@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili视频下载
 // @namespace    https://github.com/injahow
-// @version      1.8.6
+// @version      1.8.7
 // @description  支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author       injahow
 // @source       https://github.com/injahow/bilibili-parse
@@ -1937,8 +1937,7 @@
         });
 
         $('body').on('click', '#download_subtitle', function () {
-            const filename = VideoStatus.base().filename();
-            utils.Video.download_subtitle_vtt(filename);
+            utils.Video.download_subtitle_vtt(0, VideoStatus.base().filename());
         });
 
         $('body').on('click', '#video_download_all', function () {
