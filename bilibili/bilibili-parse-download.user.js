@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili视频下载
 // @namespace    https://github.com/injahow
-// @version      1.8.7
+// @version      1.8.8
 // @description  支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author       injahow
 // @source       https://github.com/injahow/bilibili-parse
@@ -433,10 +433,10 @@
             if (config.rpc_domain !== old_config.rpc_domain) {
                 if (!(config.rpc_domain.match('https://') || config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
                     utils.MessageBox.alert('' +
-                        '检测到当前RPC为非本机的http接口，即将跳转到AriaNG网页控制台页面；' +
+                        '检测到当前RPC不是localhost本地接口，即将跳转到AriaNG网页控制台页面；' +
                         '请查看控制台RPC接口参数是否正确，第一次加载会比较慢请耐心等待；' +
                         '配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！', () => {
-                            utils.open_ariang();
+                            utils.open_ariang(true);
                         });
                 }
             }
@@ -953,14 +953,18 @@
             }
         }
 
-        function open_ariang() {
+        function open_ariang(rpc_set = false) {
+            let hash_tag = '';
+            if (rpc_set) {
+                const rpc = {
+                    domain: config.rpc_domain,
+                    port: config.rpc_port,
+                    token: config.rpc_token
+                };
+                hash_tag = `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}/jsonrpc/${window.btoa(rpc.token)}`;
+            }
             const a = document.createElement('a');
-            const rpc = {
-                domain: config.rpc_domain,
-                port: config.rpc_port,
-                token: config.rpc_token
-            };
-            const url = `http://ariang.injahow.com/#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}/jsonrpc/${window.btoa(rpc.token)}`;
+            const url = 'http://ariang.injahow.com/' + hash_tag;
             a.setAttribute('target', '_blank');
             a.setAttribute('onclick', `window.bp_aria2_window=window.open('${url}');`);
             document.body.appendChild(a);
