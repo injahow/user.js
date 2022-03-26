@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili视频下载
 // @namespace    https://github.com/injahow
-// @version      1.9.0
+// @version      1.9.2
 // @description  支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author       injahow
 // @source       https://github.com/injahow/bilibili-parse
@@ -598,14 +598,25 @@
             'function' !== typeof error && (error = err => console.error(err));
 
             const video_base = VideoStatus.base();
-            const [aid, cid, epid, q, type, format] = [
+            const [aid, cid, epid, q, type] = [
                 video_base.aid(page),
                 video_base.cid(page),
                 video_base.epid(page),
                 quality || VideoStatus.get_quality().q,
-                video_base.type,
-                video_format || config.format
+                video_base.type
             ];
+            let format = video_format || config.format;
+            if (format === 'mp4' && type === 'bangumi') format = 'flv';
+
+            const url_replace_cdn = url => {
+                if (config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
+                    // 切换CDN
+                    let url_tmp = url.split('/');
+                    url_tmp[2] = hostMap[config.host_key];
+                    url = url_tmp.join('/');
+                }
+                return url;
+            }
 
             let base_api;
             const ajax_params = {
@@ -616,9 +627,9 @@
                     if (!res.code) {
                         data = res.result || res.data;
                     }
-                    if (data) { // local
+                    if (data) {
                         if (data.dash) {
-                            const _res = {
+                            const result = {
                                 'code': 0,
                                 'quality': data.quality,
                                 'accept_quality': data.accept_quality,
@@ -629,19 +640,19 @@
                             for (let i = 0; i < videos.length; i++) {
                                 const e = videos[i];
                                 if (e.id <= q) {
-                                    _res.video = e.base_url;
-                                    _res.audio = data.dash.audio[0].base_url;
+                                    result.video = url_replace_cdn(e.base_url);
+                                    result.audio = url_replace_cdn(data.dash.audio[0].base_url);
                                     break;
                                 }
                             }
-                            success(_res);
+                            success(result);
                             return;
                         }
                         success({
                             'code': 0,
                             'quality': data.quality,
                             'accept_quality': data.accept_quality,
-                            'url': data.durl[0].url
+                            'url': url_replace_cdn(data.durl[0].url)
                         });
                         return;
                     }
@@ -650,6 +661,9 @@
                         get_url_api_base(page, quality, video_format, success, error, 'online');
                         return;
                     }
+                    res.url && (res.url = url_replace_cdn(res.url));
+                    res.video && (res.video = url_replace_cdn(res.video));
+                    res.audio && (res.audio = url_replace_cdn(res.audio));
                     success(res);
                 },
                 error: e => {
@@ -672,6 +686,7 @@
                 ];
                 if (config.auth === '1' && auth_id && auth_sec) {
                     base_api += `&auth_id=${auth_id}&auth_sec=${auth_sec}`;
+                    !!page && (base_api += '&s');
                 }
             }
 
@@ -841,20 +856,11 @@
                                 if (!res.code) {
                                     utils.Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''));
                                     utils.MessageBox.alert(`${msg}：获取成功！`);
-                                    let url = res.url;
-
-                                    let video_format = '';
+                                    let url = res.url, video_format = '';
                                     if (url.match('.flv')) {
                                         video_format = '.flv';
                                     } else if (url.match('.mp4')) {
                                         video_format = '.mp4';
-                                    }
-
-                                    if (config.host_key !== '0' && config.request_type !== 'local') {
-                                        // 切换CDN路线
-                                        let url_tmp = url.split('/');
-                                        url_tmp[2] = hostMap[config.host_key];
-                                        url = url_tmp.join('/');
                                     }
 
                                     const type = rpc_type();
@@ -880,24 +886,13 @@
                                 setTimeout(function () {
                                     get_url(videos, ++i, video_urls);
                                 }, 3000);
-
                             };
-
                             const error = () => {
                                 utils.Message.danger(`第${i + 1}个视频请求出现网络异常`);
                                 get_url(videos, ++i, video_urls);
                             };
 
-                            if (config.request_type === 'online') {
-                                $.ajax(video.url, {
-                                    type: 'GET',
-                                    dataType: 'json',
-                                    success: success,
-                                    error: error
-                                });
-                            } else {
-                                utils.Video.get_urls_api(video.p, video.q, video.format, success, error);
-                            }
+                            utils.Video.get_urls_api(video.p, video.q, video.format, success, error);
 
                         }, 3000);
 
@@ -2181,17 +2176,7 @@
                     utils.Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''));
                     let url = config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://');
                     let url_2 = config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#';
-                    if (config.host_key !== '0' && config.request_type !== 'local') {
-                        // 强制切换CDN路线
-                        let url_tmp = url.split('/');
-                        url_tmp[2] = hostMap[config.host_key];
-                        url = url_tmp.join('/');
-                        if (url_2 !== '#') {
-                            let url_2_tmp = url_2.split('/');
-                            url_2_tmp[2] = hostMap[config.host_key];
-                            url_2 = url_2_tmp.join('/');
-                        }
-                    }
+
                     $('#video_url').attr('href', url);
                     $('#video_download').show();
                     if (config.format === 'dash') {
