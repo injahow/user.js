@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili视频下载
 // @namespace    https://github.com/injahow
-// @version      1.8.8
+// @version      1.9.0
 // @description  支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author       injahow
 // @source       https://github.com/injahow/bilibili-parse
@@ -30,65 +30,38 @@
     window.bp_fun_locked = true;
 
     // user
-    let UserStatus;
-    (function () {
-        UserStatus = {
-            lazy_init,
-            is_login, vip_status, mid, uname,
-            need_replace
-        };
-        let _is_login = false, _vip_status = 0, _mid = '', _uname = '';
-        let is_init = false;
-
-        function lazy_init(last_init = false) {
-            if (!is_init) {
+    const UserStatus = {
+        is_login: false,
+        vip_status: 0,
+        mid: '',
+        uname: '',
+        has_init: false,
+        need_replace: function () {
+            return !this.is_login || (this.is_login && !this.vip_status && VideoStatus.base().need_vip());
+        },
+        lazy_init: function (last_init = false) {
+            if (!this.has_init) {
                 if (window.__BILI_USER_INFO__) {
-                    _is_login = window.__BILI_USER_INFO__.isLogin;
-                    _vip_status = window.__BILI_USER_INFO__.vipStatus;
-                    _mid = window.__BILI_USER_INFO__.mid || '';
-                    _uname = window.__BILI_USER_INFO__.uname || '';
+                    this.is_login = window.__BILI_USER_INFO__.isLogin;
+                    this.vip_status = window.__BILI_USER_INFO__.vipStatus;
+                    this.mid = window.__BILI_USER_INFO__.mid || '';
+                    this.uname = window.__BILI_USER_INFO__.uname || '';
                 } else if (window.__BiliUser__) {
-                    _is_login = window.__BiliUser__.isLogin;
+                    this.is_login = window.__BiliUser__.isLogin;
                     if (window.__BiliUser__.cache) {
-                        _vip_status = window.__BiliUser__.cache.data.vipStatus;
-                        _mid = window.__BiliUser__.cache.data.mid || '';
-                        _uname = window.__BiliUser__.cache.data.uname || '';
+                        this.vip_status = window.__BiliUser__.cache.data.vipStatus;
+                        this.mid = window.__BiliUser__.cache.data.mid || '';
+                        this.uname = window.__BiliUser__.cache.data.uname || '';
                     } else {
-                        _vip_status = 0;
-                        _mid = '';
-                        _uname = '';
+                        this.vip_status = 0;
+                        this.mid = '';
+                        this.uname = '';
                     }
-                } else {
-                    _is_login = false;
-                    _vip_status = 0;
-                    _mid = '';
-                    _uname = '';
                 }
-                is_init = last_init;
+                this.has_init = last_init;
             }
         }
-
-        function is_login() {
-            return _is_login;
-        }
-
-        function vip_status() {
-            return _vip_status;
-        }
-
-        function mid() {
-            return _mid;
-        }
-
-        function uname() {
-            return _uname;
-        }
-
-        function need_replace() {
-            return (!_is_login || (_is_login && !_vip_status && VideoStatus.base().need_vip()));
-        }
-
-    })();
+    };
 
     // auth
     let Auth;
@@ -120,7 +93,7 @@
             if (access_key && auth_time === '0') {
                 localStorage.setItem('bp_auth_time', Date.now());
             }
-            if (UserStatus.is_login()) {
+            if (UserStatus.is_login) {
                 if (localStorage.getItem('bp_remind_login') === '1') {
                     if (!access_key) {
                         utils.MessageBox.confirm('当前脚本未进行账号授权，无法请求1080P以上的清晰度；如果你是大会员或承包过这部番，授权即可解锁全部清晰度；是否需要进行账号授权？', () => {
@@ -134,9 +107,11 @@
                         $.ajax(`https://api.bilibili.com/x/space/myinfo?access_key=${access_key}`, {
                             type: 'GET',
                             dataType: 'json',
-                            success: (res) => {
+                            success: res => {
                                 if (res.code) {
                                     utils.MessageBox.alert('授权已过期，准备重新授权', () => {
+                                        localStorage.setItem('bp_auth_id', '');
+                                        localStorage.setItem('bp_auth_sec', '');
                                         localStorage.setItem('bp_access_key', '');
                                         localStorage.setItem('bp_auth_time', '0');
                                         window.bp_show_login();
@@ -146,19 +121,19 @@
                                     $.ajax(`${config.base_api}/auth/v2/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}&access_key=${access_key}`, {
                                         type: 'GET',
                                         dataType: 'json',
-                                        success: (res) => {
+                                        success: res => {
                                             if (res.code) {
                                                 utils.Message.warning('授权检查失败：' + res.message);
                                             }
                                         },
                                         error: () => {
-                                            utils.Message.danger('授权检查异常');
+                                            utils.Message.danger('授权检查出现网络异常');
                                         }
                                     });
                                 }
                             },
                             error: () => {
-                                utils.Message.danger('检查key请求异常');
+                                utils.Message.danger('key检查出现网络异常');
                             }
                         });
                     }
@@ -197,7 +172,7 @@
                 xhrFields: { withCredentials: true },
                 type: 'GET',
                 dataType: 'json',
-                success: (res) => {
+                success: res => {
                     if (res.data.has_login) {
                         $('body').append(`<iframe id="auth_iframe" src="${res.data.confirm_uri}" style="display:none"></iframe>`);
                     } else {
@@ -209,7 +184,7 @@
                     }
                 },
                 error: () => {
-                    utils.Message.danger('授权请求异常');
+                    utils.Message.danger('授权请求出现网络异常');
                     auth_clicked = false;
                 }
             });
@@ -220,7 +195,7 @@
                 xhrFields: { withCredentials: true },
                 type: 'GET',
                 dataType: 'json',
-                success: (res) => {
+                success: res => {
                     if (res.data.has_login) {
                         const msg = '' +
                             `请点击<b><a href="${res.data.confirm_uri}" target="_blank">授权地址</a></b>打开一个新窗口，正常情况新窗口应该显示一个图片，请将该窗口地址栏的URL链接复制到当前文本框中<br/>
@@ -235,7 +210,7 @@
                             $.ajax(auth_url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', `${config.base_api}/auth/v2/?act=login&auth_id=${auth_id}&auth_sec=${auth_sec}&`), {
                                 type: 'GET',
                                 dataType: 'json',
-                                success: (res) => {
+                                success: res => {
                                     if (!res.code) {
                                         utils.Message.success('授权成功');
                                         if (res.auth_id && res.auth_sec) {
@@ -252,7 +227,7 @@
                                     auth_clicked = false;
                                 },
                                 error: () => {
-                                    utils.Message.danger('请求异常');
+                                    utils.Message.danger('请求出现网络异常');
                                     auth_clicked = false;
                                 }
                             });
@@ -266,7 +241,7 @@
                     }
                 },
                 error: () => {
-                    utils.Message.danger('授权请求异常');
+                    utils.Message.danger('授权请求出现网络异常');
                     auth_clicked = false;
                 }
             });
@@ -290,7 +265,7 @@
             $.ajax(`${config.base_api}/auth/v2/?act=logout&auth_id=${auth_id}&auth_sec=${auth_sec}`, {
                 type: 'GET',
                 dataType: 'json',
-                success: (res) => {
+                success: res => {
                     if (!res.code) {
                         utils.Message.success('取消成功');
                         localStorage.setItem('bp_auth_id', '');
@@ -305,7 +280,7 @@
                     auth_clicked = false;
                 },
                 error: () => {
-                    utils.Message.danger('请求异常');
+                    utils.Message.danger('请求出现网络异常');
                     auth_clicked = false;
                 }
             });
@@ -327,7 +302,7 @@
                 $.ajax(url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', `${config.base_api}/auth/v2/?act=login&auth_id=${auth_id}&auth_sec=${auth_sec}&`), {
                     type: 'GET',
                     dataType: 'json',
-                    success: (res) => {
+                    success: res => {
                         if (!res.code) {
                             utils.Message.success('授权成功');
                             if (res.auth_id && res.auth_sec) {
@@ -344,7 +319,7 @@
                         auth_clicked = false;
                     },
                     error: () => {
-                        utils.Message.danger('请求异常');
+                        utils.Message.danger('请求出现网络异常');
                         auth_clicked = false;
                     }
                 });
@@ -358,6 +333,7 @@
     // config
     const config = {
         base_api: 'https://api.injahow.cn/bparse/',
+        request_type: 'auto',
         format: 'flv',
         host_key: '0',
         replace_force: '0',
@@ -468,7 +444,7 @@
                     help_clicked = false;
                 },
                 error: (e) => {
-                    utils.Message.danger('请求异常');
+                    utils.Message.danger('请求出现网络异常');
                     help_clicked = false;
                     console.log('error', e);
                 }
@@ -507,8 +483,14 @@
                         </b>
                     </span>
                     <div style="margin:2% 0;"><label>请求地址：</label>
-                        <input id="base_api" value="..." style="width:50%;"><br />
-                        <small>普通使用请勿修改</small>
+                        <input id="base_api" value="..." style="width:30%;">&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label>请求方式：</label>
+                        <select name="request_type" id="request_type">
+                            <option value="auto">自动判断</option>
+                            <option value="online">远程请求</option>
+                            <option value="local">本地请求</option>
+                        </select><br />
+                        <small>普通使用请勿修改；默认使用混合请求</small>
                     </div>
                     <div style="margin:2% 0;"><label>视频格式：</label>
                         <select name="format" id="format">
@@ -520,7 +502,7 @@
                         <select name="host_key" id="host_key">
                             ${host_key_option}
                         </select><br />
-                        <small>注意：仅video支持MP4；仅建议特殊地区网络受限时切换CDN（自行选择合适路线）</small>
+                        <small>注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>
                     </div>
                     <div style="margin:2% 0;"><label>下载方式：</label>
                         <select name="download_type" id="download_type">
@@ -588,8 +570,16 @@
 
         utils.open_ariang = open_ariang;
 
-        // Video
         utils.Video = {
+            get_url_api: (quality = 0, success, error) => {
+                const request_type = config.request_type;
+                const format = config.format;
+                get_url_api_base(0, quality, format, success, error, request_type);
+            },
+            get_urls_api: (page = 0, quality = 0, format, success, error) => {
+                const request_type = config.request_type;
+                get_url_api_base(page, quality, format, success, error, request_type);
+            },
             download: (url, name, type) => {
                 const filename = name.replace(/[\/\\:*?"<>|]+/g, '');
                 if (type === 'blob') {
@@ -602,6 +592,91 @@
             download_danmaku_ass,
             download_subtitle_vtt
         };
+
+        function get_url_api_base(page, quality, video_format, success, error, request_type) {
+            'function' !== typeof success && (success = res => console.log(res));
+            'function' !== typeof error && (error = err => console.error(err));
+
+            const video_base = VideoStatus.base();
+            const [aid, cid, epid, q, type, format] = [
+                video_base.aid(page),
+                video_base.cid(page),
+                video_base.epid(page),
+                quality || VideoStatus.get_quality().q,
+                video_base.type,
+                video_format || config.format
+            ];
+
+            let base_api;
+            const ajax_params = {
+                type: 'GET',
+                dataType: 'json',
+                success: res => {
+                    let data;
+                    if (!res.code) {
+                        data = res.result || res.data;
+                    }
+                    if (data) { // local
+                        if (data.dash) {
+                            const _res = {
+                                'code': 0,
+                                'quality': data.quality,
+                                'accept_quality': data.accept_quality,
+                                'video': '',
+                                'audio': ''
+                            };
+                            const videos = data.dash.video;
+                            for (let i = 0; i < videos.length; i++) {
+                                const e = videos[i];
+                                if (e.id <= q) {
+                                    _res.video = e.base_url;
+                                    _res.audio = data.dash.audio[0].base_url;
+                                    break;
+                                }
+                            }
+                            success(_res);
+                            return;
+                        }
+                        success({
+                            'code': 0,
+                            'quality': data.quality,
+                            'accept_quality': data.accept_quality,
+                            'url': data.durl[0].url
+                        });
+                        return;
+                    }
+
+                    if (request_type === 'auto') {
+                        get_url_api_base(page, quality, video_format, success, error, 'online');
+                        return;
+                    }
+                    success(res);
+                },
+                error: e => {
+                    error(e);
+                }
+            }
+
+            if (request_type === 'auto' || request_type === 'local') {
+                base_api = 'https://api.bilibili.com/x/player/playurl';
+                const fnval = format === 'dash' ? 4048 : 0;
+                base_api += `?avid=${aid}&cid=${cid}&qn=${q}&fnver=0&fnval=${fnval}&fourk=1&ep_id=${epid}&type=${format}&otype=json`;
+                base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
+                ajax_params.xhrFields = { withCredentials: true };
+            } else {
+                base_api = config.base_api;
+                base_api += `?av=${aid}&cid=${cid}&q=${q}&epid=${epid}&type=${type}&format=${format}&otype=json`;
+                const [auth_id, auth_sec] = [
+                    localStorage.getItem('bp_auth_id') || '',
+                    localStorage.getItem('bp_auth_sec') || ''
+                ];
+                if (config.auth === '1' && auth_id && auth_sec) {
+                    base_api += `&auth_id=${auth_id}&auth_sec=${auth_sec}`;
+                }
+            }
+
+            $.ajax(base_api, ajax_params);
+        }
 
         function rpc_type() {
             if (config.rpc_domain.match('https://') || config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
@@ -733,6 +808,8 @@
                         dl_danmaku: _dl_danmaku,
                         cid: cid,
                         p: p,
+                        q: _q,
+                        format: format,
                         url: `${config.base_api}?av=${aid}&p=${p}&cid=${cid}&ep=${epid}&q=${_q}&type=${type}&format=${format}&otype=json&auth_id=${auth_id}&auth_sec=${auth_sec}&s`,
                         filename: filename
                     });
@@ -757,60 +834,75 @@
                         }
                         const msg = `第${i + 1}（${i + 1}/${videos.length}）个视频`;
                         utils.MessageBox.alert(`${msg}：获取中...`);
+
                         setTimeout(function () {
-                            $.ajax(video.url, {
-                                type: 'GET',
-                                dataType: 'json',
-                                success: (res) => {
-                                    if (!res.code) {
-                                        utils.Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''));
-                                        utils.MessageBox.alert(`${msg}：获取成功！`);
-                                        let url = res.url;
 
-                                        let video_format = '';
-                                        if (url.match('.flv')) {
-                                            video_format = '.flv';
-                                        } else if (url.match('.mp4')) {
-                                            video_format = '.mp4';
-                                        }
+                            const success = res => {
+                                if (!res.code) {
+                                    utils.Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''));
+                                    utils.MessageBox.alert(`${msg}：获取成功！`);
+                                    let url = res.url;
 
-                                        if (config.host_key !== '0') {
-                                            // 强制切换CDN路线
-                                            let url_tmp = url.split('/');
-                                            url_tmp[2] = hostMap[config.host_key];
-                                            url = url_tmp.join('/');
-                                        }
-
-                                        const type = rpc_type();
-                                        if (type === 'post') {
-                                            video_urls.push({
-                                                url: url,
-                                                filename: video.filename + video_format
-                                            });
-                                            if (video_urls.length > 3) {
-                                                download_rpc_all(video_urls)
-                                                video_urls.length = 0;
-                                            }
-                                        } else if (type === 'ariang') {
-                                            download_rpc_ariang_one({
-                                                url: url,
-                                                filename: video.filename + video_format
-                                            });
-                                        }
-                                    } else {
-                                        utils.Message.warning(`第${i + 1}个视频请求失败：` + res.message);
+                                    let video_format = '';
+                                    if (url.match('.flv')) {
+                                        video_format = '.flv';
+                                    } else if (url.match('.mp4')) {
+                                        video_format = '.mp4';
                                     }
-                                    setTimeout(function () {
-                                        get_url(videos, ++i, video_urls);
-                                    }, 1000);
-                                },
-                                error: () => {
-                                    utils.Message.danger(`第${i + 1}个视频请求异常`);
-                                    get_url(videos, ++i, video_urls);
+
+                                    if (config.host_key !== '0' && config.request_type !== 'local') {
+                                        // 切换CDN路线
+                                        let url_tmp = url.split('/');
+                                        url_tmp[2] = hostMap[config.host_key];
+                                        url = url_tmp.join('/');
+                                    }
+
+                                    const type = rpc_type();
+                                    if (type === 'post') {
+                                        video_urls.push({
+                                            url: url,
+                                            filename: video.filename + video_format
+                                        });
+                                        if (video_urls.length > 3) {
+                                            download_rpc_all(video_urls)
+                                            video_urls.length = 0;
+                                        }
+                                    } else if (type === 'ariang') {
+                                        download_rpc_ariang_one({
+                                            url: url,
+                                            filename: video.filename + video_format
+                                        });
+                                    }
+                                } else {
+                                    utils.Message.warning(`第${i + 1}个视频请求失败：` + res.message);
                                 }
-                            });
-                        }, 2000);
+
+                                setTimeout(function () {
+                                    get_url(videos, ++i, video_urls);
+                                }, 3000);
+
+                            };
+
+                            const error = () => {
+                                utils.Message.danger(`第${i + 1}个视频请求出现网络异常`);
+                                get_url(videos, ++i, video_urls);
+                            };
+
+                            if (config.request_type === 'online') {
+                                $.ajax(video.url, {
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    success: success,
+                                    error: error
+                                });
+                            } else {
+                                utils.Video.get_urls_api(video.p, video.q, video.format, success, error);
+                            }
+
+                        }, 3000);
+
                     } else {
+
                         utils.MessageBox.alert('视频地址请求完成！');
                         if (rpc_type() === 'post') {
                             if (video_urls.length > 0) {
@@ -859,7 +951,7 @@
                         }
                     },
                     error: () => {
-                        utils.Message.danger('RPC请求异常，请确认RPC服务配置及软件运行状态');
+                        utils.Message.danger('RPC请求出现网络异常，请检查RPC服务配置');
                     }
                 });
             }
@@ -927,7 +1019,7 @@
                         download_rpc_clicked = false;
                     },
                     error: () => {
-                        utils.Message.danger('RPC请求异常，请确认RPC服务配置及软件运行状态');
+                        utils.Message.danger('RPC请求出现网络异常，请检查RPC服务配置');
                         download_rpc_clicked = false;
                     }
                 });
@@ -1596,7 +1688,7 @@
                 const collect_name = $('.player-auxiliary-playlist-top .player-auxiliary-filter-title').html();
                 let owner_name;
                 if (location.pathname.match('/medialist/play/watchlater/')) {
-                    owner_name = UserStatus.uname();
+                    owner_name = UserStatus.uname;
                 } else {
                     owner_name = $('.player-auxiliary-playlist-user .player-auxiliary-playlist-ownerName').html();
                 }
@@ -1761,7 +1853,7 @@
             } else {
                 _q = _q_max = 80;
             }
-            if (!UserStatus.is_login()) {
+            if (!UserStatus.is_login) {
                 _q = _q_max > 80 ? 80 : _q_max;
             }
             return { q: _q, q_max: _q_max };
@@ -1860,7 +1952,7 @@
 
     })();
 
-    // main
+    // ui main
     (function () {
         $('body').append('<a id="video_url" style="display:none" target="_blank" referrerpolicy="origin" href="#"></a>');
         $('body').append('<a id="video_url_2" style="display:none" target="_blank" referrerpolicy="origin" href="#"></a>');
@@ -2055,7 +2147,7 @@
                 video_base.epid()
             ];
             const q = VideoStatus.get_quality().q;
-            api_url = `${config.base_api}?av=${aid}&p=${p}&cid=${cid}&ep=${epid}&q=${q}&type=${type}&format=${config.format}&otype=json&_host=${config.host_key}`;
+            api_url = `${config.base_api}?av=${aid}&p=${p}&cid=${cid}&ep=${epid}&q=${q}&type=${type}&format=${config.format}&otype=json&_host=${config.host_key}&_req=${config.request_type}`;
             const [auth_id, auth_sec] = [
                 localStorage.getItem('bp_auth_id') || '',
                 localStorage.getItem('bp_auth_sec') || ''
@@ -2063,7 +2155,7 @@
             if (config.auth === '1' && auth_id && auth_sec) {
                 api_url += `&auth_id=${auth_id}&auth_sec=${auth_sec}`;
             }
-            if (api_url === api_url_temp) {
+            if (api_url === api_url_temp && config.request_type !== 'local') {
                 utils.Message.info('(^・ω・^)~喵喵喵~');
                 const url = $('#video_url').attr('href');
                 const url_2 = $('#video_url_2').attr('href');
@@ -2084,46 +2176,39 @@
             api_url_temp = api_url;
 
             utils.Message.info('开始请求');
-            $.ajax(api_url, {
-                dataType: 'json',
-                success: (res) => {
-                    if (res && !res.code) {
-                        utils.Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''));
-                        let url = config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://');
-                        let url_2 = config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#';
-
-                        if (config.host_key !== '0') {
-                            // 强制切换CDN路线
-                            let url_tmp = url.split('/');
-                            url_tmp[2] = hostMap[config.host_key];
-                            url = url_tmp.join('/');
-                            if (url_2 !== '#') {
-                                let url_2_tmp = url_2.split('/');
-                                url_2_tmp[2] = hostMap[config.host_key];
-                                url_2 = url_2_tmp.join('/');
-                            }
+            utils.Video.get_url_api(0, res => {
+                if (res && !res.code) {
+                    utils.Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''));
+                    let url = config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://');
+                    let url_2 = config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#';
+                    if (config.host_key !== '0' && config.request_type !== 'local') {
+                        // 强制切换CDN路线
+                        let url_tmp = url.split('/');
+                        url_tmp[2] = hostMap[config.host_key];
+                        url = url_tmp.join('/');
+                        if (url_2 !== '#') {
+                            let url_2_tmp = url_2.split('/');
+                            url_2_tmp[2] = hostMap[config.host_key];
+                            url_2 = url_2_tmp.join('/');
                         }
-
-                        $('#video_url').attr('href', url);
-                        $('#video_download').show();
-                        if (config.format === 'dash') {
-                            $('#video_url_2').attr('href', url_2);
-                            $('#video_download_2').show();
-                        }
-                        if (UserStatus.need_replace() || video_base.is_limited() || config.replace_force === '1') {
-                            utils.Player.replace(url, url_2);
-                        }
-                        if (config.auto_download === '1') {
-                            $('#video_download').click();
-                        }
-                    } else {
-                        utils.Message.warning('请求失败：' + res.message);
                     }
-                },
-                error: (e) => {
-                    utils.Message.danger('请求异常');
-                    console.log('error', e);
+                    $('#video_url').attr('href', url);
+                    $('#video_download').show();
+                    if (config.format === 'dash') {
+                        $('#video_url_2').attr('href', url_2);
+                        $('#video_download_2').show();
+                    }
+                    if (UserStatus.need_replace() || video_base.is_limited() || config.replace_force === '1') {
+                        utils.Player.replace(url, url_2);
+                    }
+                    if (config.auto_download === '1') {
+                        $('#video_download').click();
+                    }
+                } else {
+                    utils.Message.warning('请求失败：' + res.message);
                 }
+            }, () => {
+                utils.Message.danger('请求出现网络异常');
             });
         });
     })();
