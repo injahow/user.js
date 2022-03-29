@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili视频下载
 // @namespace    https://github.com/injahow
-// @version      1.9.3
+// @version      1.9.4
 // @description  支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author       injahow
 // @source       https://github.com/injahow/bilibili-parse
@@ -116,7 +116,13 @@
                                 dataType: 'json',
                                 success: res => {
                                     if (res.code) {
-                                        utils.Message.warning('授权检查失败：' + res.message);
+                                        utils.MessageBox.alert('授权检查失败，准备重新授权', () => {
+                                            localStorage.setItem('bp_auth_id', '');
+                                            localStorage.setItem('bp_auth_sec', '');
+                                            localStorage.setItem('bp_access_key', '');
+                                            localStorage.setItem('bp_auth_time', '0');
+                                            window.bp_show_login();
+                                        });
                                     }
                                 },
                                 error: () => {
