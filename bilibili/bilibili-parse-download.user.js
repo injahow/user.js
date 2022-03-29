@@ -1,22 +1,24 @@
 // ==UserScript==
 // @name         bilibili视频下载
 // @namespace    https://github.com/injahow
-// @version      1.9.2
+// @version      1.9.3
 // @description  支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author       injahow
 // @source       https://github.com/injahow/bilibili-parse
 // @copyright    2021, injahow (https://github.com/injahow)
-// @include      *://www.bilibili.com/video/av*
-// @include      *://www.bilibili.com/video/BV*
-// @include      *://www.bilibili.com/medialist/play/*
-// @include      *://www.bilibili.com/bangumi/play/ep*
-// @include      *://www.bilibili.com/bangumi/play/ss*
-// @include      *://www.bilibili.com/cheese/play/ep*
-// @include      *://www.bilibili.com/cheese/play/ss*
-// @include      https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
+// @downloadURL  https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js
+// @updateURL    https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js
+// @match        *://www.bilibili.com/video/av*
+// @match        *://www.bilibili.com/video/BV*
+// @match        *://www.bilibili.com/medialist/play/*
+// @match        *://www.bilibili.com/bangumi/play/ep*
+// @match        *://www.bilibili.com/bangumi/play/ss*
+// @match        *://www.bilibili.com/cheese/play/ep*
+// @match        *://www.bilibili.com/cheese/play/ss*
+// @match        https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
 // @require      https://static.hdslb.com/js/jquery.min.js
-// @require      https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js
-// @require      https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js
+// @require      https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js
+// @require      https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js
 // @compatible   chrome
 // @compatible   firefox
 // @license      MIT
@@ -83,7 +85,6 @@
         let auth_clicked = false;
 
         function check_login_status() {
-            !localStorage.getItem('bp_remind_login') && localStorage.setItem('bp_remind_login', '1');
             const [auth_id, auth_sec, access_key, auth_time] = [
                 localStorage.getItem('bp_auth_id') || '',
                 localStorage.getItem('bp_auth_sec') || '',
@@ -93,58 +94,50 @@
             if (access_key && auth_time === '0') {
                 localStorage.setItem('bp_auth_time', Date.now());
             }
-            if (UserStatus.is_login) {
-                if (localStorage.getItem('bp_remind_login') === '1') {
-                    if (!access_key) {
-                        utils.MessageBox.confirm('当前脚本未进行账号授权，无法请求1080P以上的清晰度；如果你是大会员或承包过这部番，授权即可解锁全部清晰度；是否需要进行账号授权？', () => {
-                            window.bp_show_login();
-                        });
-                    }
-                    localStorage.setItem('bp_remind_login', '0');
-                } else if (config.base_api !== localStorage.getItem('bp_pre_base_api') || (Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
-                    // check key
-                    if (access_key) {
-                        $.ajax(`https://api.bilibili.com/x/space/myinfo?access_key=${access_key}`, {
-                            type: 'GET',
-                            dataType: 'json',
-                            success: res => {
-                                if (res.code) {
-                                    utils.MessageBox.alert('授权已过期，准备重新授权', () => {
-                                        localStorage.setItem('bp_auth_id', '');
-                                        localStorage.setItem('bp_auth_sec', '');
-                                        localStorage.setItem('bp_access_key', '');
-                                        localStorage.setItem('bp_auth_time', '0');
-                                        window.bp_show_login();
-                                    });
-                                } else {
-                                    localStorage.setItem('bp_auth_time', Date.now());
-                                    $.ajax(`${config.base_api}/auth/v2/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}&access_key=${access_key}`, {
-                                        type: 'GET',
-                                        dataType: 'json',
-                                        success: res => {
-                                            if (res.code) {
-                                                utils.Message.warning('授权检查失败：' + res.message);
-                                            }
-                                        },
-                                        error: () => {
-                                            utils.Message.danger('授权检查出现网络异常');
-                                        }
-                                    });
+            if (access_key && UserStatus.is_login &&
+                (config.base_api !== localStorage.getItem('bp_pre_base_api') || (Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000))) {
+                // check key
+                $.ajax(`https://api.bilibili.com/x/space/myinfo?access_key=${access_key}`, {
+                    type: 'GET',
+                    dataType: 'json',
+                    success: res => {
+                        if (res.code) {
+                            utils.MessageBox.alert('授权已过期，准备重新授权', () => {
+                                localStorage.setItem('bp_auth_id', '');
+                                localStorage.setItem('bp_auth_sec', '');
+                                localStorage.setItem('bp_access_key', '');
+                                localStorage.setItem('bp_auth_time', '0');
+                                window.bp_show_login();
+                            });
+                        } else {
+                            localStorage.setItem('bp_auth_time', Date.now());
+                            $.ajax(`${config.base_api}/auth/v2/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}&access_key=${access_key}`, {
+                                type: 'GET',
+                                dataType: 'json',
+                                success: res => {
+                                    if (res.code) {
+                                        utils.Message.warning('授权检查失败：' + res.message);
+                                    }
+                                },
+                                error: () => {
+                                    utils.Message.danger('授权检查网络异常');
                                 }
-                            },
-                            error: () => {
-                                utils.Message.danger('key检查出现网络异常');
-                            }
-                        });
+                            });
+                        }
+                    },
+                    error: () => {
+                        utils.Message.danger('网络异常');
                     }
-                }
+                });
+
             }
+
             localStorage.setItem('bp_pre_base_api', config.base_api);
         }
 
         window.bp_show_login = function (auto = '1') {
             if (auth_clicked) {
-                utils.Message.info('(^・ω・^)~喵喵喵~');
+                utils.Message.miaow();
                 return;
             }
             auth_clicked = true;
@@ -253,7 +246,7 @@
                 localStorage.getItem('bp_auth_sec') || ''
             ];
             if (auth_clicked) {
-                utils.Message.info('(^・ω・^)~喵喵喵~');
+                utils.Message.miaow();
                 return;
             }
             auth_clicked = true;
@@ -412,7 +405,11 @@
                         '检测到当前RPC不是localhost本地接口，即将跳转到AriaNG网页控制台页面；' +
                         '请查看控制台RPC接口参数是否正确，第一次加载会比较慢请耐心等待；' +
                         '配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！', () => {
-                            utils.open_ariang(true);
+                            utils.open_ariang({
+                                domain: config.rpc_domain,
+                                port: config.rpc_port,
+                                token: config.rpc_token
+                            });
                         });
                 }
             }
@@ -429,7 +426,7 @@
         let help_clicked = false;
         window.bp_show_help = () => {
             if (help_clicked) {
-                utils.Message.info('(^・ω・^)~喵喵喵~');
+                utils.Message.miaow();
                 return;
             }
             help_clicked = true;
@@ -638,9 +635,9 @@
                             };
                             const videos = data.dash.video;
                             for (let i = 0; i < videos.length; i++) {
-                                const e = videos[i];
-                                if (e.id <= q) {
-                                    result.video = url_replace_cdn(e.base_url);
+                                const video = videos[i];
+                                if (video.id <= q) {
+                                    result.video = url_replace_cdn(video.base_url);
                                     result.audio = url_replace_cdn(data.dash.audio[0].base_url);
                                     break;
                                 }
@@ -673,6 +670,7 @@
 
             if (request_type === 'auto' || request_type === 'local') {
                 base_api = 'https://api.bilibili.com/x/player/playurl';
+                // 'https://api.bilibili.com/pugv/player/web/playurl'
                 const fnval = format === 'dash' ? 4048 : 0;
                 base_api += `?avid=${aid}&cid=${cid}&qn=${q}&fnver=0&fnval=${fnval}&fourk=1&ep_id=${epid}&type=${format}&otype=json`;
                 base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
@@ -811,10 +809,8 @@
                         continue;
                     }
                     const p = i + 1;
-                    const [aid, cid, epid, filename] = [
-                        video_base.aid(p),
+                    const [cid, filename] = [
                         video_base.cid(p),
-                        video_base.epid(p),
                         video_base.filename(p)
                     ];
                     const format = $('#dl_format').val();
@@ -825,7 +821,6 @@
                         p: p,
                         q: _q,
                         format: format,
-                        url: `${config.base_api}?av=${aid}&p=${p}&cid=${cid}&ep=${epid}&q=${_q}&type=${type}&format=${format}&otype=json&auth_id=${auth_id}&auth_sec=${auth_sec}&s`,
                         filename: filename
                     });
                 }
@@ -976,7 +971,7 @@
 
         function download_rpc(url, filename, type = 'post') {
             if (download_rpc_clicked) {
-                utils.Message.info('(^・ω・^)~喵喵喵~');
+                utils.Message.miaow();
                 return;
             }
             download_rpc_clicked = true;
@@ -1031,27 +1026,21 @@
                     const task_hash = `#!/new/task?url=${window.btoa(url)}&out=${encodeURIComponent(filename)}&${aria2_header}`;
                     if (bp_aria2_window && !bp_aria2_window.closed) {
                         bp_aria2_window.location.href = `http://ariang.injahow.com/${task_hash}`;
-                        utils.Message.success('RPC请求成功');
+                        utils.Message.success('RPC请求发送成功');
                     } else {
-                        utils.Message.warning('RPC请求失败');
+                        utils.Message.warning('AriaNG页面未打开');
                     }
                     download_rpc_clicked = false;
                 }, time);
             }
         }
 
-        function open_ariang(rpc_set = false) {
-            let hash_tag = '';
-            if (rpc_set) {
-                const rpc = {
-                    domain: config.rpc_domain,
-                    port: config.rpc_port,
-                    token: config.rpc_token
-                };
-                hash_tag = `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}/jsonrpc/${window.btoa(rpc.token)}`;
-            }
-            const a = document.createElement('a');
+        function open_ariang(rpc) {
+            const hash_tag = rpc
+                ? `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}/jsonrpc/${window.btoa(rpc.token)}`
+                : '';
             const url = 'http://ariang.injahow.com/' + hash_tag;
+            const a = document.createElement('a');
             a.setAttribute('target', '_blank');
             a.setAttribute('onclick', `window.bp_aria2_window=window.open('${url}');`);
             document.body.appendChild(a);
@@ -1078,7 +1067,7 @@
 
         function download_blob(url, filename) {
             if (download_blob_clicked) {
-                utils.Message.info('(^・ω・^)~喵喵喵~');
+                utils.Message.miaow();
                 need_show_progress = true;
                 return;
             }
@@ -1327,7 +1316,7 @@
             }
             $('#player_mask_module').hide();
             const dplayer_init = (subtitle_url = '') => {
-                window.my_dplayer = new DPlayer({
+                window.bp_dplayer = new DPlayer({
                     container: $('#my_dplayer')[0],
                     mutex: false,
                     volume: 1,
@@ -1363,10 +1352,10 @@
                         }
                     ]
                 });
-
+                // subtitle_blob save
                 if (config.format === 'dash' && url_2 && url_2 !== '#') {
                     $('body').append('<div id="my_dplayer_2" style="display:none"></div>');
-                    window.my_dplayer_2 = new DPlayer({
+                    window.bp_dplayer_2 = new DPlayer({
                         container: $('#my_dplayer_2')[0],
                         mutex: false,
                         volume: 1,
@@ -1376,8 +1365,10 @@
                             type: 'auto'
                         }
                     });
-                    const my_dplayer = window.my_dplayer;
-                    const my_dplayer_2 = window.my_dplayer_2;
+                    const [my_dplayer, my_dplayer_2] = [
+                        window.bp_dplayer,
+                        window.bp_dplayer_2
+                    ];
                     my_dplayer.on('play', function () {
                         !my_dplayer.paused && my_dplayer_2.play();
                     });
@@ -1473,16 +1464,16 @@
         }
 
         function recover_player() {
-            if (window.my_dplayer) {
+            if (window.bp_dplayer) {
                 utils.Message.info('恢复播放器');
                 const bili_video = $(bili_video_tag())[0];
                 !!bili_video && bili_video.removeEventListener('play', bili_video_stop, false);
-                window.my_dplayer.destroy();
-                window.my_dplayer = null;
+                window.bp_dplayer.destroy();
+                window.bp_dplayer = null;
                 $('#my_dplayer').remove();
-                if (window.my_dplayer_2) {
-                    window.my_dplayer_2.destroy();
-                    window.my_dplayer_2 = null;
+                if (window.bp_dplayer_2) {
+                    window.bp_dplayer_2.destroy();
+                    window.bp_dplayer_2 = null;
                     $('#my_dplayer_2').remove();
                 }
                 $(bili_player_id).show();
@@ -1495,7 +1486,8 @@
             success: html => message(html, 'success'),
             warning: html => message(html, 'warning'),
             danger: html => message(html, 'danger'),
-            info: html => message(html, 'info')
+            info: html => message(html, 'info'),
+            miaow: _ => message('(^・ω・^)~喵喵喵~', 'info')
         };
         utils.MessageBox = {
             alert: (html, affirm) => messageBox({
@@ -2151,7 +2143,7 @@
                 api_url += `&auth_id=${auth_id}&auth_sec=${auth_sec}`;
             }
             if (api_url === api_url_temp && config.request_type !== 'local') {
-                utils.Message.info('(^・ω・^)~喵喵喵~');
+                utils.Message.miaow();
                 const url = $('#video_url').attr('href');
                 const url_2 = $('#video_url_2').attr('href');
                 if (url && url !== '#') {
@@ -2193,7 +2185,7 @@
                     utils.Message.warning('请求失败：' + res.message);
                 }
             }, () => {
-                utils.Message.danger('请求出现网络异常');
+                utils.Message.danger('网络异常');
             });
         });
     })();
