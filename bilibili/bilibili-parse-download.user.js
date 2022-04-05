@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili视频下载
 // @namespace    https://github.com/injahow
-// @version      1.9.4
+// @version      1.9.5
 // @description  支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author       injahow
 // @source       https://github.com/injahow/bilibili-parse
@@ -342,7 +342,9 @@
         rpc_port: '16800',
         rpc_token: '',
         rpc_dir: 'D:/',
-        auto_download: '0'
+        auto_download: '0',
+        danmaku_speed: '15',
+        danmaku_fontsize: '22'
     };
     const hostMap = {
         ks3: 'upos-sz-mirrorks3.bilivideo.com',
@@ -418,6 +420,13 @@
                             });
                         });
                 }
+            }
+            // 判断弹幕设置情况
+            if (config.danmaku_speed !== old_config.danmaku_speed) {
+                utils.Player.Danmaku.config()
+            }
+            if (config.danmaku_fontsize !== old_config.danmaku_fontsize) {
+                utils.Player.Danmaku.config()
             }
         };
 
@@ -547,6 +556,18 @@
                         <a class="setting-context" href="javascript:;" onclick="bp_show_logout()">取消授权</a>
                         <a class="setting-context" href="javascript:;" onclick="bp_show_login('0')">手动授权</a>
                         <a class="setting-context" href="javascript:;" onclick="bp_show_login_help()">这是什么？</a>
+                    </div>
+                    <span style="font-size:20px">
+                        <b>bilibili弹幕 参数设置</b>&nbsp;&nbsp;
+                        <span style="color: darkgray; font-size: 18px">(仅替换播放器后生效)</span>
+                    </span>
+                    <div style="margin:2% 0;"><label>弹幕速度：</label>
+                        <input id="danmaku_speed" value="..." style="width:5%;">s&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span style="color: darkgray">(每条弹幕飘过屏幕的时间)</span>
+                    </div>
+                    <div style="margin:2% 0;"><label>字体大小：</label>
+                        <input id="danmaku_fontsize" value="..." style="width:5%;">px&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span style="color: darkgray">(默认22px)</span>
                     </div>
                     <div style="text-align:right"><br />
                         <button class="setting-button" onclick="bp_save_config()">确定</button>
@@ -1251,7 +1272,10 @@
         utils.Player = {
             replace: replace_player,
             recover: recover_player,
-            tag: bili_video_tag
+            tag: bili_video_tag,
+            Danmaku: {
+                config: danmaku_config
+            }
         };
 
         function request_danmaku(options, _cid) {
@@ -1282,6 +1306,10 @@
                             return [{ author: '', time: parseFloat(p[0]), type: type, color: parseInt(p[3]), id: '', text: item.text() }];
                         }).get();
                         options.success(danmaku_data);
+                        // 加载弹幕设置
+                        setTimeout(() => {
+                            utils.Player.Danmaku.config()
+                        }, 100)
                     }
                 },
                 error: () => {
@@ -1485,6 +1513,24 @@
                 $(bili_player_id).show();
                 //$('#player_mask_module').show();
             }
+        }
+
+        /**
+         * 弹幕设置
+         */
+        function danmaku_config() {
+            const css = `
+                .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {
+                    animation-name: danmaku;
+                    animation-duration: ${config.danmaku_speed}s;
+                    animation-timing-function: linear;
+                    font-size: ${config.danmaku_fontsize}px;
+                }
+            `
+            const style = document.createElement("style");
+            const text = document.createTextNode(css);
+            style.appendChild(text);
+            $('body').append(style);
         }
 
         // Message & MessageBox
