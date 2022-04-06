@@ -799,7 +799,7 @@
             const msg = '' +
                 `<div style="margin:2% 0;">
                     <label>视频格式：</label>
-                    <select name="dl_format" id="dl_format">
+                    <select id="dl_format">
                         <option value="flv" selected>FLV</option>
                         <option value="mp4">MP4</option>
                     </select>
@@ -807,19 +807,19 @@
                 </div>
                 <div style="margin:2% 0;">
                     <label>视频质量：</label>
-                    <select name="dl_quality" id="dl_quality">
+                    <select id="dl_quality">
                         ${option_support_html}
                     </select>
                 </div>
                 <div style="margin:2% 0;">
                     <label>下载字幕：</label>
-                    <select name="dl_subtitle" id="dl_subtitle">
+                    <select id="dl_subtitle">
                         <option value="0" selected>关闭</option>
                         <option value="1">VTT</option>
                     </select>
                     &nbsp;&nbsp;
                     <label>下载弹幕：</label>
-                    <select name="dl_danmaku" id="dl_danmaku">
+                    <select id="dl_danmaku">
                         <option value="0" selected>关闭</option>
                         <option value="1">ASS</option>
                     </select>
