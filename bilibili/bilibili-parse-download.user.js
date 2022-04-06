@@ -1521,9 +1521,7 @@
         function danmaku_config() {
             const css = `
                 .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {
-                    animation-name: danmaku;
                     animation-duration: ${config.danmaku_speed}s;
-                    animation-timing-function: linear;
                     font-size: ${config.danmaku_fontsize}px;
                 }
             `
