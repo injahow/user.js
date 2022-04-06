@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili视频下载
 // @namespace    https://github.com/injahow
-// @version      1.9.4
+// @version      1.9.5
 // @description  支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author       injahow
 // @source       https://github.com/injahow/bilibili-parse
@@ -39,7 +39,7 @@
         uname: '',
         has_init: false,
         need_replace: function () {
-            return !this.is_login || (this.is_login && !this.vip_status && VideoStatus.base().need_vip());
+            return !this.is_login || (!this.vip_status && VideoStatus.base().need_vip());
         },
         lazy_init: function (last_init = false) {
             if (!this.has_init) {
@@ -197,7 +197,8 @@
                 success: res => {
                     if (res.data.has_login) {
                         const msg = '' +
-                            `请点击<b><a href="${res.data.confirm_uri}" target="_blank">授权地址</a></b>打开一个新窗口，正常情况新窗口应该显示一个图片，请将该窗口地址栏的URL链接复制到当前文本框中<br/>
+                            `请点击<b><a href="${res.data.confirm_uri}" target="_blank">授权地址</a></b>
+                            打开一个新窗口，正常情况新窗口应该显示一个图片，请将该窗口地址栏的URL链接复制到当前文本框中<br/>
                             <input id="auth_url" style="width:100%" type="text" autocomplete="off"><br>
                             然后点击确定即可`;
                         utils.MessageBox.alert(msg, () => {
@@ -269,7 +270,7 @@
                         utils.Message.success('取消成功');
                         localStorage.setItem('bp_auth_id', '');
                         localStorage.setItem('bp_auth_sec', '');
-                        localStorage.setItem('bp_auth_time', '');
+                        localStorage.setItem('bp_auth_time', '0');
                         localStorage.setItem('bp_access_key', '');
                         $('#auth').val('0');
                         config.auth = '0';
@@ -285,7 +286,7 @@
             });
         }
         window.bp_show_login_help = function () {
-            utils.MessageBox.confirm('进行授权之后将能在请求地址时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', () => {
+            utils.MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', () => {
                 window.bp_show_login();
             });
         }
@@ -342,7 +343,9 @@
         rpc_port: '16800',
         rpc_token: '',
         rpc_dir: 'D:/',
-        auto_download: '0'
+        auto_download: '0',
+        danmaku_speed: '15',
+        danmaku_fontsize: '22'
     };
     const hostMap = {
         ks3: 'upos-sz-mirrorks3.bilivideo.com',
@@ -389,7 +392,9 @@
             }
             const old_config = JSON.parse(localStorage.getItem('my_config_str'));
             localStorage.setItem('my_config_str', JSON.stringify(config));
-            $('#my_config').hide();
+            // hide
+            $('#bp_config').hide();
+            $('#bp_config').css('opacity', 0);
             utils.Scroll.show();
             // 判断是否需要重新请求
             for (const key of ['base_api', 'format', 'auth']) {
@@ -408,8 +413,8 @@
             if (config.rpc_domain !== old_config.rpc_domain) {
                 if (!(config.rpc_domain.match('https://') || config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
                     utils.MessageBox.alert('' +
-                        '检测到当前RPC不是localhost本地接口，即将跳转到AriaNG网页控制台页面；' +
-                        '请查看控制台RPC接口参数是否正确，第一次加载会比较慢请耐心等待；' +
+                        '检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；' +
+                        '请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；' +
                         '配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！', () => {
                             utils.open_ariang({
                                 domain: config.rpc_domain,
@@ -418,6 +423,13 @@
                             });
                         });
                 }
+            }
+            // 判断弹幕设置情况
+            if (config.danmaku_speed !== old_config.danmaku_speed) {
+                utils.Player.Danmaku.config()
+            }
+            if (config.danmaku_fontsize !== old_config.danmaku_fontsize) {
+                utils.Player.Danmaku.config()
             }
         };
 
@@ -468,16 +480,30 @@
             host_key_option += `<option value="${key}">${hostMap[key]}</option>`;
         }
         const config_css = '' +
-            '<style>' +
-            '@keyframes settings-bg{from{background:rgba(0,0,0,0)}to{background:rgba(0,0,0,.7)}}' +
-            '.setting-button{width:120px;height:40px;border-width:0px;border-radius:3px;background:#1E90FF;cursor:pointer;outline:none;color:white;font-size:17px;}.setting-button:hover{background:#5599FF;}' +
-            'a.setting-context{margin:0 2%;color:blue;}a.setting-context:hover{color:red;}' +
-            '</style>';
+            `<style>.setting-button {
+              width: 120px;
+              height: 40px;
+              border-width: 0px;
+              border-radius: 3px;
+              background: #1e90ff;
+              cursor: pointer;
+              outline: none;
+              color: white;
+              font-size: 17px;
+            }
+            .setting-button:hover {
+              background: #5599ff;
+            }
+            .setting-context {
+              margin: 0 1%;
+              color: blue;
+            }
+            .setting-context:hover {
+              color: red;
+            }</style>`;
         const config_html = '' +
-            `<div id="my_config"
-                style="display:none;position:fixed;inset:0px;top:0px;left:0px;width:100%;height:100%;background:rgba(0,0,0,0.7);animation-name:settings-bg;animation-duration:0.3s;z-index:10000;cursor:default;">
-                <div
-                    style="position:absolute;background:rgb(255,255,255);border-radius:10px;padding:20px;top:50%;left:50%;width:600px;transform:translate(-50%,-50%);cursor:default;">
+            `<div id="bp_config" style="opacity:0;display:none;position:fixed;inset:0px;top:0px;left:0px;width:100%;height:100%;z-index:10000;">
+                <div style="position:absolute;background:rgb(255,255,255);border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;box-shadow:rgb(0 0 0 / 70%) 0px 0px 0px 1000px;z-index:10001;">
                     <span style="font-size:20px">
                         <b>bilibili视频下载 参数设置</b>
                         <b>
@@ -488,7 +514,7 @@
                     <div style="margin:2% 0;"><label>请求地址：</label>
                         <input id="base_api" value="..." style="width:30%;">&nbsp;&nbsp;&nbsp;&nbsp;
                         <label>请求方式：</label>
-                        <select name="request_type" id="request_type">
+                        <select id="request_type">
                             <option value="auto">自动判断</option>
                             <option value="online">远程请求</option>
                             <option value="local">本地请求</option>
@@ -496,19 +522,19 @@
                         <small>普通使用请勿修改；默认使用混合请求</small>
                     </div>
                     <div style="margin:2% 0;"><label>视频格式：</label>
-                        <select name="format" id="format">
+                        <select id="format">
                             <option value="flv">FLV</option>
                             <option value="dash">DASH</option>
                             <option value="mp4">MP4</option>
                         </select>&nbsp;&nbsp;&nbsp;&nbsp;
                         <label>切换CDN：</label>
-                        <select name="host_key" id="host_key">
+                        <select id="host_key">
                             ${host_key_option}
                         </select><br />
                         <small>注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>
                     </div>
                     <div style="margin:2% 0;"><label>下载方式：</label>
-                        <select name="download_type" id="download_type">
+                        <select id="download_type">
                             <option value="a">URL链接</option>
                             <option value="web">Web浏览器</option>
                             <option value="blob">Blob请求</option>
@@ -524,22 +550,28 @@
                         <input id="rpc_dir" placeholder="留空使用默认目录" value="..." style="width:20%;"><br />
                         <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>
                     </div>
-                    <div style="margin:2% 0;"><label>强制换源：</label>
-                        <select name="replace_force" id="replace_force">
+                    <div style="margin:2% 0;">
+                        <label>强制换源：</label>
+                        <select id="replace_force">
                             <option value="0">关闭</option>
                             <option value="1">开启</option>
-                        </select><br />
-                        <small>说明：强制使用请求到的视频地址和第三方播放器进行播放</small>
+                        </select>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<label>弹幕速度：</label>
+                        <input id="danmaku_speed" value="..." style="width:3%;"> s
+                        &nbsp;&nbsp;&nbsp;&nbsp;<label>弹幕字号：</label>
+                        <input id="danmaku_fontsize" value="..." style="width:3%;"> px
+                        <br />
+                        <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>
                     </div>
                     <div style="margin:2% 0;"><label>自动下载：</label>
-                        <select name="auto_download" id="auto_download">
+                        <select id="auto_download">
                             <option value="0">关闭</option>
                             <option value="1">开启</option>
                         </select><br />
                         <small>说明：请求地址成功后将自动点击下载视频按钮</small>
                     </div>
                     <div style="margin:2% 0;"><label>授权状态：</label>
-                        <select name="auth" id="auth" disabled>
+                        <select id="auth" disabled>
                             <option value="0">未授权</option>
                             <option value="1">已授权</option>
                         </select>
@@ -1034,7 +1066,7 @@
                         bp_aria2_window.location.href = `http://ariang.injahow.com/${task_hash}`;
                         utils.Message.success('RPC请求发送成功');
                     } else {
-                        utils.Message.warning('AriaNG页面未打开');
+                        utils.Message.warning('AriaNg页面未打开');
                     }
                     download_rpc_clicked = false;
                 }, time);
@@ -1251,7 +1283,10 @@
         utils.Player = {
             replace: replace_player,
             recover: recover_player,
-            tag: bili_video_tag
+            tag: bili_video_tag,
+            Danmaku: {
+                config: danmaku_config
+            }
         };
 
         function request_danmaku(options, _cid) {
@@ -1282,6 +1317,10 @@
                             return [{ author: '', time: parseFloat(p[0]), type: type, color: parseInt(p[3]), id: '', text: item.text() }];
                         }).get();
                         options.success(danmaku_data);
+                        // 加载弹幕设置
+                        setTimeout(() => {
+                            utils.Player.Danmaku.config()
+                        }, 100)
                     }
                 },
                 error: () => {
@@ -1487,6 +1526,24 @@
             }
         }
 
+        /**
+         * DPlayer 弹幕设置
+         */
+        function danmaku_config() {
+            const style = '' +
+                `<style id="dplayer_danmaku_style">
+                .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {
+                    animation-duration: ${parseFloat(config.danmaku_speed)}s;
+                    font-size: ${parseInt(config.danmaku_fontsize)}px;
+                }</style>`;
+            if (!!$('#dplayer_danmaku_style')[0]) {
+                $('#dplayer_danmaku_style').remove();
+                $('body').append(style);
+            } else {
+                $('body').append(style);
+            }
+        }
+
         // Message & MessageBox
         utils.Message = {
             success: html => message(html, 'success'),
@@ -1504,26 +1561,60 @@
             }, 'confirm')
         };
         const components_css = '' +
-            '<style>' +
-            '.message-bg{position:fixed;float:right;right:0;top:2%;z-index:10001;}' +
-            '.message{margin-bottom:15px;padding:4px 12px;width:300px;display:flex;margin-top:-70px;opacity:0;}' +
-            '.message-danger{background-color:#ffdddd;border-left:6px solid #f44336;}' +
-            '.message-success{background-color:#ddffdd;border-left:6px solid #4caf50;}' +
-            '.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de;}' +
-            '.message-warning{background-color:#ffffcc;border-left:6px solid #ffeb3b;}' +
-            '.message-context{font-size:21px;word-wrap:break-word;word-break:break-all;}' +
-            '.message_box_btn{text-align:right;}.message_box_btn button{margin:0 5px;}' +
-            '</style>';
+            `<style>.message-bg {
+              position: fixed;
+              float: right;
+              right: 0;
+              top: 2%;
+              z-index: 30000;
+            }
+            .message {
+              margin-bottom: 15px;
+              padding: 4px 12px;
+              width: 300px;
+              display: flex;
+              margin-top: -70px;
+              opacity: 0;
+            }
+            .message-danger {
+              background-color: #ffdddd;
+              border-left: 6px solid #f44336;
+            }
+            .message-success {
+              background-color: #ddffdd;
+              border-left: 6px solid #4caf50;
+            }
+            .message-info {
+              background-color: #e7f3fe;
+              border-left: 6px solid #0c86de;
+            }
+            .message-warning {
+              background-color: #ffffcc;
+              border-left: 6px solid #ffeb3b;
+            }
+            .message-context {
+              font-size: 21px;
+              word-wrap: break-word;
+              word-break: break-all;
+            }
+            .message_box_btn {
+              text-align: right;
+            }
+            .message_box_btn button {
+              margin: 0 5px;
+            }</style>`;
         const components_html = '' +
-            '<div class="message-bg"></div>' +
-            '<div id="message_box" style="opacity:0;display:none;position:fixed;inset:0px;top:0px;left:0px;width:100%;height:100%;background:rgba(0,0,0,0.7);animation-name:settings-bg;animation-duration:0.3s;z-index:10000;cursor:default;">' +
-            '<div style="position:absolute;background:rgb(255,255,255);border-radius:10px;padding:20px;top:50%;left:50%;width:400px;transform:translate(-50%,-50%);cursor:default;">' +
-            '<span style="font-size:20px"><b>提示：</b></span>' +
-            '<div id="message_box_context" style="margin:2% 0;">...</div><br/><br/>' +
-            '<div class="message_box_btn">' +
-            '<button class="setting-button" name="affirm">确定</button>' +
-            '<button class="setting-button" name="cancel">取消</button></div>' +
-            '</div></div>';
+            `<div class="message-bg"></div>
+            <div id="message_box" style="opacity:0;display:none;position:fixed;inset:0px;top:0px;left:0px;width:100%;height:100%;z-index:20000;">
+                <div style="position:absolute;background:rgb(255,255,255);border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;box-shadow:rgb(0 0 0 / 70%) 0px 0px 0px 1000px;">
+                    <span style="font-size:20px"><b>提示：</b></span>
+                    <div id="message_box_context" style="margin:2% 0;">...</div><br /><br />
+                    <div class="message_box_btn">
+                        <button class="setting-button" name="affirm">确定</button>
+                        <button class="setting-button" name="cancel">取消</button>
+                    </div>
+                </div>
+            </div>`;
 
         function messageBox(ctx, type) {
             if (type === 'confirm') {
@@ -1536,13 +1627,14 @@
             } else {
                 $('div#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>');
             }
-            $('#message_box').show();
             hide_scroll();
+            $('#message_box').show();
             $('div#message_box').animate({
                 'opacity': '1'
             }, 300);
             $('div.message_box_btn button[name="affirm"]')[0].onclick = () => {
                 $('div#message_box').hide();
+                $('div#message_box').css('opacity', 0);
                 show_scroll();
                 if (ctx.callback && ctx.callback.affirm) {
                     ctx.callback.affirm();
@@ -1550,6 +1642,7 @@
             };
             $('div.message_box_btn button[name="cancel"]')[0].onclick = () => {
                 $('div#message_box').hide();
+                $('div#message_box').css('opacity', 0);
                 show_scroll();
                 if (ctx.callback && ctx.callback.cancel) {
                     ctx.callback.cancel();
@@ -1594,7 +1687,7 @@
         };
 
         function show_scroll() {
-            if ($('div#my_config').is(':hidden') && $('div#message_box').is(':hidden')) {
+            if ($('div#bp_config').is(':hidden') && $('div#message_box').is(':hidden')) {
                 $('body').css('overflow', 'auto');
             }
         }
@@ -1775,7 +1868,6 @@
                         return state.epPayMent.vipNeedPay;
                     },
                     is_limited: () => {
-                        //return !!state.mediaInfo.season_title.match(/（(僅|仅)限.*地(區|区)）/g);
                         return state.userState.areaLimit;
                     }
                 };
@@ -1954,55 +2046,108 @@
             let my_toolbar;
             if (!!$('#arc_toolbar_report')[0]) {
                 my_toolbar = '' +
-                    '<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true">' +
-                    '<div class="ops">' +
-                    '<span id="setting_btn"><i class="van-icon-general_addto_s"></i>脚本设置</span>' +
-                    '<span id="bilibili_parse"><i class="van-icon-floatwindow_custome"></i>请求地址</span>' +
-                    '<span id="video_download" style="display:none"><i class="van-icon-download"></i>下载视频</span>' +
-                    '<span id="video_download_2" style="display:none"><i class="van-icon-download"></i>下载音频</span>' +
-                    '<span id="video_download_all"><i class="van-icon-download"></i>批量下载</span>' +
-                    '</div>' +
-                    '<div class="more">' +
-                    '<i class="van-icon-general_moreactions"></i><div class="more-ops-list"><ul>' +
-                    '<li><span id="download_danmaku">下载弹幕</span></li>' +
-                    '<li><span id="download_subtitle">下载字幕</span></li></ul></div>' +
-                    '</div>' +
-                    '</div>';
+                    `<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true">
+                        <div class="ops">
+                            <span id="setting_btn"><i class="van-icon-general_addto_s"></i>脚本设置</span>
+                            <span id="bilibili_parse"><i class="van-icon-floatwindow_custome"></i>请求地址</span>
+                            <span id="video_download" style="display:none"><i class="van-icon-download"></i>下载视频</span>
+                            <span id="video_download_2" style="display:none"><i class="van-icon-download"></i>下载音频</span>
+                            <span id="video_download_all"><i class="van-icon-download"></i>批量下载</span>
+                        </div>
+                        <div class="more">
+                            <i class="van-icon-general_moreactions"></i>
+                            <div class="more-ops-list">
+                                <ul>
+                                    <li><span id="download_danmaku">下载弹幕</span></li>
+                                    <li><span id="download_subtitle">下载字幕</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>`;
                 $('#arc_toolbar_report').after(my_toolbar);
             } else if (!!$('#toolbar_module')[0]) {
                 my_toolbar = '' +
-                    '<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true">' +
-                    '<div id="setting_btn" class="like-info"><i class="iconfont icon-add"></i><span>脚本设置</span></div>' +
-                    '<div id="bilibili_parse" class="like-info"><i class="iconfont icon-customer-serv"></i><span>请求地址</span></div>' +
-                    '<div id="video_download" class="like-info" style="display:none"><i class="iconfont icon-download"></i><span>下载视频</span></div>' +
-                    '<div id="video_download_2" class="like-info" style="display:none"><i class="iconfont icon-download"></i><span>下载音频</span></div>' +
-                    '<div id="video_download_all" class="like-info"><i class="iconfont icon-download"></i><span>批量下载</span></div>' +
-                    '<div class="more">更多<div class="more-ops-list"><ul><li><span id="download_danmaku">下载弹幕</span></li><li><span id="download_subtitle">下载字幕</span></li></ul></div></div>' +
-                    '<style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;display:inline-block;transition:all .3s;position:relative;text-align:center}' +
-                    '.tool-bar .more:hover .more-ops-list{display:block}' +
-                    '.tool-bar:after{display:block;content:"";clear:both}' +
-                    '.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}' +
-                    '.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}' +
-                    '.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}' +
-                    '</style>' +
-                    '</div>';
+                    `<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true">
+                        <div id="setting_btn" class="like-info"><i class="iconfont icon-add"></i><span>脚本设置</span></div>
+                        <div id="bilibili_parse" class="like-info"><i class="iconfont icon-customer-serv"></i><span>请求地址</span></div>
+                        <div id="video_download" class="like-info" style="display:none"><i class="iconfont icon-download"></i><span>下载视频</span></div>
+                        <div id="video_download_2" class="like-info" style="display:none"><i class="iconfont icon-download"></i><span>下载音频</span></div>
+                        <div id="video_download_all" class="like-info"><i class="iconfont icon-download"></i><span>批量下载</span></div>
+                        <div class="more">更多<div class="more-ops-list">
+                                <ul>
+                                    <li><span id="download_danmaku">下载弹幕</span></li>
+                                    <li><span id="download_subtitle">下载字幕</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <style>
+                            .tool-bar .more {
+                                float: right;
+                                cursor: pointer;
+                                color: #757575;
+                                font-size: 16px;
+                                display: inline-block;
+                                transition: all .3s;
+                                position: relative;
+                                text-align: center
+                            }
+                            .tool-bar .more:hover .more-ops-list {
+                                display: block
+                            }
+                            .tool-bar:after {
+                                display: block;
+                                content: "";
+                                clear: both
+                            }
+                            .more-ops-list {
+                                display: none;
+                                position: absolute;
+                                width: 80px;
+                                left: -65px;
+                                z-index: 30;
+                                text-align: center;
+                                padding: 10px 0;
+                                background: #fff;
+                                border: 1px solid #e5e9ef;
+                                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);
+                                border-radius: 2px;
+                                font-size: 14px;
+                                color: #222
+                            }
+                            .more-ops-list li {
+                                position: relative;
+                                height: 34px;
+                                line-height: 34px;
+                                cursor: pointer;
+                                transition: all .3s
+                            }
+                            .more-ops-list li:hover {
+                                color: #00a1d6;
+                                background: #e7e7e7
+                            }
+                        </style>
+                    </div>`;
                 $('#toolbar_module').after(my_toolbar);
             } else if (!!$('div.video-toolbar')[0]) {
                 my_toolbar = '' +
-                    '<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true">' +
-                    '<div class="ops">' +
-                    '<span id="setting_btn"><i class="van-icon-general_addto_s"></i>脚本设置</span>' +
-                    '<span id="bilibili_parse"><i class="van-icon-floatwindow_custome"></i>请求地址</span>' +
-                    '<span id="video_download" style="display:none"><i class="van-icon-download"></i>下载视频</span>' +
-                    '<span id="video_download_2" style="display:none"><i class="van-icon-download"></i>下载音频</span>' +
-                    '<span id="video_download_all"><i class="van-icon-download"></i>批量下载</span>' +
-                    '</div>' +
-                    '<div class="more">' +
-                    '<i class="van-icon-general_moreactions"></i><div class="more-ops-list"><ul class="more-ops-list-box">' +
-                    '<li class="more-ops-list-box-li"><span id="download_danmaku">下载弹幕</span></li>' +
-                    '<li class="more-ops-list-box-li"><span id="download_subtitle">下载字幕</span></li></ul></div>' +
-                    '</div>' +
-                    '</div>';
+                    `<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true">
+                        <div class="ops">
+                            <span id="setting_btn"><i class="van-icon-general_addto_s"></i>脚本设置</span>
+                            <span id="bilibili_parse"><i class="van-icon-floatwindow_custome"></i>请求地址</span>
+                            <span id="video_download" style="display:none"><i class="van-icon-download"></i>下载视频</span>
+                            <span id="video_download_2" style="display:none"><i class="van-icon-download"></i>下载音频</span>
+                            <span id="video_download_all"><i class="van-icon-download"></i>批量下载</span>
+                        </div>
+                        <div class="more">
+                            <i class="van-icon-general_moreactions"></i>
+                            <div class="more-ops-list">
+                                <ul class="more-ops-list-box">
+                                    <li class="more-ops-list-box-li"><span id="download_danmaku">下载弹幕</span></li>
+                                    <li class="more-ops-list-box-li"><span id="download_subtitle">下载字幕</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>`;
                 $('div.video-toolbar').after(my_toolbar);
             }
             UserStatus.lazy_init();
@@ -2016,7 +2161,11 @@
             for (const key in config) {
                 $(`#${key}`).val(config[key]);
             }
-            $('#my_config').show();
+            //show setting
+            $("#bp_config").show();
+            $("#bp_config").animate({
+                'opacity': '1'
+            }, 300);
             utils.Scroll.hide();
         });
 
