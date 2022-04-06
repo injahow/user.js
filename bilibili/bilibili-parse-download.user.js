@@ -561,7 +561,7 @@
                         &nbsp;&nbsp;&nbsp;&nbsp;<label>弹幕字号：</label>
                         <input id="danmaku_fontsize" value="..." style="width:3%;"> px
                         <br />
-                        <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为滚动弹幕滚过DPlayer的时间</small>
+                        <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>
                     </div>
                     <div style="margin:2% 0;"><label>自动下载：</label>
                         <select id="auto_download">
