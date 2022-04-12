@@ -1,8 +1,8 @@
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
-// const GitRevisionPlugin = require('git-revision-webpack-plugin');
-// const gitRevisionPlugin = new GitRevisionPlugin();
+const { GitRevisionPlugin } = require('git-revision-webpack-plugin')
+const gitRevisionPlugin = new GitRevisionPlugin();
 
 const meta = require('./src/client/bilibili-parse-download.meta.json')
 
@@ -67,7 +67,7 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             JS_VERSION: `"${require('./package.json').version}"`,
-            GIT_HASH: "JSON.stringify('gitRevisionPlugin.version()')",
+            GIT_HASH: JSON.stringify(gitRevisionPlugin.version()),
         }),
         new webpack.BannerPlugin({
             banner: getBanner(meta),
