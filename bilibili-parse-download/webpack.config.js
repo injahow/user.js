@@ -16,7 +16,7 @@ const getBanner = meta => `${meta.main.map(e => {
         }).join('\n')
     }
     return `// ${e}`
-}).join('\n')}\n${meta.last.join('\n')}\n\n`
+}).join('\n')}\n${meta.last.join('\n')}`
 
 module.exports = {
     mode: 'production',
