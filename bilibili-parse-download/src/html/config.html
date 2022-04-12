@@ -1,0 +1,83 @@
+<div id="bp_config">
+  <div class="bp_config_bg">
+    <span style="font-size:20px;">
+      <b>bilibili视频下载 参数设置</b>
+      <b>
+        <a href="javascript:;" onclick="bp_reset_config()"> [重置配置] </a>
+        <a style="text-decoration:underline;" href="javascript:;" onclick="bp_show_help()">&lt;通知&帮助&gt;</a>
+      </b>
+    </span>
+    <div style="margin:2% 0;"><label>请求地址：</label>
+      <input id="base_api" value="..." style="width:30%;">&nbsp;&nbsp;&nbsp;&nbsp;
+      <label>请求方式：</label>
+      <select id="request_type">
+        <option value="auto">自动判断</option>
+        <option value="online">远程请求</option>
+        <option value="local">本地请求</option>
+      </select><br />
+      <small>注意：普通使用请勿修改；默认使用混合请求</small>
+    </div>
+    <div style="margin:2% 0;"><label>视频格式：</label>
+      <select id="format">
+        <option value="flv">FLV</option>
+        <option value="dash">DASH</option>
+        <option value="mp4">MP4</option>
+      </select>&nbsp;&nbsp;&nbsp;&nbsp;
+      <label>切换CDN：</label>
+      <select id="host_key">
+        ${host_key_option}
+      </select><br />
+      <small>注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>
+    </div>
+    <div style="margin:2% 0;"><label>下载方式：</label>
+      <select id="download_type">
+        <option value="a">URL链接</option>
+        <option value="web">Web浏览器</option>
+        <option value="blob">Blob请求</option>
+        <option value="rpc">RPC接口</option>
+        <option value="aria">Aria命令</option>
+      </select><br />
+      <small>提示：url和web方式下载不会设置文件名</small>
+    </div>
+    <div style="margin:2% 0;"><label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />
+      <input id="rpc_domain" value="..." style="width:25%;"> :
+      <input id="rpc_port" value="..." style="width:10%;"> |
+      <input id="rpc_token" placeholder="没有密钥不用填" value="..." style="width:15%;"> |
+      <input id="rpc_dir" placeholder="留空使用默认目录" value="..." style="width:20%;"><br />
+      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>
+    </div>
+    <div style="margin:2% 0;">
+      <label>强制换源：</label>
+      <select id="replace_force">
+        <option value="0">关闭</option>
+        <option value="1">开启</option>
+      </select>
+      &nbsp;&nbsp;&nbsp;&nbsp;<label>弹幕速度：</label>
+      <input id="danmaku_speed" value="..." style="width:5%;"> s
+      &nbsp;&nbsp;&nbsp;&nbsp;<label>弹幕字号：</label>
+      <input id="danmaku_fontsize" value="..." style="width:5%;"> px
+      <br />
+      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>
+    </div>
+    <div style="margin:2% 0;"><label>自动下载：</label>
+      <select id="auto_download">
+        <option value="0">关闭</option>
+        <option value="1">开启</option>
+      </select><br />
+      <small>说明：请求地址成功后将自动点击下载视频按钮</small>
+    </div>
+    <div style="margin:2% 0;"><label>授权状态：</label>
+      <select id="auth" disabled>
+        <option value="0">未授权</option>
+        <option value="1">已授权</option>
+      </select>
+      <a class="setting-context" href="javascript:;" onclick="bp_show_login()">账号授权</a>
+      <a class="setting-context" href="javascript:;" onclick="bp_show_logout()">取消授权</a>
+      <a class="setting-context" href="javascript:;" onclick="bp_show_login('0')">手动授权</a>
+      <a class="setting-context" href="javascript:;" onclick="bp_show_login_help()">这是什么？</a>
+    </div>
+    <div style="text-align:right"><br />
+      <button class="setting-button" onclick="bp_save_config()">确定</button>
+    </div>
+  </div>
+</div>

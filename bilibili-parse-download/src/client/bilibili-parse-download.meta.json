@@ -1,0 +1,41 @@
+{
+  "main": [
+    "==/UserScript==",
+    {
+      "name": "bilibili视频下载",
+      "namespace ": "https://github.com/injahow",
+      "version": "2.0.0",
+      "description": "支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源",
+      "author": "injahow",
+      "copyright": "2021, injahow (https://github.com/injahow)",
+      "license": "MIT",
+      "source": "https://github.com/injahow/user.js",
+      "supportURL": "https://github.com/injahow/user.js/issues",
+      "downloadURL": "https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js",
+      "updateURL": "https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js",
+      "match": [
+        "*://www.bilibili.com/video/av*",
+        "*://www.bilibili.com/video/BV*",
+        "*://www.bilibili.com/medialist/play/*",
+        "*://www.bilibili.com/bangumi/play/ep*",
+        "*://www.bilibili.com/bangumi/play/ss*",
+        "*://www.bilibili.com/cheese/play/ep*",
+        "*://www.bilibili.com/cheese/play/ss*",
+        "https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*"
+      ],
+      "require": [
+        "https://static.hdslb.com/js/jquery.min.js",
+        "https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js",
+        "https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js"
+      ],
+      "icon": "https://static.hdslb.com/images/favicon.ico",
+      "compatible": ["chrome", "firefox"],
+      "grant": "none"
+    },
+    "==/UserScript=="
+  ],
+  "last": [
+    "/* eslint-disable */ /* spell-checker: disable */",
+    "// @[ You can find all source codes in GitHub repo ]"
+  ]
+}

@@ -1,0 +1,80 @@
+.message-bg {
+  position: fixed;
+  float: right;
+  right: 0;
+  top: 2%;
+  z-index: 30000;
+}
+.message {
+  margin-bottom: 15px;
+  padding: 2% 2%;
+  width: 300px;
+  display: flex;
+  margin-top: -70px;
+  opacity: 0;
+}
+.message-success {
+  background-color: #ddffdd;
+  border-left: 6px solid #4caf50;
+}
+.message-danger {
+  background-color: #ffdddd;
+  border-left: 6px solid #f44336;
+}
+.message-info {
+  background-color: #e7f3fe;
+  border-left: 6px solid #0c86de;
+}
+.message-warning {
+  background-color: #ffffcc;
+  border-left: 6px solid #ffeb3b;
+}
+.message-context {
+  font-size: 21px;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+.message-context p {
+  margin: 0;
+}
+
+#message_box {
+  opacity: 0;
+  display: none;
+  position: fixed;
+  inset: 0px;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 20000;
+}
+.message_box_bg {
+  position: absolute;
+  background: rgb(255, 255, 255);
+  border-radius: 10px;
+  padding: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;
+}
+.message_box_btn {
+  text-align: right;
+}
+.message_box_btn button {
+  margin: 0 5px;
+  width: 120px;
+  height: 40px;
+  border-width: 0px;
+  border-radius: 3px;
+  background: #1e90ff;
+  cursor: pointer;
+  outline: none;
+  color: white;
+  font-size: 17px;
+}
+.message_box_btn button:hover {
+  background: #5599ff;
+}

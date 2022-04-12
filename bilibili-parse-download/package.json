@@ -1,0 +1,35 @@
+{
+  "name": "bilibili-parse-download",
+  "version": "2.0.0",
+  "description": "a script to download bilibli video",
+  "main": "dist/bilibili-parse-download.user.js",
+  "scripts": {
+    "webpack": "npx webpack --config webpack.config.js"
+  },
+  "private": true,
+  "keywords": [
+    "userscript",
+    "bilibili",
+    "video",
+    "download"
+  ],
+  "author": "injahow",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/injahow/user.js/issues"
+  },
+  "homepage": "https://github.com/injahow/user.js",
+  "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@babel/preset-env": "^7.16.11",
+    "babel-loader": "^8.2.4",
+    "css-loader": "^6.7.1",
+    "git-revision-webpack-plugin": "^5.0.0",
+    "html-loader": "^3.1.0",
+    "style-loader": "^3.3.1",
+    "terser-webpack-plugin": "^5.3.1",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {}
+}
