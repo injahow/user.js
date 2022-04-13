@@ -5,7 +5,6 @@ import { scroll } from "./ui/scroll"
 import { ajax } from "./utils/ajax"
 import { Download } from "./utils/download"
 import { player } from "./utils/player"
-import config_css from "../css/config.css"
 import config_html from "../html/config.html"
 
 const config = {
@@ -150,7 +149,7 @@ function initConfig() {
 
     // 注入 html
     config_html = config_html.replace('${host_key_option}', hostKeyOption())
-    $('body').append(config_html + config_css)
+    $('body').append(config_html)
     // 初始化配置页面
     for (const key in config) {
         $(`#${key}`).val(config[key])

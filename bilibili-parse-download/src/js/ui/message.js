@@ -1,10 +1,9 @@
 
 import { scroll } from './scroll'
-import message_css from '../../css/message.css';
 import message_html from '../../html/message.html';
 
 function initMessage() {
-    $('body').append(message_html + message_css)
+    $('body').append(message_html)
 }
 
 function messageBox(ctx, type) {
