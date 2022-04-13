@@ -1,0 +1,76 @@
+<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info"
+  scrollshow="true">
+  <div id="setting_btn" class="like-info">
+    <i class="iconfont icon-add"></i><span>脚本设置</span>
+  </div>
+  <div id="bilibili_parse" class="like-info">
+    <i class="iconfont icon-customer-serv"></i><span>请求地址</span>
+  </div>
+  <div id="video_download" class="like-info" style="display:none;">
+    <i class="iconfont icon-download"></i><span>下载视频</span>
+  </div>
+  <div id="video_download_2" class="like-info" style="display:none;">
+    <i class="iconfont icon-download"></i><span>下载音频</span>
+  </div>
+  <div id="video_download_all" class="like-info">
+    <i class="iconfont icon-download"></i><span>批量下载</span>
+  </div>
+  <div class="more">更多<div class="more-ops-list">
+      <ul>
+        <li><span id="download_danmaku">下载弹幕</span></li>
+        <li><span id="download_subtitle">下载字幕</span></li>
+      </ul>
+    </div>
+  </div>
+  <style>
+    .tool-bar .more {
+      float: right;
+      cursor: pointer;
+      color: #757575;
+      font-size: 16px;
+      display: inline-block;
+      transition: all .3s;
+      position: relative;
+      text-align: center
+    }
+
+    .tool-bar .more:hover .more-ops-list {
+      display: block
+    }
+
+    .tool-bar:after {
+      display: block;
+      content: "";
+      clear: both
+    }
+
+    .more-ops-list {
+      display: none;
+      position: absolute;
+      width: 80px;
+      left: -65px;
+      z-index: 30;
+      text-align: center;
+      padding: 10px 0;
+      background: #fff;
+      border: 1px solid #e5e9ef;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);
+      border-radius: 2px;
+      font-size: 14px;
+      color: #222
+    }
+
+    .more-ops-list li {
+      position: relative;
+      height: 34px;
+      line-height: 34px;
+      cursor: pointer;
+      transition: all .3s
+    }
+
+    .more-ops-list li:hover {
+      color: #00a1d6;
+      background: #e7e7e7
+    }
+  </style>
+</div>
