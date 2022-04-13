@@ -19,6 +19,7 @@ const config = {
     rpc_port: '16800',
     rpc_token: '',
     rpc_dir: 'D:/',
+    ariang_host: 'http://ariang.injahow.com/',
     auto_download: '0',
     danmaku_speed: '15',
     danmaku_fontsize: '22'
