@@ -1,0 +1,38 @@
+{
+  "main": [
+    "==UserScript==",
+    {
+      "name": "bilibili视频下载(development)",
+      "namespace ": "https://github.com/injahow",
+      "version": "999.0.0",
+      "description": "bilibili视频下载(development)",
+      "author": "injahow",
+      "copyright": "2021, injahow (https://github.com/injahow)",
+      "license": "MIT",
+      "source": "https://github.com/injahow/user.js",
+      "supportURL": "https://github.com/injahow/user.js/issues",
+      "match": [
+        "*://www.bilibili.com/video/av*",
+        "*://www.bilibili.com/video/BV*",
+        "*://www.bilibili.com/medialist/play/*",
+        "*://www.bilibili.com/bangumi/play/ep*",
+        "*://www.bilibili.com/bangumi/play/ss*",
+        "*://www.bilibili.com/cheese/play/ep*",
+        "*://www.bilibili.com/cheese/play/ss*",
+        "https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*"
+      ],
+      "require": [
+        "https://static.hdslb.com/js/jquery.min.js",
+        "https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js",
+        "https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js"
+      ],
+      "icon": "https://static.hdslb.com/images/favicon.ico",
+      "grant": "none"
+    },
+    "==/UserScript=="
+  ],
+  "last": [
+    "/* eslint-disable */ /* spell-checker: disable */",
+    "// @[ source codes in local repo ]"
+  ]
+}

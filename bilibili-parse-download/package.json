@@ -4,7 +4,8 @@
   "description": "a script to download bilibli video",
   "main": "dist/bilibili-parse-download.user.js",
   "scripts": {
-    "webpack": "npx webpack --config webpack.config.js"
+    "build-prod": "npx webpack --config ./webpack/webpack.prod.js",
+    "build-dev": "npx webpack --config ./webpack/webpack.dev.js"
   },
   "private": true,
   "keywords": [

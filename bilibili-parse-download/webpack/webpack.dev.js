@@ -1,30 +1,28 @@
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
-const { GitRevisionPlugin } = require('git-revision-webpack-plugin')
-const gitRevisionPlugin = new GitRevisionPlugin();
+const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
+const gitRevisionPlugin = new GitRevisionPlugin()
 
-const meta = require('./src/client/bilibili-parse-download.meta.json')
-
-const getBanner = meta => `${meta.main.map(e => {
-    if (typeof e === 'object') {
-        return Object.entries(e).map(([key, value]) => {
-            if (Array.isArray(value)) {
-                return value.map(item => `// @${key.padEnd(14, ' ')}${item}`).join('\n')
-            }
-            return `// @${key.padEnd(14, ' ')}${value}`
-        }).join('\n')
-    }
-    return `// ${e}`
-}).join('\n')}\n${meta.last.join('\n')}`
+const { getBanner } = require('./webpack.config')
+const meta = require('../src/client/dev.meta.json')
 
 module.exports = {
-    mode: 'production',
+    mode: 'development',
+
+    devtool: false,
+
     entry: './src/js/index.js',
+
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bilibili-parse-download.user.js'
+        path: path.resolve(__dirname, '..', 'dist'),
+        filename: 'bilibili-parse-download.dev.user.js'
     },
+
+    performance: {
+        hints: false,
+    },
+
     optimization: {
         minimizer: [
             new TerserPlugin({
@@ -37,7 +35,9 @@ module.exports = {
             })
         ]
     },
+
     module: {
+        strictExportPresence: true,
         rules: [
             {
                 test: /\.js$/,
@@ -64,9 +64,10 @@ module.exports = {
             },
         ]
     },
+
     plugins: [
         new webpack.DefinePlugin({
-            JS_VERSION: `"${require('./package.json').version}"`,
+            JS_VERSION: `"${require('../package.json').version}"`,
             GIT_HASH: JSON.stringify(gitRevisionPlugin.version()),
         }),
         new webpack.BannerPlugin({
@@ -75,4 +76,5 @@ module.exports = {
             raw: true
         })
     ]
-}
+
+};
