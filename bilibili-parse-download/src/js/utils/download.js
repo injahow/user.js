@@ -152,7 +152,7 @@ function download_all() {
                 const msg = `第${i + 1}（${i + 1}/${videos.length}）个视频`
                 MessageBox.alert(`${msg}：获取中...`)
 
-                setTimeout(function () {
+                setTimeout(() => {
 
                     const success = res => {
                         if (!res.code) {
@@ -189,7 +189,6 @@ function download_all() {
                     const error = () => {
                         get_url(videos, ++i, video_urls)
                     }
-
                     api.get_urls(video.p, video.q, video.format, success, error)
 
                 }, 3000)
@@ -261,7 +260,7 @@ function download_rpc_ariang_one(video) {
         const aria2_header = `header=User-Agent:${window.navigator.userAgent}&header=Referer:${window.location.href}`
         if (bp_aria2_window && !bp_aria2_window.closed) {
             const task_hash = `#!/new/task?url=${window.btoa(video.url)}&out=${encodeURIComponent(video.filename)}&${aria2_header}`
-            bp_aria2_window.location.href = `http://ariang.injahow.com/${task_hash}`
+            bp_aria2_window.location.href = config.ariang_host + task_hash
             Message.success('RPC请求成功')
         } else {
             Message.warning('请检查RPC参数')
@@ -325,7 +324,7 @@ function download_rpc(url, filename, type = 'post') {
             const aria2_header = `header=User-Agent:${window.navigator.userAgent}&header=Referer:${window.location.href}`
             const task_hash = `#!/new/task?url=${window.btoa(url)}&out=${encodeURIComponent(filename)}&${aria2_header}`
             if (bp_aria2_window && !bp_aria2_window.closed) {
-                bp_aria2_window.location.href = `http://ariang.injahow.com/${task_hash}`
+                bp_aria2_window.location.href = config.ariang_host + task_hash
                 Message.success('RPC请求发送成功')
             } else {
                 Message.warning('AriaNG页面未打开')
@@ -339,7 +338,7 @@ function open_ariang(rpc) {
     const hash_tag = rpc
         ? `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}/jsonrpc/${window.btoa(rpc.token)}`
         : ''
-    const url = 'http://ariang.injahow.com/' + hash_tag
+    const url = config.ariang_host + hash_tag
     const a = document.createElement('a')
     a.setAttribute('target', '_blank')
     a.setAttribute('onclick', `window.bp_aria2_window=window.open('${url}');`)
@@ -554,7 +553,7 @@ function format(url) {
 export const Download = {
     url_format: format,
     download: (url, name, type) => {
-        const filename = name.replace(/[\/\\:*?"<>|]+/g, '') + + format(url)
+        const filename = name.replace(/[\/\\:*?"<>|]+/g, '') + format(url)
 
         if (type === 'blob') {
             download_blob(url, filename)
