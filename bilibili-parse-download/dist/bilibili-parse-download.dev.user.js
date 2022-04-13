@@ -2804,7 +2804,7 @@ __webpack_require__.r(__webpack_exports__);
   /* global JS_VERSION GIT_HASH */
 
 
-  console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.1", " ").concat("44e61a3", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+  console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.1", " ").concat("e56f9a9", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   new _main__WEBPACK_IMPORTED_MODULE_0__["default"]().run();
 })();
 }();
