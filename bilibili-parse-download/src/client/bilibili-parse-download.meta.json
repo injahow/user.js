@@ -1,6 +1,6 @@
 {
   "main": [
-    "==/UserScript==",
+    "==UserScript==",
     {
       "name": "bilibili视频下载",
       "namespace ": "https://github.com/injahow",
