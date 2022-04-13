@@ -16,24 +16,6 @@ import toolbar_html from '../html/toolbar.html'
 
 class Main {
     constructor() {
-
-        if (window.bp_fun_locked) return
-        window.bp_fun_locked = true
-
-        // https://greasyfork.org/zh-CN/scripts/25718-%E8%A7%A3%E9%99%A4b%E7%AB%99%E5%8C%BA%E5%9F%9F%E9%99%90%E5%88%B6/code
-        if (location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) != null) {
-            if (location.href.match('access_key') && window !== window.parent) {
-                window.stop()
-                window.parent.postMessage('bilibili-parse-login-credentials: ' + location.href, '*')
-            }
-            return
-        }
-
-        // error page redirect -> ss / ep
-        if ($('.error-text')[0]) {
-            return
-        }
-
         initConfig()
         initMessage()
         auth.initAuth()
@@ -175,7 +157,7 @@ class Main {
                 vb.cid(),
                 vb.epid()
             ]
-            const q = video.get_quality().q
+            const { q } = video.get_quality()
             api_url = `${config.base_api}?av=${aid}&p=${p}&cid=${cid}&ep=${epid}&q=${q}&type=${type}&format=${config.format}&otype=json&_host=${config.host_key}&_req=${config.request_type}`
             const [auth_id, auth_sec] = [
                 store.get('auth_id'),
@@ -192,7 +174,7 @@ class Main {
                     $('#video_download').show()
                     config.format === 'dash' && $('#video_download_2').show()
                     if (user.needReplace() || vb.is_limited() || config.replace_force === '1') {
-                        !$('#bp_dplayer')[0] && player.recover_player(url, url_2)
+                        !$('#bp_dplayer')[0] && player.replace_player(url, url_2)
                     }
                     if (config.auto_download === '1') {
                         $('#video_download').click()

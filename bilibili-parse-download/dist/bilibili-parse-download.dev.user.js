@@ -615,23 +615,6 @@ var Main = /*#__PURE__*/function () {
   function Main() {
     _classCallCheck(this, Main);
 
-    if (window.bp_fun_locked) return;
-    window.bp_fun_locked = true; // https://greasyfork.org/zh-CN/scripts/25718-%E8%A7%A3%E9%99%A4b%E7%AB%99%E5%8C%BA%E5%9F%9F%E9%99%90%E5%88%B6/code
-
-    if (location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) != null) {
-      if (location.href.match('access_key') && window !== window.parent) {
-        window.stop();
-        window.parent.postMessage('bilibili-parse-login-credentials: ' + location.href, '*');
-      }
-
-      return;
-    } // error page redirect -> ss / ep
-
-
-    if ($('.error-text')[0]) {
-      return;
-    }
-
     (0,_config__WEBPACK_IMPORTED_MODULE_6__.initConfig)();
     (0,_ui_message__WEBPACK_IMPORTED_MODULE_5__.initMessage)();
     _auth__WEBPACK_IMPORTED_MODULE_8__.auth.initAuth();
@@ -767,7 +750,10 @@ var Main = /*#__PURE__*/function () {
             p = _ref3[2],
             cid = _ref3[3],
             epid = _ref3[4];
-        var q = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.get_quality().q;
+
+        var _video$get_quality = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.get_quality(),
+            q = _video$get_quality.q;
+
         api_url = "".concat(_config__WEBPACK_IMPORTED_MODULE_6__.config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(_config__WEBPACK_IMPORTED_MODULE_6__.config.format, "&otype=json&_host=").concat(_config__WEBPACK_IMPORTED_MODULE_6__.config.host_key, "&_req=").concat(_config__WEBPACK_IMPORTED_MODULE_6__.config.request_type);
         var _ref4 = [_store__WEBPACK_IMPORTED_MODULE_10__.store.get('auth_id'), _store__WEBPACK_IMPORTED_MODULE_10__.store.get('auth_sec')],
             auth_id = _ref4[0],
@@ -787,7 +773,7 @@ var Main = /*#__PURE__*/function () {
             _config__WEBPACK_IMPORTED_MODULE_6__.config.format === 'dash' && $('#video_download_2').show();
 
             if (_user__WEBPACK_IMPORTED_MODULE_7__.user.needReplace() || vb.is_limited() || _config__WEBPACK_IMPORTED_MODULE_6__.config.replace_force === '1') {
-              !$('#bp_dplayer')[0] && _utils_player__WEBPACK_IMPORTED_MODULE_1__.player.recover_player(url, url_2);
+              !$('#bp_dplayer')[0] && _utils_player__WEBPACK_IMPORTED_MODULE_1__.player.replace_player(url, url_2);
             }
 
             if (_config__WEBPACK_IMPORTED_MODULE_6__.config.auto_download === '1') {
@@ -3388,12 +3374,33 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _main__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main */ "./src/js/main.js");
 
-/* global JS_VERSION GIT_HASH */
 
-'use strict';
+(function () {
+  'use strict';
 
-console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.0", " ").concat("37ec2d5", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
-new _main__WEBPACK_IMPORTED_MODULE_0__["default"]().run();
+  if (window.bp_fun_locked) return;
+  window.bp_fun_locked = true;
+
+  if (location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) != null) {
+    // https://greasyfork.org/zh-CN/scripts/25718-%E8%A7%A3%E9%99%A4b%E7%AB%99%E5%8C%BA%E5%9F%9F%E9%99%90%E5%88%B6/code
+    if (location.href.match('access_key') && window !== window.parent) {
+      window.stop();
+      window.parent.postMessage('bilibili-parse-login-credentials: ' + location.href, '*');
+    }
+
+    return;
+  } // error page
+
+
+  if ($('.error-text')[0]) {
+    return;
+  }
+  /* global JS_VERSION GIT_HASH */
+
+
+  console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.0", " ").concat("71e7d96", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+  new _main__WEBPACK_IMPORTED_MODULE_0__["default"]().run();
+})();
 }();
 /******/ })()
 ;
