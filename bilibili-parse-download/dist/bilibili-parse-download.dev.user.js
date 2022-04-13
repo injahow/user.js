@@ -136,7 +136,7 @@ var Auth = /*#__PURE__*/function () {
   }, {
     key: "login",
     value: function login() {
-      _login(function (res) {
+      this._login(function (res) {
         if (res.data.has_login) {
           $('body').append("<iframe id='auth_iframe' src='".concat(res.data.confirm_uri, "' style='display:none;'></iframe>"));
         } else {
@@ -149,7 +149,7 @@ var Auth = /*#__PURE__*/function () {
   }, {
     key: "loginManual",
     value: function loginManual() {
-      _login(function (res) {
+      this._login(function (res) {
         if (res.data.has_login) {
           var msg = '' + "\u8BF7\u70B9\u51FB<b><a href='".concat(res.data.confirm_uri, "' target='_blank'>\u6388\u6743\u5730\u5740</a></b>\n                    \u6253\u5F00\u4E00\u4E2A\u65B0\u7A97\u53E3\uFF0C\u6B63\u5E38\u60C5\u51B5\u65B0\u7A97\u53E3\u5E94\u8BE5\u663E\u793A\u4E00\u4E2A\u56FE\u7247\uFF0C\u8BF7\u5C06\u8BE5\u7A97\u53E3\u5730\u5740\u680F\u7684URL\u94FE\u63A5\u590D\u5236\u5230\u5F53\u524D\u6587\u672C\u6846\u4E2D<br/>\n                    <input id='auth_url' style='width:100%;' type='text' autocomplete='off'><br>\u7136\u540E\u70B9\u51FB\u786E\u5B9A\u5373\u53EF");
           _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.alert(msg, function () {
@@ -3392,7 +3392,7 @@ __webpack_require__.r(__webpack_exports__);
 
 'use strict';
 
-console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.0", " ").concat("da6e109", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.0", " ").concat("37ec2d5", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
 new _main__WEBPACK_IMPORTED_MODULE_0__["default"]().run();
 }();
 /******/ })()

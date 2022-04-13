@@ -71,7 +71,7 @@ class Auth {
     }
 
     login() {
-        _login(res => {
+        this._login(res => {
             if (res.data.has_login) {
                 $('body').append(`<iframe id='auth_iframe' src='${res.data.confirm_uri}' style='display:none;'></iframe>`)
             } else {
@@ -83,7 +83,7 @@ class Auth {
     }
 
     loginManual() {
-        _login(res => {
+        this._login(res => {
             if (res.data.has_login) {
                 const msg = '' +
                     `请点击<b><a href='${res.data.confirm_uri}' target='_blank'>授权地址</a></b>
