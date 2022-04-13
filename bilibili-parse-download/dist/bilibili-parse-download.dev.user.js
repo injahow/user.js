@@ -1,13 +1,15 @@
 // ==UserScript==
 // @name          bilibili视频下载(development)
 // @namespace     https://github.com/injahow
-// @version       999.0.0
+// @version       1.0.0
 // @description   bilibili视频下载(development)
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
 // @license       MIT
 // @source        https://github.com/injahow/user.js
 // @supportURL    https://github.com/injahow/user.js/issues
+// @downloadURL   https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js
+// @updateURL     https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js
 // @match         *://www.bilibili.com/video/av*
 // @match         *://www.bilibili.com/video/BV*
 // @match         *://www.bilibili.com/medialist/play/*
@@ -3390,7 +3392,7 @@ __webpack_require__.r(__webpack_exports__);
 
 'use strict';
 
-console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.0", " ").concat("6f4b1f3", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.0", " ").concat("da6e109", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
 new _main__WEBPACK_IMPORTED_MODULE_0__["default"]().run();
 }();
 /******/ })()
