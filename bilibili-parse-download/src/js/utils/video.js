@@ -1,4 +1,4 @@
-import { api } from "./api"
+import { api } from './api'
 
 function type() {
     if (location.pathname.match('/cheese/play/')) {

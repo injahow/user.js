@@ -612,37 +612,57 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var Main = /*#__PURE__*/function () {
   function Main() {
+    var _this = this;
+
     _classCallCheck(this, Main);
 
-    (0,_config__WEBPACK_IMPORTED_MODULE_6__.initConfig)();
-    (0,_ui_message__WEBPACK_IMPORTED_MODULE_5__.initMessage)();
-    _auth__WEBPACK_IMPORTED_MODULE_8__.auth.initAuth();
+    this.has_toolbar = false;
+    setTimeout(function () {
+      _this.run_before();
+    }, 1000);
   }
 
   _createClass(Main, [{
+    key: "run_before",
+    value: function run_before() {
+      this.has_toolbar = this.set_toolbar();
+
+      if (this.has_toolbar) {
+        this.run();
+      }
+    }
+  }, {
+    key: "set_toolbar",
+    value: function set_toolbar() {
+      if (this.has_toolbar) return;
+      var bp_toolbar;
+
+      if (!!$('#arc_toolbar_report')[0]) {
+        bp_toolbar = _html_arc_toolbar_html__WEBPACK_IMPORTED_MODULE_11__["default"];
+        $('#arc_toolbar_report').after(bp_toolbar);
+      } else if (!!$('#toolbar_module')[0]) {
+        bp_toolbar = _html_toolbar_html__WEBPACK_IMPORTED_MODULE_13__["default"];
+        $('#toolbar_module').after(bp_toolbar);
+      } else if (!!$('div.video-toolbar')[0]) {
+        bp_toolbar = _html_video_toolbar_html__WEBPACK_IMPORTED_MODULE_12__["default"];
+        $('div.video-toolbar').after(bp_toolbar);
+      }
+
+      this.has_toolbar = !!bp_toolbar;
+    }
+  }, {
     key: "run",
     value: function run() {
+      (0,_config__WEBPACK_IMPORTED_MODULE_6__.initConfig)();
+      (0,_ui_message__WEBPACK_IMPORTED_MODULE_5__.initMessage)();
+      _user__WEBPACK_IMPORTED_MODULE_7__.user.lazyInit();
+      _auth__WEBPACK_IMPORTED_MODULE_8__.auth.initAuth();
+      _auth__WEBPACK_IMPORTED_MODULE_8__.auth.checkLoginStatus();
+      _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh(); // for dom changed
+
+      $('body').append('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js" crossorigin="true"></script>');
       $('body').append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
-      $('body').append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'); // 延迟处理
-
-      setTimeout(function () {
-        var bp_toolbar;
-
-        if (!!$('#arc_toolbar_report')[0]) {
-          bp_toolbar = _html_arc_toolbar_html__WEBPACK_IMPORTED_MODULE_11__["default"];
-          $('#arc_toolbar_report').after(bp_toolbar);
-        } else if (!!$('#toolbar_module')[0]) {
-          bp_toolbar = _html_toolbar_html__WEBPACK_IMPORTED_MODULE_13__["default"];
-          $('#toolbar_module').after(bp_toolbar);
-        } else if (!!$('div.video-toolbar')[0]) {
-          bp_toolbar = _html_video_toolbar_html__WEBPACK_IMPORTED_MODULE_12__["default"];
-          $('div.video-toolbar').after(bp_toolbar);
-        }
-
-        _user__WEBPACK_IMPORTED_MODULE_7__.user.lazyInit();
-        _auth__WEBPACK_IMPORTED_MODULE_8__.auth.checkLoginStatus();
-        _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-      }, 3000);
+      $('body').append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
       $('body').on('click', '#setting_btn', function () {
         _user__WEBPACK_IMPORTED_MODULE_7__.user.lazyInit(true); // init
         // set form by config
@@ -789,7 +809,6 @@ var Main = /*#__PURE__*/function () {
         _ui_message__WEBPACK_IMPORTED_MODULE_5__.Message.info('开始请求');
         _utils_api__WEBPACK_IMPORTED_MODULE_0__.api.get_url(0, function (res) {
           if (res && !res.code) {
-            _ui_message__WEBPACK_IMPORTED_MODULE_5__.Message.success('请求成功');
             res.times && _ui_message__WEBPACK_IMPORTED_MODULE_5__.Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
 
             var _url = _config__WEBPACK_IMPORTED_MODULE_6__.config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://');
@@ -1156,7 +1175,7 @@ function ajax(obj) {
     // set obj.success & obj.success
     obj.success = function (res) {
       if (res.code) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_0__.Message.warning("\u8BF7\u6C42\u5931\u8D25\uFF0C".concat(res.message || "CODE:".concat(res.code))); // todo
+        _ui_message__WEBPACK_IMPORTED_MODULE_0__.Message.warning("".concat(res.message || "CODE:".concat(res.code))); // todo
       }
 
       resolve(res);
@@ -1201,12 +1220,30 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 
 function get_url_base(page, quality, video_format, success, error, request_type) {
-  'function' !== typeof success && (success = function success(res) {
-    return console.log(res);
-  });
-  'function' !== typeof error && (error = function error(err) {
-    return console.error(err);
-  });
+  var _success, _error;
+
+  if ('function' === typeof success) {
+    _success = function _success(e) {
+      _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.success('请求成功');
+      success(e);
+    };
+  } else {
+    _success = function _success(res) {
+      return console.log(res);
+    };
+  }
+
+  if ('function' === typeof error) {
+    _error = function _error(e) {
+      _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.danger('请求失败');
+      error(e);
+    };
+  } else {
+    _error = function _error(err) {
+      return console.error(err);
+    };
+  }
+
   var vb = _video__WEBPACK_IMPORTED_MODULE_4__.video.base();
   var _ref = [vb.aid(page), vb.cid(page), vb.epid(page), quality || _video__WEBPACK_IMPORTED_MODULE_4__.video.get_quality().q, vb.type],
       aid = _ref[0],
@@ -1291,7 +1328,9 @@ function get_url_base(page, quality, video_format, success, error, request_type)
       res.url && (res.url = url_replace_cdn(res.url));
       res.video && (res.video = url_replace_cdn(res.video));
       res.audio && (res.audio = url_replace_cdn(res.audio));
-      success(res);
+
+      _success(res);
+
       return;
     }
 
@@ -1315,18 +1354,19 @@ function get_url_base(page, quality, video_format, success, error, request_type)
         }
       }
 
-      success(result);
+      _success(result);
+
       return;
     }
 
-    success({
+    _success({
       'code': 0,
       'quality': data.quality,
       'accept_quality': data.accept_quality,
       'url': url_replace_cdn(data.durl[0].url)
     });
   }).catch(function (err) {
-    return error(err);
+    return _error(err);
   });
 }
 
@@ -1548,12 +1588,12 @@ function download_all() {
       });
     }
 
-    get_url(videos, 0, []);
+    download_videos(videos, 0, []);
   }); // 初始化参数，去除8k及以上
 
   $('#dl_quality').val(q > 120 ? 80 : q);
 
-  function get_url(videos, i, video_urls) {
+  function download_videos(videos, i, video_urls) {
     // 单线递归处理，请求下载同时进行
     if (videos.length) {
       if (i < videos.length) {
@@ -1601,12 +1641,12 @@ function download_all() {
             }
 
             setTimeout(function () {
-              get_url(videos, ++i, video_urls);
+              download_videos(videos, ++i, video_urls);
             }, 3000);
           };
 
           var error = function error() {
-            get_url(videos, ++i, video_urls);
+            download_videos(videos, ++i, video_urls);
           };
 
           _api__WEBPACK_IMPORTED_MODULE_3__.api.get_urls(_video.p, _video.q, _video.format, success, error);
@@ -2653,7 +2693,7 @@ var video = {
 
 __webpack_require__.r(__webpack_exports__);
 // Module
-var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\"><i class=\"van-icon-general_addto_s\"></i>脚本设置</span>\n    <span id=\"bilibili_parse\"><i class=\"van-icon-floatwindow_custome\"></i>请求地址</span>\n    <span id=\"video_download\" style=\"display:none;\"><i class=\"van-icon-download\"></i>下载视频</span>\n    <span id=\"video_download_2\" style=\"display:none;\"><i class=\"van-icon-download\"></i>下载音频</span>\n    <span id=\"video_download_all\"><i class=\"van-icon-download\"></i>批量下载</span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
+var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (code);
 
@@ -2681,7 +2721,7 @@ var code = "<div id=\"bp_config\">\n  <div class=\"bp_config_bg\">\n    <span st
 
 __webpack_require__.r(__webpack_exports__);
 // Module
-var code = "<div class=\"message-bg\"></div>\n<div id=\"message_box\">\n  <div class=\"message_box_bg\">\n    <span style=\"font-size:20px\"><b>提示：</b></span>\n    <div id=\"message_box_context\" style=\"margin:2% 0;\">...</div><br /><br />\n    <div class=\"message_box_btn\">\n      <button class=\"setting-button\" name=\"affirm\">确定</button>\n      <button class=\"setting-button\" name=\"cancel\">取消</button>\n    </div>\n  </div>\n</div>\n<style>\n  .message-bg {\n    position: fixed;\n    float: right;\n    right: 0;\n    top: 2%;\n    z-index: 30000;\n  }\n\n  .message {\n    margin-bottom: 15px;\n    padding: 2% 2%;\n    width: 300px;\n    display: flex;\n    margin-top: -70px;\n    opacity: 0;\n  }\n\n  .message-success {\n    background-color: #ddffdd;\n    border-left: 6px solid #4caf50;\n  }\n\n  .message-danger {\n    background-color: #ffdddd;\n    border-left: 6px solid #f44336;\n  }\n\n  .message-info {\n    background-color: #e7f3fe;\n    border-left: 6px solid #0c86de;\n  }\n\n  .message-warning {\n    background-color: #ffffcc;\n    border-left: 6px solid #ffeb3b;\n  }\n\n  .message-context {\n    font-size: 21px;\n    word-wrap: break-word;\n    word-break: break-all;\n  }\n\n  .message-context p {\n    margin: 0;\n  }\n\n  #message_box {\n    opacity: 0;\n    display: none;\n    position: fixed;\n    inset: 0px;\n    top: 0px;\n    left: 0px;\n    width: 100%;\n    height: 100%;\n    z-index: 20000;\n  }\n\n  .message_box_bg {\n    position: absolute;\n    background: rgb(255, 255, 255);\n    border-radius: 10px;\n    padding: 20px;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 400px;\n    box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n  }\n\n  .message_box_btn {\n    text-align: right;\n  }\n\n  .message_box_btn button {\n    margin: 0 5px;\n    width: 120px;\n    height: 40px;\n    border-width: 0px;\n    border-radius: 3px;\n    background: #1e90ff;\n    cursor: pointer;\n    outline: none;\n    color: white;\n    font-size: 17px;\n  }\n\n  .message_box_btn button:hover {\n    background: #5599ff;\n  }\n</style>\n";
+var code = "<div class=\"message-bg\"></div>\n<div id=\"message_box\">\n  <div class=\"message_box_bg\">\n    <span style=\"font-size:20px\"><b>提示：</b></span>\n    <div id=\"message_box_context\" style=\"margin:2% 0;\">...</div><br /><br />\n    <div class=\"message_box_btn\">\n      <button name=\"affirm\">确定</button>\n      <button name=\"cancel\">取消</button>\n    </div>\n  </div>\n</div>\n<style>\n  .message-bg {\n    position: fixed;\n    float: right;\n    right: 0;\n    top: 2%;\n    z-index: 30000;\n  }\n\n  .message {\n    margin-bottom: 15px;\n    padding: 2% 2%;\n    width: 300px;\n    display: flex;\n    margin-top: -70px;\n    opacity: 0;\n  }\n\n  .message-success {\n    background-color: #ddffdd;\n    border-left: 6px solid #4caf50;\n  }\n\n  .message-danger {\n    background-color: #ffdddd;\n    border-left: 6px solid #f44336;\n  }\n\n  .message-info {\n    background-color: #e7f3fe;\n    border-left: 6px solid #0c86de;\n  }\n\n  .message-warning {\n    background-color: #ffffcc;\n    border-left: 6px solid #ffeb3b;\n  }\n\n  .message-context {\n    font-size: 21px;\n    word-wrap: break-word;\n    word-break: break-all;\n  }\n\n  .message-context p {\n    margin: 0;\n  }\n\n  #message_box {\n    opacity: 0;\n    display: none;\n    position: fixed;\n    inset: 0px;\n    top: 0px;\n    left: 0px;\n    width: 100%;\n    height: 100%;\n    z-index: 20000;\n  }\n\n  .message_box_bg {\n    position: absolute;\n    background: rgb(255, 255, 255);\n    border-radius: 10px;\n    padding: 20px;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 400px;\n    box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n  }\n\n  .message_box_btn {\n    text-align: right;\n  }\n\n  .message_box_btn button {\n    margin: 0 5px;\n    width: 120px;\n    height: 40px;\n    border-width: 0px;\n    border-radius: 3px;\n    background: #1e90ff;\n    cursor: pointer;\n    outline: none;\n    color: white;\n    font-size: 17px;\n  }\n\n  .message_box_btn button:hover {\n    background: #5599ff;\n  }\n</style>\n";
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (code);
 
@@ -2709,7 +2749,7 @@ var code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-m
 
 __webpack_require__.r(__webpack_exports__);
 // Module
-var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\"><i class=\"van-icon-general_addto_s\"></i>脚本设置</span>\n    <span id=\"bilibili_parse\"><i class=\"van-icon-floatwindow_custome\"></i>请求地址</span>\n    <span id=\"video_download\" style=\"display:none;\"><i class=\"van-icon-download\"></i>下载视频</span>\n    <span id=\"video_download_2\" style=\"display:none;\"><i class=\"van-icon-download\"></i>下载音频</span>\n    <span id=\"video_download_all\"><i class=\"van-icon-download\"></i>批量下载</span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\"><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li class=\"more-ops-list-box-li\"><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
+var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\" onclick=\"bp_utils.bilibili_parse()\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (code);
 
@@ -2801,11 +2841,12 @@ __webpack_require__.r(__webpack_exports__);
   if ($('.error-text')[0]) {
     return;
   }
-  /* global JS_VERSION GIT_HASH */
 
-
-  console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.1", " ").concat("e56f9a9", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
-  new _main__WEBPACK_IMPORTED_MODULE_0__["default"]().run();
+  setTimeout(function () {
+    /* global JS_VERSION GIT_HASH */
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.2", " ").concat("3b247de", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    new _main__WEBPACK_IMPORTED_MODULE_0__["default"]().run();
+  }, 2000);
 })();
 }();
 /******/ })()

@@ -1,8 +1,8 @@
-import { config } from "../config"
-import { Message, MessageBox } from "../ui/message"
-import { ajax } from "./ajax"
-import { api } from "./api"
-import { video } from "./video"
+import { config } from '../config'
+import { Message, MessageBox } from '../ui/message'
+import { ajax } from './ajax'
+import { api } from './api'
+import { video } from './video'
 
 function rpc_type() {
     if (config.rpc_domain.match('https://') || config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
@@ -37,7 +37,7 @@ function download_all() {
     }
 
     let all_checked = false
-    $('body').on('click', 'button#checkbox_btn', function () {
+    $('body').on('click', 'button#checkbox_btn', () => {
         if (all_checked) {
             all_checked = false
             $('input[name="dl_video"]').prop('checked', all_checked)
@@ -131,12 +131,12 @@ function download_all() {
                 filename: filename
             })
         }
-        get_url(videos, 0, [])
+        download_videos(videos, 0, [])
     })
     // 初始化参数，去除8k及以上
     $('#dl_quality').val(q > 120 ? 80 : q)
 
-    function get_url(videos, i, video_urls) {
+    function download_videos(videos, i, video_urls) {
         // 单线递归处理，请求下载同时进行
         if (videos.length) {
             if (i < videos.length) {
@@ -183,11 +183,11 @@ function download_all() {
                         }
 
                         setTimeout(() => {
-                            get_url(videos, ++i, video_urls)
+                            download_videos(videos, ++i, video_urls)
                         }, 3000)
                     }
                     const error = () => {
-                        get_url(videos, ++i, video_urls)
+                        download_videos(videos, ++i, video_urls)
                     }
                     api.get_urls(video.p, video.q, video.format, success, error)
 

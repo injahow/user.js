@@ -1,7 +1,7 @@
-import { config } from "../config"
-import { ajax } from "./ajax"
-import { api } from "./api"
-import { video } from "./video"
+import { config } from '../config'
+import { ajax } from './ajax'
+import { api } from './api'
+import { video } from './video'
 
 function get_bili_player_id() {
     if (!!$('#bilibiliPlayer')[0]) {

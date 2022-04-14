@@ -1,13 +1,30 @@
 
-import { config, hostMap } from "../config"
-import { store } from "../store"
-import { Message } from "../ui/message"
-import { ajax } from "./ajax"
-import { video } from "./video"
+import { config, hostMap } from '../config'
+import { store } from '../store'
+import { Message } from '../ui/message'
+import { ajax } from './ajax'
+import { video } from './video'
 
 function get_url_base(page, quality, video_format, success, error, request_type) {
-    'function' !== typeof success && (success = res => console.log(res))
-    'function' !== typeof error && (error = err => console.error(err))
+
+    let _success, _error
+    if ('function' === typeof success) {
+        _success = e => {
+            Message.success('请求成功')
+            success(e)
+        }
+    } else {
+        _success = res => console.log(res)
+    }
+
+    if ('function' === typeof error) {
+        _error = e => {
+            Message.danger('请求失败')
+            error(e)
+        }
+    } else {
+        _error = err => console.error(err)
+    }
 
     const vb = video.base()
     const [aid, cid, epid, q, type] = [
@@ -86,7 +103,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
             res.url && (res.url = url_replace_cdn(res.url))
             res.video && (res.video = url_replace_cdn(res.video))
             res.audio && (res.audio = url_replace_cdn(res.audio))
-            success(res)
+            _success(res)
             return
         }
 
@@ -107,18 +124,18 @@ function get_url_base(page, quality, video_format, success, error, request_type)
                     break
                 }
             }
-            success(result)
+            _success(result)
             return
         }
 
-        success({
+        _success({
             'code': 0,
             'quality': data.quality,
             'accept_quality': data.accept_quality,
             'url': url_replace_cdn(data.durl[0].url)
         })
 
-    }).catch(err => error(err))
+    }).catch(err => _error(err))
 
 }
 

@@ -7,7 +7,7 @@ export function ajax(obj) {
         obj.success = res => {
 
             if (res.code) {
-                Message.warning(`请求失败，${res.message || `CODE:${res.code}`}`)
+                Message.warning(`${res.message || `CODE:${res.code}`}`)
                 // todo
             }
 

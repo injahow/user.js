@@ -16,32 +16,49 @@ import toolbar_html from '../html/toolbar.html'
 
 class Main {
     constructor() {
-        initConfig()
-        initMessage()
-        auth.initAuth()
+        this.has_toolbar = false
+        setTimeout(() => {
+            this.run_before()
+        }, 1000)
+    }
+
+    run_before() {
+        this.has_toolbar = this.set_toolbar()
+        if (this.has_toolbar) {
+            this.run()
+        }
+    }
+
+    set_toolbar() {
+        if (this.has_toolbar) return
+        let bp_toolbar
+        if (!!$('#arc_toolbar_report')[0]) {
+            bp_toolbar = arc_toolbar_html
+            $('#arc_toolbar_report').after(bp_toolbar)
+        } else if (!!$('#toolbar_module')[0]) {
+            bp_toolbar = toolbar_html
+            $('#toolbar_module').after(bp_toolbar)
+        } else if (!!$('div.video-toolbar')[0]) {
+            bp_toolbar = video_toolbar_html
+            $('div.video-toolbar').after(bp_toolbar)
+        }
+        this.has_toolbar = !!bp_toolbar
     }
 
     run() {
 
+        initConfig()
+        initMessage()
+        user.lazyInit()
+        auth.initAuth()
+        auth.checkLoginStatus()
+        check.refresh()
+
+        // for dom changed
+        $('body').append('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js" crossorigin="true"></script>')
+
         $('body').append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
         $('body').append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
-        // 延迟处理
-        setTimeout(() => {
-            let bp_toolbar
-            if (!!$('#arc_toolbar_report')[0]) {
-                bp_toolbar = arc_toolbar_html
-                $('#arc_toolbar_report').after(bp_toolbar)
-            } else if (!!$('#toolbar_module')[0]) {
-                bp_toolbar = toolbar_html
-                $('#toolbar_module').after(bp_toolbar)
-            } else if (!!$('div.video-toolbar')[0]) {
-                bp_toolbar = video_toolbar_html
-                $('div.video-toolbar').after(bp_toolbar)
-            }
-            user.lazyInit()
-            auth.checkLoginStatus()
-            check.refresh()
-        }, 3000)
 
         $('body').on('click', '#setting_btn', () => {
             user.lazyInit(true) // init
@@ -189,7 +206,6 @@ class Main {
             Message.info('开始请求')
             api.get_url(0, res => {
                 if (res && !res.code) {
-                    Message.success('请求成功')
                     res.times && Message.info(`剩余请求次数：${res.times}`)
                     let url = config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://')
                     let url_2 = config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#'
