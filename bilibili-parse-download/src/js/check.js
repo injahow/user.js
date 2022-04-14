@@ -1,5 +1,5 @@
-import { video } from "./utils/video"
-import { player } from "./utils/player"
+import { video } from './utils/video'
+import { player } from './utils/player'
 
 class Check {
 

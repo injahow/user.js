@@ -1,18 +1,32 @@
 <div id="arc_toolbar_report_2" style="margin-top:16px;" class="video-toolbar report-wrap-module report-scroll-module"
   scrollshow="true">
   <div class="ops">
-    <span id="setting_btn"><i class="van-icon-general_addto_s"></i>脚本设置</span>
-    <span id="bilibili_parse"><i class="van-icon-floatwindow_custome"></i>请求地址</span>
-    <span id="video_download" style="display:none;"><i class="van-icon-download"></i>下载视频</span>
-    <span id="video_download_2" style="display:none;"><i class="van-icon-download"></i>下载音频</span>
-    <span id="video_download_all"><i class="van-icon-download"></i>批量下载</span>
+    <span id="setting_btn" onclick="bp_utils.bilibili_parse()">
+      <i class="van-icon-general_addto_s"></i>脚本设置
+    </span>
+    <span id="bilibili_parse">
+      <i class="van-icon-floatwindow_custome"></i>请求地址
+    </span>
+    <span id="video_download" style="display:none;">
+      <i class="van-icon-download"></i>下载视频
+    </span>
+    <span id="video_download_2" style="display:none;">
+      <i class="van-icon-download"></i>下载音频
+    </span>
+    <span id="video_download_all">
+      <i class="van-icon-download"></i>批量下载
+    </span>
   </div>
   <div class="more">
     <i class="van-icon-general_moreactions"></i>
     <div class="more-ops-list">
       <ul class="more-ops-list-box">
-        <li class="more-ops-list-box-li"><span id="download_danmaku">下载弹幕</span></li>
-        <li class="more-ops-list-box-li"><span id="download_subtitle">下载字幕</span></li>
+        <li class="more-ops-list-box-li">
+          <span id="download_danmaku">下载弹幕</span>
+        </li>
+        <li class="more-ops-list-box-li">
+          <span id="download_subtitle">下载字幕</span>
+        </li>
       </ul>
     </div>
   </div>

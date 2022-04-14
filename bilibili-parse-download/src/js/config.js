@@ -1,11 +1,11 @@
-import { store } from "./store"
-import { check } from "./check"
-import { Message, MessageBox } from "./ui/message"
-import { scroll } from "./ui/scroll"
-import { ajax } from "./utils/ajax"
-import { Download } from "./utils/download"
-import { player } from "./utils/player"
-import config_html from "../html/config.html"
+import { store } from './store'
+import { check } from './check'
+import { Message, MessageBox } from './ui/message'
+import { scroll } from './ui/scroll'
+import { ajax } from './utils/ajax'
+import { Download } from './utils/download'
+import { player } from './utils/player'
+import config_html from '../html/config.html'
 
 const config = {
     base_api: 'https://api.injahow.cn/bparse/',
