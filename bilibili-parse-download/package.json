@@ -1,11 +1,11 @@
 {
   "name": "bilibili-parse-download",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "a script to download bilibli video",
   "main": "dist/bilibili-parse-download.user.js",
   "scripts": {
-    "build-prod": "npx webpack --config ./webpack/webpack.prod.js",
-    "build-dev": "npx webpack --config ./webpack/webpack.dev.js"
+    "build-dev": "npx webpack --config ./webpack/webpack.dev.js",
+    "build-prod": "npx webpack --config ./webpack/webpack.prod.js"
   },
   "private": true,
   "keywords": [
@@ -24,11 +24,17 @@
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "babel-loader": "^8.2.4",
+    "css-loader": "^6.7.1",
     "git-revision-webpack-plugin": "^5.0.0",
     "html-loader": "^3.1.0",
+    "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.3.1",
+    "vue-loader": "^17.0.0",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jszip": "^3.9.1",
+    "vue": "^3.2.33"
+  }
 }

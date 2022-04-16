@@ -1,3 +1,4 @@
+import JSZip from 'jszip'
 import { config } from '../config'
 import { Message, MessageBox } from '../ui/message'
 import { ajax } from './ajax'
@@ -106,9 +107,9 @@ function download_all() {
 
     MessageBox.confirm(msg, () => {
         // 获取参数
-        let _q = $('#dl_quality').val() || q
-        let _dl_subtitle = $('#dl_subtitle').val()
-        let _dl_danmaku = $('#dl_danmaku').val()
+        let dl_quality = $('#dl_quality').val() || q
+        let dl_subtitle = $('#dl_subtitle').val()
+        let dl_danmaku = $('#dl_danmaku').val()
 
         const videos = []
         for (let i = 0; i < total; i++) {
@@ -122,15 +123,24 @@ function download_all() {
             ]
             const format = $('#dl_format').val()
             videos.push({
-                dl_subtitle: _dl_subtitle,
-                dl_danmaku: _dl_danmaku,
                 cid: cid,
                 p: p,
-                q: _q,
+                q: dl_quality,
                 format: format,
                 filename: filename
             })
         }
+
+        if (dl_subtitle === '1') {
+            // 下载字幕vtt.zip
+            download_subtitle_vtt_zip([...videos], new JSZip())
+        }
+
+        if (dl_danmaku === '1') {
+            // 下载弹幕ass.zip
+            download_danmaku_ass_zip([...videos], new JSZip())
+        }
+
         download_videos(videos, 0, [])
     })
     // 初始化参数，去除8k及以上
@@ -141,14 +151,6 @@ function download_all() {
         if (videos.length) {
             if (i < videos.length) {
                 const video = videos[i]
-                if (video.dl_subtitle === '1') {
-                    // 下载字幕vtt
-                    Download.download_subtitle_vtt(video.p, video.filename)
-                }
-                if (video.dl_danmaku === '1') {
-                    // 下载弹幕ass
-                    Download.download_danmaku_ass(video.cid, video.filename)
-                }
                 const msg = `第${i + 1}（${i + 1}/${videos.length}）个视频`
                 MessageBox.alert(`${msg}：获取中...`)
 
@@ -403,13 +405,13 @@ function download_blob(url, filename) {
         }
     }
     xhr.send()
-    download_blob_clicked = true; // locked
+    download_blob_clicked = true // locked
     Message.info('准备开始下载')
 }
 
-function download_danmaku_ass(_cid, title) { // todo: 暂时使用随机弹幕
+function _download_danmaku_ass(cid, title, return_type = null, callback = null) { // todo: 暂时使用随机弹幕
     ajax({
-        url: `https://api.bilibili.com/x/v1/dm/list.so?oid=${_cid}`,
+        url: `https://api.bilibili.com/x/v1/dm/list.so?oid=${cid}`,
         dataType: 'text'
     }).then(result => {
         const result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''))
@@ -505,20 +507,29 @@ function download_danmaku_ass(_cid, title) { // todo: 暂时使用随机弹幕
                 }
                 content.push(dialogue(danmaku, scroll_id, fix_id))
             }
-            // 4.ass->blob->url
-            const blob_url = URL.createObjectURL(new Blob([content.join('\n')], { type: 'text/ass' }))
-            const a = document.createElement('a')
-            a.style.display = 'none'
-            a.href = blob_url
-            a.download = title + '.ass'
-            document.body.appendChild(a)
-            a.click()
-            a.remove()
-            URL.revokeObjectURL(blob_url)
+            // 4.ass & return
+            const data = content.join('\n')
+            if (return_type === null || return_type === 'file') {
+                const blob_url = URL.createObjectURL(new Blob([data], { type: 'text/ass' }))
+                const a = document.createElement('a')
+                a.style.display = 'none'
+                a.href = blob_url
+                a.download = title + '.ass'
+                document.body.appendChild(a)
+                a.click()
+                a.remove()
+                URL.revokeObjectURL(blob_url)
+            } else if (return_type === 'callback' && callback) {
+                callback(data)
+            }
         }
     }).catch(_ => {
         Message.warning('未发现字幕')
     })
+}
+
+function download_danmaku_ass(cid, title) {
+    _download_danmaku_ass(cid, title, 'file')
 }
 
 function download_subtitle_vtt(p = 0, file_name) {
@@ -538,6 +549,50 @@ function download_subtitle_vtt(p = 0, file_name) {
     }
     api.get_subtitle_url(p, download_subtitle)
 }
+
+function download_blob_zip(blob_data, filename) {
+    if (!blob_data) return
+    const blob_url = URL.createObjectURL(blob_data);
+    const a = document.createElement('a')
+    a.setAttribute('target', '_blank')
+    a.setAttribute('href', blob_url)
+    a.setAttribute('download', filename + '.zip')
+    document.body.appendChild(a);
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(blob_url)
+}
+
+function download_danmaku_ass_zip(videos, zip) { // 异步递归
+    if (!videos) return
+    if (videos.length === 0) {
+        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().name + '_ass'))
+        return
+    }
+    const videos_pop = videos.pop()
+    _download_danmaku_ass(videos_pop.cid, videos_pop.filename, 'callback', data => {
+        if (data) {
+            zip.file(videos_pop.filename + '.ass', data)
+        }
+        download_danmaku_ass_zip(videos, zip)
+    })
+}
+
+function download_subtitle_vtt_zip(videos, zip) { // 异步递归
+    if (!videos) return
+    if (videos.length === 0) {
+        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().name + '_vtt'))
+        return
+    }
+    const videos_pop = videos.pop()
+    api.get_subtitle_data(videos_pop.p, data => {
+        if (data) {
+            zip.file(videos_pop.filename + '.vtt', data);
+        }
+        download_subtitle_vtt_zip(videos, zip)
+    })
+}
+
 
 function format(url) {
     if (url.match('.flv')) {

@@ -57,6 +57,7 @@ class Auth {
     }
 
     _login(resolve) {
+
         if (this.auth_clicked) {
             Message.miaow()
             return
@@ -70,7 +71,19 @@ class Auth {
         }).then(resolve).finally(_ => this.auth_clicked = false)
     }
 
-    login() {
+    login(auto = '1') {
+        const do_login = auto === '1' // 绑定 this
+            ? this.loginAuto.bind(this)
+            : this.loginManual.bind(this)
+
+        if (store.get('auth_id')) {
+            MessageBox.confirm('发现授权记录，是否重新授权？', do_login);
+            return
+        }
+        do_login()
+    }
+
+    loginAuto() {
         this._login(res => {
             if (res.data.has_login) {
                 $('body').append(`<iframe id='auth_iframe' src='${res.data.confirm_uri}' style='display:none;'></iframe>`)
@@ -160,33 +173,6 @@ class Auth {
     }
 
     initAuth() {
-
-        window.bp_show_login = (auto = '1') => {
-            const show_login = () => {
-                if (auto === '1') {
-                    this.login()
-                } else {
-                    this.loginManual()
-                }
-            }
-            if (store.get('auth_id')) {
-                MessageBox.confirm('发现授权记录，是否重新授权？', () => {
-                    show_login()
-                })
-            } else {
-                show_login()
-            }
-        }
-
-        window.bp_show_logout = () => {
-            this.logout()
-        }
-
-        window.bp_show_login_help = () => {
-            MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', () => {
-                this.login()
-            })
-        }
 
         window.addEventListener('message', e => {
             if (typeof e.data !== 'string') return
