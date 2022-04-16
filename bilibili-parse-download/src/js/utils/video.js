@@ -20,8 +20,10 @@ function base() {
     const _type = type()
     if (_type === 'video') {
         const state = window.__INITIAL_STATE__
+        const main_title = (state.videoData && state.videoData.title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
         return {
             type: 'video',
+            name: main_title,
             total: () => {
                 return state.videoData.pages.length || 1
             },
@@ -31,7 +33,7 @@ function base() {
             },
             filename: (_p) => {
                 const p = _p || state.p || 1
-                const title = (state.videoData && state.videoData.title || 'unknown') + ` P${p} （${state.videoData.pages[p - 1].part || p}）`
+                const title = main_title + ` P${p} （${state.videoData.pages[p - 1].part || p}）`
                 return title.replace(/[\/\\:*?"<>|]+/g, '')
             },
             aid: (_p) => {
@@ -61,9 +63,10 @@ function base() {
         const medialist = $('div.player-auxiliary-playlist-item')
         const _id = $('div.player-auxiliary-playlist-item.player-auxiliary-playlist-item-active').index()
         const collect_name = $('.player-auxiliary-playlist-top .player-auxiliary-filter-title').html()
-
+        const main_title = (collect_name || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
         return {
             type: 'video',
+            name: main_title,
             total: () => {
                 return medialist.length
             },
@@ -75,7 +78,7 @@ function base() {
             filename: (_p) => {
                 let id = _p ? (_p - 1) : _id
                 const title = medialist.eq(id).find('.player-auxiliary-playlist-item-title').attr('title') || 'unknown'
-                return (`${collect_name} P${id + 1} （${title}）`).replace(/[\/\\:*?"<>|]+/g, '')
+                return (`${main_title} P${id + 1} （${title}）`).replace(/[\/\\:*?"<>|]+/g, '')
             },
             aid: (_p) => {
                 let id = _p ? (_p - 1) : _id
@@ -103,19 +106,21 @@ function base() {
         }
     } else if (_type === 'bangumi') {
         const state = window.__INITIAL_STATE__
+        const main_title = (state.mediaInfo.season_title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
         return {
             type: 'bangumi',
+            name: main_title,
             total: () => {
                 return state.epList.length
             },
             title: (_p) => {
                 const ep = _p ? state.epList[_p - 1] : state.epInfo
-                return (`${ep.titleFormat} ${ep.longTitle}` || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+                return (`${ep.titleFormat} ${ep.longTitle}`).replace(/[\/\\:*?"<>|]+/g, '')
             },
             filename: (_p) => {
                 if (_p) {
                     const ep = state.epList[_p - 1]
-                    return (`${state.mediaInfo.season_title}：${ep.titleFormat} ${ep.longTitle}` || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+                    return (`${main_title}：${ep.titleFormat} ${ep.longTitle}`).replace(/[\/\\:*?"<>|]+/g, '')
                 }
                 return (state.h1Title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
             },
@@ -151,8 +156,10 @@ function base() {
 
         const episodes = window.bp_episodes
         const _id = $('li.on.list-box-li').index()
+        const main_title = ($('div.season-info h1').html() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
         return {
             type: 'cheese',
+            name: main_title,
             total: () => {
                 return episodes.length
             },
@@ -162,7 +169,7 @@ function base() {
             },
             filename: (_p) => {
                 let id = _p ? (_p - 1) : _id
-                return (`${$('div.season-info h1').html()} P${id + 1} （${episodes[id].title || 'unknown'}）`).replace(/[\/\\:*?"<>|]+/g, '')
+                return (`${main_title} P${id + 1} （${episodes[id].title || 'unknown'}）`).replace(/[\/\\:*?"<>|]+/g, '')
             },
             aid: (_p) => {
                 let id = _p ? (_p - 1) : _id
@@ -192,6 +199,7 @@ function base() {
     } else { // error
         return {
             type: '?',
+            name: 'none',
             total: () => { return 0 },
             title: (_p) => { return '' },
             filename: (_p) => { return '' },

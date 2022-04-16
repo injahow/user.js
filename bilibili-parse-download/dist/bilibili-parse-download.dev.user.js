@@ -27,335 +27,7 @@
 /* eslint-disable */ /* spell-checker: disable */
 // @[ source codes in local repo ]
 /******/ (function() { // webpackBootstrap
-/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
-
-/***/ "./src/js/auth.js":
-/*!************************!*\
-  !*** ./src/js/auth.js ***!
-  \************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "auth": function() { return /* binding */ auth; }
-/* harmony export */ });
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./config */ "./src/js/config.js");
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store */ "./src/js/store.js");
-/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui/message */ "./src/js/ui/message.js");
-/* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./user */ "./src/js/user.js");
-/* harmony import */ var _utils_ajax__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/ajax */ "./src/js/utils/ajax.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
-
-
-
-
-
-var Auth = /*#__PURE__*/function () {
-  function Auth() {
-    _classCallCheck(this, Auth);
-
-    this.auth_clicked = false;
-  }
-
-  _createClass(Auth, [{
-    key: "reLogin",
-    value: function reLogin() {
-      _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_id', '');
-      _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_sec', '');
-      _store__WEBPACK_IMPORTED_MODULE_1__.store.set('access_key', '');
-      _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_time', '0');
-      this.login();
-    }
-  }, {
-    key: "checkLoginStatus",
-    value: function checkLoginStatus() {
-      var _this = this;
-
-      var _ref = [_store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_id'), _store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_sec'), _store__WEBPACK_IMPORTED_MODULE_1__.store.get('access_key'), _store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_time') || '0'],
-          auth_id = _ref[0],
-          auth_sec = _ref[1],
-          access_key = _ref[2],
-          auth_time = _ref[3];
-      if (!access_key) return;
-
-      if (_user__WEBPACK_IMPORTED_MODULE_3__.user.is_login && (_config__WEBPACK_IMPORTED_MODULE_0__.config.base_api !== _store__WEBPACK_IMPORTED_MODULE_1__.store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
-        // check key
-        (0,_utils_ajax__WEBPACK_IMPORTED_MODULE_4__.ajax)({
-          url: "https://api.bilibili.com/x/space/myinfo?access_key=".concat(access_key),
-          type: 'GET',
-          dataType: 'json'
-        }).then(function (res) {
-          if (res.code) {
-            _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.alert('授权已过期，准备重新授权', _this.reLogin);
-          } else {
-            _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_time', Date.now());
-            return (0,_utils_ajax__WEBPACK_IMPORTED_MODULE_4__.ajax)({
-              url: "".concat(_config__WEBPACK_IMPORTED_MODULE_0__.config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
-              type: 'GET',
-              dataType: 'json'
-            });
-          }
-        }).then(function (res) {
-          if (res.code) {
-            _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.alert('授权检查失败，准备重新授权', _this.reLogin);
-          }
-        });
-      }
-
-      _store__WEBPACK_IMPORTED_MODULE_1__.store.set('pre_base_api', _config__WEBPACK_IMPORTED_MODULE_0__.config.base_api);
-    }
-  }, {
-    key: "_login",
-    value: function _login(resolve) {
-      var _this2 = this;
-
-      if (this.auth_clicked) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.miaow();
-        return;
-      }
-
-      this.auth_clicked = true;
-      (0,_utils_ajax__WEBPACK_IMPORTED_MODULE_4__.ajax)({
-        url: 'https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=https%3A%2F%2Fwww.mcbbs.net%2Ftemplate%2Fmcbbs%2Fimage%2Fspecial_photo_bg.png&sign=04224646d1fea004e79606d3b038c84a',
-        xhrFields: {
-          withCredentials: true
-        },
-        type: 'GET',
-        dataType: 'json'
-      }).then(resolve).finally(function (_) {
-        return _this2.auth_clicked = false;
-      });
-    }
-  }, {
-    key: "login",
-    value: function login() {
-      this._login(function (res) {
-        if (res.data.has_login) {
-          $('body').append("<iframe id='auth_iframe' src='".concat(res.data.confirm_uri, "' style='display:none;'></iframe>"));
-        } else {
-          _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', function () {
-            location.href = 'https://passport.bilibili.com/login';
-          });
-        }
-      });
-    }
-  }, {
-    key: "loginManual",
-    value: function loginManual() {
-      this._login(function (res) {
-        if (res.data.has_login) {
-          var msg = '' + "\u8BF7\u70B9\u51FB<b><a href='".concat(res.data.confirm_uri, "' target='_blank'>\u6388\u6743\u5730\u5740</a></b>\n                    \u6253\u5F00\u4E00\u4E2A\u65B0\u7A97\u53E3\uFF0C\u6B63\u5E38\u60C5\u51B5\u65B0\u7A97\u53E3\u5E94\u8BE5\u663E\u793A\u4E00\u4E2A\u56FE\u7247\uFF0C\u8BF7\u5C06\u8BE5\u7A97\u53E3\u5730\u5740\u680F\u7684URL\u94FE\u63A5\u590D\u5236\u5230\u5F53\u524D\u6587\u672C\u6846\u4E2D<br/>\n                    <input id='auth_url' style='width:100%;' type='text' autocomplete='off'><br>\u7136\u540E\u70B9\u51FB\u786E\u5B9A\u5373\u53EF");
-          _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.alert(msg, function () {
-            var auth_url = $('#auth_url').val();
-            var auth_id = _store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_id') || '',
-                auth_sec = _store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_sec') || '';
-            (0,_utils_ajax__WEBPACK_IMPORTED_MODULE_4__.ajax)({
-              url: auth_url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(_config__WEBPACK_IMPORTED_MODULE_0__.config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
-              type: 'GET',
-              dataType: 'json'
-            }).then(function (res) {
-              if (!res.code) {
-                _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.success('授权成功');
-
-                if (res.auth_id && res.auth_sec) {
-                  _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_id', res.auth_id);
-                  _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_sec', res.auth_sec);
-                }
-
-                _store__WEBPACK_IMPORTED_MODULE_1__.store.set('access_key', new URL(auth_url).searchParams.get('access_key'));
-                _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_time', Date.now());
-                $('#auth').val('1');
-                _config__WEBPACK_IMPORTED_MODULE_0__.config.auth = '1';
-              } else {
-                _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.warning('授权失败');
-              }
-            });
-          });
-        } else {
-          _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', function () {
-            location.href = 'https://passport.bilibili.com/login';
-          });
-        }
-      });
-    }
-  }, {
-    key: "logout",
-    value: function logout() {
-      var _this3 = this;
-
-      if (!_store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_id')) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.alert('没有发现授权记录');
-        return;
-      }
-
-      if (this.auth_clicked) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.miaow();
-        return;
-      }
-
-      var _ref2 = [_store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_id'), _store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_sec')],
-          auth_id = _ref2[0],
-          auth_sec = _ref2[1];
-      (0,_utils_ajax__WEBPACK_IMPORTED_MODULE_4__.ajax)({
-        url: "".concat(_config__WEBPACK_IMPORTED_MODULE_0__.config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
-        type: 'GET',
-        dataType: 'json'
-      }).then(function (res) {
-        if (!res.code) {
-          _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.success('取消成功');
-          _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_id', '');
-          _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_sec', '');
-          _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_time', '0');
-          _store__WEBPACK_IMPORTED_MODULE_1__.store.set('access_key', '');
-          $('#auth').val('0');
-          _config__WEBPACK_IMPORTED_MODULE_0__.config.auth = '0';
-        } else {
-          _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.warning('取消失败');
-        }
-      }).finally(function (_) {
-        return _this3.auth_clicked = false;
-      });
-    }
-  }, {
-    key: "initAuth",
-    value: function initAuth() {
-      var _this4 = this;
-
-      window.bp_show_login = function () {
-        var auto = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '1';
-
-        var show_login = function show_login() {
-          if (auto === '1') {
-            _this4.login();
-          } else {
-            _this4.loginManual();
-          }
-        };
-
-        if (_store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_id')) {
-          _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.confirm('发现授权记录，是否重新授权？', function () {
-            show_login();
-          });
-        } else {
-          show_login();
-        }
-      };
-
-      window.bp_show_logout = function () {
-        _this4.logout();
-      };
-
-      window.bp_show_login_help = function () {
-        _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', function () {
-          _this4.login();
-        });
-      };
-
-      window.addEventListener('message', function (e) {
-        if (typeof e.data !== 'string') return;
-
-        if (e.data.split(':')[0] === 'bilibili-parse-login-credentials') {
-          $('iframe#auth_iframe').remove();
-          var url = e.data.split(': ')[1];
-          var _ref3 = [_store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_id'), _store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_sec')],
-              auth_id = _ref3[0],
-              auth_sec = _ref3[1];
-          (0,_utils_ajax__WEBPACK_IMPORTED_MODULE_4__.ajax)({
-            url: url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(_config__WEBPACK_IMPORTED_MODULE_0__.config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
-            type: 'GET',
-            dataType: 'json'
-          }).then(function (res) {
-            if (!res.code) {
-              _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.success('授权成功');
-
-              if (res.auth_id && res.auth_sec) {
-                _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_id', res.auth_id);
-                _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_sec', res.auth_sec);
-              }
-
-              _store__WEBPACK_IMPORTED_MODULE_1__.store.set('access_key', new URL(url).searchParams.get('access_key'));
-              _store__WEBPACK_IMPORTED_MODULE_1__.store.set('auth_time', Date.now());
-              $('#auth').val('1');
-              _config__WEBPACK_IMPORTED_MODULE_0__.config.auth = '1';
-            } else {
-              _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.warning('授权失败');
-            }
-          }).finally(function (_) {
-            return _this4.auth_clicked = false;
-          });
-        }
-      });
-    }
-  }]);
-
-  return Auth;
-}();
-
-var auth = new Auth();
-
-/***/ }),
-
-/***/ "./src/js/check.js":
-/*!*************************!*\
-  !*** ./src/js/check.js ***!
-  \*************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "check": function() { return /* binding */ check; }
-/* harmony export */ });
-/* harmony import */ var _utils_video__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/video */ "./src/js/utils/video.js");
-/* harmony import */ var _utils_player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/player */ "./src/js/utils/player.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
-
-
-var Check = /*#__PURE__*/function () {
-  function Check() {
-    _classCallCheck(this, Check);
-
-    this.aid = '';
-    this.cid = '';
-    this.q = '';
-    this.epid = '';
-  }
-
-  _createClass(Check, [{
-    key: "refresh",
-    value: function refresh() {
-      console.log('refresh...');
-      $('#video_download').hide();
-      $('#video_download_2').hide();
-      _utils_player__WEBPACK_IMPORTED_MODULE_1__.player.recover_player(); // 更新check
-
-      var vb = _utils_video__WEBPACK_IMPORTED_MODULE_0__.video.base();
-      this.aid = vb.aid();
-      this.cid = vb.cid();
-      this.epid = vb.epid();
-      this.q = _utils_video__WEBPACK_IMPORTED_MODULE_0__.video.get_quality().q;
-      window.bp_episodes = null; // todo
-    }
-  }]);
-
-  return Check;
-}();
-
-var check = new Check();
-
-/***/ }),
 
 /***/ "./src/js/config.js":
 /*!**************************!*\
@@ -363,29 +35,12 @@ var check = new Check();
   \**************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "config": function() { return /* binding */ config; },
-/* harmony export */   "hostKeyOption": function() { return /* binding */ hostKeyOption; },
-/* harmony export */   "hostMap": function() { return /* binding */ hostMap; },
-/* harmony export */   "initConfig": function() { return /* binding */ initConfig; }
+/* harmony export */   "hostMap": function() { return /* binding */ hostMap; }
 /* harmony export */ });
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store */ "./src/js/store.js");
-/* harmony import */ var _check__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./check */ "./src/js/check.js");
-/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui/message */ "./src/js/ui/message.js");
-/* harmony import */ var _ui_scroll__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ui/scroll */ "./src/js/ui/scroll.js");
-/* harmony import */ var _utils_ajax__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/ajax */ "./src/js/utils/ajax.js");
-/* harmony import */ var _utils_download__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/download */ "./src/js/utils/download.js");
-/* harmony import */ var _utils_player__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/player */ "./src/js/utils/player.js");
-/* harmony import */ var _html_config_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../html/config.html */ "./src/html/config.html");
-
-
-
-
-
-
-
-
 var config = {
   base_api: 'https://api.injahow.cn/bparse/',
   request_type: 'auto',
@@ -404,6 +59,7 @@ var config = {
   danmaku_fontsize: '22'
 };
 var hostMap = {
+  '0': '关闭',
   ks3: 'upos-sz-mirrorks3.bilivideo.com',
   ks3b: 'upos-sz-mirrorks3b.bilivideo.com',
   ks3c: 'upos-sz-mirrorks3c.bilivideo.com',
@@ -428,476 +84,609 @@ var hostMap = {
   akamai: 'upos-hz-mirrorakam.akamaized.net'
 };
 
-function initConfig() {
-  var default_config = Object.assign({}, config); // 浅拷贝
 
-  var config_str = _store__WEBPACK_IMPORTED_MODULE_0__.store.get('config_str') || localStorage.getItem('my_config_str');
+/***/ }),
 
-  if (!config_str) {
-    _store__WEBPACK_IMPORTED_MODULE_0__.store.set('config_str', JSON.stringify(config));
-    localStorage.setItem('my_config_str', JSON.stringify(config)); // wait to be deleted
-  } else {
-    // set config from cache
-    var old_config = JSON.parse(config_str);
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[8].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css":
+/*!*****************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[8].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-    for (var key in old_config) {
-      if (Object.hasOwnProperty.call(config, key)) {
-        config[key] = old_config[key];
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/noSourceMaps.js */ "./node_modules/css-loader/dist/runtime/noSourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n#bp_config[data-v-15d0b82e] {\n  opacity: 0;\n  display: none;\n  position: fixed;\n  inset: 0px;\n  top: 0px;\n  left: 0px;\n  width: 100%;\n  height: 100%;\n  z-index: 10000;\n}\n.bp_config_bg[data-v-15d0b82e] {\n  position: absolute;\n  background: rgb(255, 255, 255);\n  border-radius: 10px;\n  padding: 20px;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 600px;\n  box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n}\n.setting-button[data-v-15d0b82e] {\n  width: 120px;\n  height: 40px;\n  border-width: 0px;\n  border-radius: 3px;\n  background: #1e90ff;\n  cursor: pointer;\n  outline: none;\n  color: white;\n  font-size: 17px;\n}\n.setting-button[data-v-15d0b82e]:hover {\n  background: #5599ff;\n}\n.setting-context[data-v-15d0b82e] {\n  margin: 0 1%;\n  color: blue;\n}\n.setting-context[data-v-15d0b82e]:hover {\n  color: red;\n}\n", ""]);
+// Exports
+/* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/runtime/api.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/api.js ***!
+  \*****************************************************/
+/***/ (function(module) {
+
+"use strict";
+
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+*/
+module.exports = function (cssWithMappingToString) {
+  var list = []; // return the list of modules as css string
+
+  list.toString = function toString() {
+    return this.map(function (item) {
+      var content = "";
+      var needLayer = typeof item[5] !== "undefined";
+
+      if (item[4]) {
+        content += "@supports (".concat(item[4], ") {");
+      }
+
+      if (item[2]) {
+        content += "@media ".concat(item[2], " {");
+      }
+
+      if (needLayer) {
+        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
+      }
+
+      content += cssWithMappingToString(item);
+
+      if (needLayer) {
+        content += "}";
+      }
+
+      if (item[2]) {
+        content += "}";
+      }
+
+      if (item[4]) {
+        content += "}";
+      }
+
+      return content;
+    }).join("");
+  }; // import a list of modules into the list
+
+
+  list.i = function i(modules, media, dedupe, supports, layer) {
+    if (typeof modules === "string") {
+      modules = [[null, modules, undefined]];
+    }
+
+    var alreadyImportedModules = {};
+
+    if (dedupe) {
+      for (var k = 0; k < this.length; k++) {
+        var id = this[k][0];
+
+        if (id != null) {
+          alreadyImportedModules[id] = true;
+        }
       }
     }
-  }
 
-  window.bp_save_config = function () {
-    // set config by form
-    for (var _key in config) {
-      config[_key] = $("#".concat(_key)).val();
-    }
+    for (var _k = 0; _k < modules.length; _k++) {
+      var item = [].concat(modules[_k]);
 
-    var old_config = JSON.parse(_store__WEBPACK_IMPORTED_MODULE_0__.store.get('config_str') || localStorage.getItem('my_config_str'));
-    _store__WEBPACK_IMPORTED_MODULE_0__.store.set('config_str', JSON.stringify(config));
-    localStorage.setItem('my_config_str', JSON.stringify(config)); // wait to be deleted
-    // hide
-
-    $('#bp_config').hide();
-    $('#bp_config').css('opacity', 0);
-    _ui_scroll__WEBPACK_IMPORTED_MODULE_3__.scroll.show(); // 判断是否需要重新请求
-
-    for (var _i = 0, _arr = ['base_api', 'format', 'auth']; _i < _arr.length; _i++) {
-      var _key2 = _arr[_i];
-
-      if (config[_key2] !== old_config[_key2]) {
-        $('#video_download').hide();
-        $('#video_download_2').hide();
-        break;
-      }
-    }
-
-    if (config.host_key !== old_config.host_key) {
-      _check__WEBPACK_IMPORTED_MODULE_1__.check.refresh();
-      $('#video_url').attr('href', '#');
-      $('#video_url_2').attr('href', '#');
-    } // 判断RPC配置情况
-
-
-    if (config.rpc_domain !== old_config.rpc_domain) {
-      if (!(config.rpc_domain.match('https://') || config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.alert('' + '检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；' + '请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；' + '配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！', function () {
-          _utils_download__WEBPACK_IMPORTED_MODULE_5__.Download.open_ariang({
-            domain: config.rpc_domain,
-            port: config.rpc_port,
-            token: config.rpc_token
-          });
-        });
-      }
-    } // 判断弹幕设置情况
-
-
-    for (var _i2 = 0, _arr2 = ['danmaku_speed', 'danmaku_fontsize']; _i2 < _arr2.length; _i2++) {
-      var _key3 = _arr2[_i2];
-
-      if (config[_key3] !== old_config[_key3]) {
-        _utils_player__WEBPACK_IMPORTED_MODULE_6__.player.danmaku.config();
-        break;
-      }
-    }
-  };
-
-  window.onbeforeunload = function () {
-    window.bp_save_config();
-    var bp_aria2_window = window.bp_aria2_window;
-
-    if (bp_aria2_window && !bp_aria2_window.closed) {
-      bp_aria2_window.close();
-    }
-  };
-
-  var help_clicked = false;
-
-  window.bp_show_help = function () {
-    if (help_clicked) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.miaow();
-      return;
-    }
-
-    help_clicked = true;
-    (0,_utils_ajax__WEBPACK_IMPORTED_MODULE_4__.ajax)({
-      url: "".concat(config.base_api, "/auth/v2/?act=help"),
-      dataType: 'text'
-    }).then(function (res) {
-      if (res) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_2__.MessageBox.alert(res);
-      } else {
-        _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.warning('获取失败');
-      }
-    }).finally(function (_) {
-      return help_clicked = false;
-    });
-  };
-
-  !window.bp_reset_config && (window.bp_reset_config = function () {
-    for (var _key4 in default_config) {
-      if (_key4 === 'auth') {
+      if (dedupe && alreadyImportedModules[item[0]]) {
         continue;
       }
 
-      $("#".concat(_key4)).val(default_config[_key4]);
+      if (typeof layer !== "undefined") {
+        if (typeof item[5] === "undefined") {
+          item[5] = layer;
+        } else {
+          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
+          item[5] = layer;
+        }
+      }
+
+      if (media) {
+        if (!item[2]) {
+          item[2] = media;
+        } else {
+          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
+          item[2] = media;
+        }
+      }
+
+      if (supports) {
+        if (!item[4]) {
+          item[4] = "".concat(supports);
+        } else {
+          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
+          item[4] = supports;
+        }
+      }
+
+      list.push(item);
     }
-  }); // 注入 html
+  };
 
-  _html_config_html__WEBPACK_IMPORTED_MODULE_7__["default"] = _html_config_html__WEBPACK_IMPORTED_MODULE_7__["default"].replace('${host_key_option}', hostKeyOption());
-  $('body').append(_html_config_html__WEBPACK_IMPORTED_MODULE_7__["default"]); // 初始化配置页面
-
-  for (var _key5 in config) {
-    $("#".concat(_key5)).val(config[_key5]);
-  }
-}
-
-function hostKeyOption() {
-  var host_keys = Object.keys(hostMap);
-  var host_key_option = '<option value="0">关闭</option>';
-
-  for (var _i3 = 0, _host_keys = host_keys; _i3 < _host_keys.length; _i3++) {
-    var key = _host_keys[_i3];
-    host_key_option += "<option value=\"".concat(key, "\">").concat(hostMap[key], "</option>");
-  }
-
-  return host_key_option;
-}
-
-
+  return list;
+};
 
 /***/ }),
 
-/***/ "./src/js/main.js":
-/*!************************!*\
-  !*** ./src/js/main.js ***!
-  \************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+/***/ "./node_modules/css-loader/dist/runtime/noSourceMaps.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/noSourceMaps.js ***!
+  \**************************************************************/
+/***/ (function(module) {
 
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/api */ "./src/js/utils/api.js");
-/* harmony import */ var _utils_player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/player */ "./src/js/utils/player.js");
-/* harmony import */ var _utils_video__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/video */ "./src/js/utils/video.js");
-/* harmony import */ var _utils_download__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/download */ "./src/js/utils/download.js");
-/* harmony import */ var _ui_scroll__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ui/scroll */ "./src/js/ui/scroll.js");
-/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ui/message */ "./src/js/ui/message.js");
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./config */ "./src/js/config.js");
-/* harmony import */ var _user__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./user */ "./src/js/user.js");
-/* harmony import */ var _auth__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./auth */ "./src/js/auth.js");
-/* harmony import */ var _check__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./check */ "./src/js/check.js");
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./store */ "./src/js/store.js");
-/* harmony import */ var _html_arc_toolbar_html__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../html/arc_toolbar.html */ "./src/html/arc_toolbar.html");
-/* harmony import */ var _html_video_toolbar_html__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../html/video_toolbar.html */ "./src/html/video_toolbar.html");
-/* harmony import */ var _html_toolbar_html__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../html/toolbar.html */ "./src/html/toolbar.html");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+"use strict";
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var Main = /*#__PURE__*/function () {
-  function Main() {
-    var _this = this;
-
-    _classCallCheck(this, Main);
-
-    this.has_toolbar = false;
-    setTimeout(function () {
-      _this.run_before();
-    }, 1000);
-  }
-
-  _createClass(Main, [{
-    key: "run_before",
-    value: function run_before() {
-      this.has_toolbar = this.set_toolbar();
-
-      if (this.has_toolbar) {
-        this.run();
-      }
-    }
-  }, {
-    key: "set_toolbar",
-    value: function set_toolbar() {
-      if (this.has_toolbar) return;
-      var bp_toolbar;
-
-      if (!!$('#arc_toolbar_report')[0]) {
-        bp_toolbar = _html_arc_toolbar_html__WEBPACK_IMPORTED_MODULE_11__["default"];
-        $('#arc_toolbar_report').after(bp_toolbar);
-      } else if (!!$('#toolbar_module')[0]) {
-        bp_toolbar = _html_toolbar_html__WEBPACK_IMPORTED_MODULE_13__["default"];
-        $('#toolbar_module').after(bp_toolbar);
-      } else if (!!$('div.video-toolbar')[0]) {
-        bp_toolbar = _html_video_toolbar_html__WEBPACK_IMPORTED_MODULE_12__["default"];
-        $('div.video-toolbar').after(bp_toolbar);
-      }
-
-      this.has_toolbar = !!bp_toolbar;
-    }
-  }, {
-    key: "run",
-    value: function run() {
-      (0,_config__WEBPACK_IMPORTED_MODULE_6__.initConfig)();
-      (0,_ui_message__WEBPACK_IMPORTED_MODULE_5__.initMessage)();
-      _user__WEBPACK_IMPORTED_MODULE_7__.user.lazyInit();
-      _auth__WEBPACK_IMPORTED_MODULE_8__.auth.initAuth();
-      _auth__WEBPACK_IMPORTED_MODULE_8__.auth.checkLoginStatus();
-      _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh(); // for dom changed
-
-      $('body').append('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js" crossorigin="true"></script>');
-      $('body').append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
-      $('body').append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
-      $('body').on('click', '#setting_btn', function () {
-        _user__WEBPACK_IMPORTED_MODULE_7__.user.lazyInit(true); // init
-        // set form by config
-
-        for (var key in _config__WEBPACK_IMPORTED_MODULE_6__.config) {
-          $("#".concat(key)).val(_config__WEBPACK_IMPORTED_MODULE_6__.config[key]);
-        } //show setting
-
-
-        $("#bp_config").show();
-        $("#bp_config").animate({
-          'opacity': '1'
-        }, 300);
-        _ui_scroll__WEBPACK_IMPORTED_MODULE_4__.scroll.hide();
-      });
-      $('body').on('click', '#download_danmaku', function () {
-        var vb = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.base();
-        _utils_download__WEBPACK_IMPORTED_MODULE_3__.Download.download_danmaku_ass(vb.cid(), vb.filename());
-      });
-      $('body').on('click', '#download_subtitle', function () {
-        _utils_download__WEBPACK_IMPORTED_MODULE_3__.Download.download_subtitle_vtt(0, _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.base().filename());
-      });
-      $('body').on('click', '#video_download_all', function () {
-        _user__WEBPACK_IMPORTED_MODULE_7__.user.lazyInit(true); // init
-
-        if (_store__WEBPACK_IMPORTED_MODULE_10__.store.get('auth_id') && _store__WEBPACK_IMPORTED_MODULE_10__.store.get('auth_sec')) {
-          if (_config__WEBPACK_IMPORTED_MODULE_6__.config.download_type === 'rpc') {
-            _utils_download__WEBPACK_IMPORTED_MODULE_3__.Download.download_all();
-          } else {
-            _ui_message__WEBPACK_IMPORTED_MODULE_5__.MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
-              _utils_download__WEBPACK_IMPORTED_MODULE_3__.Download.download_all();
-            });
-          }
-        } else {
-          _ui_message__WEBPACK_IMPORTED_MODULE_5__.MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
-            window.bp_show_login();
-          });
-        }
-      });
-      $('body').on('click', '#video_download', function () {
-        var type = _config__WEBPACK_IMPORTED_MODULE_6__.config.download_type;
-
-        if (type === 'web') {
-          $('#video_url')[0].click();
-        } else if (type === 'a') {
-          var _ref = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
-              video_url = _ref[0],
-              video_url_2 = _ref[1];
-          var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (_config__WEBPACK_IMPORTED_MODULE_6__.config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
-          _ui_message__WEBPACK_IMPORTED_MODULE_5__.MessageBox.alert(msg);
-        } else if (type === 'aria') {
-          var _ref2 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
-              _video_url = _ref2[0],
-              _video_url_ = _ref2[1];
-          var video_title = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.base().filename();
-          var file_name, file_name_2;
-          file_name = video_title + _utils_download__WEBPACK_IMPORTED_MODULE_3__.Download.url_format(_video_url);
-          file_name_2 = video_title + '_audio.mp4';
-          var aria2_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
-          var code = "aria2c \"".concat(_video_url, "\" --out \"").concat(file_name, "\" ").concat(aria2_header),
-              code_2 = "aria2c \"".concat(_video_url_, "\" --out \"").concat(file_name_2, "\" ").concat(aria2_header);
-
-          var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (_config__WEBPACK_IMPORTED_MODULE_6__.config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
-
-          !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
-            $("#".concat(id)).select();
-
-            if (document.execCommand('copy')) {
-              _ui_message__WEBPACK_IMPORTED_MODULE_5__.Message.success('复制成功');
-            } else {
-              _ui_message__WEBPACK_IMPORTED_MODULE_5__.Message.warning('复制失败');
-            }
-          });
-          _ui_message__WEBPACK_IMPORTED_MODULE_5__.MessageBox.alert(_msg);
-        } else {
-          var url = $('#video_url').attr('href');
-          var filename = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.base().filename();
-          _utils_download__WEBPACK_IMPORTED_MODULE_3__.Download.download(url, filename, type);
-        }
-      });
-      $('body').on('click', '#video_download_2', function () {
-        var type = _config__WEBPACK_IMPORTED_MODULE_6__.config.download_type;
-
-        if (type === 'web') {
-          $('#video_url_2')[0].click();
-        } else if (type === 'a') {
-          $('#video_download').click();
-        } else if (type === 'aria') {
-          $('#video_download').click();
-        } else {
-          var url = $('#video_url_2').attr('href');
-          var filename = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.base().filename();
-          _utils_download__WEBPACK_IMPORTED_MODULE_3__.Download.download(url, filename, type);
-        }
-      });
-      var api_url, api_url_temp;
-      $('body').on('click', '#bilibili_parse', function () {
-        _user__WEBPACK_IMPORTED_MODULE_7__.user.lazyInit(true); // init
-
-        var vb = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.base();
-        var _ref3 = [vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid()],
-            type = _ref3[0],
-            aid = _ref3[1],
-            p = _ref3[2],
-            cid = _ref3[3],
-            epid = _ref3[4];
-
-        var _video$get_quality = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.get_quality(),
-            q = _video$get_quality.q;
-
-        api_url = "".concat(_config__WEBPACK_IMPORTED_MODULE_6__.config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(_config__WEBPACK_IMPORTED_MODULE_6__.config.format, "&otype=json&_host=").concat(_config__WEBPACK_IMPORTED_MODULE_6__.config.host_key, "&_req=").concat(_config__WEBPACK_IMPORTED_MODULE_6__.config.request_type);
-        var _ref4 = [_store__WEBPACK_IMPORTED_MODULE_10__.store.get('auth_id'), _store__WEBPACK_IMPORTED_MODULE_10__.store.get('auth_sec')],
-            auth_id = _ref4[0],
-            auth_sec = _ref4[1];
-
-        if (_config__WEBPACK_IMPORTED_MODULE_6__.config.auth === '1' && auth_id && auth_sec) {
-          api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
-        }
-
-        if (api_url === api_url_temp && _config__WEBPACK_IMPORTED_MODULE_6__.config.request_type !== 'local') {
-          _ui_message__WEBPACK_IMPORTED_MODULE_5__.Message.miaow();
-          var url = $('#video_url').attr('href');
-          var url_2 = $('#video_url_2').attr('href');
-
-          if (url && url !== '#') {
-            $('#video_download').show();
-            _config__WEBPACK_IMPORTED_MODULE_6__.config.format === 'dash' && $('#video_download_2').show();
-
-            if (_user__WEBPACK_IMPORTED_MODULE_7__.user.needReplace() || vb.is_limited() || _config__WEBPACK_IMPORTED_MODULE_6__.config.replace_force === '1') {
-              !$('#bp_dplayer')[0] && _utils_player__WEBPACK_IMPORTED_MODULE_1__.player.replace_player(url, url_2);
-            }
-
-            if (_config__WEBPACK_IMPORTED_MODULE_6__.config.auto_download === '1') {
-              $('#video_download').click();
-            }
-          }
-
-          return;
-        }
-
-        $('#video_url').attr('href', '#');
-        $('#video_url_2').attr('href', '#');
-        api_url_temp = api_url;
-        _ui_message__WEBPACK_IMPORTED_MODULE_5__.Message.info('开始请求');
-        _utils_api__WEBPACK_IMPORTED_MODULE_0__.api.get_url(0, function (res) {
-          if (res && !res.code) {
-            res.times && _ui_message__WEBPACK_IMPORTED_MODULE_5__.Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
-
-            var _url = _config__WEBPACK_IMPORTED_MODULE_6__.config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://');
-
-            var _url_ = _config__WEBPACK_IMPORTED_MODULE_6__.config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#';
-
-            $('#video_url').attr('href', _url);
-            $('#video_download').show();
-
-            if (_config__WEBPACK_IMPORTED_MODULE_6__.config.format === 'dash') {
-              $('#video_url_2').attr('href', _url_);
-              $('#video_download_2').show();
-            }
-
-            if (_user__WEBPACK_IMPORTED_MODULE_7__.user.needReplace() || vb.is_limited() || _config__WEBPACK_IMPORTED_MODULE_6__.config.replace_force === '1') {
-              _utils_player__WEBPACK_IMPORTED_MODULE_1__.player.replace_player(_url, _url_);
-            }
-
-            if (_config__WEBPACK_IMPORTED_MODULE_6__.config.auto_download === '1') {
-              $('#video_download').click();
-            }
-          }
-        });
-      }); // part of check
-
-      $('body').on('click', 'a.router-link-active', function () {
-        if (this !== $('li[class="on"]').find('a')[0]) {
-          _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-        }
-      });
-      $('body').on('click', 'li.ep-item', function () {
-        _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-      });
-      $('body').on('click', 'button.bilibili-player-iconfont-next', function () {
-        _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-      });
-      var bili_video_tag = _utils_player__WEBPACK_IMPORTED_MODULE_1__.player.bili_video_tag();
-      !!$(bili_video_tag)[0] && ($(bili_video_tag)[0].onended = function () {
-        _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-      }); // 监听q
-
-      $('body').on('click', 'li.bui-select-item', function () {
-        _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-      });
-      setInterval(function () {
-        if (_check__WEBPACK_IMPORTED_MODULE_9__.check.q !== _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.get_quality().q) {
-          _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-        } else if (_utils_video__WEBPACK_IMPORTED_MODULE_2__.video.type() === 'cheese') {
-          // epid for cheese
-          if (_check__WEBPACK_IMPORTED_MODULE_9__.check.epid !== _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.base().epid()) {
-            _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-          }
-        }
-      }, 1000); // 监听aid
-
-      $('body').on('click', '.rec-list', function () {
-        _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-      });
-      $('body').on('click', '.bilibili-player-ending-panel-box-videos', function () {
-        _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-      }); // 定时检查 aid 和 cid
-
-      setInterval(function () {
-        var vb = _utils_video__WEBPACK_IMPORTED_MODULE_2__.video.base();
-
-        if (_check__WEBPACK_IMPORTED_MODULE_9__.check.aid !== vb.aid() || _check__WEBPACK_IMPORTED_MODULE_9__.check.cid !== vb.cid()) {
-          _check__WEBPACK_IMPORTED_MODULE_9__.check.refresh();
-        }
-      }, 3000);
-    }
-  }]);
-
-  return Main;
-}();
-
-/* harmony default export */ __webpack_exports__["default"] = (Main);
+module.exports = function (i) {
+  return i[1];
+};
 
 /***/ }),
 
-/***/ "./src/js/store.js":
-/*!*************************!*\
-  !*** ./src/js/store.js ***!
-  \*************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+/***/ "./node_modules/jszip/dist/jszip.min.js":
+/*!**********************************************!*\
+  !*** ./node_modules/jszip/dist/jszip.min.js ***!
+  \**********************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
+/*!
+
+JSZip v3.9.1 - A JavaScript class for generating and reading zip files
+<http://stuartk.com/jszip>
+
+(c) 2009-2016 Stuart Knightley <stuart [at] stuartk.com>
+Dual licenced under the MIT license or GPLv3. See https://raw.github.com/Stuk/jszip/master/LICENSE.markdown.
+
+JSZip uses the library pako released under the MIT license :
+https://github.com/nodeca/pako/blob/master/LICENSE
+*/
+
+!function(t){if(true)module.exports=t();else {}}(function(){return function s(a,o,h){function u(r,t){if(!o[r]){if(!a[r]){var e=undefined;if(!t&&e)return require(r,!0);if(l)return l(r,!0);var i=new Error("Cannot find module '"+r+"'");throw i.code="MODULE_NOT_FOUND",i}var n=o[r]={exports:{}};a[r][0].call(n.exports,function(t){var e=a[r][1][t];return u(e||t)},n,n.exports,s,a,o,h)}return o[r].exports}for(var l=undefined,t=0;t<h.length;t++)u(h[t]);return u}({1:[function(t,e,r){"use strict";var c=t("./utils"),d=t("./support"),p="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";r.encode=function(t){for(var e,r,i,n,s,a,o,h=[],u=0,l=t.length,f=l,d="string"!==c.getTypeOf(t);u<t.length;)f=l-u,i=d?(e=t[u++],r=u<l?t[u++]:0,u<l?t[u++]:0):(e=t.charCodeAt(u++),r=u<l?t.charCodeAt(u++):0,u<l?t.charCodeAt(u++):0),n=e>>2,s=(3&e)<<4|r>>4,a=1<f?(15&r)<<2|i>>6:64,o=2<f?63&i:64,h.push(p.charAt(n)+p.charAt(s)+p.charAt(a)+p.charAt(o));return h.join("")},r.decode=function(t){var e,r,i,n,s,a,o=0,h=0,u="data:";if(t.substr(0,u.length)===u)throw new Error("Invalid base64 input, it looks like a data url.");var l,f=3*(t=t.replace(/[^A-Za-z0-9\+\/\=]/g,"")).length/4;if(t.charAt(t.length-1)===p.charAt(64)&&f--,t.charAt(t.length-2)===p.charAt(64)&&f--,f%1!=0)throw new Error("Invalid base64 input, bad content length.");for(l=d.uint8array?new Uint8Array(0|f):new Array(0|f);o<t.length;)e=p.indexOf(t.charAt(o++))<<2|(n=p.indexOf(t.charAt(o++)))>>4,r=(15&n)<<4|(s=p.indexOf(t.charAt(o++)))>>2,i=(3&s)<<6|(a=p.indexOf(t.charAt(o++))),l[h++]=e,64!==s&&(l[h++]=r),64!==a&&(l[h++]=i);return l}},{"./support":30,"./utils":32}],2:[function(t,e,r){"use strict";var i=t("./external"),n=t("./stream/DataWorker"),s=t("./stream/Crc32Probe"),a=t("./stream/DataLengthProbe");function o(t,e,r,i,n){this.compressedSize=t,this.uncompressedSize=e,this.crc32=r,this.compression=i,this.compressedContent=n}o.prototype={getContentWorker:function(){var t=new n(i.Promise.resolve(this.compressedContent)).pipe(this.compression.uncompressWorker()).pipe(new a("data_length")),e=this;return t.on("end",function(){if(this.streamInfo.data_length!==e.uncompressedSize)throw new Error("Bug : uncompressed data size mismatch")}),t},getCompressedWorker:function(){return new n(i.Promise.resolve(this.compressedContent)).withStreamInfo("compressedSize",this.compressedSize).withStreamInfo("uncompressedSize",this.uncompressedSize).withStreamInfo("crc32",this.crc32).withStreamInfo("compression",this.compression)}},o.createWorkerFrom=function(t,e,r){return t.pipe(new s).pipe(new a("uncompressedSize")).pipe(e.compressWorker(r)).pipe(new a("compressedSize")).withStreamInfo("compression",e)},e.exports=o},{"./external":6,"./stream/Crc32Probe":25,"./stream/DataLengthProbe":26,"./stream/DataWorker":27}],3:[function(t,e,r){"use strict";var i=t("./stream/GenericWorker");r.STORE={magic:"\0\0",compressWorker:function(t){return new i("STORE compression")},uncompressWorker:function(){return new i("STORE decompression")}},r.DEFLATE=t("./flate")},{"./flate":7,"./stream/GenericWorker":28}],4:[function(t,e,r){"use strict";var i=t("./utils");var o=function(){for(var t,e=[],r=0;r<256;r++){t=r;for(var i=0;i<8;i++)t=1&t?3988292384^t>>>1:t>>>1;e[r]=t}return e}();e.exports=function(t,e){return void 0!==t&&t.length?"string"!==i.getTypeOf(t)?function(t,e,r,i){var n=o,s=i+r;t^=-1;for(var a=i;a<s;a++)t=t>>>8^n[255&(t^e[a])];return-1^t}(0|e,t,t.length,0):function(t,e,r,i){var n=o,s=i+r;t^=-1;for(var a=i;a<s;a++)t=t>>>8^n[255&(t^e.charCodeAt(a))];return-1^t}(0|e,t,t.length,0):0}},{"./utils":32}],5:[function(t,e,r){"use strict";r.base64=!1,r.binary=!1,r.dir=!1,r.createFolders=!0,r.date=null,r.compression=null,r.compressionOptions=null,r.comment=null,r.unixPermissions=null,r.dosPermissions=null},{}],6:[function(t,e,r){"use strict";var i=null;i="undefined"!=typeof Promise?Promise:t("lie"),e.exports={Promise:i}},{lie:37}],7:[function(t,e,r){"use strict";var i="undefined"!=typeof Uint8Array&&"undefined"!=typeof Uint16Array&&"undefined"!=typeof Uint32Array,n=t("pako"),s=t("./utils"),a=t("./stream/GenericWorker"),o=i?"uint8array":"array";function h(t,e){a.call(this,"FlateWorker/"+t),this._pako=null,this._pakoAction=t,this._pakoOptions=e,this.meta={}}r.magic="\b\0",s.inherits(h,a),h.prototype.processChunk=function(t){this.meta=t.meta,null===this._pako&&this._createPako(),this._pako.push(s.transformTo(o,t.data),!1)},h.prototype.flush=function(){a.prototype.flush.call(this),null===this._pako&&this._createPako(),this._pako.push([],!0)},h.prototype.cleanUp=function(){a.prototype.cleanUp.call(this),this._pako=null},h.prototype._createPako=function(){this._pako=new n[this._pakoAction]({raw:!0,level:this._pakoOptions.level||-1});var e=this;this._pako.onData=function(t){e.push({data:t,meta:e.meta})}},r.compressWorker=function(t){return new h("Deflate",t)},r.uncompressWorker=function(){return new h("Inflate",{})}},{"./stream/GenericWorker":28,"./utils":32,pako:38}],8:[function(t,e,r){"use strict";function A(t,e){var r,i="";for(r=0;r<e;r++)i+=String.fromCharCode(255&t),t>>>=8;return i}function i(t,e,r,i,n,s){var a,o,h=t.file,u=t.compression,l=s!==O.utf8encode,f=I.transformTo("string",s(h.name)),d=I.transformTo("string",O.utf8encode(h.name)),c=h.comment,p=I.transformTo("string",s(c)),m=I.transformTo("string",O.utf8encode(c)),_=d.length!==h.name.length,g=m.length!==c.length,b="",v="",y="",w=h.dir,k=h.date,x={crc32:0,compressedSize:0,uncompressedSize:0};e&&!r||(x.crc32=t.crc32,x.compressedSize=t.compressedSize,x.uncompressedSize=t.uncompressedSize);var S=0;e&&(S|=8),l||!_&&!g||(S|=2048);var z=0,C=0;w&&(z|=16),"UNIX"===n?(C=798,z|=function(t,e){var r=t;return t||(r=e?16893:33204),(65535&r)<<16}(h.unixPermissions,w)):(C=20,z|=function(t){return 63&(t||0)}(h.dosPermissions)),a=k.getUTCHours(),a<<=6,a|=k.getUTCMinutes(),a<<=5,a|=k.getUTCSeconds()/2,o=k.getUTCFullYear()-1980,o<<=4,o|=k.getUTCMonth()+1,o<<=5,o|=k.getUTCDate(),_&&(v=A(1,1)+A(B(f),4)+d,b+="up"+A(v.length,2)+v),g&&(y=A(1,1)+A(B(p),4)+m,b+="uc"+A(y.length,2)+y);var E="";return E+="\n\0",E+=A(S,2),E+=u.magic,E+=A(a,2),E+=A(o,2),E+=A(x.crc32,4),E+=A(x.compressedSize,4),E+=A(x.uncompressedSize,4),E+=A(f.length,2),E+=A(b.length,2),{fileRecord:R.LOCAL_FILE_HEADER+E+f+b,dirRecord:R.CENTRAL_FILE_HEADER+A(C,2)+E+A(p.length,2)+"\0\0\0\0"+A(z,4)+A(i,4)+f+b+p}}var I=t("../utils"),n=t("../stream/GenericWorker"),O=t("../utf8"),B=t("../crc32"),R=t("../signature");function s(t,e,r,i){n.call(this,"ZipFileWorker"),this.bytesWritten=0,this.zipComment=e,this.zipPlatform=r,this.encodeFileName=i,this.streamFiles=t,this.accumulate=!1,this.contentBuffer=[],this.dirRecords=[],this.currentSourceOffset=0,this.entriesCount=0,this.currentFile=null,this._sources=[]}I.inherits(s,n),s.prototype.push=function(t){var e=t.meta.percent||0,r=this.entriesCount,i=this._sources.length;this.accumulate?this.contentBuffer.push(t):(this.bytesWritten+=t.data.length,n.prototype.push.call(this,{data:t.data,meta:{currentFile:this.currentFile,percent:r?(e+100*(r-i-1))/r:100}}))},s.prototype.openedSource=function(t){this.currentSourceOffset=this.bytesWritten,this.currentFile=t.file.name;var e=this.streamFiles&&!t.file.dir;if(e){var r=i(t,e,!1,this.currentSourceOffset,this.zipPlatform,this.encodeFileName);this.push({data:r.fileRecord,meta:{percent:0}})}else this.accumulate=!0},s.prototype.closedSource=function(t){this.accumulate=!1;var e=this.streamFiles&&!t.file.dir,r=i(t,e,!0,this.currentSourceOffset,this.zipPlatform,this.encodeFileName);if(this.dirRecords.push(r.dirRecord),e)this.push({data:function(t){return R.DATA_DESCRIPTOR+A(t.crc32,4)+A(t.compressedSize,4)+A(t.uncompressedSize,4)}(t),meta:{percent:100}});else for(this.push({data:r.fileRecord,meta:{percent:0}});this.contentBuffer.length;)this.push(this.contentBuffer.shift());this.currentFile=null},s.prototype.flush=function(){for(var t=this.bytesWritten,e=0;e<this.dirRecords.length;e++)this.push({data:this.dirRecords[e],meta:{percent:100}});var r=this.bytesWritten-t,i=function(t,e,r,i,n){var s=I.transformTo("string",n(i));return R.CENTRAL_DIRECTORY_END+"\0\0\0\0"+A(t,2)+A(t,2)+A(e,4)+A(r,4)+A(s.length,2)+s}(this.dirRecords.length,r,t,this.zipComment,this.encodeFileName);this.push({data:i,meta:{percent:100}})},s.prototype.prepareNextSource=function(){this.previous=this._sources.shift(),this.openedSource(this.previous.streamInfo),this.isPaused?this.previous.pause():this.previous.resume()},s.prototype.registerPrevious=function(t){this._sources.push(t);var e=this;return t.on("data",function(t){e.processChunk(t)}),t.on("end",function(){e.closedSource(e.previous.streamInfo),e._sources.length?e.prepareNextSource():e.end()}),t.on("error",function(t){e.error(t)}),this},s.prototype.resume=function(){return!!n.prototype.resume.call(this)&&(!this.previous&&this._sources.length?(this.prepareNextSource(),!0):this.previous||this._sources.length||this.generatedError?void 0:(this.end(),!0))},s.prototype.error=function(t){var e=this._sources;if(!n.prototype.error.call(this,t))return!1;for(var r=0;r<e.length;r++)try{e[r].error(t)}catch(t){}return!0},s.prototype.lock=function(){n.prototype.lock.call(this);for(var t=this._sources,e=0;e<t.length;e++)t[e].lock()},e.exports=s},{"../crc32":4,"../signature":23,"../stream/GenericWorker":28,"../utf8":31,"../utils":32}],9:[function(t,e,r){"use strict";var u=t("../compressions"),i=t("./ZipFileWorker");r.generateWorker=function(t,a,e){var o=new i(a.streamFiles,e,a.platform,a.encodeFileName),h=0;try{t.forEach(function(t,e){h++;var r=function(t,e){var r=t||e,i=u[r];if(!i)throw new Error(r+" is not a valid compression method !");return i}(e.options.compression,a.compression),i=e.options.compressionOptions||a.compressionOptions||{},n=e.dir,s=e.date;e._compressWorker(r,i).withStreamInfo("file",{name:t,dir:n,date:s,comment:e.comment||"",unixPermissions:e.unixPermissions,dosPermissions:e.dosPermissions}).pipe(o)}),o.entriesCount=h}catch(t){o.error(t)}return o}},{"../compressions":3,"./ZipFileWorker":8}],10:[function(t,e,r){"use strict";function i(){if(!(this instanceof i))return new i;if(arguments.length)throw new Error("The constructor with parameters has been removed in JSZip 3.0, please check the upgrade guide.");this.files=Object.create(null),this.comment=null,this.root="",this.clone=function(){var t=new i;for(var e in this)"function"!=typeof this[e]&&(t[e]=this[e]);return t}}(i.prototype=t("./object")).loadAsync=t("./load"),i.support=t("./support"),i.defaults=t("./defaults"),i.version="3.9.1",i.loadAsync=function(t,e){return(new i).loadAsync(t,e)},i.external=t("./external"),e.exports=i},{"./defaults":5,"./external":6,"./load":11,"./object":15,"./support":30}],11:[function(t,e,r){"use strict";var u=t("./utils"),n=t("./external"),i=t("./utf8"),s=t("./zipEntries"),a=t("./stream/Crc32Probe"),l=t("./nodejsUtils");function f(i){return new n.Promise(function(t,e){var r=i.decompressed.getContentWorker().pipe(new a);r.on("error",function(t){e(t)}).on("end",function(){r.streamInfo.crc32!==i.decompressed.crc32?e(new Error("Corrupted zip : CRC32 mismatch")):t()}).resume()})}e.exports=function(t,o){var h=this;return o=u.extend(o||{},{base64:!1,checkCRC32:!1,optimizedBinaryString:!1,createFolders:!1,decodeFileName:i.utf8decode}),l.isNode&&l.isStream(t)?n.Promise.reject(new Error("JSZip can't accept a stream when loading a zip file.")):u.prepareContent("the loaded zip file",t,!0,o.optimizedBinaryString,o.base64).then(function(t){var e=new s(o);return e.load(t),e}).then(function(t){var e=[n.Promise.resolve(t)],r=t.files;if(o.checkCRC32)for(var i=0;i<r.length;i++)e.push(f(r[i]));return n.Promise.all(e)}).then(function(t){for(var e=t.shift(),r=e.files,i=0;i<r.length;i++){var n=r[i],s=n.fileNameStr,a=u.resolve(n.fileNameStr);h.file(a,n.decompressed,{binary:!0,optimizedBinaryString:!0,date:n.date,dir:n.dir,comment:n.fileCommentStr.length?n.fileCommentStr:null,unixPermissions:n.unixPermissions,dosPermissions:n.dosPermissions,createFolders:o.createFolders}),n.dir||(h.file(a).unsafeOriginalName=s)}return e.zipComment.length&&(h.comment=e.zipComment),h})}},{"./external":6,"./nodejsUtils":14,"./stream/Crc32Probe":25,"./utf8":31,"./utils":32,"./zipEntries":33}],12:[function(t,e,r){"use strict";var i=t("../utils"),n=t("../stream/GenericWorker");function s(t,e){n.call(this,"Nodejs stream input adapter for "+t),this._upstreamEnded=!1,this._bindStream(e)}i.inherits(s,n),s.prototype._bindStream=function(t){var e=this;(this._stream=t).pause(),t.on("data",function(t){e.push({data:t,meta:{percent:0}})}).on("error",function(t){e.isPaused?this.generatedError=t:e.error(t)}).on("end",function(){e.isPaused?e._upstreamEnded=!0:e.end()})},s.prototype.pause=function(){return!!n.prototype.pause.call(this)&&(this._stream.pause(),!0)},s.prototype.resume=function(){return!!n.prototype.resume.call(this)&&(this._upstreamEnded?this.end():this._stream.resume(),!0)},e.exports=s},{"../stream/GenericWorker":28,"../utils":32}],13:[function(t,e,r){"use strict";var n=t("readable-stream").Readable;function i(t,e,r){n.call(this,e),this._helper=t;var i=this;t.on("data",function(t,e){i.push(t)||i._helper.pause(),r&&r(e)}).on("error",function(t){i.emit("error",t)}).on("end",function(){i.push(null)})}t("../utils").inherits(i,n),i.prototype._read=function(){this._helper.resume()},e.exports=i},{"../utils":32,"readable-stream":16}],14:[function(t,e,r){"use strict";e.exports={isNode:"undefined"!=typeof Buffer,newBufferFrom:function(t,e){if(Buffer.from&&Buffer.from!==Uint8Array.from)return Buffer.from(t,e);if("number"==typeof t)throw new Error('The "data" argument must not be a number');return new Buffer(t,e)},allocBuffer:function(t){if(Buffer.alloc)return Buffer.alloc(t);var e=new Buffer(t);return e.fill(0),e},isBuffer:function(t){return Buffer.isBuffer(t)},isStream:function(t){return t&&"function"==typeof t.on&&"function"==typeof t.pause&&"function"==typeof t.resume}}},{}],15:[function(t,e,r){"use strict";function s(t,e,r){var i,n=u.getTypeOf(e),s=u.extend(r||{},f);s.date=s.date||new Date,null!==s.compression&&(s.compression=s.compression.toUpperCase()),"string"==typeof s.unixPermissions&&(s.unixPermissions=parseInt(s.unixPermissions,8)),s.unixPermissions&&16384&s.unixPermissions&&(s.dir=!0),s.dosPermissions&&16&s.dosPermissions&&(s.dir=!0),s.dir&&(t=g(t)),s.createFolders&&(i=_(t))&&b.call(this,i,!0);var a="string"===n&&!1===s.binary&&!1===s.base64;r&&void 0!==r.binary||(s.binary=!a),(e instanceof d&&0===e.uncompressedSize||s.dir||!e||0===e.length)&&(s.base64=!1,s.binary=!0,e="",s.compression="STORE",n="string");var o=null;o=e instanceof d||e instanceof l?e:p.isNode&&p.isStream(e)?new m(t,e):u.prepareContent(t,e,s.binary,s.optimizedBinaryString,s.base64);var h=new c(t,o,s);this.files[t]=h}var n=t("./utf8"),u=t("./utils"),l=t("./stream/GenericWorker"),a=t("./stream/StreamHelper"),f=t("./defaults"),d=t("./compressedObject"),c=t("./zipObject"),o=t("./generate"),p=t("./nodejsUtils"),m=t("./nodejs/NodejsStreamInputAdapter"),_=function(t){"/"===t.slice(-1)&&(t=t.substring(0,t.length-1));var e=t.lastIndexOf("/");return 0<e?t.substring(0,e):""},g=function(t){return"/"!==t.slice(-1)&&(t+="/"),t},b=function(t,e){return e=void 0!==e?e:f.createFolders,t=g(t),this.files[t]||s.call(this,t,null,{dir:!0,createFolders:e}),this.files[t]};function h(t){return"[object RegExp]"===Object.prototype.toString.call(t)}var i={load:function(){throw new Error("This method has been removed in JSZip 3.0, please check the upgrade guide.")},forEach:function(t){var e,r,i;for(e in this.files)i=this.files[e],(r=e.slice(this.root.length,e.length))&&e.slice(0,this.root.length)===this.root&&t(r,i)},filter:function(r){var i=[];return this.forEach(function(t,e){r(t,e)&&i.push(e)}),i},file:function(t,e,r){if(1!==arguments.length)return t=this.root+t,s.call(this,t,e,r),this;if(h(t)){var i=t;return this.filter(function(t,e){return!e.dir&&i.test(t)})}var n=this.files[this.root+t];return n&&!n.dir?n:null},folder:function(r){if(!r)return this;if(h(r))return this.filter(function(t,e){return e.dir&&r.test(t)});var t=this.root+r,e=b.call(this,t),i=this.clone();return i.root=e.name,i},remove:function(r){r=this.root+r;var t=this.files[r];if(t||("/"!==r.slice(-1)&&(r+="/"),t=this.files[r]),t&&!t.dir)delete this.files[r];else for(var e=this.filter(function(t,e){return e.name.slice(0,r.length)===r}),i=0;i<e.length;i++)delete this.files[e[i].name];return this},generate:function(t){throw new Error("This method has been removed in JSZip 3.0, please check the upgrade guide.")},generateInternalStream:function(t){var e,r={};try{if((r=u.extend(t||{},{streamFiles:!1,compression:"STORE",compressionOptions:null,type:"",platform:"DOS",comment:null,mimeType:"application/zip",encodeFileName:n.utf8encode})).type=r.type.toLowerCase(),r.compression=r.compression.toUpperCase(),"binarystring"===r.type&&(r.type="string"),!r.type)throw new Error("No output type specified.");u.checkSupport(r.type),"darwin"!==r.platform&&"freebsd"!==r.platform&&"linux"!==r.platform&&"sunos"!==r.platform||(r.platform="UNIX"),"win32"===r.platform&&(r.platform="DOS");var i=r.comment||this.comment||"";e=o.generateWorker(this,r,i)}catch(t){(e=new l("error")).error(t)}return new a(e,r.type||"string",r.mimeType)},generateAsync:function(t,e){return this.generateInternalStream(t).accumulate(e)},generateNodeStream:function(t,e){return(t=t||{}).type||(t.type="nodebuffer"),this.generateInternalStream(t).toNodejsStream(e)}};e.exports=i},{"./compressedObject":2,"./defaults":5,"./generate":9,"./nodejs/NodejsStreamInputAdapter":12,"./nodejsUtils":14,"./stream/GenericWorker":28,"./stream/StreamHelper":29,"./utf8":31,"./utils":32,"./zipObject":35}],16:[function(t,e,r){e.exports=t("stream")},{stream:void 0}],17:[function(t,e,r){"use strict";var i=t("./DataReader");function n(t){i.call(this,t);for(var e=0;e<this.data.length;e++)t[e]=255&t[e]}t("../utils").inherits(n,i),n.prototype.byteAt=function(t){return this.data[this.zero+t]},n.prototype.lastIndexOfSignature=function(t){for(var e=t.charCodeAt(0),r=t.charCodeAt(1),i=t.charCodeAt(2),n=t.charCodeAt(3),s=this.length-4;0<=s;--s)if(this.data[s]===e&&this.data[s+1]===r&&this.data[s+2]===i&&this.data[s+3]===n)return s-this.zero;return-1},n.prototype.readAndCheckSignature=function(t){var e=t.charCodeAt(0),r=t.charCodeAt(1),i=t.charCodeAt(2),n=t.charCodeAt(3),s=this.readData(4);return e===s[0]&&r===s[1]&&i===s[2]&&n===s[3]},n.prototype.readData=function(t){if(this.checkOffset(t),0===t)return[];var e=this.data.slice(this.zero+this.index,this.zero+this.index+t);return this.index+=t,e},e.exports=n},{"../utils":32,"./DataReader":18}],18:[function(t,e,r){"use strict";var i=t("../utils");function n(t){this.data=t,this.length=t.length,this.index=0,this.zero=0}n.prototype={checkOffset:function(t){this.checkIndex(this.index+t)},checkIndex:function(t){if(this.length<this.zero+t||t<0)throw new Error("End of data reached (data length = "+this.length+", asked index = "+t+"). Corrupted zip ?")},setIndex:function(t){this.checkIndex(t),this.index=t},skip:function(t){this.setIndex(this.index+t)},byteAt:function(t){},readInt:function(t){var e,r=0;for(this.checkOffset(t),e=this.index+t-1;e>=this.index;e--)r=(r<<8)+this.byteAt(e);return this.index+=t,r},readString:function(t){return i.transformTo("string",this.readData(t))},readData:function(t){},lastIndexOfSignature:function(t){},readAndCheckSignature:function(t){},readDate:function(){var t=this.readInt(4);return new Date(Date.UTC(1980+(t>>25&127),(t>>21&15)-1,t>>16&31,t>>11&31,t>>5&63,(31&t)<<1))}},e.exports=n},{"../utils":32}],19:[function(t,e,r){"use strict";var i=t("./Uint8ArrayReader");function n(t){i.call(this,t)}t("../utils").inherits(n,i),n.prototype.readData=function(t){this.checkOffset(t);var e=this.data.slice(this.zero+this.index,this.zero+this.index+t);return this.index+=t,e},e.exports=n},{"../utils":32,"./Uint8ArrayReader":21}],20:[function(t,e,r){"use strict";var i=t("./DataReader");function n(t){i.call(this,t)}t("../utils").inherits(n,i),n.prototype.byteAt=function(t){return this.data.charCodeAt(this.zero+t)},n.prototype.lastIndexOfSignature=function(t){return this.data.lastIndexOf(t)-this.zero},n.prototype.readAndCheckSignature=function(t){return t===this.readData(4)},n.prototype.readData=function(t){this.checkOffset(t);var e=this.data.slice(this.zero+this.index,this.zero+this.index+t);return this.index+=t,e},e.exports=n},{"../utils":32,"./DataReader":18}],21:[function(t,e,r){"use strict";var i=t("./ArrayReader");function n(t){i.call(this,t)}t("../utils").inherits(n,i),n.prototype.readData=function(t){if(this.checkOffset(t),0===t)return new Uint8Array(0);var e=this.data.subarray(this.zero+this.index,this.zero+this.index+t);return this.index+=t,e},e.exports=n},{"../utils":32,"./ArrayReader":17}],22:[function(t,e,r){"use strict";var i=t("../utils"),n=t("../support"),s=t("./ArrayReader"),a=t("./StringReader"),o=t("./NodeBufferReader"),h=t("./Uint8ArrayReader");e.exports=function(t){var e=i.getTypeOf(t);return i.checkSupport(e),"string"!==e||n.uint8array?"nodebuffer"===e?new o(t):n.uint8array?new h(i.transformTo("uint8array",t)):new s(i.transformTo("array",t)):new a(t)}},{"../support":30,"../utils":32,"./ArrayReader":17,"./NodeBufferReader":19,"./StringReader":20,"./Uint8ArrayReader":21}],23:[function(t,e,r){"use strict";r.LOCAL_FILE_HEADER="PK",r.CENTRAL_FILE_HEADER="PK",r.CENTRAL_DIRECTORY_END="PK",r.ZIP64_CENTRAL_DIRECTORY_LOCATOR="PK",r.ZIP64_CENTRAL_DIRECTORY_END="PK",r.DATA_DESCRIPTOR="PK\b"},{}],24:[function(t,e,r){"use strict";var i=t("./GenericWorker"),n=t("../utils");function s(t){i.call(this,"ConvertWorker to "+t),this.destType=t}n.inherits(s,i),s.prototype.processChunk=function(t){this.push({data:n.transformTo(this.destType,t.data),meta:t.meta})},e.exports=s},{"../utils":32,"./GenericWorker":28}],25:[function(t,e,r){"use strict";var i=t("./GenericWorker"),n=t("../crc32");function s(){i.call(this,"Crc32Probe"),this.withStreamInfo("crc32",0)}t("../utils").inherits(s,i),s.prototype.processChunk=function(t){this.streamInfo.crc32=n(t.data,this.streamInfo.crc32||0),this.push(t)},e.exports=s},{"../crc32":4,"../utils":32,"./GenericWorker":28}],26:[function(t,e,r){"use strict";var i=t("../utils"),n=t("./GenericWorker");function s(t){n.call(this,"DataLengthProbe for "+t),this.propName=t,this.withStreamInfo(t,0)}i.inherits(s,n),s.prototype.processChunk=function(t){if(t){var e=this.streamInfo[this.propName]||0;this.streamInfo[this.propName]=e+t.data.length}n.prototype.processChunk.call(this,t)},e.exports=s},{"../utils":32,"./GenericWorker":28}],27:[function(t,e,r){"use strict";var i=t("../utils"),n=t("./GenericWorker");function s(t){n.call(this,"DataWorker");var e=this;this.dataIsReady=!1,this.index=0,this.max=0,this.data=null,this.type="",this._tickScheduled=!1,t.then(function(t){e.dataIsReady=!0,e.data=t,e.max=t&&t.length||0,e.type=i.getTypeOf(t),e.isPaused||e._tickAndRepeat()},function(t){e.error(t)})}i.inherits(s,n),s.prototype.cleanUp=function(){n.prototype.cleanUp.call(this),this.data=null},s.prototype.resume=function(){return!!n.prototype.resume.call(this)&&(!this._tickScheduled&&this.dataIsReady&&(this._tickScheduled=!0,i.delay(this._tickAndRepeat,[],this)),!0)},s.prototype._tickAndRepeat=function(){this._tickScheduled=!1,this.isPaused||this.isFinished||(this._tick(),this.isFinished||(i.delay(this._tickAndRepeat,[],this),this._tickScheduled=!0))},s.prototype._tick=function(){if(this.isPaused||this.isFinished)return!1;var t=null,e=Math.min(this.max,this.index+16384);if(this.index>=this.max)return this.end();switch(this.type){case"string":t=this.data.substring(this.index,e);break;case"uint8array":t=this.data.subarray(this.index,e);break;case"array":case"nodebuffer":t=this.data.slice(this.index,e)}return this.index=e,this.push({data:t,meta:{percent:this.max?this.index/this.max*100:0}})},e.exports=s},{"../utils":32,"./GenericWorker":28}],28:[function(t,e,r){"use strict";function i(t){this.name=t||"default",this.streamInfo={},this.generatedError=null,this.extraStreamInfo={},this.isPaused=!0,this.isFinished=!1,this.isLocked=!1,this._listeners={data:[],end:[],error:[]},this.previous=null}i.prototype={push:function(t){this.emit("data",t)},end:function(){if(this.isFinished)return!1;this.flush();try{this.emit("end"),this.cleanUp(),this.isFinished=!0}catch(t){this.emit("error",t)}return!0},error:function(t){return!this.isFinished&&(this.isPaused?this.generatedError=t:(this.isFinished=!0,this.emit("error",t),this.previous&&this.previous.error(t),this.cleanUp()),!0)},on:function(t,e){return this._listeners[t].push(e),this},cleanUp:function(){this.streamInfo=this.generatedError=this.extraStreamInfo=null,this._listeners=[]},emit:function(t,e){if(this._listeners[t])for(var r=0;r<this._listeners[t].length;r++)this._listeners[t][r].call(this,e)},pipe:function(t){return t.registerPrevious(this)},registerPrevious:function(t){if(this.isLocked)throw new Error("The stream '"+this+"' has already been used.");this.streamInfo=t.streamInfo,this.mergeStreamInfo(),this.previous=t;var e=this;return t.on("data",function(t){e.processChunk(t)}),t.on("end",function(){e.end()}),t.on("error",function(t){e.error(t)}),this},pause:function(){return!this.isPaused&&!this.isFinished&&(this.isPaused=!0,this.previous&&this.previous.pause(),!0)},resume:function(){if(!this.isPaused||this.isFinished)return!1;var t=this.isPaused=!1;return this.generatedError&&(this.error(this.generatedError),t=!0),this.previous&&this.previous.resume(),!t},flush:function(){},processChunk:function(t){this.push(t)},withStreamInfo:function(t,e){return this.extraStreamInfo[t]=e,this.mergeStreamInfo(),this},mergeStreamInfo:function(){for(var t in this.extraStreamInfo)this.extraStreamInfo.hasOwnProperty(t)&&(this.streamInfo[t]=this.extraStreamInfo[t])},lock:function(){if(this.isLocked)throw new Error("The stream '"+this+"' has already been used.");this.isLocked=!0,this.previous&&this.previous.lock()},toString:function(){var t="Worker "+this.name;return this.previous?this.previous+" -> "+t:t}},e.exports=i},{}],29:[function(t,e,r){"use strict";var h=t("../utils"),n=t("./ConvertWorker"),s=t("./GenericWorker"),u=t("../base64"),i=t("../support"),a=t("../external"),o=null;if(i.nodestream)try{o=t("../nodejs/NodejsStreamOutputAdapter")}catch(t){}function l(t,o){return new a.Promise(function(e,r){var i=[],n=t._internalType,s=t._outputType,a=t._mimeType;t.on("data",function(t,e){i.push(t),o&&o(e)}).on("error",function(t){i=[],r(t)}).on("end",function(){try{var t=function(t,e,r){switch(t){case"blob":return h.newBlob(h.transformTo("arraybuffer",e),r);case"base64":return u.encode(e);default:return h.transformTo(t,e)}}(s,function(t,e){var r,i=0,n=null,s=0;for(r=0;r<e.length;r++)s+=e[r].length;switch(t){case"string":return e.join("");case"array":return Array.prototype.concat.apply([],e);case"uint8array":for(n=new Uint8Array(s),r=0;r<e.length;r++)n.set(e[r],i),i+=e[r].length;return n;case"nodebuffer":return Buffer.concat(e);default:throw new Error("concat : unsupported type '"+t+"'")}}(n,i),a);e(t)}catch(t){r(t)}i=[]}).resume()})}function f(t,e,r){var i=e;switch(e){case"blob":case"arraybuffer":i="uint8array";break;case"base64":i="string"}try{this._internalType=i,this._outputType=e,this._mimeType=r,h.checkSupport(i),this._worker=t.pipe(new n(i)),t.lock()}catch(t){this._worker=new s("error"),this._worker.error(t)}}f.prototype={accumulate:function(t){return l(this,t)},on:function(t,e){var r=this;return"data"===t?this._worker.on(t,function(t){e.call(r,t.data,t.meta)}):this._worker.on(t,function(){h.delay(e,arguments,r)}),this},resume:function(){return h.delay(this._worker.resume,[],this._worker),this},pause:function(){return this._worker.pause(),this},toNodejsStream:function(t){if(h.checkSupport("nodestream"),"nodebuffer"!==this._outputType)throw new Error(this._outputType+" is not supported by this method");return new o(this,{objectMode:"nodebuffer"!==this._outputType},t)}},e.exports=f},{"../base64":1,"../external":6,"../nodejs/NodejsStreamOutputAdapter":13,"../support":30,"../utils":32,"./ConvertWorker":24,"./GenericWorker":28}],30:[function(t,e,r){"use strict";if(r.base64=!0,r.array=!0,r.string=!0,r.arraybuffer="undefined"!=typeof ArrayBuffer&&"undefined"!=typeof Uint8Array,r.nodebuffer="undefined"!=typeof Buffer,r.uint8array="undefined"!=typeof Uint8Array,"undefined"==typeof ArrayBuffer)r.blob=!1;else{var i=new ArrayBuffer(0);try{r.blob=0===new Blob([i],{type:"application/zip"}).size}catch(t){try{var n=new(self.BlobBuilder||self.WebKitBlobBuilder||self.MozBlobBuilder||self.MSBlobBuilder);n.append(i),r.blob=0===n.getBlob("application/zip").size}catch(t){r.blob=!1}}}try{r.nodestream=!!t("readable-stream").Readable}catch(t){r.nodestream=!1}},{"readable-stream":16}],31:[function(t,e,s){"use strict";for(var o=t("./utils"),h=t("./support"),r=t("./nodejsUtils"),i=t("./stream/GenericWorker"),u=new Array(256),n=0;n<256;n++)u[n]=252<=n?6:248<=n?5:240<=n?4:224<=n?3:192<=n?2:1;u[254]=u[254]=1;function a(){i.call(this,"utf-8 decode"),this.leftOver=null}function l(){i.call(this,"utf-8 encode")}s.utf8encode=function(t){return h.nodebuffer?r.newBufferFrom(t,"utf-8"):function(t){var e,r,i,n,s,a=t.length,o=0;for(n=0;n<a;n++)55296==(64512&(r=t.charCodeAt(n)))&&n+1<a&&56320==(64512&(i=t.charCodeAt(n+1)))&&(r=65536+(r-55296<<10)+(i-56320),n++),o+=r<128?1:r<2048?2:r<65536?3:4;for(e=h.uint8array?new Uint8Array(o):new Array(o),n=s=0;s<o;n++)55296==(64512&(r=t.charCodeAt(n)))&&n+1<a&&56320==(64512&(i=t.charCodeAt(n+1)))&&(r=65536+(r-55296<<10)+(i-56320),n++),r<128?e[s++]=r:(r<2048?e[s++]=192|r>>>6:(r<65536?e[s++]=224|r>>>12:(e[s++]=240|r>>>18,e[s++]=128|r>>>12&63),e[s++]=128|r>>>6&63),e[s++]=128|63&r);return e}(t)},s.utf8decode=function(t){return h.nodebuffer?o.transformTo("nodebuffer",t).toString("utf-8"):function(t){var e,r,i,n,s=t.length,a=new Array(2*s);for(e=r=0;e<s;)if((i=t[e++])<128)a[r++]=i;else if(4<(n=u[i]))a[r++]=65533,e+=n-1;else{for(i&=2===n?31:3===n?15:7;1<n&&e<s;)i=i<<6|63&t[e++],n--;1<n?a[r++]=65533:i<65536?a[r++]=i:(i-=65536,a[r++]=55296|i>>10&1023,a[r++]=56320|1023&i)}return a.length!==r&&(a.subarray?a=a.subarray(0,r):a.length=r),o.applyFromCharCode(a)}(t=o.transformTo(h.uint8array?"uint8array":"array",t))},o.inherits(a,i),a.prototype.processChunk=function(t){var e=o.transformTo(h.uint8array?"uint8array":"array",t.data);if(this.leftOver&&this.leftOver.length){if(h.uint8array){var r=e;(e=new Uint8Array(r.length+this.leftOver.length)).set(this.leftOver,0),e.set(r,this.leftOver.length)}else e=this.leftOver.concat(e);this.leftOver=null}var i=function(t,e){var r;for((e=e||t.length)>t.length&&(e=t.length),r=e-1;0<=r&&128==(192&t[r]);)r--;return r<0?e:0===r?e:r+u[t[r]]>e?r:e}(e),n=e;i!==e.length&&(h.uint8array?(n=e.subarray(0,i),this.leftOver=e.subarray(i,e.length)):(n=e.slice(0,i),this.leftOver=e.slice(i,e.length))),this.push({data:s.utf8decode(n),meta:t.meta})},a.prototype.flush=function(){this.leftOver&&this.leftOver.length&&(this.push({data:s.utf8decode(this.leftOver),meta:{}}),this.leftOver=null)},s.Utf8DecodeWorker=a,o.inherits(l,i),l.prototype.processChunk=function(t){this.push({data:s.utf8encode(t.data),meta:t.meta})},s.Utf8EncodeWorker=l},{"./nodejsUtils":14,"./stream/GenericWorker":28,"./support":30,"./utils":32}],32:[function(t,e,a){"use strict";var o=t("./support"),h=t("./base64"),r=t("./nodejsUtils"),i=t("set-immediate-shim"),u=t("./external");function n(t){return t}function l(t,e){for(var r=0;r<t.length;++r)e[r]=255&t.charCodeAt(r);return e}a.newBlob=function(e,r){a.checkSupport("blob");try{return new Blob([e],{type:r})}catch(t){try{var i=new(self.BlobBuilder||self.WebKitBlobBuilder||self.MozBlobBuilder||self.MSBlobBuilder);return i.append(e),i.getBlob(r)}catch(t){throw new Error("Bug : can't construct the Blob.")}}};var s={stringifyByChunk:function(t,e,r){var i=[],n=0,s=t.length;if(s<=r)return String.fromCharCode.apply(null,t);for(;n<s;)"array"===e||"nodebuffer"===e?i.push(String.fromCharCode.apply(null,t.slice(n,Math.min(n+r,s)))):i.push(String.fromCharCode.apply(null,t.subarray(n,Math.min(n+r,s)))),n+=r;return i.join("")},stringifyByChar:function(t){for(var e="",r=0;r<t.length;r++)e+=String.fromCharCode(t[r]);return e},applyCanBeUsed:{uint8array:function(){try{return o.uint8array&&1===String.fromCharCode.apply(null,new Uint8Array(1)).length}catch(t){return!1}}(),nodebuffer:function(){try{return o.nodebuffer&&1===String.fromCharCode.apply(null,r.allocBuffer(1)).length}catch(t){return!1}}()}};function f(t){var e=65536,r=a.getTypeOf(t),i=!0;if("uint8array"===r?i=s.applyCanBeUsed.uint8array:"nodebuffer"===r&&(i=s.applyCanBeUsed.nodebuffer),i)for(;1<e;)try{return s.stringifyByChunk(t,r,e)}catch(t){e=Math.floor(e/2)}return s.stringifyByChar(t)}function d(t,e){for(var r=0;r<t.length;r++)e[r]=t[r];return e}a.applyFromCharCode=f;var c={};c.string={string:n,array:function(t){return l(t,new Array(t.length))},arraybuffer:function(t){return c.string.uint8array(t).buffer},uint8array:function(t){return l(t,new Uint8Array(t.length))},nodebuffer:function(t){return l(t,r.allocBuffer(t.length))}},c.array={string:f,array:n,arraybuffer:function(t){return new Uint8Array(t).buffer},uint8array:function(t){return new Uint8Array(t)},nodebuffer:function(t){return r.newBufferFrom(t)}},c.arraybuffer={string:function(t){return f(new Uint8Array(t))},array:function(t){return d(new Uint8Array(t),new Array(t.byteLength))},arraybuffer:n,uint8array:function(t){return new Uint8Array(t)},nodebuffer:function(t){return r.newBufferFrom(new Uint8Array(t))}},c.uint8array={string:f,array:function(t){return d(t,new Array(t.length))},arraybuffer:function(t){return t.buffer},uint8array:n,nodebuffer:function(t){return r.newBufferFrom(t)}},c.nodebuffer={string:f,array:function(t){return d(t,new Array(t.length))},arraybuffer:function(t){return c.nodebuffer.uint8array(t).buffer},uint8array:function(t){return d(t,new Uint8Array(t.length))},nodebuffer:n},a.transformTo=function(t,e){if(e=e||"",!t)return e;a.checkSupport(t);var r=a.getTypeOf(e);return c[r][t](e)},a.resolve=function(t){for(var e=t.split("/"),r=[],i=0;i<e.length;i++){var n=e[i];"."===n||""===n&&0!==i&&i!==e.length-1||(".."===n?r.pop():r.push(n))}return r.join("/")},a.getTypeOf=function(t){return"string"==typeof t?"string":"[object Array]"===Object.prototype.toString.call(t)?"array":o.nodebuffer&&r.isBuffer(t)?"nodebuffer":o.uint8array&&t instanceof Uint8Array?"uint8array":o.arraybuffer&&t instanceof ArrayBuffer?"arraybuffer":void 0},a.checkSupport=function(t){if(!o[t.toLowerCase()])throw new Error(t+" is not supported by this platform")},a.MAX_VALUE_16BITS=65535,a.MAX_VALUE_32BITS=-1,a.pretty=function(t){var e,r,i="";for(r=0;r<(t||"").length;r++)i+="\\x"+((e=t.charCodeAt(r))<16?"0":"")+e.toString(16).toUpperCase();return i},a.delay=function(t,e,r){i(function(){t.apply(r||null,e||[])})},a.inherits=function(t,e){function r(){}r.prototype=e.prototype,t.prototype=new r},a.extend=function(){var t,e,r={};for(t=0;t<arguments.length;t++)for(e in arguments[t])arguments[t].hasOwnProperty(e)&&void 0===r[e]&&(r[e]=arguments[t][e]);return r},a.prepareContent=function(r,t,i,n,s){return u.Promise.resolve(t).then(function(i){return o.blob&&(i instanceof Blob||-1!==["[object File]","[object Blob]"].indexOf(Object.prototype.toString.call(i)))&&"undefined"!=typeof FileReader?new u.Promise(function(e,r){var t=new FileReader;t.onload=function(t){e(t.target.result)},t.onerror=function(t){r(t.target.error)},t.readAsArrayBuffer(i)}):i}).then(function(t){var e=a.getTypeOf(t);return e?("arraybuffer"===e?t=a.transformTo("uint8array",t):"string"===e&&(s?t=h.decode(t):i&&!0!==n&&(t=function(t){return l(t,o.uint8array?new Uint8Array(t.length):new Array(t.length))}(t))),t):u.Promise.reject(new Error("Can't read the data of '"+r+"'. Is it in a supported JavaScript type (String, Blob, ArrayBuffer, etc) ?"))})}},{"./base64":1,"./external":6,"./nodejsUtils":14,"./support":30,"set-immediate-shim":54}],33:[function(t,e,r){"use strict";var i=t("./reader/readerFor"),n=t("./utils"),s=t("./signature"),a=t("./zipEntry"),o=(t("./utf8"),t("./support"));function h(t){this.files=[],this.loadOptions=t}h.prototype={checkSignature:function(t){if(!this.reader.readAndCheckSignature(t)){this.reader.index-=4;var e=this.reader.readString(4);throw new Error("Corrupted zip or bug: unexpected signature ("+n.pretty(e)+", expected "+n.pretty(t)+")")}},isSignature:function(t,e){var r=this.reader.index;this.reader.setIndex(t);var i=this.reader.readString(4)===e;return this.reader.setIndex(r),i},readBlockEndOfCentral:function(){this.diskNumber=this.reader.readInt(2),this.diskWithCentralDirStart=this.reader.readInt(2),this.centralDirRecordsOnThisDisk=this.reader.readInt(2),this.centralDirRecords=this.reader.readInt(2),this.centralDirSize=this.reader.readInt(4),this.centralDirOffset=this.reader.readInt(4),this.zipCommentLength=this.reader.readInt(2);var t=this.reader.readData(this.zipCommentLength),e=o.uint8array?"uint8array":"array",r=n.transformTo(e,t);this.zipComment=this.loadOptions.decodeFileName(r)},readBlockZip64EndOfCentral:function(){this.zip64EndOfCentralSize=this.reader.readInt(8),this.reader.skip(4),this.diskNumber=this.reader.readInt(4),this.diskWithCentralDirStart=this.reader.readInt(4),this.centralDirRecordsOnThisDisk=this.reader.readInt(8),this.centralDirRecords=this.reader.readInt(8),this.centralDirSize=this.reader.readInt(8),this.centralDirOffset=this.reader.readInt(8),this.zip64ExtensibleData={};for(var t,e,r,i=this.zip64EndOfCentralSize-44;0<i;)t=this.reader.readInt(2),e=this.reader.readInt(4),r=this.reader.readData(e),this.zip64ExtensibleData[t]={id:t,length:e,value:r}},readBlockZip64EndOfCentralLocator:function(){if(this.diskWithZip64CentralDirStart=this.reader.readInt(4),this.relativeOffsetEndOfZip64CentralDir=this.reader.readInt(8),this.disksCount=this.reader.readInt(4),1<this.disksCount)throw new Error("Multi-volumes zip are not supported")},readLocalFiles:function(){var t,e;for(t=0;t<this.files.length;t++)e=this.files[t],this.reader.setIndex(e.localHeaderOffset),this.checkSignature(s.LOCAL_FILE_HEADER),e.readLocalPart(this.reader),e.handleUTF8(),e.processAttributes()},readCentralDir:function(){var t;for(this.reader.setIndex(this.centralDirOffset);this.reader.readAndCheckSignature(s.CENTRAL_FILE_HEADER);)(t=new a({zip64:this.zip64},this.loadOptions)).readCentralPart(this.reader),this.files.push(t);if(this.centralDirRecords!==this.files.length&&0!==this.centralDirRecords&&0===this.files.length)throw new Error("Corrupted zip or bug: expected "+this.centralDirRecords+" records in central dir, got "+this.files.length)},readEndOfCentral:function(){var t=this.reader.lastIndexOfSignature(s.CENTRAL_DIRECTORY_END);if(t<0)throw!this.isSignature(0,s.LOCAL_FILE_HEADER)?new Error("Can't find end of central directory : is this a zip file ? If it is, see https://stuk.github.io/jszip/documentation/howto/read_zip.html"):new Error("Corrupted zip: can't find end of central directory");this.reader.setIndex(t);var e=t;if(this.checkSignature(s.CENTRAL_DIRECTORY_END),this.readBlockEndOfCentral(),this.diskNumber===n.MAX_VALUE_16BITS||this.diskWithCentralDirStart===n.MAX_VALUE_16BITS||this.centralDirRecordsOnThisDisk===n.MAX_VALUE_16BITS||this.centralDirRecords===n.MAX_VALUE_16BITS||this.centralDirSize===n.MAX_VALUE_32BITS||this.centralDirOffset===n.MAX_VALUE_32BITS){if(this.zip64=!0,(t=this.reader.lastIndexOfSignature(s.ZIP64_CENTRAL_DIRECTORY_LOCATOR))<0)throw new Error("Corrupted zip: can't find the ZIP64 end of central directory locator");if(this.reader.setIndex(t),this.checkSignature(s.ZIP64_CENTRAL_DIRECTORY_LOCATOR),this.readBlockZip64EndOfCentralLocator(),!this.isSignature(this.relativeOffsetEndOfZip64CentralDir,s.ZIP64_CENTRAL_DIRECTORY_END)&&(this.relativeOffsetEndOfZip64CentralDir=this.reader.lastIndexOfSignature(s.ZIP64_CENTRAL_DIRECTORY_END),this.relativeOffsetEndOfZip64CentralDir<0))throw new Error("Corrupted zip: can't find the ZIP64 end of central directory");this.reader.setIndex(this.relativeOffsetEndOfZip64CentralDir),this.checkSignature(s.ZIP64_CENTRAL_DIRECTORY_END),this.readBlockZip64EndOfCentral()}var r=this.centralDirOffset+this.centralDirSize;this.zip64&&(r+=20,r+=12+this.zip64EndOfCentralSize);var i=e-r;if(0<i)this.isSignature(e,s.CENTRAL_FILE_HEADER)||(this.reader.zero=i);else if(i<0)throw new Error("Corrupted zip: missing "+Math.abs(i)+" bytes.")},prepareReader:function(t){this.reader=i(t)},load:function(t){this.prepareReader(t),this.readEndOfCentral(),this.readCentralDir(),this.readLocalFiles()}},e.exports=h},{"./reader/readerFor":22,"./signature":23,"./support":30,"./utf8":31,"./utils":32,"./zipEntry":34}],34:[function(t,e,r){"use strict";var i=t("./reader/readerFor"),s=t("./utils"),n=t("./compressedObject"),a=t("./crc32"),o=t("./utf8"),h=t("./compressions"),u=t("./support");function l(t,e){this.options=t,this.loadOptions=e}l.prototype={isEncrypted:function(){return 1==(1&this.bitFlag)},useUTF8:function(){return 2048==(2048&this.bitFlag)},readLocalPart:function(t){var e,r;if(t.skip(22),this.fileNameLength=t.readInt(2),r=t.readInt(2),this.fileName=t.readData(this.fileNameLength),t.skip(r),-1===this.compressedSize||-1===this.uncompressedSize)throw new Error("Bug or corrupted zip : didn't get enough information from the central directory (compressedSize === -1 || uncompressedSize === -1)");if(null===(e=function(t){for(var e in h)if(h.hasOwnProperty(e)&&h[e].magic===t)return h[e];return null}(this.compressionMethod)))throw new Error("Corrupted zip : compression "+s.pretty(this.compressionMethod)+" unknown (inner file : "+s.transformTo("string",this.fileName)+")");this.decompressed=new n(this.compressedSize,this.uncompressedSize,this.crc32,e,t.readData(this.compressedSize))},readCentralPart:function(t){this.versionMadeBy=t.readInt(2),t.skip(2),this.bitFlag=t.readInt(2),this.compressionMethod=t.readString(2),this.date=t.readDate(),this.crc32=t.readInt(4),this.compressedSize=t.readInt(4),this.uncompressedSize=t.readInt(4);var e=t.readInt(2);if(this.extraFieldsLength=t.readInt(2),this.fileCommentLength=t.readInt(2),this.diskNumberStart=t.readInt(2),this.internalFileAttributes=t.readInt(2),this.externalFileAttributes=t.readInt(4),this.localHeaderOffset=t.readInt(4),this.isEncrypted())throw new Error("Encrypted zip are not supported");t.skip(e),this.readExtraFields(t),this.parseZIP64ExtraField(t),this.fileComment=t.readData(this.fileCommentLength)},processAttributes:function(){this.unixPermissions=null,this.dosPermissions=null;var t=this.versionMadeBy>>8;this.dir=!!(16&this.externalFileAttributes),0==t&&(this.dosPermissions=63&this.externalFileAttributes),3==t&&(this.unixPermissions=this.externalFileAttributes>>16&65535),this.dir||"/"!==this.fileNameStr.slice(-1)||(this.dir=!0)},parseZIP64ExtraField:function(t){if(this.extraFields[1]){var e=i(this.extraFields[1].value);this.uncompressedSize===s.MAX_VALUE_32BITS&&(this.uncompressedSize=e.readInt(8)),this.compressedSize===s.MAX_VALUE_32BITS&&(this.compressedSize=e.readInt(8)),this.localHeaderOffset===s.MAX_VALUE_32BITS&&(this.localHeaderOffset=e.readInt(8)),this.diskNumberStart===s.MAX_VALUE_32BITS&&(this.diskNumberStart=e.readInt(4))}},readExtraFields:function(t){var e,r,i,n=t.index+this.extraFieldsLength;for(this.extraFields||(this.extraFields={});t.index+4<n;)e=t.readInt(2),r=t.readInt(2),i=t.readData(r),this.extraFields[e]={id:e,length:r,value:i};t.setIndex(n)},handleUTF8:function(){var t=u.uint8array?"uint8array":"array";if(this.useUTF8())this.fileNameStr=o.utf8decode(this.fileName),this.fileCommentStr=o.utf8decode(this.fileComment);else{var e=this.findExtraFieldUnicodePath();if(null!==e)this.fileNameStr=e;else{var r=s.transformTo(t,this.fileName);this.fileNameStr=this.loadOptions.decodeFileName(r)}var i=this.findExtraFieldUnicodeComment();if(null!==i)this.fileCommentStr=i;else{var n=s.transformTo(t,this.fileComment);this.fileCommentStr=this.loadOptions.decodeFileName(n)}}},findExtraFieldUnicodePath:function(){var t=this.extraFields[28789];if(t){var e=i(t.value);return 1!==e.readInt(1)?null:a(this.fileName)!==e.readInt(4)?null:o.utf8decode(e.readData(t.length-5))}return null},findExtraFieldUnicodeComment:function(){var t=this.extraFields[25461];if(t){var e=i(t.value);return 1!==e.readInt(1)?null:a(this.fileComment)!==e.readInt(4)?null:o.utf8decode(e.readData(t.length-5))}return null}},e.exports=l},{"./compressedObject":2,"./compressions":3,"./crc32":4,"./reader/readerFor":22,"./support":30,"./utf8":31,"./utils":32}],35:[function(t,e,r){"use strict";function i(t,e,r){this.name=t,this.dir=r.dir,this.date=r.date,this.comment=r.comment,this.unixPermissions=r.unixPermissions,this.dosPermissions=r.dosPermissions,this._data=e,this._dataBinary=r.binary,this.options={compression:r.compression,compressionOptions:r.compressionOptions}}var s=t("./stream/StreamHelper"),n=t("./stream/DataWorker"),a=t("./utf8"),o=t("./compressedObject"),h=t("./stream/GenericWorker");i.prototype={internalStream:function(t){var e=null,r="string";try{if(!t)throw new Error("No output type specified.");var i="string"===(r=t.toLowerCase())||"text"===r;"binarystring"!==r&&"text"!==r||(r="string"),e=this._decompressWorker();var n=!this._dataBinary;n&&!i&&(e=e.pipe(new a.Utf8EncodeWorker)),!n&&i&&(e=e.pipe(new a.Utf8DecodeWorker))}catch(t){(e=new h("error")).error(t)}return new s(e,r,"")},async:function(t,e){return this.internalStream(t).accumulate(e)},nodeStream:function(t,e){return this.internalStream(t||"nodebuffer").toNodejsStream(e)},_compressWorker:function(t,e){if(this._data instanceof o&&this._data.compression.magic===t.magic)return this._data.getCompressedWorker();var r=this._decompressWorker();return this._dataBinary||(r=r.pipe(new a.Utf8EncodeWorker)),o.createWorkerFrom(r,t,e)},_decompressWorker:function(){return this._data instanceof o?this._data.getContentWorker():this._data instanceof h?this._data:new n(this._data)}};for(var u=["asText","asBinary","asNodeBuffer","asUint8Array","asArrayBuffer"],l=function(){throw new Error("This method has been removed in JSZip 3.0, please check the upgrade guide.")},f=0;f<u.length;f++)i.prototype[u[f]]=l;e.exports=i},{"./compressedObject":2,"./stream/DataWorker":27,"./stream/GenericWorker":28,"./stream/StreamHelper":29,"./utf8":31}],36:[function(t,l,e){(function(e){"use strict";var r,i,t=e.MutationObserver||e.WebKitMutationObserver;if(t){var n=0,s=new t(u),a=e.document.createTextNode("");s.observe(a,{characterData:!0}),r=function(){a.data=n=++n%2}}else if(e.setImmediate||void 0===e.MessageChannel)r="document"in e&&"onreadystatechange"in e.document.createElement("script")?function(){var t=e.document.createElement("script");t.onreadystatechange=function(){u(),t.onreadystatechange=null,t.parentNode.removeChild(t),t=null},e.document.documentElement.appendChild(t)}:function(){setTimeout(u,0)};else{var o=new e.MessageChannel;o.port1.onmessage=u,r=function(){o.port2.postMessage(0)}}var h=[];function u(){var t,e;i=!0;for(var r=h.length;r;){for(e=h,h=[],t=-1;++t<r;)e[t]();r=h.length}i=!1}l.exports=function(t){1!==h.push(t)||i||r()}}).call(this,"undefined"!=typeof __webpack_require__.g?__webpack_require__.g:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{}],37:[function(t,e,r){"use strict";var n=t("immediate");function u(){}var l={},s=["REJECTED"],a=["FULFILLED"],i=["PENDING"];function o(t){if("function"!=typeof t)throw new TypeError("resolver must be a function");this.state=i,this.queue=[],this.outcome=void 0,t!==u&&c(this,t)}function h(t,e,r){this.promise=t,"function"==typeof e&&(this.onFulfilled=e,this.callFulfilled=this.otherCallFulfilled),"function"==typeof r&&(this.onRejected=r,this.callRejected=this.otherCallRejected)}function f(e,r,i){n(function(){var t;try{t=r(i)}catch(t){return l.reject(e,t)}t===e?l.reject(e,new TypeError("Cannot resolve promise with itself")):l.resolve(e,t)})}function d(t){var e=t&&t.then;if(t&&("object"==typeof t||"function"==typeof t)&&"function"==typeof e)return function(){e.apply(t,arguments)}}function c(e,t){var r=!1;function i(t){r||(r=!0,l.reject(e,t))}function n(t){r||(r=!0,l.resolve(e,t))}var s=p(function(){t(n,i)});"error"===s.status&&i(s.value)}function p(t,e){var r={};try{r.value=t(e),r.status="success"}catch(t){r.status="error",r.value=t}return r}(e.exports=o).prototype.finally=function(e){if("function"!=typeof e)return this;var r=this.constructor;return this.then(function(t){return r.resolve(e()).then(function(){return t})},function(t){return r.resolve(e()).then(function(){throw t})})},o.prototype.catch=function(t){return this.then(null,t)},o.prototype.then=function(t,e){if("function"!=typeof t&&this.state===a||"function"!=typeof e&&this.state===s)return this;var r=new this.constructor(u);this.state!==i?f(r,this.state===a?t:e,this.outcome):this.queue.push(new h(r,t,e));return r},h.prototype.callFulfilled=function(t){l.resolve(this.promise,t)},h.prototype.otherCallFulfilled=function(t){f(this.promise,this.onFulfilled,t)},h.prototype.callRejected=function(t){l.reject(this.promise,t)},h.prototype.otherCallRejected=function(t){f(this.promise,this.onRejected,t)},l.resolve=function(t,e){var r=p(d,e);if("error"===r.status)return l.reject(t,r.value);var i=r.value;if(i)c(t,i);else{t.state=a,t.outcome=e;for(var n=-1,s=t.queue.length;++n<s;)t.queue[n].callFulfilled(e)}return t},l.reject=function(t,e){t.state=s,t.outcome=e;for(var r=-1,i=t.queue.length;++r<i;)t.queue[r].callRejected(e);return t},o.resolve=function(t){if(t instanceof this)return t;return l.resolve(new this(u),t)},o.reject=function(t){var e=new this(u);return l.reject(e,t)},o.all=function(t){var r=this;if("[object Array]"!==Object.prototype.toString.call(t))return this.reject(new TypeError("must be an array"));var i=t.length,n=!1;if(!i)return this.resolve([]);var s=new Array(i),a=0,e=-1,o=new this(u);for(;++e<i;)h(t[e],e);return o;function h(t,e){r.resolve(t).then(function(t){s[e]=t,++a!==i||n||(n=!0,l.resolve(o,s))},function(t){n||(n=!0,l.reject(o,t))})}},o.race=function(t){var e=this;if("[object Array]"!==Object.prototype.toString.call(t))return this.reject(new TypeError("must be an array"));var r=t.length,i=!1;if(!r)return this.resolve([]);var n=-1,s=new this(u);for(;++n<r;)a=t[n],e.resolve(a).then(function(t){i||(i=!0,l.resolve(s,t))},function(t){i||(i=!0,l.reject(s,t))});var a;return s}},{immediate:36}],38:[function(t,e,r){"use strict";var i={};(0,t("./lib/utils/common").assign)(i,t("./lib/deflate"),t("./lib/inflate"),t("./lib/zlib/constants")),e.exports=i},{"./lib/deflate":39,"./lib/inflate":40,"./lib/utils/common":41,"./lib/zlib/constants":44}],39:[function(t,e,r){"use strict";var a=t("./zlib/deflate"),o=t("./utils/common"),h=t("./utils/strings"),n=t("./zlib/messages"),s=t("./zlib/zstream"),u=Object.prototype.toString,l=0,f=-1,d=0,c=8;function p(t){if(!(this instanceof p))return new p(t);this.options=o.assign({level:f,method:c,chunkSize:16384,windowBits:15,memLevel:8,strategy:d,to:""},t||{});var e=this.options;e.raw&&0<e.windowBits?e.windowBits=-e.windowBits:e.gzip&&0<e.windowBits&&e.windowBits<16&&(e.windowBits+=16),this.err=0,this.msg="",this.ended=!1,this.chunks=[],this.strm=new s,this.strm.avail_out=0;var r=a.deflateInit2(this.strm,e.level,e.method,e.windowBits,e.memLevel,e.strategy);if(r!==l)throw new Error(n[r]);if(e.header&&a.deflateSetHeader(this.strm,e.header),e.dictionary){var i;if(i="string"==typeof e.dictionary?h.string2buf(e.dictionary):"[object ArrayBuffer]"===u.call(e.dictionary)?new Uint8Array(e.dictionary):e.dictionary,(r=a.deflateSetDictionary(this.strm,i))!==l)throw new Error(n[r]);this._dict_set=!0}}function i(t,e){var r=new p(e);if(r.push(t,!0),r.err)throw r.msg||n[r.err];return r.result}p.prototype.push=function(t,e){var r,i,n=this.strm,s=this.options.chunkSize;if(this.ended)return!1;i=e===~~e?e:!0===e?4:0,"string"==typeof t?n.input=h.string2buf(t):"[object ArrayBuffer]"===u.call(t)?n.input=new Uint8Array(t):n.input=t,n.next_in=0,n.avail_in=n.input.length;do{if(0===n.avail_out&&(n.output=new o.Buf8(s),n.next_out=0,n.avail_out=s),1!==(r=a.deflate(n,i))&&r!==l)return this.onEnd(r),!(this.ended=!0);0!==n.avail_out&&(0!==n.avail_in||4!==i&&2!==i)||("string"===this.options.to?this.onData(h.buf2binstring(o.shrinkBuf(n.output,n.next_out))):this.onData(o.shrinkBuf(n.output,n.next_out)))}while((0<n.avail_in||0===n.avail_out)&&1!==r);return 4===i?(r=a.deflateEnd(this.strm),this.onEnd(r),this.ended=!0,r===l):2!==i||(this.onEnd(l),!(n.avail_out=0))},p.prototype.onData=function(t){this.chunks.push(t)},p.prototype.onEnd=function(t){t===l&&("string"===this.options.to?this.result=this.chunks.join(""):this.result=o.flattenChunks(this.chunks)),this.chunks=[],this.err=t,this.msg=this.strm.msg},r.Deflate=p,r.deflate=i,r.deflateRaw=function(t,e){return(e=e||{}).raw=!0,i(t,e)},r.gzip=function(t,e){return(e=e||{}).gzip=!0,i(t,e)}},{"./utils/common":41,"./utils/strings":42,"./zlib/deflate":46,"./zlib/messages":51,"./zlib/zstream":53}],40:[function(t,e,r){"use strict";var d=t("./zlib/inflate"),c=t("./utils/common"),p=t("./utils/strings"),m=t("./zlib/constants"),i=t("./zlib/messages"),n=t("./zlib/zstream"),s=t("./zlib/gzheader"),_=Object.prototype.toString;function a(t){if(!(this instanceof a))return new a(t);this.options=c.assign({chunkSize:16384,windowBits:0,to:""},t||{});var e=this.options;e.raw&&0<=e.windowBits&&e.windowBits<16&&(e.windowBits=-e.windowBits,0===e.windowBits&&(e.windowBits=-15)),!(0<=e.windowBits&&e.windowBits<16)||t&&t.windowBits||(e.windowBits+=32),15<e.windowBits&&e.windowBits<48&&0==(15&e.windowBits)&&(e.windowBits|=15),this.err=0,this.msg="",this.ended=!1,this.chunks=[],this.strm=new n,this.strm.avail_out=0;var r=d.inflateInit2(this.strm,e.windowBits);if(r!==m.Z_OK)throw new Error(i[r]);this.header=new s,d.inflateGetHeader(this.strm,this.header)}function o(t,e){var r=new a(e);if(r.push(t,!0),r.err)throw r.msg||i[r.err];return r.result}a.prototype.push=function(t,e){var r,i,n,s,a,o,h=this.strm,u=this.options.chunkSize,l=this.options.dictionary,f=!1;if(this.ended)return!1;i=e===~~e?e:!0===e?m.Z_FINISH:m.Z_NO_FLUSH,"string"==typeof t?h.input=p.binstring2buf(t):"[object ArrayBuffer]"===_.call(t)?h.input=new Uint8Array(t):h.input=t,h.next_in=0,h.avail_in=h.input.length;do{if(0===h.avail_out&&(h.output=new c.Buf8(u),h.next_out=0,h.avail_out=u),(r=d.inflate(h,m.Z_NO_FLUSH))===m.Z_NEED_DICT&&l&&(o="string"==typeof l?p.string2buf(l):"[object ArrayBuffer]"===_.call(l)?new Uint8Array(l):l,r=d.inflateSetDictionary(this.strm,o)),r===m.Z_BUF_ERROR&&!0===f&&(r=m.Z_OK,f=!1),r!==m.Z_STREAM_END&&r!==m.Z_OK)return this.onEnd(r),!(this.ended=!0);h.next_out&&(0!==h.avail_out&&r!==m.Z_STREAM_END&&(0!==h.avail_in||i!==m.Z_FINISH&&i!==m.Z_SYNC_FLUSH)||("string"===this.options.to?(n=p.utf8border(h.output,h.next_out),s=h.next_out-n,a=p.buf2string(h.output,n),h.next_out=s,h.avail_out=u-s,s&&c.arraySet(h.output,h.output,n,s,0),this.onData(a)):this.onData(c.shrinkBuf(h.output,h.next_out)))),0===h.avail_in&&0===h.avail_out&&(f=!0)}while((0<h.avail_in||0===h.avail_out)&&r!==m.Z_STREAM_END);return r===m.Z_STREAM_END&&(i=m.Z_FINISH),i===m.Z_FINISH?(r=d.inflateEnd(this.strm),this.onEnd(r),this.ended=!0,r===m.Z_OK):i!==m.Z_SYNC_FLUSH||(this.onEnd(m.Z_OK),!(h.avail_out=0))},a.prototype.onData=function(t){this.chunks.push(t)},a.prototype.onEnd=function(t){t===m.Z_OK&&("string"===this.options.to?this.result=this.chunks.join(""):this.result=c.flattenChunks(this.chunks)),this.chunks=[],this.err=t,this.msg=this.strm.msg},r.Inflate=a,r.inflate=o,r.inflateRaw=function(t,e){return(e=e||{}).raw=!0,o(t,e)},r.ungzip=o},{"./utils/common":41,"./utils/strings":42,"./zlib/constants":44,"./zlib/gzheader":47,"./zlib/inflate":49,"./zlib/messages":51,"./zlib/zstream":53}],41:[function(t,e,r){"use strict";var i="undefined"!=typeof Uint8Array&&"undefined"!=typeof Uint16Array&&"undefined"!=typeof Int32Array;r.assign=function(t){for(var e=Array.prototype.slice.call(arguments,1);e.length;){var r=e.shift();if(r){if("object"!=typeof r)throw new TypeError(r+"must be non-object");for(var i in r)r.hasOwnProperty(i)&&(t[i]=r[i])}}return t},r.shrinkBuf=function(t,e){return t.length===e?t:t.subarray?t.subarray(0,e):(t.length=e,t)};var n={arraySet:function(t,e,r,i,n){if(e.subarray&&t.subarray)t.set(e.subarray(r,r+i),n);else for(var s=0;s<i;s++)t[n+s]=e[r+s]},flattenChunks:function(t){var e,r,i,n,s,a;for(e=i=0,r=t.length;e<r;e++)i+=t[e].length;for(a=new Uint8Array(i),e=n=0,r=t.length;e<r;e++)s=t[e],a.set(s,n),n+=s.length;return a}},s={arraySet:function(t,e,r,i,n){for(var s=0;s<i;s++)t[n+s]=e[r+s]},flattenChunks:function(t){return[].concat.apply([],t)}};r.setTyped=function(t){t?(r.Buf8=Uint8Array,r.Buf16=Uint16Array,r.Buf32=Int32Array,r.assign(r,n)):(r.Buf8=Array,r.Buf16=Array,r.Buf32=Array,r.assign(r,s))},r.setTyped(i)},{}],42:[function(t,e,r){"use strict";var h=t("./common"),n=!0,s=!0;try{String.fromCharCode.apply(null,[0])}catch(t){n=!1}try{String.fromCharCode.apply(null,new Uint8Array(1))}catch(t){s=!1}for(var u=new h.Buf8(256),i=0;i<256;i++)u[i]=252<=i?6:248<=i?5:240<=i?4:224<=i?3:192<=i?2:1;function l(t,e){if(e<65537&&(t.subarray&&s||!t.subarray&&n))return String.fromCharCode.apply(null,h.shrinkBuf(t,e));for(var r="",i=0;i<e;i++)r+=String.fromCharCode(t[i]);return r}u[254]=u[254]=1,r.string2buf=function(t){var e,r,i,n,s,a=t.length,o=0;for(n=0;n<a;n++)55296==(64512&(r=t.charCodeAt(n)))&&n+1<a&&56320==(64512&(i=t.charCodeAt(n+1)))&&(r=65536+(r-55296<<10)+(i-56320),n++),o+=r<128?1:r<2048?2:r<65536?3:4;for(e=new h.Buf8(o),n=s=0;s<o;n++)55296==(64512&(r=t.charCodeAt(n)))&&n+1<a&&56320==(64512&(i=t.charCodeAt(n+1)))&&(r=65536+(r-55296<<10)+(i-56320),n++),r<128?e[s++]=r:(r<2048?e[s++]=192|r>>>6:(r<65536?e[s++]=224|r>>>12:(e[s++]=240|r>>>18,e[s++]=128|r>>>12&63),e[s++]=128|r>>>6&63),e[s++]=128|63&r);return e},r.buf2binstring=function(t){return l(t,t.length)},r.binstring2buf=function(t){for(var e=new h.Buf8(t.length),r=0,i=e.length;r<i;r++)e[r]=t.charCodeAt(r);return e},r.buf2string=function(t,e){var r,i,n,s,a=e||t.length,o=new Array(2*a);for(r=i=0;r<a;)if((n=t[r++])<128)o[i++]=n;else if(4<(s=u[n]))o[i++]=65533,r+=s-1;else{for(n&=2===s?31:3===s?15:7;1<s&&r<a;)n=n<<6|63&t[r++],s--;1<s?o[i++]=65533:n<65536?o[i++]=n:(n-=65536,o[i++]=55296|n>>10&1023,o[i++]=56320|1023&n)}return l(o,i)},r.utf8border=function(t,e){var r;for((e=e||t.length)>t.length&&(e=t.length),r=e-1;0<=r&&128==(192&t[r]);)r--;return r<0?e:0===r?e:r+u[t[r]]>e?r:e}},{"./common":41}],43:[function(t,e,r){"use strict";e.exports=function(t,e,r,i){for(var n=65535&t|0,s=t>>>16&65535|0,a=0;0!==r;){for(r-=a=2e3<r?2e3:r;s=s+(n=n+e[i++]|0)|0,--a;);n%=65521,s%=65521}return n|s<<16|0}},{}],44:[function(t,e,r){"use strict";e.exports={Z_NO_FLUSH:0,Z_PARTIAL_FLUSH:1,Z_SYNC_FLUSH:2,Z_FULL_FLUSH:3,Z_FINISH:4,Z_BLOCK:5,Z_TREES:6,Z_OK:0,Z_STREAM_END:1,Z_NEED_DICT:2,Z_ERRNO:-1,Z_STREAM_ERROR:-2,Z_DATA_ERROR:-3,Z_BUF_ERROR:-5,Z_NO_COMPRESSION:0,Z_BEST_SPEED:1,Z_BEST_COMPRESSION:9,Z_DEFAULT_COMPRESSION:-1,Z_FILTERED:1,Z_HUFFMAN_ONLY:2,Z_RLE:3,Z_FIXED:4,Z_DEFAULT_STRATEGY:0,Z_BINARY:0,Z_TEXT:1,Z_UNKNOWN:2,Z_DEFLATED:8}},{}],45:[function(t,e,r){"use strict";var o=function(){for(var t,e=[],r=0;r<256;r++){t=r;for(var i=0;i<8;i++)t=1&t?3988292384^t>>>1:t>>>1;e[r]=t}return e}();e.exports=function(t,e,r,i){var n=o,s=i+r;t^=-1;for(var a=i;a<s;a++)t=t>>>8^n[255&(t^e[a])];return-1^t}},{}],46:[function(t,e,r){"use strict";var h,d=t("../utils/common"),u=t("./trees"),c=t("./adler32"),p=t("./crc32"),i=t("./messages"),l=0,f=4,m=0,_=-2,g=-1,b=4,n=2,v=8,y=9,s=286,a=30,o=19,w=2*s+1,k=15,x=3,S=258,z=S+x+1,C=42,E=113,A=1,I=2,O=3,B=4;function R(t,e){return t.msg=i[e],e}function T(t){return(t<<1)-(4<t?9:0)}function D(t){for(var e=t.length;0<=--e;)t[e]=0}function F(t){var e=t.state,r=e.pending;r>t.avail_out&&(r=t.avail_out),0!==r&&(d.arraySet(t.output,e.pending_buf,e.pending_out,r,t.next_out),t.next_out+=r,e.pending_out+=r,t.total_out+=r,t.avail_out-=r,e.pending-=r,0===e.pending&&(e.pending_out=0))}function N(t,e){u._tr_flush_block(t,0<=t.block_start?t.block_start:-1,t.strstart-t.block_start,e),t.block_start=t.strstart,F(t.strm)}function U(t,e){t.pending_buf[t.pending++]=e}function P(t,e){t.pending_buf[t.pending++]=e>>>8&255,t.pending_buf[t.pending++]=255&e}function L(t,e){var r,i,n=t.max_chain_length,s=t.strstart,a=t.prev_length,o=t.nice_match,h=t.strstart>t.w_size-z?t.strstart-(t.w_size-z):0,u=t.window,l=t.w_mask,f=t.prev,d=t.strstart+S,c=u[s+a-1],p=u[s+a];t.prev_length>=t.good_match&&(n>>=2),o>t.lookahead&&(o=t.lookahead);do{if(u[(r=e)+a]===p&&u[r+a-1]===c&&u[r]===u[s]&&u[++r]===u[s+1]){s+=2,r++;do{}while(u[++s]===u[++r]&&u[++s]===u[++r]&&u[++s]===u[++r]&&u[++s]===u[++r]&&u[++s]===u[++r]&&u[++s]===u[++r]&&u[++s]===u[++r]&&u[++s]===u[++r]&&s<d);if(i=S-(d-s),s=d-S,a<i){if(t.match_start=e,o<=(a=i))break;c=u[s+a-1],p=u[s+a]}}}while((e=f[e&l])>h&&0!=--n);return a<=t.lookahead?a:t.lookahead}function j(t){var e,r,i,n,s,a,o,h,u,l,f=t.w_size;do{if(n=t.window_size-t.lookahead-t.strstart,t.strstart>=f+(f-z)){for(d.arraySet(t.window,t.window,f,f,0),t.match_start-=f,t.strstart-=f,t.block_start-=f,e=r=t.hash_size;i=t.head[--e],t.head[e]=f<=i?i-f:0,--r;);for(e=r=f;i=t.prev[--e],t.prev[e]=f<=i?i-f:0,--r;);n+=f}if(0===t.strm.avail_in)break;if(a=t.strm,o=t.window,h=t.strstart+t.lookahead,u=n,l=void 0,l=a.avail_in,u<l&&(l=u),r=0===l?0:(a.avail_in-=l,d.arraySet(o,a.input,a.next_in,l,h),1===a.state.wrap?a.adler=c(a.adler,o,l,h):2===a.state.wrap&&(a.adler=p(a.adler,o,l,h)),a.next_in+=l,a.total_in+=l,l),t.lookahead+=r,t.lookahead+t.insert>=x)for(s=t.strstart-t.insert,t.ins_h=t.window[s],t.ins_h=(t.ins_h<<t.hash_shift^t.window[s+1])&t.hash_mask;t.insert&&(t.ins_h=(t.ins_h<<t.hash_shift^t.window[s+x-1])&t.hash_mask,t.prev[s&t.w_mask]=t.head[t.ins_h],t.head[t.ins_h]=s,s++,t.insert--,!(t.lookahead+t.insert<x)););}while(t.lookahead<z&&0!==t.strm.avail_in)}function Z(t,e){for(var r,i;;){if(t.lookahead<z){if(j(t),t.lookahead<z&&e===l)return A;if(0===t.lookahead)break}if(r=0,t.lookahead>=x&&(t.ins_h=(t.ins_h<<t.hash_shift^t.window[t.strstart+x-1])&t.hash_mask,r=t.prev[t.strstart&t.w_mask]=t.head[t.ins_h],t.head[t.ins_h]=t.strstart),0!==r&&t.strstart-r<=t.w_size-z&&(t.match_length=L(t,r)),t.match_length>=x)if(i=u._tr_tally(t,t.strstart-t.match_start,t.match_length-x),t.lookahead-=t.match_length,t.match_length<=t.max_lazy_match&&t.lookahead>=x){for(t.match_length--;t.strstart++,t.ins_h=(t.ins_h<<t.hash_shift^t.window[t.strstart+x-1])&t.hash_mask,r=t.prev[t.strstart&t.w_mask]=t.head[t.ins_h],t.head[t.ins_h]=t.strstart,0!=--t.match_length;);t.strstart++}else t.strstart+=t.match_length,t.match_length=0,t.ins_h=t.window[t.strstart],t.ins_h=(t.ins_h<<t.hash_shift^t.window[t.strstart+1])&t.hash_mask;else i=u._tr_tally(t,0,t.window[t.strstart]),t.lookahead--,t.strstart++;if(i&&(N(t,!1),0===t.strm.avail_out))return A}return t.insert=t.strstart<x-1?t.strstart:x-1,e===f?(N(t,!0),0===t.strm.avail_out?O:B):t.last_lit&&(N(t,!1),0===t.strm.avail_out)?A:I}function W(t,e){for(var r,i,n;;){if(t.lookahead<z){if(j(t),t.lookahead<z&&e===l)return A;if(0===t.lookahead)break}if(r=0,t.lookahead>=x&&(t.ins_h=(t.ins_h<<t.hash_shift^t.window[t.strstart+x-1])&t.hash_mask,r=t.prev[t.strstart&t.w_mask]=t.head[t.ins_h],t.head[t.ins_h]=t.strstart),t.prev_length=t.match_length,t.prev_match=t.match_start,t.match_length=x-1,0!==r&&t.prev_length<t.max_lazy_match&&t.strstart-r<=t.w_size-z&&(t.match_length=L(t,r),t.match_length<=5&&(1===t.strategy||t.match_length===x&&4096<t.strstart-t.match_start)&&(t.match_length=x-1)),t.prev_length>=x&&t.match_length<=t.prev_length){for(n=t.strstart+t.lookahead-x,i=u._tr_tally(t,t.strstart-1-t.prev_match,t.prev_length-x),t.lookahead-=t.prev_length-1,t.prev_length-=2;++t.strstart<=n&&(t.ins_h=(t.ins_h<<t.hash_shift^t.window[t.strstart+x-1])&t.hash_mask,r=t.prev[t.strstart&t.w_mask]=t.head[t.ins_h],t.head[t.ins_h]=t.strstart),0!=--t.prev_length;);if(t.match_available=0,t.match_length=x-1,t.strstart++,i&&(N(t,!1),0===t.strm.avail_out))return A}else if(t.match_available){if((i=u._tr_tally(t,0,t.window[t.strstart-1]))&&N(t,!1),t.strstart++,t.lookahead--,0===t.strm.avail_out)return A}else t.match_available=1,t.strstart++,t.lookahead--}return t.match_available&&(i=u._tr_tally(t,0,t.window[t.strstart-1]),t.match_available=0),t.insert=t.strstart<x-1?t.strstart:x-1,e===f?(N(t,!0),0===t.strm.avail_out?O:B):t.last_lit&&(N(t,!1),0===t.strm.avail_out)?A:I}function M(t,e,r,i,n){this.good_length=t,this.max_lazy=e,this.nice_length=r,this.max_chain=i,this.func=n}function H(){this.strm=null,this.status=0,this.pending_buf=null,this.pending_buf_size=0,this.pending_out=0,this.pending=0,this.wrap=0,this.gzhead=null,this.gzindex=0,this.method=v,this.last_flush=-1,this.w_size=0,this.w_bits=0,this.w_mask=0,this.window=null,this.window_size=0,this.prev=null,this.head=null,this.ins_h=0,this.hash_size=0,this.hash_bits=0,this.hash_mask=0,this.hash_shift=0,this.block_start=0,this.match_length=0,this.prev_match=0,this.match_available=0,this.strstart=0,this.match_start=0,this.lookahead=0,this.prev_length=0,this.max_chain_length=0,this.max_lazy_match=0,this.level=0,this.strategy=0,this.good_match=0,this.nice_match=0,this.dyn_ltree=new d.Buf16(2*w),this.dyn_dtree=new d.Buf16(2*(2*a+1)),this.bl_tree=new d.Buf16(2*(2*o+1)),D(this.dyn_ltree),D(this.dyn_dtree),D(this.bl_tree),this.l_desc=null,this.d_desc=null,this.bl_desc=null,this.bl_count=new d.Buf16(k+1),this.heap=new d.Buf16(2*s+1),D(this.heap),this.heap_len=0,this.heap_max=0,this.depth=new d.Buf16(2*s+1),D(this.depth),this.l_buf=0,this.lit_bufsize=0,this.last_lit=0,this.d_buf=0,this.opt_len=0,this.static_len=0,this.matches=0,this.insert=0,this.bi_buf=0,this.bi_valid=0}function G(t){var e;return t&&t.state?(t.total_in=t.total_out=0,t.data_type=n,(e=t.state).pending=0,e.pending_out=0,e.wrap<0&&(e.wrap=-e.wrap),e.status=e.wrap?C:E,t.adler=2===e.wrap?0:1,e.last_flush=l,u._tr_init(e),m):R(t,_)}function K(t){var e=G(t);return e===m&&function(t){t.window_size=2*t.w_size,D(t.head),t.max_lazy_match=h[t.level].max_lazy,t.good_match=h[t.level].good_length,t.nice_match=h[t.level].nice_length,t.max_chain_length=h[t.level].max_chain,t.strstart=0,t.block_start=0,t.lookahead=0,t.insert=0,t.match_length=t.prev_length=x-1,t.match_available=0,t.ins_h=0}(t.state),e}function Y(t,e,r,i,n,s){if(!t)return _;var a=1;if(e===g&&(e=6),i<0?(a=0,i=-i):15<i&&(a=2,i-=16),n<1||y<n||r!==v||i<8||15<i||e<0||9<e||s<0||b<s)return R(t,_);8===i&&(i=9);var o=new H;return(t.state=o).strm=t,o.wrap=a,o.gzhead=null,o.w_bits=i,o.w_size=1<<o.w_bits,o.w_mask=o.w_size-1,o.hash_bits=n+7,o.hash_size=1<<o.hash_bits,o.hash_mask=o.hash_size-1,o.hash_shift=~~((o.hash_bits+x-1)/x),o.window=new d.Buf8(2*o.w_size),o.head=new d.Buf16(o.hash_size),o.prev=new d.Buf16(o.w_size),o.lit_bufsize=1<<n+6,o.pending_buf_size=4*o.lit_bufsize,o.pending_buf=new d.Buf8(o.pending_buf_size),o.d_buf=1*o.lit_bufsize,o.l_buf=3*o.lit_bufsize,o.level=e,o.strategy=s,o.method=r,K(t)}h=[new M(0,0,0,0,function(t,e){var r=65535;for(r>t.pending_buf_size-5&&(r=t.pending_buf_size-5);;){if(t.lookahead<=1){if(j(t),0===t.lookahead&&e===l)return A;if(0===t.lookahead)break}t.strstart+=t.lookahead,t.lookahead=0;var i=t.block_start+r;if((0===t.strstart||t.strstart>=i)&&(t.lookahead=t.strstart-i,t.strstart=i,N(t,!1),0===t.strm.avail_out))return A;if(t.strstart-t.block_start>=t.w_size-z&&(N(t,!1),0===t.strm.avail_out))return A}return t.insert=0,e===f?(N(t,!0),0===t.strm.avail_out?O:B):(t.strstart>t.block_start&&(N(t,!1),t.strm.avail_out),A)}),new M(4,4,8,4,Z),new M(4,5,16,8,Z),new M(4,6,32,32,Z),new M(4,4,16,16,W),new M(8,16,32,32,W),new M(8,16,128,128,W),new M(8,32,128,256,W),new M(32,128,258,1024,W),new M(32,258,258,4096,W)],r.deflateInit=function(t,e){return Y(t,e,v,15,8,0)},r.deflateInit2=Y,r.deflateReset=K,r.deflateResetKeep=G,r.deflateSetHeader=function(t,e){return t&&t.state?2!==t.state.wrap?_:(t.state.gzhead=e,m):_},r.deflate=function(t,e){var r,i,n,s;if(!t||!t.state||5<e||e<0)return t?R(t,_):_;if(i=t.state,!t.output||!t.input&&0!==t.avail_in||666===i.status&&e!==f)return R(t,0===t.avail_out?-5:_);if(i.strm=t,r=i.last_flush,i.last_flush=e,i.status===C)if(2===i.wrap)t.adler=0,U(i,31),U(i,139),U(i,8),i.gzhead?(U(i,(i.gzhead.text?1:0)+(i.gzhead.hcrc?2:0)+(i.gzhead.extra?4:0)+(i.gzhead.name?8:0)+(i.gzhead.comment?16:0)),U(i,255&i.gzhead.time),U(i,i.gzhead.time>>8&255),U(i,i.gzhead.time>>16&255),U(i,i.gzhead.time>>24&255),U(i,9===i.level?2:2<=i.strategy||i.level<2?4:0),U(i,255&i.gzhead.os),i.gzhead.extra&&i.gzhead.extra.length&&(U(i,255&i.gzhead.extra.length),U(i,i.gzhead.extra.length>>8&255)),i.gzhead.hcrc&&(t.adler=p(t.adler,i.pending_buf,i.pending,0)),i.gzindex=0,i.status=69):(U(i,0),U(i,0),U(i,0),U(i,0),U(i,0),U(i,9===i.level?2:2<=i.strategy||i.level<2?4:0),U(i,3),i.status=E);else{var a=v+(i.w_bits-8<<4)<<8;a|=(2<=i.strategy||i.level<2?0:i.level<6?1:6===i.level?2:3)<<6,0!==i.strstart&&(a|=32),a+=31-a%31,i.status=E,P(i,a),0!==i.strstart&&(P(i,t.adler>>>16),P(i,65535&t.adler)),t.adler=1}if(69===i.status)if(i.gzhead.extra){for(n=i.pending;i.gzindex<(65535&i.gzhead.extra.length)&&(i.pending!==i.pending_buf_size||(i.gzhead.hcrc&&i.pending>n&&(t.adler=p(t.adler,i.pending_buf,i.pending-n,n)),F(t),n=i.pending,i.pending!==i.pending_buf_size));)U(i,255&i.gzhead.extra[i.gzindex]),i.gzindex++;i.gzhead.hcrc&&i.pending>n&&(t.adler=p(t.adler,i.pending_buf,i.pending-n,n)),i.gzindex===i.gzhead.extra.length&&(i.gzindex=0,i.status=73)}else i.status=73;if(73===i.status)if(i.gzhead.name){n=i.pending;do{if(i.pending===i.pending_buf_size&&(i.gzhead.hcrc&&i.pending>n&&(t.adler=p(t.adler,i.pending_buf,i.pending-n,n)),F(t),n=i.pending,i.pending===i.pending_buf_size)){s=1;break}s=i.gzindex<i.gzhead.name.length?255&i.gzhead.name.charCodeAt(i.gzindex++):0,U(i,s)}while(0!==s);i.gzhead.hcrc&&i.pending>n&&(t.adler=p(t.adler,i.pending_buf,i.pending-n,n)),0===s&&(i.gzindex=0,i.status=91)}else i.status=91;if(91===i.status)if(i.gzhead.comment){n=i.pending;do{if(i.pending===i.pending_buf_size&&(i.gzhead.hcrc&&i.pending>n&&(t.adler=p(t.adler,i.pending_buf,i.pending-n,n)),F(t),n=i.pending,i.pending===i.pending_buf_size)){s=1;break}s=i.gzindex<i.gzhead.comment.length?255&i.gzhead.comment.charCodeAt(i.gzindex++):0,U(i,s)}while(0!==s);i.gzhead.hcrc&&i.pending>n&&(t.adler=p(t.adler,i.pending_buf,i.pending-n,n)),0===s&&(i.status=103)}else i.status=103;if(103===i.status&&(i.gzhead.hcrc?(i.pending+2>i.pending_buf_size&&F(t),i.pending+2<=i.pending_buf_size&&(U(i,255&t.adler),U(i,t.adler>>8&255),t.adler=0,i.status=E)):i.status=E),0!==i.pending){if(F(t),0===t.avail_out)return i.last_flush=-1,m}else if(0===t.avail_in&&T(e)<=T(r)&&e!==f)return R(t,-5);if(666===i.status&&0!==t.avail_in)return R(t,-5);if(0!==t.avail_in||0!==i.lookahead||e!==l&&666!==i.status){var o=2===i.strategy?function(t,e){for(var r;;){if(0===t.lookahead&&(j(t),0===t.lookahead)){if(e===l)return A;break}if(t.match_length=0,r=u._tr_tally(t,0,t.window[t.strstart]),t.lookahead--,t.strstart++,r&&(N(t,!1),0===t.strm.avail_out))return A}return t.insert=0,e===f?(N(t,!0),0===t.strm.avail_out?O:B):t.last_lit&&(N(t,!1),0===t.strm.avail_out)?A:I}(i,e):3===i.strategy?function(t,e){for(var r,i,n,s,a=t.window;;){if(t.lookahead<=S){if(j(t),t.lookahead<=S&&e===l)return A;if(0===t.lookahead)break}if(t.match_length=0,t.lookahead>=x&&0<t.strstart&&(i=a[n=t.strstart-1])===a[++n]&&i===a[++n]&&i===a[++n]){s=t.strstart+S;do{}while(i===a[++n]&&i===a[++n]&&i===a[++n]&&i===a[++n]&&i===a[++n]&&i===a[++n]&&i===a[++n]&&i===a[++n]&&n<s);t.match_length=S-(s-n),t.match_length>t.lookahead&&(t.match_length=t.lookahead)}if(t.match_length>=x?(r=u._tr_tally(t,1,t.match_length-x),t.lookahead-=t.match_length,t.strstart+=t.match_length,t.match_length=0):(r=u._tr_tally(t,0,t.window[t.strstart]),t.lookahead--,t.strstart++),r&&(N(t,!1),0===t.strm.avail_out))return A}return t.insert=0,e===f?(N(t,!0),0===t.strm.avail_out?O:B):t.last_lit&&(N(t,!1),0===t.strm.avail_out)?A:I}(i,e):h[i.level].func(i,e);if(o!==O&&o!==B||(i.status=666),o===A||o===O)return 0===t.avail_out&&(i.last_flush=-1),m;if(o===I&&(1===e?u._tr_align(i):5!==e&&(u._tr_stored_block(i,0,0,!1),3===e&&(D(i.head),0===i.lookahead&&(i.strstart=0,i.block_start=0,i.insert=0))),F(t),0===t.avail_out))return i.last_flush=-1,m}return e!==f?m:i.wrap<=0?1:(2===i.wrap?(U(i,255&t.adler),U(i,t.adler>>8&255),U(i,t.adler>>16&255),U(i,t.adler>>24&255),U(i,255&t.total_in),U(i,t.total_in>>8&255),U(i,t.total_in>>16&255),U(i,t.total_in>>24&255)):(P(i,t.adler>>>16),P(i,65535&t.adler)),F(t),0<i.wrap&&(i.wrap=-i.wrap),0!==i.pending?m:1)},r.deflateEnd=function(t){var e;return t&&t.state?(e=t.state.status)!==C&&69!==e&&73!==e&&91!==e&&103!==e&&e!==E&&666!==e?R(t,_):(t.state=null,e===E?R(t,-3):m):_},r.deflateSetDictionary=function(t,e){var r,i,n,s,a,o,h,u,l=e.length;if(!t||!t.state)return _;if(2===(s=(r=t.state).wrap)||1===s&&r.status!==C||r.lookahead)return _;for(1===s&&(t.adler=c(t.adler,e,l,0)),r.wrap=0,l>=r.w_size&&(0===s&&(D(r.head),r.strstart=0,r.block_start=0,r.insert=0),u=new d.Buf8(r.w_size),d.arraySet(u,e,l-r.w_size,r.w_size,0),e=u,l=r.w_size),a=t.avail_in,o=t.next_in,h=t.input,t.avail_in=l,t.next_in=0,t.input=e,j(r);r.lookahead>=x;){for(i=r.strstart,n=r.lookahead-(x-1);r.ins_h=(r.ins_h<<r.hash_shift^r.window[i+x-1])&r.hash_mask,r.prev[i&r.w_mask]=r.head[r.ins_h],r.head[r.ins_h]=i,i++,--n;);r.strstart=i,r.lookahead=x-1,j(r)}return r.strstart+=r.lookahead,r.block_start=r.strstart,r.insert=r.lookahead,r.lookahead=0,r.match_length=r.prev_length=x-1,r.match_available=0,t.next_in=o,t.input=h,t.avail_in=a,r.wrap=s,m},r.deflateInfo="pako deflate (from Nodeca project)"},{"../utils/common":41,"./adler32":43,"./crc32":45,"./messages":51,"./trees":52}],47:[function(t,e,r){"use strict";e.exports=function(){this.text=0,this.time=0,this.xflags=0,this.os=0,this.extra=null,this.extra_len=0,this.name="",this.comment="",this.hcrc=0,this.done=!1}},{}],48:[function(t,e,r){"use strict";e.exports=function(t,e){var r,i,n,s,a,o,h,u,l,f,d,c,p,m,_,g,b,v,y,w,k,x,S,z,C;r=t.state,i=t.next_in,z=t.input,n=i+(t.avail_in-5),s=t.next_out,C=t.output,a=s-(e-t.avail_out),o=s+(t.avail_out-257),h=r.dmax,u=r.wsize,l=r.whave,f=r.wnext,d=r.window,c=r.hold,p=r.bits,m=r.lencode,_=r.distcode,g=(1<<r.lenbits)-1,b=(1<<r.distbits)-1;t:do{p<15&&(c+=z[i++]<<p,p+=8,c+=z[i++]<<p,p+=8),v=m[c&g];e:for(;;){if(c>>>=y=v>>>24,p-=y,0===(y=v>>>16&255))C[s++]=65535&v;else{if(!(16&y)){if(0==(64&y)){v=m[(65535&v)+(c&(1<<y)-1)];continue e}if(32&y){r.mode=12;break t}t.msg="invalid literal/length code",r.mode=30;break t}w=65535&v,(y&=15)&&(p<y&&(c+=z[i++]<<p,p+=8),w+=c&(1<<y)-1,c>>>=y,p-=y),p<15&&(c+=z[i++]<<p,p+=8,c+=z[i++]<<p,p+=8),v=_[c&b];r:for(;;){if(c>>>=y=v>>>24,p-=y,!(16&(y=v>>>16&255))){if(0==(64&y)){v=_[(65535&v)+(c&(1<<y)-1)];continue r}t.msg="invalid distance code",r.mode=30;break t}if(k=65535&v,p<(y&=15)&&(c+=z[i++]<<p,(p+=8)<y&&(c+=z[i++]<<p,p+=8)),h<(k+=c&(1<<y)-1)){t.msg="invalid distance too far back",r.mode=30;break t}if(c>>>=y,p-=y,(y=s-a)<k){if(l<(y=k-y)&&r.sane){t.msg="invalid distance too far back",r.mode=30;break t}if(S=d,(x=0)===f){if(x+=u-y,y<w){for(w-=y;C[s++]=d[x++],--y;);x=s-k,S=C}}else if(f<y){if(x+=u+f-y,(y-=f)<w){for(w-=y;C[s++]=d[x++],--y;);if(x=0,f<w){for(w-=y=f;C[s++]=d[x++],--y;);x=s-k,S=C}}}else if(x+=f-y,y<w){for(w-=y;C[s++]=d[x++],--y;);x=s-k,S=C}for(;2<w;)C[s++]=S[x++],C[s++]=S[x++],C[s++]=S[x++],w-=3;w&&(C[s++]=S[x++],1<w&&(C[s++]=S[x++]))}else{for(x=s-k;C[s++]=C[x++],C[s++]=C[x++],C[s++]=C[x++],2<(w-=3););w&&(C[s++]=C[x++],1<w&&(C[s++]=C[x++]))}break}}break}}while(i<n&&s<o);i-=w=p>>3,c&=(1<<(p-=w<<3))-1,t.next_in=i,t.next_out=s,t.avail_in=i<n?n-i+5:5-(i-n),t.avail_out=s<o?o-s+257:257-(s-o),r.hold=c,r.bits=p}},{}],49:[function(t,e,r){"use strict";var I=t("../utils/common"),O=t("./adler32"),B=t("./crc32"),R=t("./inffast"),T=t("./inftrees"),D=1,F=2,N=0,U=-2,P=1,i=852,n=592;function L(t){return(t>>>24&255)+(t>>>8&65280)+((65280&t)<<8)+((255&t)<<24)}function s(){this.mode=0,this.last=!1,this.wrap=0,this.havedict=!1,this.flags=0,this.dmax=0,this.check=0,this.total=0,this.head=null,this.wbits=0,this.wsize=0,this.whave=0,this.wnext=0,this.window=null,this.hold=0,this.bits=0,this.length=0,this.offset=0,this.extra=0,this.lencode=null,this.distcode=null,this.lenbits=0,this.distbits=0,this.ncode=0,this.nlen=0,this.ndist=0,this.have=0,this.next=null,this.lens=new I.Buf16(320),this.work=new I.Buf16(288),this.lendyn=null,this.distdyn=null,this.sane=0,this.back=0,this.was=0}function a(t){var e;return t&&t.state?(e=t.state,t.total_in=t.total_out=e.total=0,t.msg="",e.wrap&&(t.adler=1&e.wrap),e.mode=P,e.last=0,e.havedict=0,e.dmax=32768,e.head=null,e.hold=0,e.bits=0,e.lencode=e.lendyn=new I.Buf32(i),e.distcode=e.distdyn=new I.Buf32(n),e.sane=1,e.back=-1,N):U}function o(t){var e;return t&&t.state?((e=t.state).wsize=0,e.whave=0,e.wnext=0,a(t)):U}function h(t,e){var r,i;return t&&t.state?(i=t.state,e<0?(r=0,e=-e):(r=1+(e>>4),e<48&&(e&=15)),e&&(e<8||15<e)?U:(null!==i.window&&i.wbits!==e&&(i.window=null),i.wrap=r,i.wbits=e,o(t))):U}function u(t,e){var r,i;return t?(i=new s,(t.state=i).window=null,(r=h(t,e))!==N&&(t.state=null),r):U}var l,f,d=!0;function j(t){if(d){var e;for(l=new I.Buf32(512),f=new I.Buf32(32),e=0;e<144;)t.lens[e++]=8;for(;e<256;)t.lens[e++]=9;for(;e<280;)t.lens[e++]=7;for(;e<288;)t.lens[e++]=8;for(T(D,t.lens,0,288,l,0,t.work,{bits:9}),e=0;e<32;)t.lens[e++]=5;T(F,t.lens,0,32,f,0,t.work,{bits:5}),d=!1}t.lencode=l,t.lenbits=9,t.distcode=f,t.distbits=5}function Z(t,e,r,i){var n,s=t.state;return null===s.window&&(s.wsize=1<<s.wbits,s.wnext=0,s.whave=0,s.window=new I.Buf8(s.wsize)),i>=s.wsize?(I.arraySet(s.window,e,r-s.wsize,s.wsize,0),s.wnext=0,s.whave=s.wsize):(i<(n=s.wsize-s.wnext)&&(n=i),I.arraySet(s.window,e,r-i,n,s.wnext),(i-=n)?(I.arraySet(s.window,e,r-i,i,0),s.wnext=i,s.whave=s.wsize):(s.wnext+=n,s.wnext===s.wsize&&(s.wnext=0),s.whave<s.wsize&&(s.whave+=n))),0}r.inflateReset=o,r.inflateReset2=h,r.inflateResetKeep=a,r.inflateInit=function(t){return u(t,15)},r.inflateInit2=u,r.inflate=function(t,e){var r,i,n,s,a,o,h,u,l,f,d,c,p,m,_,g,b,v,y,w,k,x,S,z,C=0,E=new I.Buf8(4),A=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];if(!t||!t.state||!t.output||!t.input&&0!==t.avail_in)return U;12===(r=t.state).mode&&(r.mode=13),a=t.next_out,n=t.output,h=t.avail_out,s=t.next_in,i=t.input,o=t.avail_in,u=r.hold,l=r.bits,f=o,d=h,x=N;t:for(;;)switch(r.mode){case P:if(0===r.wrap){r.mode=13;break}for(;l<16;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(2&r.wrap&&35615===u){E[r.check=0]=255&u,E[1]=u>>>8&255,r.check=B(r.check,E,2,0),l=u=0,r.mode=2;break}if(r.flags=0,r.head&&(r.head.done=!1),!(1&r.wrap)||(((255&u)<<8)+(u>>8))%31){t.msg="incorrect header check",r.mode=30;break}if(8!=(15&u)){t.msg="unknown compression method",r.mode=30;break}if(l-=4,k=8+(15&(u>>>=4)),0===r.wbits)r.wbits=k;else if(k>r.wbits){t.msg="invalid window size",r.mode=30;break}r.dmax=1<<k,t.adler=r.check=1,r.mode=512&u?10:12,l=u=0;break;case 2:for(;l<16;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(r.flags=u,8!=(255&r.flags)){t.msg="unknown compression method",r.mode=30;break}if(57344&r.flags){t.msg="unknown header flags set",r.mode=30;break}r.head&&(r.head.text=u>>8&1),512&r.flags&&(E[0]=255&u,E[1]=u>>>8&255,r.check=B(r.check,E,2,0)),l=u=0,r.mode=3;case 3:for(;l<32;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}r.head&&(r.head.time=u),512&r.flags&&(E[0]=255&u,E[1]=u>>>8&255,E[2]=u>>>16&255,E[3]=u>>>24&255,r.check=B(r.check,E,4,0)),l=u=0,r.mode=4;case 4:for(;l<16;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}r.head&&(r.head.xflags=255&u,r.head.os=u>>8),512&r.flags&&(E[0]=255&u,E[1]=u>>>8&255,r.check=B(r.check,E,2,0)),l=u=0,r.mode=5;case 5:if(1024&r.flags){for(;l<16;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}r.length=u,r.head&&(r.head.extra_len=u),512&r.flags&&(E[0]=255&u,E[1]=u>>>8&255,r.check=B(r.check,E,2,0)),l=u=0}else r.head&&(r.head.extra=null);r.mode=6;case 6:if(1024&r.flags&&(o<(c=r.length)&&(c=o),c&&(r.head&&(k=r.head.extra_len-r.length,r.head.extra||(r.head.extra=new Array(r.head.extra_len)),I.arraySet(r.head.extra,i,s,c,k)),512&r.flags&&(r.check=B(r.check,i,c,s)),o-=c,s+=c,r.length-=c),r.length))break t;r.length=0,r.mode=7;case 7:if(2048&r.flags){if(0===o)break t;for(c=0;k=i[s+c++],r.head&&k&&r.length<65536&&(r.head.name+=String.fromCharCode(k)),k&&c<o;);if(512&r.flags&&(r.check=B(r.check,i,c,s)),o-=c,s+=c,k)break t}else r.head&&(r.head.name=null);r.length=0,r.mode=8;case 8:if(4096&r.flags){if(0===o)break t;for(c=0;k=i[s+c++],r.head&&k&&r.length<65536&&(r.head.comment+=String.fromCharCode(k)),k&&c<o;);if(512&r.flags&&(r.check=B(r.check,i,c,s)),o-=c,s+=c,k)break t}else r.head&&(r.head.comment=null);r.mode=9;case 9:if(512&r.flags){for(;l<16;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(u!==(65535&r.check)){t.msg="header crc mismatch",r.mode=30;break}l=u=0}r.head&&(r.head.hcrc=r.flags>>9&1,r.head.done=!0),t.adler=r.check=0,r.mode=12;break;case 10:for(;l<32;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}t.adler=r.check=L(u),l=u=0,r.mode=11;case 11:if(0===r.havedict)return t.next_out=a,t.avail_out=h,t.next_in=s,t.avail_in=o,r.hold=u,r.bits=l,2;t.adler=r.check=1,r.mode=12;case 12:if(5===e||6===e)break t;case 13:if(r.last){u>>>=7&l,l-=7&l,r.mode=27;break}for(;l<3;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}switch(r.last=1&u,l-=1,3&(u>>>=1)){case 0:r.mode=14;break;case 1:if(j(r),r.mode=20,6!==e)break;u>>>=2,l-=2;break t;case 2:r.mode=17;break;case 3:t.msg="invalid block type",r.mode=30}u>>>=2,l-=2;break;case 14:for(u>>>=7&l,l-=7&l;l<32;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if((65535&u)!=(u>>>16^65535)){t.msg="invalid stored block lengths",r.mode=30;break}if(r.length=65535&u,l=u=0,r.mode=15,6===e)break t;case 15:r.mode=16;case 16:if(c=r.length){if(o<c&&(c=o),h<c&&(c=h),0===c)break t;I.arraySet(n,i,s,c,a),o-=c,s+=c,h-=c,a+=c,r.length-=c;break}r.mode=12;break;case 17:for(;l<14;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(r.nlen=257+(31&u),u>>>=5,l-=5,r.ndist=1+(31&u),u>>>=5,l-=5,r.ncode=4+(15&u),u>>>=4,l-=4,286<r.nlen||30<r.ndist){t.msg="too many length or distance symbols",r.mode=30;break}r.have=0,r.mode=18;case 18:for(;r.have<r.ncode;){for(;l<3;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}r.lens[A[r.have++]]=7&u,u>>>=3,l-=3}for(;r.have<19;)r.lens[A[r.have++]]=0;if(r.lencode=r.lendyn,r.lenbits=7,S={bits:r.lenbits},x=T(0,r.lens,0,19,r.lencode,0,r.work,S),r.lenbits=S.bits,x){t.msg="invalid code lengths set",r.mode=30;break}r.have=0,r.mode=19;case 19:for(;r.have<r.nlen+r.ndist;){for(;g=(C=r.lencode[u&(1<<r.lenbits)-1])>>>16&255,b=65535&C,!((_=C>>>24)<=l);){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(b<16)u>>>=_,l-=_,r.lens[r.have++]=b;else{if(16===b){for(z=_+2;l<z;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(u>>>=_,l-=_,0===r.have){t.msg="invalid bit length repeat",r.mode=30;break}k=r.lens[r.have-1],c=3+(3&u),u>>>=2,l-=2}else if(17===b){for(z=_+3;l<z;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}l-=_,k=0,c=3+(7&(u>>>=_)),u>>>=3,l-=3}else{for(z=_+7;l<z;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}l-=_,k=0,c=11+(127&(u>>>=_)),u>>>=7,l-=7}if(r.have+c>r.nlen+r.ndist){t.msg="invalid bit length repeat",r.mode=30;break}for(;c--;)r.lens[r.have++]=k}}if(30===r.mode)break;if(0===r.lens[256]){t.msg="invalid code -- missing end-of-block",r.mode=30;break}if(r.lenbits=9,S={bits:r.lenbits},x=T(D,r.lens,0,r.nlen,r.lencode,0,r.work,S),r.lenbits=S.bits,x){t.msg="invalid literal/lengths set",r.mode=30;break}if(r.distbits=6,r.distcode=r.distdyn,S={bits:r.distbits},x=T(F,r.lens,r.nlen,r.ndist,r.distcode,0,r.work,S),r.distbits=S.bits,x){t.msg="invalid distances set",r.mode=30;break}if(r.mode=20,6===e)break t;case 20:r.mode=21;case 21:if(6<=o&&258<=h){t.next_out=a,t.avail_out=h,t.next_in=s,t.avail_in=o,r.hold=u,r.bits=l,R(t,d),a=t.next_out,n=t.output,h=t.avail_out,s=t.next_in,i=t.input,o=t.avail_in,u=r.hold,l=r.bits,12===r.mode&&(r.back=-1);break}for(r.back=0;g=(C=r.lencode[u&(1<<r.lenbits)-1])>>>16&255,b=65535&C,!((_=C>>>24)<=l);){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(g&&0==(240&g)){for(v=_,y=g,w=b;g=(C=r.lencode[w+((u&(1<<v+y)-1)>>v)])>>>16&255,b=65535&C,!(v+(_=C>>>24)<=l);){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}u>>>=v,l-=v,r.back+=v}if(u>>>=_,l-=_,r.back+=_,r.length=b,0===g){r.mode=26;break}if(32&g){r.back=-1,r.mode=12;break}if(64&g){t.msg="invalid literal/length code",r.mode=30;break}r.extra=15&g,r.mode=22;case 22:if(r.extra){for(z=r.extra;l<z;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}r.length+=u&(1<<r.extra)-1,u>>>=r.extra,l-=r.extra,r.back+=r.extra}r.was=r.length,r.mode=23;case 23:for(;g=(C=r.distcode[u&(1<<r.distbits)-1])>>>16&255,b=65535&C,!((_=C>>>24)<=l);){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(0==(240&g)){for(v=_,y=g,w=b;g=(C=r.distcode[w+((u&(1<<v+y)-1)>>v)])>>>16&255,b=65535&C,!(v+(_=C>>>24)<=l);){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}u>>>=v,l-=v,r.back+=v}if(u>>>=_,l-=_,r.back+=_,64&g){t.msg="invalid distance code",r.mode=30;break}r.offset=b,r.extra=15&g,r.mode=24;case 24:if(r.extra){for(z=r.extra;l<z;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}r.offset+=u&(1<<r.extra)-1,u>>>=r.extra,l-=r.extra,r.back+=r.extra}if(r.offset>r.dmax){t.msg="invalid distance too far back",r.mode=30;break}r.mode=25;case 25:if(0===h)break t;if(c=d-h,r.offset>c){if((c=r.offset-c)>r.whave&&r.sane){t.msg="invalid distance too far back",r.mode=30;break}p=c>r.wnext?(c-=r.wnext,r.wsize-c):r.wnext-c,c>r.length&&(c=r.length),m=r.window}else m=n,p=a-r.offset,c=r.length;for(h<c&&(c=h),h-=c,r.length-=c;n[a++]=m[p++],--c;);0===r.length&&(r.mode=21);break;case 26:if(0===h)break t;n[a++]=r.length,h--,r.mode=21;break;case 27:if(r.wrap){for(;l<32;){if(0===o)break t;o--,u|=i[s++]<<l,l+=8}if(d-=h,t.total_out+=d,r.total+=d,d&&(t.adler=r.check=r.flags?B(r.check,n,d,a-d):O(r.check,n,d,a-d)),d=h,(r.flags?u:L(u))!==r.check){t.msg="incorrect data check",r.mode=30;break}l=u=0}r.mode=28;case 28:if(r.wrap&&r.flags){for(;l<32;){if(0===o)break t;o--,u+=i[s++]<<l,l+=8}if(u!==(4294967295&r.total)){t.msg="incorrect length check",r.mode=30;break}l=u=0}r.mode=29;case 29:x=1;break t;case 30:x=-3;break t;case 31:return-4;case 32:default:return U}return t.next_out=a,t.avail_out=h,t.next_in=s,t.avail_in=o,r.hold=u,r.bits=l,(r.wsize||d!==t.avail_out&&r.mode<30&&(r.mode<27||4!==e))&&Z(t,t.output,t.next_out,d-t.avail_out)?(r.mode=31,-4):(f-=t.avail_in,d-=t.avail_out,t.total_in+=f,t.total_out+=d,r.total+=d,r.wrap&&d&&(t.adler=r.check=r.flags?B(r.check,n,d,t.next_out-d):O(r.check,n,d,t.next_out-d)),t.data_type=r.bits+(r.last?64:0)+(12===r.mode?128:0)+(20===r.mode||15===r.mode?256:0),(0==f&&0===d||4===e)&&x===N&&(x=-5),x)},r.inflateEnd=function(t){if(!t||!t.state)return U;var e=t.state;return e.window&&(e.window=null),t.state=null,N},r.inflateGetHeader=function(t,e){var r;return t&&t.state?0==(2&(r=t.state).wrap)?U:((r.head=e).done=!1,N):U},r.inflateSetDictionary=function(t,e){var r,i=e.length;return t&&t.state?0!==(r=t.state).wrap&&11!==r.mode?U:11===r.mode&&O(1,e,i,0)!==r.check?-3:Z(t,e,i,i)?(r.mode=31,-4):(r.havedict=1,N):U},r.inflateInfo="pako inflate (from Nodeca project)"},{"../utils/common":41,"./adler32":43,"./crc32":45,"./inffast":48,"./inftrees":50}],50:[function(t,e,r){"use strict";var D=t("../utils/common"),F=[3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258,0,0],N=[16,16,16,16,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,16,72,78],U=[1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577,0,0],P=[16,16,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27,28,28,29,29,64,64];e.exports=function(t,e,r,i,n,s,a,o){var h,u,l,f,d,c,p,m,_,g=o.bits,b=0,v=0,y=0,w=0,k=0,x=0,S=0,z=0,C=0,E=0,A=null,I=0,O=new D.Buf16(16),B=new D.Buf16(16),R=null,T=0;for(b=0;b<=15;b++)O[b]=0;for(v=0;v<i;v++)O[e[r+v]]++;for(k=g,w=15;1<=w&&0===O[w];w--);if(w<k&&(k=w),0===w)return n[s++]=20971520,n[s++]=20971520,o.bits=1,0;for(y=1;y<w&&0===O[y];y++);for(k<y&&(k=y),b=z=1;b<=15;b++)if(z<<=1,(z-=O[b])<0)return-1;if(0<z&&(0===t||1!==w))return-1;for(B[1]=0,b=1;b<15;b++)B[b+1]=B[b]+O[b];for(v=0;v<i;v++)0!==e[r+v]&&(a[B[e[r+v]]++]=v);if(c=0===t?(A=R=a,19):1===t?(A=F,I-=257,R=N,T-=257,256):(A=U,R=P,-1),b=y,d=s,S=v=E=0,l=-1,f=(C=1<<(x=k))-1,1===t&&852<C||2===t&&592<C)return 1;for(;;){for(p=b-S,_=a[v]<c?(m=0,a[v]):a[v]>c?(m=R[T+a[v]],A[I+a[v]]):(m=96,0),h=1<<b-S,y=u=1<<x;n[d+(E>>S)+(u-=h)]=p<<24|m<<16|_|0,0!==u;);for(h=1<<b-1;E&h;)h>>=1;if(0!==h?(E&=h-1,E+=h):E=0,v++,0==--O[b]){if(b===w)break;b=e[r+a[v]]}if(k<b&&(E&f)!==l){for(0===S&&(S=k),d+=y,z=1<<(x=b-S);x+S<w&&!((z-=O[x+S])<=0);)x++,z<<=1;if(C+=1<<x,1===t&&852<C||2===t&&592<C)return 1;n[l=E&f]=k<<24|x<<16|d-s|0}}return 0!==E&&(n[d+E]=b-S<<24|64<<16|0),o.bits=k,0}},{"../utils/common":41}],51:[function(t,e,r){"use strict";e.exports={2:"need dictionary",1:"stream end",0:"","-1":"file error","-2":"stream error","-3":"data error","-4":"insufficient memory","-5":"buffer error","-6":"incompatible version"}},{}],52:[function(t,e,r){"use strict";var n=t("../utils/common"),o=0,h=1;function i(t){for(var e=t.length;0<=--e;)t[e]=0}var s=0,a=29,u=256,l=u+1+a,f=30,d=19,_=2*l+1,g=15,c=16,p=7,m=256,b=16,v=17,y=18,w=[0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0],k=[0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13],x=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,7],S=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15],z=new Array(2*(l+2));i(z);var C=new Array(2*f);i(C);var E=new Array(512);i(E);var A=new Array(256);i(A);var I=new Array(a);i(I);var O,B,R,T=new Array(f);function D(t,e,r,i,n){this.static_tree=t,this.extra_bits=e,this.extra_base=r,this.elems=i,this.max_length=n,this.has_stree=t&&t.length}function F(t,e){this.dyn_tree=t,this.max_code=0,this.stat_desc=e}function N(t){return t<256?E[t]:E[256+(t>>>7)]}function U(t,e){t.pending_buf[t.pending++]=255&e,t.pending_buf[t.pending++]=e>>>8&255}function P(t,e,r){t.bi_valid>c-r?(t.bi_buf|=e<<t.bi_valid&65535,U(t,t.bi_buf),t.bi_buf=e>>c-t.bi_valid,t.bi_valid+=r-c):(t.bi_buf|=e<<t.bi_valid&65535,t.bi_valid+=r)}function L(t,e,r){P(t,r[2*e],r[2*e+1])}function j(t,e){for(var r=0;r|=1&t,t>>>=1,r<<=1,0<--e;);return r>>>1}function Z(t,e,r){var i,n,s=new Array(g+1),a=0;for(i=1;i<=g;i++)s[i]=a=a+r[i-1]<<1;for(n=0;n<=e;n++){var o=t[2*n+1];0!==o&&(t[2*n]=j(s[o]++,o))}}function W(t){var e;for(e=0;e<l;e++)t.dyn_ltree[2*e]=0;for(e=0;e<f;e++)t.dyn_dtree[2*e]=0;for(e=0;e<d;e++)t.bl_tree[2*e]=0;t.dyn_ltree[2*m]=1,t.opt_len=t.static_len=0,t.last_lit=t.matches=0}function M(t){8<t.bi_valid?U(t,t.bi_buf):0<t.bi_valid&&(t.pending_buf[t.pending++]=t.bi_buf),t.bi_buf=0,t.bi_valid=0}function H(t,e,r,i){var n=2*e,s=2*r;return t[n]<t[s]||t[n]===t[s]&&i[e]<=i[r]}function G(t,e,r){for(var i=t.heap[r],n=r<<1;n<=t.heap_len&&(n<t.heap_len&&H(e,t.heap[n+1],t.heap[n],t.depth)&&n++,!H(e,i,t.heap[n],t.depth));)t.heap[r]=t.heap[n],r=n,n<<=1;t.heap[r]=i}function K(t,e,r){var i,n,s,a,o=0;if(0!==t.last_lit)for(;i=t.pending_buf[t.d_buf+2*o]<<8|t.pending_buf[t.d_buf+2*o+1],n=t.pending_buf[t.l_buf+o],o++,0===i?L(t,n,e):(L(t,(s=A[n])+u+1,e),0!==(a=w[s])&&P(t,n-=I[s],a),L(t,s=N(--i),r),0!==(a=k[s])&&P(t,i-=T[s],a)),o<t.last_lit;);L(t,m,e)}function Y(t,e){var r,i,n,s=e.dyn_tree,a=e.stat_desc.static_tree,o=e.stat_desc.has_stree,h=e.stat_desc.elems,u=-1;for(t.heap_len=0,t.heap_max=_,r=0;r<h;r++)0!==s[2*r]?(t.heap[++t.heap_len]=u=r,t.depth[r]=0):s[2*r+1]=0;for(;t.heap_len<2;)s[2*(n=t.heap[++t.heap_len]=u<2?++u:0)]=1,t.depth[n]=0,t.opt_len--,o&&(t.static_len-=a[2*n+1]);for(e.max_code=u,r=t.heap_len>>1;1<=r;r--)G(t,s,r);for(n=h;r=t.heap[1],t.heap[1]=t.heap[t.heap_len--],G(t,s,1),i=t.heap[1],t.heap[--t.heap_max]=r,t.heap[--t.heap_max]=i,s[2*n]=s[2*r]+s[2*i],t.depth[n]=(t.depth[r]>=t.depth[i]?t.depth[r]:t.depth[i])+1,s[2*r+1]=s[2*i+1]=n,t.heap[1]=n++,G(t,s,1),2<=t.heap_len;);t.heap[--t.heap_max]=t.heap[1],function(t,e){var r,i,n,s,a,o,h=e.dyn_tree,u=e.max_code,l=e.stat_desc.static_tree,f=e.stat_desc.has_stree,d=e.stat_desc.extra_bits,c=e.stat_desc.extra_base,p=e.stat_desc.max_length,m=0;for(s=0;s<=g;s++)t.bl_count[s]=0;for(h[2*t.heap[t.heap_max]+1]=0,r=t.heap_max+1;r<_;r++)p<(s=h[2*h[2*(i=t.heap[r])+1]+1]+1)&&(s=p,m++),h[2*i+1]=s,u<i||(t.bl_count[s]++,a=0,c<=i&&(a=d[i-c]),o=h[2*i],t.opt_len+=o*(s+a),f&&(t.static_len+=o*(l[2*i+1]+a)));if(0!==m){do{for(s=p-1;0===t.bl_count[s];)s--;t.bl_count[s]--,t.bl_count[s+1]+=2,t.bl_count[p]--,m-=2}while(0<m);for(s=p;0!==s;s--)for(i=t.bl_count[s];0!==i;)u<(n=t.heap[--r])||(h[2*n+1]!==s&&(t.opt_len+=(s-h[2*n+1])*h[2*n],h[2*n+1]=s),i--)}}(t,e),Z(s,u,t.bl_count)}function X(t,e,r){var i,n,s=-1,a=e[1],o=0,h=7,u=4;for(0===a&&(h=138,u=3),e[2*(r+1)+1]=65535,i=0;i<=r;i++)n=a,a=e[2*(i+1)+1],++o<h&&n===a||(o<u?t.bl_tree[2*n]+=o:0!==n?(n!==s&&t.bl_tree[2*n]++,t.bl_tree[2*b]++):o<=10?t.bl_tree[2*v]++:t.bl_tree[2*y]++,s=n,u=(o=0)===a?(h=138,3):n===a?(h=6,3):(h=7,4))}function V(t,e,r){var i,n,s=-1,a=e[1],o=0,h=7,u=4;for(0===a&&(h=138,u=3),i=0;i<=r;i++)if(n=a,a=e[2*(i+1)+1],!(++o<h&&n===a)){if(o<u)for(;L(t,n,t.bl_tree),0!=--o;);else 0!==n?(n!==s&&(L(t,n,t.bl_tree),o--),L(t,b,t.bl_tree),P(t,o-3,2)):o<=10?(L(t,v,t.bl_tree),P(t,o-3,3)):(L(t,y,t.bl_tree),P(t,o-11,7));s=n,u=(o=0)===a?(h=138,3):n===a?(h=6,3):(h=7,4)}}i(T);var q=!1;function J(t,e,r,i){P(t,(s<<1)+(i?1:0),3),function(t,e,r,i){M(t),i&&(U(t,r),U(t,~r)),n.arraySet(t.pending_buf,t.window,e,r,t.pending),t.pending+=r}(t,e,r,!0)}r._tr_init=function(t){q||(function(){var t,e,r,i,n,s=new Array(g+1);for(i=r=0;i<a-1;i++)for(I[i]=r,t=0;t<1<<w[i];t++)A[r++]=i;for(A[r-1]=i,i=n=0;i<16;i++)for(T[i]=n,t=0;t<1<<k[i];t++)E[n++]=i;for(n>>=7;i<f;i++)for(T[i]=n<<7,t=0;t<1<<k[i]-7;t++)E[256+n++]=i;for(e=0;e<=g;e++)s[e]=0;for(t=0;t<=143;)z[2*t+1]=8,t++,s[8]++;for(;t<=255;)z[2*t+1]=9,t++,s[9]++;for(;t<=279;)z[2*t+1]=7,t++,s[7]++;for(;t<=287;)z[2*t+1]=8,t++,s[8]++;for(Z(z,l+1,s),t=0;t<f;t++)C[2*t+1]=5,C[2*t]=j(t,5);O=new D(z,w,u+1,l,g),B=new D(C,k,0,f,g),R=new D(new Array(0),x,0,d,p)}(),q=!0),t.l_desc=new F(t.dyn_ltree,O),t.d_desc=new F(t.dyn_dtree,B),t.bl_desc=new F(t.bl_tree,R),t.bi_buf=0,t.bi_valid=0,W(t)},r._tr_stored_block=J,r._tr_flush_block=function(t,e,r,i){var n,s,a=0;0<t.level?(2===t.strm.data_type&&(t.strm.data_type=function(t){var e,r=4093624447;for(e=0;e<=31;e++,r>>>=1)if(1&r&&0!==t.dyn_ltree[2*e])return o;if(0!==t.dyn_ltree[18]||0!==t.dyn_ltree[20]||0!==t.dyn_ltree[26])return h;for(e=32;e<u;e++)if(0!==t.dyn_ltree[2*e])return h;return o}(t)),Y(t,t.l_desc),Y(t,t.d_desc),a=function(t){var e;for(X(t,t.dyn_ltree,t.l_desc.max_code),X(t,t.dyn_dtree,t.d_desc.max_code),Y(t,t.bl_desc),e=d-1;3<=e&&0===t.bl_tree[2*S[e]+1];e--);return t.opt_len+=3*(e+1)+5+5+4,e}(t),n=t.opt_len+3+7>>>3,(s=t.static_len+3+7>>>3)<=n&&(n=s)):n=s=r+5,r+4<=n&&-1!==e?J(t,e,r,i):4===t.strategy||s===n?(P(t,2+(i?1:0),3),K(t,z,C)):(P(t,4+(i?1:0),3),function(t,e,r,i){var n;for(P(t,e-257,5),P(t,r-1,5),P(t,i-4,4),n=0;n<i;n++)P(t,t.bl_tree[2*S[n]+1],3);V(t,t.dyn_ltree,e-1),V(t,t.dyn_dtree,r-1)}(t,t.l_desc.max_code+1,t.d_desc.max_code+1,a+1),K(t,t.dyn_ltree,t.dyn_dtree)),W(t),i&&M(t)},r._tr_tally=function(t,e,r){return t.pending_buf[t.d_buf+2*t.last_lit]=e>>>8&255,t.pending_buf[t.d_buf+2*t.last_lit+1]=255&e,t.pending_buf[t.l_buf+t.last_lit]=255&r,t.last_lit++,0===e?t.dyn_ltree[2*r]++:(t.matches++,e--,t.dyn_ltree[2*(A[r]+u+1)]++,t.dyn_dtree[2*N(e)]++),t.last_lit===t.lit_bufsize-1},r._tr_align=function(t){P(t,2,3),L(t,m,z),function(t){16===t.bi_valid?(U(t,t.bi_buf),t.bi_buf=0,t.bi_valid=0):8<=t.bi_valid&&(t.pending_buf[t.pending++]=255&t.bi_buf,t.bi_buf>>=8,t.bi_valid-=8)}(t)}},{"../utils/common":41}],53:[function(t,e,r){"use strict";e.exports=function(){this.input=null,this.next_in=0,this.avail_in=0,this.total_in=0,this.output=null,this.next_out=0,this.avail_out=0,this.total_out=0,this.msg="",this.state=null,this.data_type=2,this.adler=0}},{}],54:[function(t,e,r){"use strict";e.exports="function"==typeof setImmediate?setImmediate:function(){var t=[].slice.apply(arguments);t.splice(1,0,0),setTimeout.apply(null,t)}},{}]},{},[10])(10)});
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
+  \****************************************************************************/
+/***/ (function(module) {
+
+"use strict";
+
+
+var stylesInDOM = [];
+
+function getIndexByIdentifier(identifier) {
+  var result = -1;
+
+  for (var i = 0; i < stylesInDOM.length; i++) {
+    if (stylesInDOM[i].identifier === identifier) {
+      result = i;
+      break;
+    }
+  }
+
+  return result;
+}
+
+function modulesToDom(list, options) {
+  var idCountMap = {};
+  var identifiers = [];
+
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i];
+    var id = options.base ? item[0] + options.base : item[0];
+    var count = idCountMap[id] || 0;
+    var identifier = "".concat(id, " ").concat(count);
+    idCountMap[id] = count + 1;
+    var indexByIdentifier = getIndexByIdentifier(identifier);
+    var obj = {
+      css: item[1],
+      media: item[2],
+      sourceMap: item[3],
+      supports: item[4],
+      layer: item[5]
+    };
+
+    if (indexByIdentifier !== -1) {
+      stylesInDOM[indexByIdentifier].references++;
+      stylesInDOM[indexByIdentifier].updater(obj);
+    } else {
+      var updater = addElementStyle(obj, options);
+      options.byIndex = i;
+      stylesInDOM.splice(i, 0, {
+        identifier: identifier,
+        updater: updater,
+        references: 1
+      });
+    }
+
+    identifiers.push(identifier);
+  }
+
+  return identifiers;
+}
+
+function addElementStyle(obj, options) {
+  var api = options.domAPI(options);
+  api.update(obj);
+
+  var updater = function updater(newObj) {
+    if (newObj) {
+      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {
+        return;
+      }
+
+      api.update(obj = newObj);
+    } else {
+      api.remove();
+    }
+  };
+
+  return updater;
+}
+
+module.exports = function (list, options) {
+  options = options || {};
+  list = list || [];
+  var lastIdentifiers = modulesToDom(list, options);
+  return function update(newList) {
+    newList = newList || [];
+
+    for (var i = 0; i < lastIdentifiers.length; i++) {
+      var identifier = lastIdentifiers[i];
+      var index = getIndexByIdentifier(identifier);
+      stylesInDOM[index].references--;
+    }
+
+    var newLastIdentifiers = modulesToDom(newList, options);
+
+    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
+      var _identifier = lastIdentifiers[_i];
+
+      var _index = getIndexByIdentifier(_identifier);
+
+      if (stylesInDOM[_index].references === 0) {
+        stylesInDOM[_index].updater();
+
+        stylesInDOM.splice(_index, 1);
+      }
+    }
+
+    lastIdentifiers = newLastIdentifiers;
+  };
+};
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/insertBySelector.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/insertBySelector.js ***!
+  \********************************************************************/
+/***/ (function(module) {
+
+"use strict";
+
+
+var memo = {};
+/* istanbul ignore next  */
+
+function getTarget(target) {
+  if (typeof memo[target] === "undefined") {
+    var styleTarget = document.querySelector(target); // Special case to return head of iframe instead of iframe itself
+
+    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+      try {
+        // This will throw an exception if access to iframe is blocked
+        // due to cross-origin restrictions
+        styleTarget = styleTarget.contentDocument.head;
+      } catch (e) {
+        // istanbul ignore next
+        styleTarget = null;
+      }
+    }
+
+    memo[target] = styleTarget;
+  }
+
+  return memo[target];
+}
+/* istanbul ignore next  */
+
+
+function insertBySelector(insert, style) {
+  var target = getTarget(insert);
+
+  if (!target) {
+    throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
+  }
+
+  target.appendChild(style);
+}
+
+module.exports = insertBySelector;
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/insertStyleElement.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/insertStyleElement.js ***!
+  \**********************************************************************/
+/***/ (function(module) {
+
+"use strict";
+
+
+/* istanbul ignore next  */
+function insertStyleElement(options) {
+  var element = document.createElement("style");
+  options.setAttributes(element, options.attributes);
+  options.insert(element, options.options);
+  return element;
+}
+
+module.exports = insertStyleElement;
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js ***!
+  \**********************************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+/* istanbul ignore next  */
+function setAttributesWithoutAttributes(styleElement) {
+  var nonce =  true ? __webpack_require__.nc : 0;
+
+  if (nonce) {
+    styleElement.setAttribute("nonce", nonce);
+  }
+}
+
+module.exports = setAttributesWithoutAttributes;
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/styleDomAPI.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/styleDomAPI.js ***!
+  \***************************************************************/
+/***/ (function(module) {
+
+"use strict";
+
+
+/* istanbul ignore next  */
+function apply(styleElement, options, obj) {
+  var css = "";
+
+  if (obj.supports) {
+    css += "@supports (".concat(obj.supports, ") {");
+  }
+
+  if (obj.media) {
+    css += "@media ".concat(obj.media, " {");
+  }
+
+  var needLayer = typeof obj.layer !== "undefined";
+
+  if (needLayer) {
+    css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {");
+  }
+
+  css += obj.css;
+
+  if (needLayer) {
+    css += "}";
+  }
+
+  if (obj.media) {
+    css += "}";
+  }
+
+  if (obj.supports) {
+    css += "}";
+  }
+
+  var sourceMap = obj.sourceMap;
+
+  if (sourceMap && typeof btoa !== "undefined") {
+    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
+  } // For old IE
+
+  /* istanbul ignore if  */
+
+
+  options.styleTagTransform(css, styleElement, options.options);
+}
+
+function removeStyleElement(styleElement) {
+  // istanbul ignore if
+  if (styleElement.parentNode === null) {
+    return false;
+  }
+
+  styleElement.parentNode.removeChild(styleElement);
+}
+/* istanbul ignore next  */
+
+
+function domAPI(options) {
+  var styleElement = options.insertStyleElement(options);
+  return {
+    update: function update(obj) {
+      apply(styleElement, options, obj);
+    },
+    remove: function remove() {
+      removeStyleElement(styleElement);
+    }
+  };
+}
+
+module.exports = domAPI;
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/runtime/styleTagTransform.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/styleTagTransform.js ***!
+  \*********************************************************************/
+/***/ (function(module) {
+
+"use strict";
+
+
+/* istanbul ignore next  */
+function styleTagTransform(css, styleElement) {
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css;
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild);
+    }
+
+    styleElement.appendChild(document.createTextNode(css));
+  }
+}
+
+module.exports = styleTagTransform;
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/dist/exportHelper.js":
+/*!******************************************************!*\
+  !*** ./node_modules/vue-loader/dist/exportHelper.js ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// runtime helper for setting properties on components
+// in a tree-shakable way
+exports["default"] = (sfc, props) => {
+    const target = sfc.__vccOpts || sfc;
+    for (const [key, val] of props) {
+        target[key] = val;
+    }
+    return target;
+};
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+!function() {
+"use strict";
+/*!**************************************!*\
+  !*** ./src/js/index.js + 28 modules ***!
+  \**************************************/
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "store": function() { return /* binding */ store; }
-/* harmony export */ });
+
+// EXTERNAL MODULE: ./src/js/config.js
+var config = __webpack_require__("./src/js/config.js");
+;// CONCATENATED MODULE: ./src/js/store.js
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -927,28 +716,32 @@ var Store = /*#__PURE__*/function () {
 }();
 
 var store = new Store();
+;// CONCATENATED MODULE: ./src/js/ui/scroll.js
+function show_scroll() {
+  if ($('div#bp_config').is(':hidden') && $('div#message_box').is(':hidden')) {
+    $('body').css('overflow', 'auto');
+  }
+}
 
-/***/ }),
+function hide_scroll() {
+  $('body').css('overflow', 'hidden');
+}
 
-/***/ "./src/js/ui/message.js":
-/*!******************************!*\
-  !*** ./src/js/ui/message.js ***!
-  \******************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Message": function() { return /* binding */ Message; },
-/* harmony export */   "MessageBox": function() { return /* binding */ MessageBox; },
-/* harmony export */   "initMessage": function() { return /* binding */ initMessage; }
-/* harmony export */ });
-/* harmony import */ var _scroll__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scroll */ "./src/js/ui/scroll.js");
-/* harmony import */ var _html_message_html__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../html/message.html */ "./src/html/message.html");
+var scroll_scroll = {
+  show: show_scroll,
+  hide: hide_scroll
+};
+;// CONCATENATED MODULE: ./src/html/message.html
+// Module
+var code = "<div class=\"message-bg\"></div>\n<div id=\"message_box\">\n  <div class=\"message_box_bg\">\n    <span style=\"font-size:20px\"><b>提示：</b></span>\n    <div id=\"message_box_context\" style=\"margin:2% 0;\">...</div><br /><br />\n    <div class=\"message_box_btn\">\n      <button name=\"affirm\">确定</button>\n      <button name=\"cancel\">取消</button>\n    </div>\n  </div>\n</div>\n<style>\n  .message-bg {\n    position: fixed;\n    float: right;\n    right: 0;\n    top: 2%;\n    z-index: 30000;\n  }\n\n  .message {\n    margin-bottom: 15px;\n    padding: 2% 2%;\n    width: 300px;\n    display: flex;\n    margin-top: -70px;\n    opacity: 0;\n  }\n\n  .message-success {\n    background-color: #ddffdd;\n    border-left: 6px solid #4caf50;\n  }\n\n  .message-danger {\n    background-color: #ffdddd;\n    border-left: 6px solid #f44336;\n  }\n\n  .message-info {\n    background-color: #e7f3fe;\n    border-left: 6px solid #0c86de;\n  }\n\n  .message-warning {\n    background-color: #ffffcc;\n    border-left: 6px solid #ffeb3b;\n  }\n\n  .message-context {\n    font-size: 21px;\n    word-wrap: break-word;\n    word-break: break-all;\n  }\n\n  .message-context p {\n    margin: 0;\n  }\n\n  #message_box {\n    opacity: 0;\n    display: none;\n    position: fixed;\n    inset: 0px;\n    top: 0px;\n    left: 0px;\n    width: 100%;\n    height: 100%;\n    z-index: 20000;\n  }\n\n  .message_box_bg {\n    position: absolute;\n    background: rgb(255, 255, 255);\n    border-radius: 10px;\n    padding: 20px;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 400px;\n    box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n  }\n\n  .message_box_btn {\n    text-align: right;\n  }\n\n  .message_box_btn button {\n    margin: 0 5px;\n    width: 120px;\n    height: 40px;\n    border-width: 0px;\n    border-radius: 3px;\n    background: #1e90ff;\n    cursor: pointer;\n    outline: none;\n    color: white;\n    font-size: 17px;\n  }\n\n  .message_box_btn button:hover {\n    background: #5599ff;\n  }\n</style>\n";
+// Exports
+/* harmony default export */ var message = (code);
+;// CONCATENATED MODULE: ./src/js/ui/message.js
 
 
 
 function initMessage() {
-  $('body').append(_html_message_html__WEBPACK_IMPORTED_MODULE_1__["default"]);
+  $('body').append(message);
 }
 
 function messageBox(ctx, type) {
@@ -964,7 +757,7 @@ function messageBox(ctx, type) {
     $('div#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>');
   }
 
-  _scroll__WEBPACK_IMPORTED_MODULE_0__.scroll.hide();
+  scroll_scroll.hide();
   $('#message_box').show();
   $('div#message_box').animate({
     'opacity': '1'
@@ -973,7 +766,7 @@ function messageBox(ctx, type) {
   $('div.message_box_btn button[name="affirm"]')[0].onclick = function () {
     $('div#message_box').hide();
     $('div#message_box').css('opacity', 0);
-    _scroll__WEBPACK_IMPORTED_MODULE_0__.scroll.show();
+    scroll_scroll.show();
 
     if (ctx.callback && ctx.callback.affirm) {
       ctx.callback.affirm();
@@ -983,7 +776,7 @@ function messageBox(ctx, type) {
   $('div.message_box_btn button[name="cancel"]')[0].onclick = function () {
     $('div#message_box').hide();
     $('div#message_box').css('opacity', 0);
-    _scroll__WEBPACK_IMPORTED_MODULE_0__.scroll.show();
+    scroll_scroll.show();
 
     if (ctx.callback && ctx.callback.cancel) {
       ctx.callback.cancel();
@@ -993,7 +786,7 @@ function messageBox(ctx, type) {
 
 var id = 0;
 
-function message(html, type) {
+function message_message(html, type) {
   id += 1;
   messageEnQueue("<div id=\"message-".concat(id, "\" class=\"message message-").concat(type, "\"><div class=\"message-context\"><p><strong>").concat(type, "\uFF1A</strong></p><p>").concat(html, "</p></div></div>"), id);
   messageDeQueue(id, 3);
@@ -1022,19 +815,19 @@ function messageDeQueue(id) {
 
 var Message = {
   success: function success(html) {
-    return message(html, 'success');
+    return message_message(html, 'success');
   },
   warning: function warning(html) {
-    return message(html, 'warning');
+    return message_message(html, 'warning');
   },
   danger: function danger(html) {
-    return message(html, 'danger');
+    return message_message(html, 'danger');
   },
   info: function info(html) {
-    return message(html, 'info');
+    return message_message(html, 'info');
   },
   miaow: function miaow(_) {
-    return message('(^・ω・^)~喵喵喵~', 'info');
+    return message_message('(^・ω・^)~喵喵喵~', 'info');
   }
 };
 var MessageBox = {
@@ -1057,1319 +850,28 @@ var MessageBox = {
   }
 };
 
-
-/***/ }),
-
-/***/ "./src/js/ui/scroll.js":
-/*!*****************************!*\
-  !*** ./src/js/ui/scroll.js ***!
-  \*****************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "scroll": function() { return /* binding */ scroll; }
-/* harmony export */ });
-function show_scroll() {
-  if ($('div#bp_config').is(':hidden') && $('div#message_box').is(':hidden')) {
-    $('body').css('overflow', 'auto');
-  }
-}
-
-function hide_scroll() {
-  $('body').css('overflow', 'hidden');
-}
-
-var scroll = {
-  show: show_scroll,
-  hide: hide_scroll
-};
-
-/***/ }),
-
-/***/ "./src/js/user.js":
-/*!************************!*\
-  !*** ./src/js/user.js ***!
-  \************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "user": function() { return /* binding */ user; }
-/* harmony export */ });
-/* harmony import */ var _utils_video__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/video */ "./src/js/utils/video.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
-
-var User = /*#__PURE__*/function () {
-  function User() {
-    _classCallCheck(this, User);
-
-    this.is_login = false;
-    this.vip_status = 0;
-    this.mid = '';
-    this.uname = '';
-    this.has_init = false;
-    this.lazyInit();
-  }
-
-  _createClass(User, [{
-    key: "needReplace",
-    value: function needReplace() {
-      return !this.is_login || !this.vip_status && _utils_video__WEBPACK_IMPORTED_MODULE_0__.video.base().need_vip();
-    }
-  }, {
-    key: "lazyInit",
-    value: function lazyInit(last_init) {
-      if (!this.has_init) {
-        if (window.__BILI_USER_INFO__) {
-          this.is_login = window.__BILI_USER_INFO__.isLogin;
-          this.vip_status = window.__BILI_USER_INFO__.vipStatus;
-          this.mid = window.__BILI_USER_INFO__.mid || '';
-          this.uname = window.__BILI_USER_INFO__.uname || '';
-        } else if (window.__BiliUser__) {
-          this.is_login = window.__BiliUser__.isLogin;
-
-          if (window.__BiliUser__.cache) {
-            this.vip_status = window.__BiliUser__.cache.data.vipStatus;
-            this.mid = window.__BiliUser__.cache.data.mid || '';
-            this.uname = window.__BiliUser__.cache.data.uname || '';
-          } else {
-            this.vip_status = 0;
-            this.mid = '';
-            this.uname = '';
-          }
-        }
-
-        this.has_init = last_init;
-      }
-    }
-  }]);
-
-  return User;
-}();
-
-var user = new User();
-
-/***/ }),
-
-/***/ "./src/js/utils/ajax.js":
-/*!******************************!*\
-  !*** ./src/js/utils/ajax.js ***!
-  \******************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ajax": function() { return /* binding */ ajax; }
-/* harmony export */ });
-/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ui/message */ "./src/js/ui/message.js");
+;// CONCATENATED MODULE: ./src/js/utils/ajax.js
 
 function ajax(obj) {
   return new Promise(function (resolve, reject) {
     // set obj.success & obj.success
     obj.success = function (res) {
       if (res.code) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_0__.Message.warning("".concat(res.message || "CODE:".concat(res.code))); // todo
+        Message.warning("".concat(res.message || "CODE:".concat(res.code))); // todo
       }
 
       resolve(res);
     };
 
     obj.error = function (err) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_0__.Message.danger('网络异常');
+      Message.danger('网络异常');
       reject(err);
     };
 
     $.ajax(obj);
   });
 }
-
-/***/ }),
-
-/***/ "./src/js/utils/api.js":
-/*!*****************************!*\
-  !*** ./src/js/utils/api.js ***!
-  \*****************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "api": function() { return /* binding */ api; }
-/* harmony export */ });
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config */ "./src/js/config.js");
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store */ "./src/js/store.js");
-/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/message */ "./src/js/ui/message.js");
-/* harmony import */ var _ajax__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ajax */ "./src/js/utils/ajax.js");
-/* harmony import */ var _video__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./video */ "./src/js/utils/video.js");
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-
-
-
-
-
-
-function get_url_base(page, quality, video_format, success, error, request_type) {
-  var _success, _error;
-
-  if ('function' === typeof success) {
-    _success = function _success(e) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.success('请求成功');
-      success(e);
-    };
-  } else {
-    _success = function _success(res) {
-      return console.log(res);
-    };
-  }
-
-  if ('function' === typeof error) {
-    _error = function _error(e) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.danger('请求失败');
-      error(e);
-    };
-  } else {
-    _error = function _error(err) {
-      return console.error(err);
-    };
-  }
-
-  var vb = _video__WEBPACK_IMPORTED_MODULE_4__.video.base();
-  var _ref = [vb.aid(page), vb.cid(page), vb.epid(page), quality || _video__WEBPACK_IMPORTED_MODULE_4__.video.get_quality().q, vb.type],
-      aid = _ref[0],
-      cid = _ref[1],
-      epid = _ref[2],
-      q = _ref[3],
-      type = _ref[4];
-  var format = video_format || _config__WEBPACK_IMPORTED_MODULE_0__.config.format;
-  if (format === 'mp4' && type !== 'video') format = 'flv';
-
-  var url_replace_cdn = function url_replace_cdn(url) {
-    if (_config__WEBPACK_IMPORTED_MODULE_0__.config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
-      // 切换CDN
-      var url_tmp = url.split('/');
-      url_tmp[2] = _config__WEBPACK_IMPORTED_MODULE_0__.hostMap[_config__WEBPACK_IMPORTED_MODULE_0__.config.host_key];
-      url = url_tmp.join('/');
-    }
-
-    return url;
-  };
-
-  var base_api;
-  var ajax_obj = {
-    type: 'GET',
-    dataType: 'json'
-  };
-
-  if (request_type === 'auto' || request_type === 'local') {
-    var fnver, fnval;
-
-    if (type !== 'cheese') {
-      base_api = 'https://api.bilibili.com/x/player/playurl';
-
-      if (format === 'dash') {
-        fnver = 0, fnval = 80;
-      } else {
-        fnver = 0, fnval = 0;
-      }
-    } else {
-      base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
-
-      if (format === 'dash') {
-        fnver = 0, fnval = 80;
-      } else {
-        fnver = 1, fnval = 80;
-      }
-    }
-
-    base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
-    base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
-    ajax_obj.xhrFields = {
-      withCredentials: true
-    };
-  } else {
-    base_api = _config__WEBPACK_IMPORTED_MODULE_0__.config.base_api;
-    base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
-    var _ref2 = [_store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_id'), _store__WEBPACK_IMPORTED_MODULE_1__.store.get('auth_sec')],
-        auth_id = _ref2[0],
-        auth_sec = _ref2[1];
-
-    if (_config__WEBPACK_IMPORTED_MODULE_0__.config.auth === '1' && auth_id && auth_sec) {
-      base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
-      !!page && (base_api += '&s');
-    }
-  }
-
-  ajax_obj.url = base_api;
-  (0,_ajax__WEBPACK_IMPORTED_MODULE_3__.ajax)(ajax_obj).then(function (res) {
-    var data;
-
-    if (!res.code) {
-      data = res.result || res.data;
-    }
-
-    if (!data) {
-      if (request_type === 'auto') {
-        get_url_base(page, quality, video_format, success, error, 'online');
-        return;
-      } // online
-
-
-      res.url && (res.url = url_replace_cdn(res.url));
-      res.video && (res.video = url_replace_cdn(res.video));
-      res.audio && (res.audio = url_replace_cdn(res.audio));
-
-      _success(res);
-
-      return;
-    }
-
-    if (data.dash) {
-      var result = {
-        'code': 0,
-        'quality': data.quality,
-        'accept_quality': data.accept_quality,
-        'video': '',
-        'audio': ''
-      };
-      var videos = data.dash.video;
-
-      for (var i = 0; i < videos.length; i++) {
-        var _video = videos[i];
-
-        if (_video.id <= q) {
-          result.video = url_replace_cdn(_video.base_url);
-          result.audio = url_replace_cdn(data.dash.audio[0].base_url);
-          break;
-        }
-      }
-
-      _success(result);
-
-      return;
-    }
-
-    _success({
-      'code': 0,
-      'quality': data.quality,
-      'accept_quality': data.accept_quality,
-      'url': url_replace_cdn(data.durl[0].url)
-    });
-  }).catch(function (err) {
-    return _error(err);
-  });
-}
-
-function get_subtitle_url(p, callback) {
-  var video_base = _video__WEBPACK_IMPORTED_MODULE_4__.video.base();
-  var _ref3 = [video_base.aid(p), video_base.cid(p), video_base.epid(p)],
-      aid = _ref3[0],
-      cid = _ref3[1],
-      epid = _ref3[2];
-  (0,_ajax__WEBPACK_IMPORTED_MODULE_3__.ajax)({
-    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
-    dataType: 'json'
-  }).then(function (res) {
-    // todo
-    if (!res.code && res.data.subtitle.subtitles[0]) {
-      (0,_ajax__WEBPACK_IMPORTED_MODULE_3__.ajax)({
-        url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
-        dataType: 'json'
-      }).then(function (res) {
-        // json -> webvtt -> blob_url
-        var datas = res.body || [{
-          from: 0,
-          to: 0,
-          content: ''
-        }];
-        var webvtt = 'WEBVTT\n\n';
-
-        var _iterator = _createForOfIteratorHelper(datas),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var data = _step.value;
-            var a = new Date((parseInt(data.from) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.from.toString().split('.')[1] || '000').padEnd(3, '0');
-            var b = new Date((parseInt(data.to) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0');
-            webvtt += "".concat(a, " --> ").concat(b, "\n").concat(data.content.trim(), "\n\n");
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-
-        callback(URL.createObjectURL(new Blob([webvtt], {
-          type: 'text/vtt'
-        })));
-      }).catch(callback);
-    } else {
-      callback();
-    }
-  }).catch(callback);
-}
-
-function get_season(epid) {
-  (0,_ajax__WEBPACK_IMPORTED_MODULE_3__.ajax)({
-    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
-    xhrFields: {
-      withCredentials: true
-    },
-    dataType: 'json'
-  }).then(function (res) {
-    if (res.code) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_2__.Message.warning('获取剧集信息失败');
-      return;
-    }
-
-    window.bp_episodes = res.data.episodes || null;
-  });
-}
-
-var api = {
-  get_url: function get_url() {
-    var quality = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-    var success = arguments.length > 1 ? arguments[1] : undefined;
-    var error = arguments.length > 2 ? arguments[2] : undefined;
-    var request_type = _config__WEBPACK_IMPORTED_MODULE_0__.config.request_type;
-    var format = _config__WEBPACK_IMPORTED_MODULE_0__.config.format;
-    get_url_base(0, quality, format, success, error, request_type);
-  },
-  get_urls: function get_urls() {
-    var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-    var quality = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var format = arguments.length > 2 ? arguments[2] : undefined;
-    var success = arguments.length > 3 ? arguments[3] : undefined;
-    var error = arguments.length > 4 ? arguments[4] : undefined;
-    var request_type = _config__WEBPACK_IMPORTED_MODULE_0__.config.request_type;
-    get_url_base(page, quality, format, success, error, request_type);
-  },
-  get_subtitle_url: get_subtitle_url,
-  get_season: get_season
-};
-
-/***/ }),
-
-/***/ "./src/js/utils/download.js":
-/*!**********************************!*\
-  !*** ./src/js/utils/download.js ***!
-  \**********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Download": function() { return /* binding */ Download; }
-/* harmony export */ });
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config */ "./src/js/config.js");
-/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/message */ "./src/js/ui/message.js");
-/* harmony import */ var _ajax__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ajax */ "./src/js/utils/ajax.js");
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./api */ "./src/js/utils/api.js");
-/* harmony import */ var _video__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./video */ "./src/js/utils/video.js");
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-
-
-
-
-
-
-function rpc_type() {
-  if (_config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_domain.match('https://') || _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
-    return 'post';
-  } else {
-    return 'ariang';
-  }
-}
-
-function download_all() {
-  var vb = _video__WEBPACK_IMPORTED_MODULE_4__.video.base();
-  var _ref = [_video__WEBPACK_IMPORTED_MODULE_4__.video.get_quality().q, vb.total()],
-      q = _ref[0],
-      total = _ref[1];
-  $('body').on('click', 'input[name="dl_video"]', function () {
-    if ($(this).is(':checked')) {
-      $(this).parent().css('color', 'rgba(0,0,0,1)');
-    } else {
-      $(this).parent().css('color', 'rgba(0,0,0,0.5)');
-    }
-  });
-  var video_html = '';
-
-  for (var i = 0; i < total; i++) {
-    video_html += '' + "<label for=\"option_".concat(i, "\"><div style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"option_").concat(i, "\" name=\"dl_video\" value=\"").concat(i, "\">\n                P").concat(i + 1, " ").concat(vb.title(i + 1), "\n            </div></label>");
-  }
-
-  var all_checked = false;
-  $('body').on('click', 'button#checkbox_btn', function () {
-    if (all_checked) {
-      all_checked = false;
-      $('input[name="dl_video"]').prop('checked', all_checked);
-      $('input[name="dl_video"]').parent().css('color', 'rgba(0,0,0,0.5)');
-    } else {
-      all_checked = true;
-      $('input[name="dl_video"]').prop('checked', all_checked);
-      $('input[name="dl_video"]').parent().css('color', 'rgb(0,0,0)');
-    }
-  });
-  var q_map = {
-    '120': '4K 超清',
-    '116': '1080P 60帧',
-    '112': '1080P 高码率',
-    '80': '1080P 高清',
-    '74': '720P 60帧',
-    '64': '720P 高清',
-    '48': '720P 高清(MP4)',
-    '32': '480P 清晰',
-    '16': '360P 流畅'
-  };
-  var quality_support = _video__WEBPACK_IMPORTED_MODULE_4__.video.get_quality_support();
-  var option_support_html = '';
-
-  var _iterator = _createForOfIteratorHelper(quality_support),
-      _step;
-
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var item = _step.value;
-      option_support_html += "<option value=\"".concat(item, "\">").concat(q_map[item], "</option>");
-    }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
-  }
-
-  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F\uFF1A</label>\n            <select id=\"dl_format\">\n                <option value=\"flv\" selected>FLV</option>\n                <option value=\"mp4\">MP4</option>\n            </select>\n            &nbsp;&nbsp;\u4EC5video\u7C7B\u578B\u652F\u6301mp4\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF\uFF1A</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u5B57\u5E55\uFF1A</label>\n            <select id=\"dl_subtitle\">\n                <option value=\"0\" selected>\u5173\u95ED</option>\n                <option value=\"1\">VTT</option>\n            </select>\n            &nbsp;&nbsp\n            <label>\u4E0B\u8F7D\u5F39\u5E55\uFF1A</label>\n            <select id=\"dl_danmaku\">\n                <option value=\"0\" selected>\u5173\u95ED</option>\n                <option value=\"1\">ASS</option>\n            </select>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div>").concat(_video__WEBPACK_IMPORTED_MODULE_4__.video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : '', "</div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
-  _ui_message__WEBPACK_IMPORTED_MODULE_1__.MessageBox.confirm(msg, function () {
-    // 获取参数
-    var _q = $('#dl_quality').val() || q;
-
-    var _dl_subtitle = $('#dl_subtitle').val();
-
-    var _dl_danmaku = $('#dl_danmaku').val();
-
-    var videos = [];
-
-    for (var _i = 0; _i < total; _i++) {
-      if (!$("input#option_".concat(_i)).is(':checked')) {
-        continue;
-      }
-
-      var p = _i + 1;
-      var _ref2 = [vb.cid(p), vb.filename(p)],
-          cid = _ref2[0],
-          filename = _ref2[1];
-
-      var _format = $('#dl_format').val();
-
-      videos.push({
-        dl_subtitle: _dl_subtitle,
-        dl_danmaku: _dl_danmaku,
-        cid: cid,
-        p: p,
-        q: _q,
-        format: _format,
-        filename: filename
-      });
-    }
-
-    download_videos(videos, 0, []);
-  }); // 初始化参数，去除8k及以上
-
-  $('#dl_quality').val(q > 120 ? 80 : q);
-
-  function download_videos(videos, i, video_urls) {
-    // 单线递归处理，请求下载同时进行
-    if (videos.length) {
-      if (i < videos.length) {
-        var _video = videos[i];
-
-        if (_video.dl_subtitle === '1') {
-          // 下载字幕vtt
-          Download.download_subtitle_vtt(_video.p, _video.filename);
-        }
-
-        if (_video.dl_danmaku === '1') {
-          // 下载弹幕ass
-          Download.download_danmaku_ass(_video.cid, _video.filename);
-        }
-
-        var _msg = "\u7B2C".concat(i + 1, "\uFF08").concat(i + 1, "/").concat(videos.length, "\uFF09\u4E2A\u89C6\u9891");
-
-        _ui_message__WEBPACK_IMPORTED_MODULE_1__.MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
-        setTimeout(function () {
-          var success = function success(res) {
-            if (!res.code) {
-              _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
-              _ui_message__WEBPACK_IMPORTED_MODULE_1__.MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
-              var _ref3 = [res.url, format(res.url), rpc_type()],
-                  url = _ref3[0],
-                  video_format = _ref3[1],
-                  type = _ref3[2];
-
-              if (type === 'post') {
-                video_urls.push({
-                  url: url,
-                  filename: _video.filename + video_format
-                });
-
-                if (video_urls.length > 3) {
-                  download_rpc_all(video_urls);
-                  video_urls.length = 0;
-                }
-              } else if (type === 'ariang') {
-                download_rpc_ariang_one({
-                  url: url,
-                  filename: _video.filename + video_format
-                });
-              }
-            }
-
-            setTimeout(function () {
-              download_videos(videos, ++i, video_urls);
-            }, 3000);
-          };
-
-          var error = function error() {
-            download_videos(videos, ++i, video_urls);
-          };
-
-          _api__WEBPACK_IMPORTED_MODULE_3__.api.get_urls(_video.p, _video.q, _video.format, success, error);
-        }, 3000);
-      } else {
-        _ui_message__WEBPACK_IMPORTED_MODULE_1__.MessageBox.alert('视频地址请求完成！');
-
-        if (rpc_type() === 'post') {
-          if (video_urls.length > 0) {
-            download_rpc_all(video_urls);
-            video_urls.length = 0;
-          }
-        } // one by one -> null
-
-      }
-    }
-  }
-
-  function download_rpc_all(video_urls) {
-    var rpc = {
-      domain: _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_domain,
-      port: _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_port,
-      token: _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_token,
-      dir: _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_dir
-    };
-    var json_rpc = [];
-
-    var _iterator2 = _createForOfIteratorHelper(video_urls),
-        _step2;
-
-    try {
-      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-        var _video2 = _step2.value;
-        json_rpc.push({
-          id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
-          jsonrpc: '2.0',
-          method: 'aria2.addUri',
-          params: ["token:".concat(rpc.token), [_video2.url], {
-            dir: rpc.dir,
-            out: _video2.filename,
-            header: ["User-Agent: ".concat(window.navigator.userAgent), "Referer: ".concat(window.location.href)]
-          }]
-        });
-      }
-    } catch (err) {
-      _iterator2.e(err);
-    } finally {
-      _iterator2.f();
-    }
-
-    _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.info('发送RPC下载请求');
-    (0,_ajax__WEBPACK_IMPORTED_MODULE_2__.ajax)({
-      url: "".concat(rpc.domain, ":").concat(rpc.port, "/jsonrpc"),
-      type: 'POST',
-      dataType: 'json',
-      data: JSON.stringify(json_rpc)
-    }).then(function (res) {
-      if (res.length === json_rpc.length) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.success('RPC请求成功');
-      } else {
-        _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.warning('请检查RPC参数');
-      }
-    }).catch(function (_) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.danger('请检查RPC服务配置');
-    });
-  }
-}
-
-function download_rpc_ariang_one(video) {
-  var bp_aria2_window = window.bp_aria2_window;
-  var time = 100;
-
-  if (!bp_aria2_window || bp_aria2_window.closed) {
-    open_ariang();
-    time = 3000;
-  }
-
-  setTimeout(function () {
-    var bp_aria2_window = window.bp_aria2_window;
-    var aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
-
-    if (bp_aria2_window && !bp_aria2_window.closed) {
-      var task_hash = "#!/new/task?url=".concat(window.btoa(video.url), "&out=").concat(encodeURIComponent(video.filename), "&").concat(aria2_header);
-      bp_aria2_window.location.href = _config__WEBPACK_IMPORTED_MODULE_0__.config.ariang_host + task_hash;
-      _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.success('RPC请求成功');
-    } else {
-      _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.warning('请检查RPC参数');
-    }
-  }, time);
-}
-
-var download_rpc_clicked = false;
-
-function download_rpc(url, filename) {
-  var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'post';
-
-  if (download_rpc_clicked) {
-    _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.miaow();
-    return;
-  }
-
-  download_rpc_clicked = true;
-  var rpc = {
-    domain: _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_domain,
-    port: _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_port,
-    token: _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_token,
-    dir: _config__WEBPACK_IMPORTED_MODULE_0__.config.rpc_dir
-  };
-  var json_rpc = {
-    id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
-    jsonrpc: '2.0',
-    method: 'aria2.addUri',
-    params: ["token:".concat(rpc.token), [url], {
-      dir: rpc.dir,
-      out: filename,
-      header: ["User-Agent: ".concat(window.navigator.userAgent), "Referer: ".concat(window.location.href)]
-    }]
-  };
-  _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.info('发送RPC下载请求');
-
-  if (type === 'post') {
-    (0,_ajax__WEBPACK_IMPORTED_MODULE_2__.ajax)({
-      url: "".concat(rpc.domain, ":").concat(rpc.port, "/jsonrpc"),
-      type: 'POST',
-      dataType: 'json',
-      data: JSON.stringify(json_rpc)
-    }).then(function (res) {
-      if (res.result) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.success('RPC请求成功');
-      } else {
-        _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.warning('请检查RPC参数');
-      }
-    }).catch(function (_) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.danger('请检查RPC服务配置');
-    }).finally(function (_) {
-      return download_rpc_clicked = false;
-    });
-  } else if (type === 'ariang') {
-    var bp_aria2_window = window.bp_aria2_window;
-    var time = 100;
-
-    if (!bp_aria2_window || bp_aria2_window.closed) {
-      open_ariang();
-      time = 3000;
-    }
-
-    setTimeout(function () {
-      var bp_aria2_window = window.bp_aria2_window;
-      var aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
-      var task_hash = "#!/new/task?url=".concat(window.btoa(url), "&out=").concat(encodeURIComponent(filename), "&").concat(aria2_header);
-
-      if (bp_aria2_window && !bp_aria2_window.closed) {
-        bp_aria2_window.location.href = _config__WEBPACK_IMPORTED_MODULE_0__.config.ariang_host + task_hash;
-        _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.success('RPC请求发送成功');
-      } else {
-        _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.warning('AriaNG页面未打开');
-      }
-
-      download_rpc_clicked = false;
-    }, time);
-  }
-}
-
-function open_ariang(rpc) {
-  var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace('://', '/'), "/").concat(rpc.port, "/jsonrpc/").concat(window.btoa(rpc.token)) : '';
-  var url = _config__WEBPACK_IMPORTED_MODULE_0__.config.ariang_host + hash_tag;
-  var a = document.createElement('a');
-  a.setAttribute('target', '_blank');
-  a.setAttribute('onclick', "window.bp_aria2_window=window.open('".concat(url, "');"));
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
-
-var download_blob_clicked = false,
-    need_show_progress = true;
-
-function show_progress(_ref4) {
-  var total = _ref4.total,
-      loaded = _ref4.loaded,
-      percent = _ref4.percent;
-
-  if (need_show_progress) {
-    _ui_message__WEBPACK_IMPORTED_MODULE_1__.MessageBox.alert("\u6587\u4EF6\u5927\u5C0F\uFF1A".concat(Math.floor(total / (1024 * 1024)), "MB(").concat(total, "Byte)<br/>") + "\u5DF2\u7ECF\u4E0B\u8F7D\uFF1A".concat(Math.floor(loaded / (1024 * 1024)), "MB(").concat(loaded, "Byte)<br/>") + "\u5F53\u524D\u8FDB\u5EA6\uFF1A".concat(percent, "%<br/>\u4E0B\u8F7D\u4E2D\u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF01"), function () {
-      need_show_progress = false;
-      _ui_message__WEBPACK_IMPORTED_MODULE_1__.MessageBox.alert('注意：刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。');
-    });
-  }
-
-  if (total === loaded) {
-    _ui_message__WEBPACK_IMPORTED_MODULE_1__.MessageBox.alert('下载完成，请等待浏览器保存！');
-    download_blob_clicked = false;
-  }
-}
-
-function download_blob(url, filename) {
-  if (download_blob_clicked) {
-    _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.miaow();
-    need_show_progress = true;
-    return;
-  }
-
-  var xhr = new XMLHttpRequest();
-  xhr.open('get', url);
-  xhr.responseType = 'blob';
-
-  xhr.onload = function () {
-    if (this.status === 200 || this.status === 304) {
-      if ('msSaveOrOpenBlob' in navigator) {
-        navigator.msSaveOrOpenBlob(this.response, filename);
-        return;
-      }
-
-      var blob_url = URL.createObjectURL(this.response);
-      var a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = blob_url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(blob_url);
-    }
-  };
-
-  need_show_progress = true;
-
-  xhr.onprogress = function (evt) {
-    if (this.state != 4) {
-      var loaded = evt.loaded;
-      var tot = evt.total;
-      show_progress({
-        total: tot,
-        loaded: loaded,
-        percent: Math.floor(100 * loaded / tot)
-      });
-    }
-  };
-
-  xhr.send();
-  download_blob_clicked = true; // locked
-
-  _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.info('准备开始下载');
-}
-
-function download_danmaku_ass(_cid, title) {
-  // todo: 暂时使用随机弹幕
-  (0,_ajax__WEBPACK_IMPORTED_MODULE_2__.ajax)({
-    url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(_cid),
-    dataType: 'text'
-  }).then(function (result) {
-    var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''));
-
-    if (!result_dom || !result_dom.find('d')[0]) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.warning('未发现弹幕');
-      return;
-    } else {
-      // 1.json
-      var danmaku_data = result_dom.find('d').map(function (i, el) {
-        var item = $(el);
-        var p = item.attr('p').split(',');
-        var type = 0;
-
-        if (p[1] === '4') {
-          type = 2;
-        } else if (p[1] === '5') {
-          type = 1;
-        }
-
-        return [{
-          time: parseFloat(p[0]),
-          type: type,
-          color: parseInt(p[3]),
-          text: item.text()
-        }];
-      }).get();
-      danmaku_data.sort(function (a, b) {
-        return a.time - b.time;
-      }); // 2.dialogue
-
-      var dialogue = function dialogue(danmaku, scroll_id, fix_id) {
-        var encode = function encode(text) {
-          return text.replace(/\{/g, '｛').replace(/\}/g, '｝').replace(/\r|\n/g, '');
-        };
-
-        var colorCommand = function colorCommand(color) {
-          var r = color >> 16 & 0xff,
-              g = color >> 8 & 0xff,
-              b = color & 0xff;
-          return "\\c&H".concat((b << 16 | g << 8 | r).toString(16), "&");
-        }; //const borderColorCommand = color => `\\3c&H${color.toString(16)}&`
-
-
-        var isWhite = function isWhite(color) {
-          return color === 16777215;
-        };
-
-        var scrollCommand = function scrollCommand(top, left_a, left_b) {
-          return "\\move(".concat(left_a, ",").concat(top, ",").concat(left_b, ",").concat(top, ")");
-        };
-
-        var fixCommand = function fixCommand(top, left) {
-          return "\\pos(".concat(left, ",").concat(top, ")");
-        };
-
-        var scrollTime = 8,
-            fixTime = 4;
-        var text = danmaku.text,
-            time = danmaku.time;
-        var commands = [danmaku.type === 0 ? scrollCommand(50 * (1 + Math.floor(Math.random() * 15)), 1920 + 50 * danmaku.text.length / 2, 0 - 50 * danmaku.text.length / 2) : fixCommand(50 * (1 + fix_id % 15), 960), isWhite(danmaku.color) ? '' : colorCommand(danmaku.color) //isWhite(danmaku.color) ? '' : borderColorCommand(danmaku.color)
-        ];
-
-        var formatTime = function formatTime(seconds) {
-          var div = function div(i, j) {
-            return Math.floor(i / j);
-          };
-
-          var pad = function pad(n) {
-            return n < 10 ? '0' + n : '' + n;
-          };
-
-          var integer = Math.floor(seconds);
-          var hour = div(integer, 60 * 60);
-          var minute = div(integer, 60) % 60;
-          var second = integer % 60;
-          var minorSecond = Math.floor((seconds - integer) * 100); // 取小数部分2位
-
-          return "".concat(hour, ":").concat(pad(minute), ":").concat(pad(second), ".").concat(minorSecond);
-        };
-
-        var fields = [0, // Layer,
-        formatTime(time), // Start
-        formatTime(time + (danmaku.type === 0 ? scrollTime : fixTime)), // End
-        'Medium', // Style
-        '', // Name
-        '0', // MarginL
-        '0', // MarginR
-        '0', // MarginV
-        '', // Effect
-        '{' + commands.join('') + '}' + encode(text) // Text
-        ];
-        return 'Dialogue: ' + fields.join(',');
-      }; // 3.for of
-
-
-      var content = ['[Script Info]', '; Script generated by bilibili-parse', '; https://github.com/injahow/bilibili-parse', "Title: ".concat(title), 'ScriptType: v4.00+', "PlayResX: ".concat(1920), "PlayResY: ".concat(1080), 'Timer: 10.0000', 'WrapStyle: 2', 'ScaledBorderAndShadow: no', '', '[V4+ Styles]', 'Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding', 'Style: Small,微软雅黑,36,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Medium,微软雅黑,52,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Large,微软雅黑,64,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Larger,微软雅黑,72,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: ExtraLarge,微软雅黑,90,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', '', '[Events]', 'Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text'];
-      var scroll_id = 0,
-          fix_id = 0;
-
-      var _iterator3 = _createForOfIteratorHelper(danmaku_data),
-          _step3;
-
-      try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var danmaku = _step3.value;
-
-          if (danmaku.type === 0) {
-            scroll_id++;
-          } else {
-            fix_id++;
-          }
-
-          content.push(dialogue(danmaku, scroll_id, fix_id));
-        } // 4.ass->blob->url
-
-      } catch (err) {
-        _iterator3.e(err);
-      } finally {
-        _iterator3.f();
-      }
-
-      var blob_url = URL.createObjectURL(new Blob([content.join('\n')], {
-        type: 'text/ass'
-      }));
-      var a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = blob_url;
-      a.download = title + '.ass';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(blob_url);
-    }
-  }).catch(function (_) {
-    _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.warning('未发现字幕');
-  });
-}
-
-function download_subtitle_vtt() {
-  var p = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-  var file_name = arguments.length > 1 ? arguments[1] : undefined;
-
-  var download_subtitle = function download_subtitle() {
-    var blob_url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-    if (!blob_url) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_1__.Message.warning('未发现字幕');
-      return;
-    }
-
-    var a = document.createElement('a');
-    a.setAttribute('target', '_blank');
-    a.setAttribute('href', blob_url);
-    a.setAttribute('download', file_name + '.vtt');
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(blob_url);
-  };
-
-  _api__WEBPACK_IMPORTED_MODULE_3__.api.get_subtitle_url(p, download_subtitle);
-}
-
-function format(url) {
-  if (url.match('.flv')) {
-    return '.flv';
-  } else if (url.match('.m4s')) {
-    return '_video.mp4';
-  } else if (url.match('.mp4')) {
-    return '.mp4';
-  }
-
-  return '.mp4';
-}
-
-var Download = {
-  url_format: format,
-  download: function download(url, name, type) {
-    var filename = name.replace(/[\/\\:*?"<>|]+/g, '') + format(url);
-
-    if (type === 'blob') {
-      download_blob(url, filename);
-    } else if (type === 'rpc') {
-      download_rpc(url, filename, rpc_type());
-    }
-  },
-  download_all: download_all,
-  download_danmaku_ass: download_danmaku_ass,
-  download_subtitle_vtt: download_subtitle_vtt,
-  open_ariang: open_ariang
-};
-
-/***/ }),
-
-/***/ "./src/js/utils/player.js":
-/*!********************************!*\
-  !*** ./src/js/utils/player.js ***!
-  \********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "player": function() { return /* binding */ player; }
-/* harmony export */ });
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config */ "./src/js/config.js");
-/* harmony import */ var _ajax__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ajax */ "./src/js/utils/ajax.js");
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./api */ "./src/js/utils/api.js");
-/* harmony import */ var _video__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./video */ "./src/js/utils/video.js");
-
-
-
-
-
-function get_bili_player_id() {
-  if (!!$('#bilibiliPlayer')[0]) {
-    return '#bilibiliPlayer';
-  } else if (!!$('#bilibili-player')[0]) {
-    return '#bilibili-player';
-  } else if (_video__WEBPACK_IMPORTED_MODULE_3__.video.type() === 'cheese') {
-    if (!!$('div.bpx-player[data-injector="nano"]')[0]) {
-      return 'div.bpx-player[data-injector="nano"]';
-    } else {
-      // first
-      return '#pay-mask';
-    }
-  }
-}
-
-function request_danmaku(options, _cid) {
-  if (!_cid) {
-    options.error('cid未知，无法获取弹幕');
-    return;
-  }
-
-  (0,_ajax__WEBPACK_IMPORTED_MODULE_1__.ajax)({
-    url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(_cid),
-    dataType: 'text'
-  }).then(function (result) {
-    var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''));
-
-    if (!result_dom) {
-      options.error('弹幕获取失败');
-      return;
-    }
-
-    if (!result_dom.find('d')[0]) {
-      options.error('未发现弹幕');
-    } else {
-      var danmaku_data = result_dom.find('d').map(function (i, el) {
-        var item = $(el);
-        var p = item.attr('p').split(',');
-        var type = 0;
-
-        if (p[1] === '4') {
-          type = 2;
-        } else if (p[1] === '5') {
-          type = 1;
-        }
-
-        return [{
-          author: '',
-          time: parseFloat(p[0]),
-          type: type,
-          color: parseInt(p[3]),
-          id: '',
-          text: item.text()
-        }];
-      }).get();
-      options.success(danmaku_data); // 加载弹幕设置
-
-      setTimeout(function () {
-        danmaku_config();
-      }, 100);
-    }
-  }).catch(function (_) {
-    options.error('弹幕请求异常');
-  });
-}
-
-function replace_player(url, url_2) {
-  // 恢复原视频
-  recover_player(); // 暂停原视频
-
-  var bili_video = $(bili_video_tag())[0];
-  bili_video_stop();
-  !!bili_video && bili_video.addEventListener('play', bili_video_stop, false);
-  var bili_player_id;
-
-  if (!!$('#bilibiliPlayer')[0]) {
-    bili_player_id = '#bilibiliPlayer';
-    $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">');
-    $(bili_player_id).hide();
-  } else if (!!$('#bilibili-player')[0]) {
-    bili_player_id = '#bilibili-player';
-    $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>');
-    $(bili_player_id).hide();
-  } else if (_video__WEBPACK_IMPORTED_MODULE_3__.video.type() === 'cheese') {
-    if (!!$('div.bpx-player[data-injector="nano"]')[0]) {
-      $('#pay-mask').hide();
-      $('#bofqi').show();
-      bili_player_id = 'div.bpx-player[data-injector="nano"]';
-      $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>');
-      $(bili_player_id).hide();
-    } else {
-      // 第一次
-      bili_player_id = '#pay-mask';
-      $(bili_player_id).html('<div id="bp_dplayer" style="width:100%;height:100%;"></div>');
-    }
-  }
-
-  $('#player_mask_module').hide();
-
-  var dplayer_init = function dplayer_init() {
-    var subtitle_url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    window.bp_dplayer = new DPlayer({
-      container: $('#bp_dplayer')[0],
-      mutex: false,
-      volume: 1,
-      autoplay: true,
-      video: {
-        url: url,
-        type: 'auto'
-      },
-      subtitle: {
-        url: subtitle_url,
-        type: 'webvtt',
-        fontSize: '35px',
-        bottom: '5%',
-        color: '#fff'
-      },
-      danmaku: true,
-      apiBackend: {
-        read: function read(options) {
-          request_danmaku(options, _video__WEBPACK_IMPORTED_MODULE_3__.video.base().cid());
-        },
-        send: function send(options) {
-          // ?
-          options.error('此脚本无法将弹幕同步到云端');
-        }
-      },
-      contextmenu: [{
-        text: '脚本信息',
-        link: 'https://github.com/injahow/user.js'
-      }, {
-        text: '脚本作者',
-        link: 'https://injahow.com'
-      }]
-    }); // subtitle_blob save
-
-    if (_config__WEBPACK_IMPORTED_MODULE_0__.config.format === 'dash' && url_2 && url_2 !== '#') {
-      $('body').append('<div id="bp_dplayer_2" style="display:none;"></div>');
-      window.bp_dplayer_2 = new DPlayer({
-        container: $('#bp_dplayer_2')[0],
-        mutex: false,
-        volume: 1,
-        autoplay: true,
-        video: {
-          url: url_2,
-          type: 'auto'
-        }
-      });
-      var _ref = [window.bp_dplayer, window.bp_dplayer_2],
-          bp_dplayer = _ref[0],
-          bp_dplayer_2 = _ref[1];
-      bp_dplayer.on('play', function () {
-        !bp_dplayer.paused && bp_dplayer_2.play();
-      });
-      bp_dplayer.on('playing', function () {
-        !bp_dplayer.paused && bp_dplayer_2.play();
-      });
-      bp_dplayer.on('timeupdate', function () {
-        if (Math.abs(bp_dplayer.video.currentTime - bp_dplayer_2.video.currentTime) > 1) {
-          bp_dplayer_2.pause();
-          bp_dplayer_2.seek(bp_dplayer.video.currentTime);
-        }
-
-        !bp_dplayer.paused && bp_dplayer_2.play();
-      });
-      bp_dplayer.on('seeking', function () {
-        bp_dplayer_2.pause();
-        bp_dplayer_2.seek(bp_dplayer.video.currentTime);
-      });
-      bp_dplayer.on('waiting', function () {
-        bp_dplayer_2.pause();
-        bp_dplayer_2.seek(bp_dplayer.video.currentTime);
-      });
-      bp_dplayer.on('pause', function () {
-        bp_dplayer_2.pause();
-        bp_dplayer_2.seek(bp_dplayer.video.currentTime);
-      });
-      bp_dplayer.on('suspend', function () {
-        bp_dplayer_2.speed(bp_dplayer.video.playbackRate);
-      });
-      bp_dplayer.on('volumechange', function () {
-        bp_dplayer_2.volume(bp_dplayer.video.volume);
-        bp_dplayer_2.video.muted = bp_dplayer.video.muted;
-      });
-    }
-  }; // 默认请求字幕
-
-
-  _api__WEBPACK_IMPORTED_MODULE_2__.api.get_subtitle_url(0, dplayer_init);
-}
-
-function bili_video_tag() {
-  if (!!$('bwp-video')[0]) {
-    return 'bwp-video';
-  } else if (!!$('video[class!="dplayer-video dplayer-video-current"]')[0]) {
-    return 'video[class!="dplayer-video dplayer-video-current"]';
-  }
-}
-
-function bili_video_stop() {
-  // listener
-  var bili_video = $(bili_video_tag())[0];
-
-  if (bili_video) {
-    bili_video.pause();
-    bili_video.currentTime = 0;
-  }
-}
-
-function recover_player() {
-  if (window.bp_dplayer) {
-    var bili_video = $(bili_video_tag())[0];
-    !!bili_video && bili_video.removeEventListener('play', bili_video_stop, false);
-    window.bp_dplayer.destroy();
-    window.bp_dplayer = null;
-    $('#bp_dplayer').remove();
-
-    if (window.bp_dplayer_2) {
-      window.bp_dplayer_2.destroy();
-      window.bp_dplayer_2 = null;
-      $('#bp_dplayer_2').remove();
-    }
-
-    $(get_bili_player_id()).show(); // $('#player_mask_module').show()
-  }
-} // DPlayer 弹幕设置
-
-
-function danmaku_config() {
-  var style = '' + "<style id=\"dplayer_danmaku_style\">\n        .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {\n            animation-duration: ".concat(parseFloat(_config__WEBPACK_IMPORTED_MODULE_0__.config.danmaku_speed), "s;\n            font-size: ").concat(parseInt(_config__WEBPACK_IMPORTED_MODULE_0__.config.danmaku_fontsize), "px;\n        }\n        </style>");
-
-  if (!!$('#dplayer_danmaku_style')[0]) {
-    $('#dplayer_danmaku_style').remove();
-  }
-
-  $('body').append(style);
-}
-
-var player = {
-  bili_video_tag: bili_video_tag,
-  recover_player: recover_player,
-  replace_player: replace_player,
-  danmaku: {
-    config: danmaku_config
-  }
-};
-
-/***/ }),
-
-/***/ "./src/js/utils/video.js":
-/*!*******************************!*\
-  !*** ./src/js/utils/video.js ***!
-  \*******************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "video": function() { return /* binding */ video; }
-/* harmony export */ });
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/js/utils/api.js");
+;// CONCATENATED MODULE: ./src/js/utils/video.js
 
 
 function type() {
@@ -2393,8 +895,10 @@ function base() {
 
   if (_type === 'video') {
     var state = window.__INITIAL_STATE__;
+    var main_title = (state.videoData && state.videoData.title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
     return {
       type: 'video',
+      name: main_title,
       total: function total() {
         return state.videoData.pages.length || 1;
       },
@@ -2404,7 +908,7 @@ function base() {
       },
       filename: function filename(_p) {
         var p = _p || state.p || 1;
-        var title = (state.videoData && state.videoData.title || 'unknown') + " P".concat(p, " \uFF08").concat(state.videoData.pages[p - 1].part || p, "\uFF09");
+        var title = main_title + " P".concat(p, " \uFF08").concat(state.videoData.pages[p - 1].part || p, "\uFF09");
         return title.replace(/[\/\\:*?"<>|]+/g, '');
       },
       aid: function aid(_p) {
@@ -2436,8 +940,12 @@ function base() {
     var _id = $('div.player-auxiliary-playlist-item.player-auxiliary-playlist-item-active').index();
 
     var collect_name = $('.player-auxiliary-playlist-top .player-auxiliary-filter-title').html();
+
+    var _main_title = (collect_name || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+
     return {
       type: 'video',
+      name: _main_title,
       total: function total() {
         return medialist.length;
       },
@@ -2449,7 +957,7 @@ function base() {
       filename: function filename(_p) {
         var id = _p ? _p - 1 : _id;
         var title = medialist.eq(id).find('.player-auxiliary-playlist-item-title').attr('title') || 'unknown';
-        return "".concat(collect_name, " P").concat(id + 1, " \uFF08").concat(title, "\uFF09").replace(/[\/\\:*?"<>|]+/g, '');
+        return "".concat(_main_title, " P").concat(id + 1, " \uFF08").concat(title, "\uFF09").replace(/[\/\\:*?"<>|]+/g, '');
       },
       aid: function aid(_p) {
         var id = _p ? _p - 1 : _id;
@@ -2477,19 +985,23 @@ function base() {
     };
   } else if (_type === 'bangumi') {
     var _state = window.__INITIAL_STATE__;
+
+    var _main_title2 = (_state.mediaInfo.season_title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+
     return {
       type: 'bangumi',
+      name: _main_title2,
       total: function total() {
         return _state.epList.length;
       },
       title: function title(_p) {
         var ep = _p ? _state.epList[_p - 1] : _state.epInfo;
-        return ("".concat(ep.titleFormat, " ").concat(ep.longTitle) || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+        return "".concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, '');
       },
       filename: function filename(_p) {
         if (_p) {
           var ep = _state.epList[_p - 1];
-          return ("".concat(_state.mediaInfo.season_title, "\uFF1A").concat(ep.titleFormat, " ").concat(ep.longTitle) || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+          return "".concat(_main_title2, "\uFF1A").concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, '');
         }
 
         return (_state.h1Title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
@@ -2523,15 +1035,18 @@ function base() {
       // todo: 异步如何处理？
       window.bp_episodes = []; // ref check
 
-      _api__WEBPACK_IMPORTED_MODULE_0__.api.get_season(epid);
+      api.get_season(epid);
     }
 
     var episodes = window.bp_episodes;
 
     var _id2 = $('li.on.list-box-li').index();
 
+    var _main_title3 = ($('div.season-info h1').html() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+
     return {
       type: 'cheese',
+      name: _main_title3,
       total: function total() {
         return episodes.length;
       },
@@ -2541,7 +1056,7 @@ function base() {
       },
       filename: function filename(_p) {
         var id = _p ? _p - 1 : _id2;
-        return "".concat($('div.season-info h1').html(), " P").concat(id + 1, " \uFF08").concat(episodes[id].title || 'unknown', "\uFF09").replace(/[\/\\:*?"<>|]+/g, '');
+        return "".concat(_main_title3, " P").concat(id + 1, " \uFF08").concat(episodes[id].title || 'unknown', "\uFF09").replace(/[\/\\:*?"<>|]+/g, '');
       },
       aid: function aid(_p) {
         var id = _p ? _p - 1 : _id2;
@@ -2572,6 +1087,7 @@ function base() {
     // error
     return {
       type: '?',
+      name: 'none',
       total: function total() {
         return 0;
       },
@@ -2682,143 +1198,13943 @@ var video = {
   get_quality: get_quality,
   get_quality_support: get_quality_support
 };
+;// CONCATENATED MODULE: ./src/js/utils/api.js
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-/***/ }),
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-/***/ "./src/html/arc_toolbar.html":
-/*!***********************************!*\
-  !*** ./src/html/arc_toolbar.html ***!
-  \***********************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-__webpack_require__.r(__webpack_exports__);
+
+
+
+
+
+
+function get_url_base(page, quality, video_format, success, error, request_type) {
+  var _success, _error;
+
+  if ('function' === typeof success) {
+    _success = function _success(e) {
+      // todo
+      success(e);
+    };
+  } else {
+    _success = function _success(res) {
+      return console.log(res);
+    };
+  }
+
+  if ('function' === typeof error) {
+    _error = function _error(e) {
+      Message.danger('请求失败');
+      error(e);
+    };
+  } else {
+    _error = function _error(err) {
+      return console.error(err);
+    };
+  }
+
+  var vb = video.base();
+  var _ref = [vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type],
+      aid = _ref[0],
+      cid = _ref[1],
+      epid = _ref[2],
+      q = _ref[3],
+      type = _ref[4];
+  var format = video_format || config.config.format;
+  if (format === 'mp4' && type !== 'video') format = 'flv';
+
+  var url_replace_cdn = function url_replace_cdn(url) {
+    if (config.config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
+      // 切换CDN
+      var url_tmp = url.split('/');
+      url_tmp[2] = config.hostMap[config.config.host_key];
+      url = url_tmp.join('/');
+    }
+
+    return url;
+  };
+
+  var base_api;
+  var ajax_obj = {
+    type: 'GET',
+    dataType: 'json'
+  };
+
+  if (request_type === 'auto' || request_type === 'local') {
+    var fnver, fnval;
+
+    if (type !== 'cheese') {
+      base_api = 'https://api.bilibili.com/x/player/playurl';
+
+      if (format === 'dash') {
+        fnver = 0, fnval = 80;
+      } else {
+        fnver = 0, fnval = 0;
+      }
+    } else {
+      base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
+
+      if (format === 'dash') {
+        fnver = 0, fnval = 80;
+      } else {
+        fnver = 1, fnval = 80;
+      }
+    }
+
+    base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
+    base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
+    ajax_obj.xhrFields = {
+      withCredentials: true
+    };
+  } else {
+    base_api = config.config.base_api;
+    base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
+    var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+        auth_id = _ref2[0],
+        auth_sec = _ref2[1];
+
+    if (config.config.auth === '1' && auth_id && auth_sec) {
+      base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
+      !!page && (base_api += '&s');
+    }
+  }
+
+  ajax_obj.url = base_api;
+  ajax(ajax_obj).then(function (res) {
+    var data;
+
+    if (!res.code) {
+      data = res.result || res.data;
+    }
+
+    if (!data) {
+      if (request_type === 'auto') {
+        get_url_base(page, quality, video_format, success, error, 'online');
+        return;
+      } // online
+
+
+      res.url && (res.url = url_replace_cdn(res.url));
+      res.video && (res.video = url_replace_cdn(res.video));
+      res.audio && (res.audio = url_replace_cdn(res.audio));
+
+      _success(res);
+
+      return;
+    }
+
+    if (data.dash) {
+      var result = {
+        'code': 0,
+        'quality': data.quality,
+        'accept_quality': data.accept_quality,
+        'video': '',
+        'audio': ''
+      };
+      var videos = data.dash.video;
+
+      for (var i = 0; i < videos.length; i++) {
+        var _video = videos[i];
+
+        if (_video.id <= q) {
+          result.video = url_replace_cdn(_video.base_url);
+          result.audio = url_replace_cdn(data.dash.audio[0].base_url);
+          break;
+        }
+      }
+
+      _success(result);
+
+      return;
+    }
+
+    _success({
+      'code': 0,
+      'quality': data.quality,
+      'accept_quality': data.accept_quality,
+      'url': url_replace_cdn(data.durl[0].url)
+    });
+  }).catch(function (err) {
+    return _error(err);
+  });
+}
+
+function _get_subtitle(p, callback) {
+  var to_blob_url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  var video_base = video.base();
+  var _ref3 = [video_base.aid(p), video_base.cid(p), video_base.epid(p)],
+      aid = _ref3[0],
+      cid = _ref3[1],
+      epid = _ref3[2];
+  ajax({
+    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
+    dataType: 'json'
+  }).then(function (res) {
+    // todo
+    if (!res.code && res.data.subtitle.subtitles[0]) {
+      ajax({
+        url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
+        dataType: 'json'
+      }).then(function (res) {
+        // json -> webvtt -> blob_url
+        var datas = res.body || [{
+          from: 0,
+          to: 0,
+          content: ''
+        }];
+        var webvtt = 'WEBVTT\n\n';
+
+        var _iterator = _createForOfIteratorHelper(datas),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var data = _step.value;
+            var a = new Date((parseInt(data.from) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.from.toString().split('.')[1] || '000').padEnd(3, '0');
+            var b = new Date((parseInt(data.to) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0');
+            webvtt += "".concat(a, " --> ").concat(b, "\n").concat(data.content.trim(), "\n\n");
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+
+        if (to_blob_url) {
+          callback(URL.createObjectURL(new Blob([webvtt], {
+            type: 'text/vtt'
+          })));
+        } else {
+          callback(webvtt);
+        }
+      }).catch(callback);
+    } else {
+      callback();
+    }
+  }).catch(callback);
+}
+
+function get_subtitle_data(p, callback) {
+  _get_subtitle(p, callback, false);
+}
+
+function get_subtitle_url(p, callback) {
+  _get_subtitle(p, callback, true);
+}
+
+function get_season(epid) {
+  ajax({
+    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
+    xhrFields: {
+      withCredentials: true
+    },
+    dataType: 'json'
+  }).then(function (res) {
+    if (res.code) {
+      Message.warning('获取剧集信息失败');
+      return;
+    }
+
+    window.bp_episodes = res.data.episodes || null;
+  });
+}
+
+var api = {
+  get_url: function get_url(success, error) {
+    var request_type = config.config.request_type;
+    var format = config.config.format;
+    get_url_base(0, 0, format, success, error, request_type);
+  },
+  get_urls: function get_urls(page, quality, format, success, error) {
+    var request_type = config.config.request_type;
+    get_url_base(page, quality, format, success, error, request_type);
+  },
+  get_subtitle_url: get_subtitle_url,
+  get_subtitle_data: get_subtitle_data,
+  get_season: get_season
+};
+;// CONCATENATED MODULE: ./src/js/utils/player.js
+
+
+
+
+
+function get_bili_player_id() {
+  if (!!$('#bilibiliPlayer')[0]) {
+    return '#bilibiliPlayer';
+  } else if (!!$('#bilibili-player')[0]) {
+    return '#bilibili-player';
+  } else if (video.type() === 'cheese') {
+    if (!!$('div.bpx-player[data-injector="nano"]')[0]) {
+      return 'div.bpx-player[data-injector="nano"]';
+    } else {
+      // first
+      return '#pay-mask';
+    }
+  }
+}
+
+function request_danmaku(options, _cid) {
+  if (!_cid) {
+    options.error('cid未知，无法获取弹幕');
+    return;
+  }
+
+  ajax({
+    url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(_cid),
+    dataType: 'text'
+  }).then(function (result) {
+    var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''));
+
+    if (!result_dom) {
+      options.error('弹幕获取失败');
+      return;
+    }
+
+    if (!result_dom.find('d')[0]) {
+      options.error('未发现弹幕');
+    } else {
+      var danmaku_data = result_dom.find('d').map(function (i, el) {
+        var item = $(el);
+        var p = item.attr('p').split(',');
+        var type = 0;
+
+        if (p[1] === '4') {
+          type = 2;
+        } else if (p[1] === '5') {
+          type = 1;
+        }
+
+        return [{
+          author: '',
+          time: parseFloat(p[0]),
+          type: type,
+          color: parseInt(p[3]),
+          id: '',
+          text: item.text()
+        }];
+      }).get();
+      options.success(danmaku_data); // 加载弹幕设置
+
+      setTimeout(function () {
+        danmaku_config();
+      }, 100);
+    }
+  }).catch(function (_) {
+    options.error('弹幕请求异常');
+  });
+}
+
+function replace_player(url, url_2) {
+  // 恢复原视频
+  recover_player(); // 暂停原视频
+
+  var bili_video = $(bili_video_tag())[0];
+  bili_video_stop();
+  !!bili_video && bili_video.addEventListener('play', bili_video_stop, false);
+  var bili_player_id;
+
+  if (!!$('#bilibiliPlayer')[0]) {
+    bili_player_id = '#bilibiliPlayer';
+    $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">');
+    $(bili_player_id).hide();
+  } else if (!!$('#bilibili-player')[0]) {
+    bili_player_id = '#bilibili-player';
+    $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>');
+    $(bili_player_id).hide();
+  } else if (video.type() === 'cheese') {
+    if (!!$('div.bpx-player[data-injector="nano"]')[0]) {
+      $('#pay-mask').hide();
+      $('#bofqi').show();
+      bili_player_id = 'div.bpx-player[data-injector="nano"]';
+      $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>');
+      $(bili_player_id).hide();
+    } else {
+      // 第一次
+      bili_player_id = '#pay-mask';
+      $(bili_player_id).html('<div id="bp_dplayer" style="width:100%;height:100%;"></div>');
+    }
+  }
+
+  $('#player_mask_module').hide();
+
+  var dplayer_init = function dplayer_init() {
+    var subtitle_url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    window.bp_dplayer = new DPlayer({
+      container: $('#bp_dplayer')[0],
+      mutex: false,
+      volume: 1,
+      autoplay: true,
+      video: {
+        url: url,
+        type: 'auto'
+      },
+      subtitle: {
+        url: subtitle_url,
+        type: 'webvtt',
+        fontSize: '35px',
+        bottom: '5%',
+        color: '#fff'
+      },
+      danmaku: true,
+      apiBackend: {
+        read: function read(options) {
+          request_danmaku(options, video.base().cid());
+        },
+        send: function send(options) {
+          // ?
+          options.error('此脚本无法将弹幕同步到云端');
+        }
+      },
+      contextmenu: [{
+        text: '脚本信息',
+        link: 'https://github.com/injahow/user.js'
+      }, {
+        text: '脚本作者',
+        link: 'https://injahow.com'
+      }]
+    }); // subtitle_blob save
+
+    if (config.config.format === 'dash' && url_2 && url_2 !== '#') {
+      $('body').append('<div id="bp_dplayer_2" style="display:none;"></div>');
+      window.bp_dplayer_2 = new DPlayer({
+        container: $('#bp_dplayer_2')[0],
+        mutex: false,
+        volume: 1,
+        autoplay: true,
+        video: {
+          url: url_2,
+          type: 'auto'
+        }
+      });
+      var _ref = [window.bp_dplayer, window.bp_dplayer_2],
+          bp_dplayer = _ref[0],
+          bp_dplayer_2 = _ref[1];
+      bp_dplayer.on('play', function () {
+        !bp_dplayer.paused && bp_dplayer_2.play();
+      });
+      bp_dplayer.on('playing', function () {
+        !bp_dplayer.paused && bp_dplayer_2.play();
+      });
+      bp_dplayer.on('timeupdate', function () {
+        if (Math.abs(bp_dplayer.video.currentTime - bp_dplayer_2.video.currentTime) > 1) {
+          bp_dplayer_2.pause();
+          bp_dplayer_2.seek(bp_dplayer.video.currentTime);
+        }
+
+        !bp_dplayer.paused && bp_dplayer_2.play();
+      });
+      bp_dplayer.on('seeking', function () {
+        bp_dplayer_2.pause();
+        bp_dplayer_2.seek(bp_dplayer.video.currentTime);
+      });
+      bp_dplayer.on('waiting', function () {
+        bp_dplayer_2.pause();
+        bp_dplayer_2.seek(bp_dplayer.video.currentTime);
+      });
+      bp_dplayer.on('pause', function () {
+        bp_dplayer_2.pause();
+        bp_dplayer_2.seek(bp_dplayer.video.currentTime);
+      });
+      bp_dplayer.on('suspend', function () {
+        bp_dplayer_2.speed(bp_dplayer.video.playbackRate);
+      });
+      bp_dplayer.on('volumechange', function () {
+        bp_dplayer_2.volume(bp_dplayer.video.volume);
+        bp_dplayer_2.video.muted = bp_dplayer.video.muted;
+      });
+    }
+  }; // 默认请求字幕
+
+
+  api.get_subtitle_url(0, dplayer_init);
+}
+
+function bili_video_tag() {
+  if (!!$('bwp-video')[0]) {
+    return 'bwp-video';
+  } else if (!!$('video[class!="dplayer-video dplayer-video-current"]')[0]) {
+    return 'video[class!="dplayer-video dplayer-video-current"]';
+  }
+}
+
+function bili_video_stop() {
+  // listener
+  var bili_video = $(bili_video_tag())[0];
+
+  if (bili_video) {
+    bili_video.pause();
+    bili_video.currentTime = 0;
+  }
+}
+
+function recover_player() {
+  if (window.bp_dplayer) {
+    var bili_video = $(bili_video_tag())[0];
+    !!bili_video && bili_video.removeEventListener('play', bili_video_stop, false);
+    window.bp_dplayer.destroy();
+    window.bp_dplayer = null;
+    $('#bp_dplayer').remove();
+
+    if (window.bp_dplayer_2) {
+      window.bp_dplayer_2.destroy();
+      window.bp_dplayer_2 = null;
+      $('#bp_dplayer_2').remove();
+    }
+
+    $(get_bili_player_id()).show(); // $('#player_mask_module').show()
+  }
+} // DPlayer 弹幕设置
+
+
+function danmaku_config() {
+  var style = '' + "<style id=\"dplayer_danmaku_style\">\n        .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {\n            animation-duration: ".concat(parseFloat(config.config.danmaku_speed), "s;\n            font-size: ").concat(parseInt(config.config.danmaku_fontsize), "px;\n        }\n        </style>");
+
+  if (!!$('#dplayer_danmaku_style')[0]) {
+    $('#dplayer_danmaku_style').remove();
+  }
+
+  $('body').append(style);
+}
+
+var player = {
+  bili_video_tag: bili_video_tag,
+  recover_player: recover_player,
+  replace_player: replace_player,
+  danmaku: {
+    config: danmaku_config
+  }
+};
+// EXTERNAL MODULE: ./node_modules/jszip/dist/jszip.min.js
+var jszip_min = __webpack_require__("./node_modules/jszip/dist/jszip.min.js");
+var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
+;// CONCATENATED MODULE: ./src/js/utils/download.js
+function download_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = download_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function download_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return download_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return download_arrayLikeToArray(o, minLen); }
+
+function download_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+
+
+
+
+
+
+function rpc_type() {
+  if (config.config.rpc_domain.match('https://') || config.config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
+    return 'post';
+  } else {
+    return 'ariang';
+  }
+}
+
+function download_all() {
+  var vb = video.base();
+  var _ref = [video.get_quality().q, vb.total()],
+      q = _ref[0],
+      total = _ref[1];
+  $('body').on('click', 'input[name="dl_video"]', function () {
+    if ($(this).is(':checked')) {
+      $(this).parent().css('color', 'rgba(0,0,0,1)');
+    } else {
+      $(this).parent().css('color', 'rgba(0,0,0,0.5)');
+    }
+  });
+  var video_html = '';
+
+  for (var i = 0; i < total; i++) {
+    video_html += '' + "<label for=\"option_".concat(i, "\"><div style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"option_").concat(i, "\" name=\"dl_video\" value=\"").concat(i, "\">\n                P").concat(i + 1, " ").concat(vb.title(i + 1), "\n            </div></label>");
+  }
+
+  var all_checked = false;
+  $('body').on('click', 'button#checkbox_btn', function () {
+    if (all_checked) {
+      all_checked = false;
+      $('input[name="dl_video"]').prop('checked', all_checked);
+      $('input[name="dl_video"]').parent().css('color', 'rgba(0,0,0,0.5)');
+    } else {
+      all_checked = true;
+      $('input[name="dl_video"]').prop('checked', all_checked);
+      $('input[name="dl_video"]').parent().css('color', 'rgb(0,0,0)');
+    }
+  });
+  var q_map = {
+    '120': '4K 超清',
+    '116': '1080P 60帧',
+    '112': '1080P 高码率',
+    '80': '1080P 高清',
+    '74': '720P 60帧',
+    '64': '720P 高清',
+    '48': '720P 高清(MP4)',
+    '32': '480P 清晰',
+    '16': '360P 流畅'
+  };
+  var quality_support = video.get_quality_support();
+  var option_support_html = '';
+
+  var _iterator = download_createForOfIteratorHelper(quality_support),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var item = _step.value;
+      option_support_html += "<option value=\"".concat(item, "\">").concat(q_map[item], "</option>");
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+
+  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F\uFF1A</label>\n            <select id=\"dl_format\">\n                <option value=\"flv\" selected>FLV</option>\n                <option value=\"mp4\">MP4</option>\n            </select>\n            &nbsp;&nbsp;\u4EC5video\u7C7B\u578B\u652F\u6301mp4\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF\uFF1A</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u5B57\u5E55\uFF1A</label>\n            <select id=\"dl_subtitle\">\n                <option value=\"0\" selected>\u5173\u95ED</option>\n                <option value=\"1\">VTT</option>\n            </select>\n            &nbsp;&nbsp\n            <label>\u4E0B\u8F7D\u5F39\u5E55\uFF1A</label>\n            <select id=\"dl_danmaku\">\n                <option value=\"0\" selected>\u5173\u95ED</option>\n                <option value=\"1\">ASS</option>\n            </select>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div>").concat(video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : '', "</div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
+  MessageBox.confirm(msg, function () {
+    // 获取参数
+    var dl_quality = $('#dl_quality').val() || q;
+    var dl_subtitle = $('#dl_subtitle').val();
+    var dl_danmaku = $('#dl_danmaku').val();
+    var videos = [];
+
+    for (var _i = 0; _i < total; _i++) {
+      if (!$("input#option_".concat(_i)).is(':checked')) {
+        continue;
+      }
+
+      var p = _i + 1;
+      var _ref2 = [vb.cid(p), vb.filename(p)],
+          cid = _ref2[0],
+          filename = _ref2[1];
+
+      var _format = $('#dl_format').val();
+
+      videos.push({
+        cid: cid,
+        p: p,
+        q: dl_quality,
+        format: _format,
+        filename: filename
+      });
+    }
+
+    if (dl_subtitle === '1') {
+      // 下载字幕vtt.zip
+      download_subtitle_vtt_zip([].concat(videos), new (jszip_min_default())());
+    }
+
+    if (dl_danmaku === '1') {
+      // 下载弹幕ass.zip
+      download_danmaku_ass_zip([].concat(videos), new (jszip_min_default())());
+    }
+
+    download_videos(videos, 0, []);
+  }); // 初始化参数，去除8k及以上
+
+  $('#dl_quality').val(q > 120 ? 80 : q);
+
+  function download_videos(videos, i, video_urls) {
+    // 单线递归处理，请求下载同时进行
+    if (videos.length) {
+      if (i < videos.length) {
+        var _video = videos[i];
+
+        var _msg = "\u7B2C".concat(i + 1, "\uFF08").concat(i + 1, "/").concat(videos.length, "\uFF09\u4E2A\u89C6\u9891");
+
+        MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
+        setTimeout(function () {
+          var success = function success(res) {
+            if (!res.code) {
+              Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
+              MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
+              var _ref3 = [res.url, format(res.url), rpc_type()],
+                  url = _ref3[0],
+                  video_format = _ref3[1],
+                  type = _ref3[2];
+
+              if (type === 'post') {
+                video_urls.push({
+                  url: url,
+                  filename: _video.filename + video_format
+                });
+
+                if (video_urls.length > 3) {
+                  download_rpc_all(video_urls);
+                  video_urls.length = 0;
+                }
+              } else if (type === 'ariang') {
+                download_rpc_ariang_one({
+                  url: url,
+                  filename: _video.filename + video_format
+                });
+              }
+            }
+
+            setTimeout(function () {
+              download_videos(videos, ++i, video_urls);
+            }, 3000);
+          };
+
+          var error = function error() {
+            download_videos(videos, ++i, video_urls);
+          };
+
+          api.get_urls(_video.p, _video.q, _video.format, success, error);
+        }, 3000);
+      } else {
+        MessageBox.alert('视频地址请求完成！');
+
+        if (rpc_type() === 'post') {
+          if (video_urls.length > 0) {
+            download_rpc_all(video_urls);
+            video_urls.length = 0;
+          }
+        } // one by one -> null
+
+      }
+    }
+  }
+
+  function download_rpc_all(video_urls) {
+    var rpc = {
+      domain: config.config.rpc_domain,
+      port: config.config.rpc_port,
+      token: config.config.rpc_token,
+      dir: config.config.rpc_dir
+    };
+    var json_rpc = [];
+
+    var _iterator2 = download_createForOfIteratorHelper(video_urls),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var _video2 = _step2.value;
+        json_rpc.push({
+          id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
+          jsonrpc: '2.0',
+          method: 'aria2.addUri',
+          params: ["token:".concat(rpc.token), [_video2.url], {
+            dir: rpc.dir,
+            out: _video2.filename,
+            header: ["User-Agent: ".concat(window.navigator.userAgent), "Referer: ".concat(window.location.href)]
+          }]
+        });
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+
+    Message.info('发送RPC下载请求');
+    ajax({
+      url: "".concat(rpc.domain, ":").concat(rpc.port, "/jsonrpc"),
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(json_rpc)
+    }).then(function (res) {
+      if (res.length === json_rpc.length) {
+        Message.success('RPC请求成功');
+      } else {
+        Message.warning('请检查RPC参数');
+      }
+    }).catch(function (_) {
+      Message.danger('请检查RPC服务配置');
+    });
+  }
+}
+
+function download_rpc_ariang_one(video) {
+  var bp_aria2_window = window.bp_aria2_window;
+  var time = 100;
+
+  if (!bp_aria2_window || bp_aria2_window.closed) {
+    open_ariang();
+    time = 3000;
+  }
+
+  setTimeout(function () {
+    var bp_aria2_window = window.bp_aria2_window;
+    var aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
+
+    if (bp_aria2_window && !bp_aria2_window.closed) {
+      var task_hash = "#!/new/task?url=".concat(window.btoa(video.url), "&out=").concat(encodeURIComponent(video.filename), "&").concat(aria2_header);
+      bp_aria2_window.location.href = config.config.ariang_host + task_hash;
+      Message.success('RPC请求成功');
+    } else {
+      Message.warning('请检查RPC参数');
+    }
+  }, time);
+}
+
+var download_rpc_clicked = false;
+
+function download_rpc(url, filename) {
+  var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'post';
+
+  if (download_rpc_clicked) {
+    Message.miaow();
+    return;
+  }
+
+  download_rpc_clicked = true;
+  var rpc = {
+    domain: config.config.rpc_domain,
+    port: config.config.rpc_port,
+    token: config.config.rpc_token,
+    dir: config.config.rpc_dir
+  };
+  var json_rpc = {
+    id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
+    jsonrpc: '2.0',
+    method: 'aria2.addUri',
+    params: ["token:".concat(rpc.token), [url], {
+      dir: rpc.dir,
+      out: filename,
+      header: ["User-Agent: ".concat(window.navigator.userAgent), "Referer: ".concat(window.location.href)]
+    }]
+  };
+  Message.info('发送RPC下载请求');
+
+  if (type === 'post') {
+    ajax({
+      url: "".concat(rpc.domain, ":").concat(rpc.port, "/jsonrpc"),
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(json_rpc)
+    }).then(function (res) {
+      if (res.result) {
+        Message.success('RPC请求成功');
+      } else {
+        Message.warning('请检查RPC参数');
+      }
+    }).catch(function (_) {
+      Message.danger('请检查RPC服务配置');
+    }).finally(function (_) {
+      return download_rpc_clicked = false;
+    });
+  } else if (type === 'ariang') {
+    var bp_aria2_window = window.bp_aria2_window;
+    var time = 100;
+
+    if (!bp_aria2_window || bp_aria2_window.closed) {
+      open_ariang();
+      time = 3000;
+    }
+
+    setTimeout(function () {
+      var bp_aria2_window = window.bp_aria2_window;
+      var aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
+      var task_hash = "#!/new/task?url=".concat(window.btoa(url), "&out=").concat(encodeURIComponent(filename), "&").concat(aria2_header);
+
+      if (bp_aria2_window && !bp_aria2_window.closed) {
+        bp_aria2_window.location.href = config.config.ariang_host + task_hash;
+        Message.success('RPC请求发送成功');
+      } else {
+        Message.warning('AriaNG页面未打开');
+      }
+
+      download_rpc_clicked = false;
+    }, time);
+  }
+}
+
+function open_ariang(rpc) {
+  var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace('://', '/'), "/").concat(rpc.port, "/jsonrpc/").concat(window.btoa(rpc.token)) : '';
+  var url = config.config.ariang_host + hash_tag;
+  var a = document.createElement('a');
+  a.setAttribute('target', '_blank');
+  a.setAttribute('onclick', "window.bp_aria2_window=window.open('".concat(url, "');"));
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+var download_blob_clicked = false,
+    need_show_progress = true;
+
+function show_progress(_ref4) {
+  var total = _ref4.total,
+      loaded = _ref4.loaded,
+      percent = _ref4.percent;
+
+  if (need_show_progress) {
+    MessageBox.alert("\u6587\u4EF6\u5927\u5C0F\uFF1A".concat(Math.floor(total / (1024 * 1024)), "MB(").concat(total, "Byte)<br/>") + "\u5DF2\u7ECF\u4E0B\u8F7D\uFF1A".concat(Math.floor(loaded / (1024 * 1024)), "MB(").concat(loaded, "Byte)<br/>") + "\u5F53\u524D\u8FDB\u5EA6\uFF1A".concat(percent, "%<br/>\u4E0B\u8F7D\u4E2D\u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF01"), function () {
+      need_show_progress = false;
+      MessageBox.alert('注意：刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。');
+    });
+  }
+
+  if (total === loaded) {
+    MessageBox.alert('下载完成，请等待浏览器保存！');
+    download_blob_clicked = false;
+  }
+}
+
+function download_blob(url, filename) {
+  if (download_blob_clicked) {
+    Message.miaow();
+    need_show_progress = true;
+    return;
+  }
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('get', url);
+  xhr.responseType = 'blob';
+
+  xhr.onload = function () {
+    if (this.status === 200 || this.status === 304) {
+      if ('msSaveOrOpenBlob' in navigator) {
+        navigator.msSaveOrOpenBlob(this.response, filename);
+        return;
+      }
+
+      var blob_url = URL.createObjectURL(this.response);
+      var a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = blob_url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blob_url);
+    }
+  };
+
+  need_show_progress = true;
+
+  xhr.onprogress = function (evt) {
+    if (this.state != 4) {
+      var loaded = evt.loaded;
+      var tot = evt.total;
+      show_progress({
+        total: tot,
+        loaded: loaded,
+        percent: Math.floor(100 * loaded / tot)
+      });
+    }
+  };
+
+  xhr.send();
+  download_blob_clicked = true; // locked
+
+  Message.info('准备开始下载');
+}
+
+function _download_danmaku_ass(cid, title) {
+  var return_type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  // todo: 暂时使用随机弹幕
+  ajax({
+    url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(cid),
+    dataType: 'text'
+  }).then(function (result) {
+    var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''));
+
+    if (!result_dom || !result_dom.find('d')[0]) {
+      Message.warning('未发现弹幕');
+      return;
+    } else {
+      // 1.json
+      var danmaku_data = result_dom.find('d').map(function (i, el) {
+        var item = $(el);
+        var p = item.attr('p').split(',');
+        var type = 0;
+
+        if (p[1] === '4') {
+          type = 2;
+        } else if (p[1] === '5') {
+          type = 1;
+        }
+
+        return [{
+          time: parseFloat(p[0]),
+          type: type,
+          color: parseInt(p[3]),
+          text: item.text()
+        }];
+      }).get();
+      danmaku_data.sort(function (a, b) {
+        return a.time - b.time;
+      }); // 2.dialogue
+
+      var dialogue = function dialogue(danmaku, scroll_id, fix_id) {
+        var encode = function encode(text) {
+          return text.replace(/\{/g, '｛').replace(/\}/g, '｝').replace(/\r|\n/g, '');
+        };
+
+        var colorCommand = function colorCommand(color) {
+          var r = color >> 16 & 0xff,
+              g = color >> 8 & 0xff,
+              b = color & 0xff;
+          return "\\c&H".concat((b << 16 | g << 8 | r).toString(16), "&");
+        }; //const borderColorCommand = color => `\\3c&H${color.toString(16)}&`
+
+
+        var isWhite = function isWhite(color) {
+          return color === 16777215;
+        };
+
+        var scrollCommand = function scrollCommand(top, left_a, left_b) {
+          return "\\move(".concat(left_a, ",").concat(top, ",").concat(left_b, ",").concat(top, ")");
+        };
+
+        var fixCommand = function fixCommand(top, left) {
+          return "\\pos(".concat(left, ",").concat(top, ")");
+        };
+
+        var scrollTime = 8,
+            fixTime = 4;
+        var text = danmaku.text,
+            time = danmaku.time;
+        var commands = [danmaku.type === 0 ? scrollCommand(50 * (1 + Math.floor(Math.random() * 15)), 1920 + 50 * danmaku.text.length / 2, 0 - 50 * danmaku.text.length / 2) : fixCommand(50 * (1 + fix_id % 15), 960), isWhite(danmaku.color) ? '' : colorCommand(danmaku.color) //isWhite(danmaku.color) ? '' : borderColorCommand(danmaku.color)
+        ];
+
+        var formatTime = function formatTime(seconds) {
+          var div = function div(i, j) {
+            return Math.floor(i / j);
+          };
+
+          var pad = function pad(n) {
+            return n < 10 ? '0' + n : '' + n;
+          };
+
+          var integer = Math.floor(seconds);
+          var hour = div(integer, 60 * 60);
+          var minute = div(integer, 60) % 60;
+          var second = integer % 60;
+          var minorSecond = Math.floor((seconds - integer) * 100); // 取小数部分2位
+
+          return "".concat(hour, ":").concat(pad(minute), ":").concat(pad(second), ".").concat(minorSecond);
+        };
+
+        var fields = [0, // Layer,
+        formatTime(time), // Start
+        formatTime(time + (danmaku.type === 0 ? scrollTime : fixTime)), // End
+        'Medium', // Style
+        '', // Name
+        '0', // MarginL
+        '0', // MarginR
+        '0', // MarginV
+        '', // Effect
+        '{' + commands.join('') + '}' + encode(text) // Text
+        ];
+        return 'Dialogue: ' + fields.join(',');
+      }; // 3.for of
+
+
+      var content = ['[Script Info]', '; Script generated by bilibili-parse', '; https://github.com/injahow/bilibili-parse', "Title: ".concat(title), 'ScriptType: v4.00+', "PlayResX: ".concat(1920), "PlayResY: ".concat(1080), 'Timer: 10.0000', 'WrapStyle: 2', 'ScaledBorderAndShadow: no', '', '[V4+ Styles]', 'Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding', 'Style: Small,微软雅黑,36,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Medium,微软雅黑,52,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Large,微软雅黑,64,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Larger,微软雅黑,72,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: ExtraLarge,微软雅黑,90,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', '', '[Events]', 'Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text'];
+      var scroll_id = 0,
+          fix_id = 0;
+
+      var _iterator3 = download_createForOfIteratorHelper(danmaku_data),
+          _step3;
+
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var danmaku = _step3.value;
+
+          if (danmaku.type === 0) {
+            scroll_id++;
+          } else {
+            fix_id++;
+          }
+
+          content.push(dialogue(danmaku, scroll_id, fix_id));
+        } // 4.ass & return
+
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+
+      var data = content.join('\n');
+
+      if (return_type === null || return_type === 'file') {
+        var blob_url = URL.createObjectURL(new Blob([data], {
+          type: 'text/ass'
+        }));
+        var a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blob_url;
+        a.download = title + '.ass';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blob_url);
+      } else if (return_type === 'callback' && callback) {
+        callback(data);
+      }
+    }
+  }).catch(function (_) {
+    Message.warning('未发现字幕');
+  });
+}
+
+function download_danmaku_ass(cid, title) {
+  _download_danmaku_ass(cid, title, 'file');
+}
+
+function download_subtitle_vtt() {
+  var p = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  var file_name = arguments.length > 1 ? arguments[1] : undefined;
+
+  var download_subtitle = function download_subtitle() {
+    var blob_url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+    if (!blob_url) {
+      Message.warning('未发现字幕');
+      return;
+    }
+
+    var a = document.createElement('a');
+    a.setAttribute('target', '_blank');
+    a.setAttribute('href', blob_url);
+    a.setAttribute('download', file_name + '.vtt');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(blob_url);
+  };
+
+  api.get_subtitle_url(p, download_subtitle);
+}
+
+function download_blob_zip(blob_data, filename) {
+  if (!blob_data) return;
+  var blob_url = URL.createObjectURL(blob_data);
+  var a = document.createElement('a');
+  a.setAttribute('target', '_blank');
+  a.setAttribute('href', blob_url);
+  a.setAttribute('download', filename + '.zip');
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(blob_url);
+}
+
+function download_danmaku_ass_zip(videos, zip) {
+  // 异步递归
+  if (!videos) return;
+
+  if (videos.length === 0) {
+    zip.generateAsync({
+      type: 'blob'
+    }).then(function (data) {
+      return download_blob_zip(data, video.base().name + '_ass');
+    });
+    return;
+  }
+
+  var videos_pop = videos.pop();
+
+  _download_danmaku_ass(videos_pop.cid, videos_pop.filename, 'callback', function (data) {
+    if (data) {
+      zip.file(videos_pop.filename + '.ass', data);
+    }
+
+    download_danmaku_ass_zip(videos, zip);
+  });
+}
+
+function download_subtitle_vtt_zip(videos, zip) {
+  // 异步递归
+  if (!videos) return;
+
+  if (videos.length === 0) {
+    zip.generateAsync({
+      type: 'blob'
+    }).then(function (data) {
+      return download_blob_zip(data, video.base().name + '_vtt');
+    });
+    return;
+  }
+
+  var videos_pop = videos.pop();
+  api.get_subtitle_data(videos_pop.p, function (data) {
+    if (data) {
+      zip.file(videos_pop.filename + '.vtt', data);
+    }
+
+    download_subtitle_vtt_zip(videos, zip);
+  });
+}
+
+function format(url) {
+  if (url.match('.flv')) {
+    return '.flv';
+  } else if (url.match('.m4s')) {
+    return '_video.mp4';
+  } else if (url.match('.mp4')) {
+    return '.mp4';
+  }
+
+  return '.mp4';
+}
+
+var Download = {
+  url_format: format,
+  download: function download(url, name, type) {
+    var filename = name.replace(/[\/\\:*?"<>|]+/g, '') + format(url);
+
+    if (type === 'blob') {
+      download_blob(url, filename);
+    } else if (type === 'rpc') {
+      download_rpc(url, filename, rpc_type());
+    }
+  },
+  download_all: download_all,
+  download_danmaku_ass: download_danmaku_ass,
+  download_subtitle_vtt: download_subtitle_vtt,
+  open_ariang: open_ariang
+};
+;// CONCATENATED MODULE: ./src/js/user.js
+function user_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function user_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function user_createClass(Constructor, protoProps, staticProps) { if (protoProps) user_defineProperties(Constructor.prototype, protoProps); if (staticProps) user_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+var User = /*#__PURE__*/function () {
+  function User() {
+    user_classCallCheck(this, User);
+
+    this.is_login = false;
+    this.vip_status = 0;
+    this.mid = '';
+    this.uname = '';
+    this.has_init = false;
+    this.lazyInit();
+  }
+
+  user_createClass(User, [{
+    key: "needReplace",
+    value: function needReplace() {
+      return !this.is_login || !this.vip_status && video.base().need_vip();
+    }
+  }, {
+    key: "lazyInit",
+    value: function lazyInit(last_init) {
+      if (!this.has_init) {
+        if (window.__BILI_USER_INFO__) {
+          this.is_login = window.__BILI_USER_INFO__.isLogin;
+          this.vip_status = window.__BILI_USER_INFO__.vipStatus;
+          this.mid = window.__BILI_USER_INFO__.mid || '';
+          this.uname = window.__BILI_USER_INFO__.uname || '';
+        } else if (window.__BiliUser__) {
+          this.is_login = window.__BiliUser__.isLogin;
+
+          if (window.__BiliUser__.cache) {
+            this.vip_status = window.__BiliUser__.cache.data.vipStatus;
+            this.mid = window.__BiliUser__.cache.data.mid || '';
+            this.uname = window.__BiliUser__.cache.data.uname || '';
+          } else {
+            this.vip_status = 0;
+            this.mid = '';
+            this.uname = '';
+          }
+        }
+
+        this.has_init = last_init;
+      }
+    }
+  }]);
+
+  return User;
+}();
+
+var user = new User();
+;// CONCATENATED MODULE: ./src/js/auth.js
+function auth_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function auth_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function auth_createClass(Constructor, protoProps, staticProps) { if (protoProps) auth_defineProperties(Constructor.prototype, protoProps); if (staticProps) auth_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+
+
+
+
+var Auth = /*#__PURE__*/function () {
+  function Auth() {
+    auth_classCallCheck(this, Auth);
+
+    this.auth_clicked = false;
+  }
+
+  auth_createClass(Auth, [{
+    key: "reLogin",
+    value: function reLogin() {
+      store.set('auth_id', '');
+      store.set('auth_sec', '');
+      store.set('access_key', '');
+      store.set('auth_time', '0');
+      this.login();
+    }
+  }, {
+    key: "checkLoginStatus",
+    value: function checkLoginStatus() {
+      var _this = this;
+
+      var _ref = [store.get('auth_id'), store.get('auth_sec'), store.get('access_key'), store.get('auth_time') || '0'],
+          auth_id = _ref[0],
+          auth_sec = _ref[1],
+          access_key = _ref[2],
+          auth_time = _ref[3];
+      if (!access_key) return;
+
+      if (user.is_login && (config.config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
+        // check key
+        ajax({
+          url: "https://api.bilibili.com/x/space/myinfo?access_key=".concat(access_key),
+          type: 'GET',
+          dataType: 'json'
+        }).then(function (res) {
+          if (res.code) {
+            MessageBox.alert('授权已过期，准备重新授权', _this.reLogin);
+          } else {
+            store.set('auth_time', Date.now());
+            return ajax({
+              url: "".concat(config.config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+              type: 'GET',
+              dataType: 'json'
+            });
+          }
+        }).then(function (res) {
+          if (res.code) {
+            MessageBox.alert('授权检查失败，准备重新授权', _this.reLogin);
+          }
+        });
+      }
+
+      store.set('pre_base_api', config.config.base_api);
+    }
+  }, {
+    key: "_login",
+    value: function _login(resolve) {
+      var _this2 = this;
+
+      if (this.auth_clicked) {
+        Message.miaow();
+        return;
+      }
+
+      this.auth_clicked = true;
+      ajax({
+        url: 'https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=https%3A%2F%2Fwww.mcbbs.net%2Ftemplate%2Fmcbbs%2Fimage%2Fspecial_photo_bg.png&sign=04224646d1fea004e79606d3b038c84a',
+        xhrFields: {
+          withCredentials: true
+        },
+        type: 'GET',
+        dataType: 'json'
+      }).then(resolve).finally(function (_) {
+        return _this2.auth_clicked = false;
+      });
+    }
+  }, {
+    key: "login",
+    value: function login() {
+      var auto = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '1';
+      var do_login = auto === '1' // 绑定 this
+      ? this.loginAuto.bind(this) : this.loginManual.bind(this);
+
+      if (store.get('auth_id')) {
+        MessageBox.confirm('发现授权记录，是否重新授权？', do_login);
+        return;
+      }
+
+      do_login();
+    }
+  }, {
+    key: "loginAuto",
+    value: function loginAuto() {
+      this._login(function (res) {
+        if (res.data.has_login) {
+          $('body').append("<iframe id='auth_iframe' src='".concat(res.data.confirm_uri, "' style='display:none;'></iframe>"));
+        } else {
+          MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', function () {
+            location.href = 'https://passport.bilibili.com/login';
+          });
+        }
+      });
+    }
+  }, {
+    key: "loginManual",
+    value: function loginManual() {
+      this._login(function (res) {
+        if (res.data.has_login) {
+          var msg = '' + "\u8BF7\u70B9\u51FB<b><a href='".concat(res.data.confirm_uri, "' target='_blank'>\u6388\u6743\u5730\u5740</a></b>\n                    \u6253\u5F00\u4E00\u4E2A\u65B0\u7A97\u53E3\uFF0C\u6B63\u5E38\u60C5\u51B5\u65B0\u7A97\u53E3\u5E94\u8BE5\u663E\u793A\u4E00\u4E2A\u56FE\u7247\uFF0C\u8BF7\u5C06\u8BE5\u7A97\u53E3\u5730\u5740\u680F\u7684URL\u94FE\u63A5\u590D\u5236\u5230\u5F53\u524D\u6587\u672C\u6846\u4E2D<br/>\n                    <input id='auth_url' style='width:100%;' type='text' autocomplete='off'><br>\u7136\u540E\u70B9\u51FB\u786E\u5B9A\u5373\u53EF");
+          MessageBox.alert(msg, function () {
+            var auth_url = $('#auth_url').val();
+            var auth_id = store.get('auth_id') || '',
+                auth_sec = store.get('auth_sec') || '';
+            ajax({
+              url: auth_url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config.config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
+              type: 'GET',
+              dataType: 'json'
+            }).then(function (res) {
+              if (!res.code) {
+                Message.success('授权成功');
+
+                if (res.auth_id && res.auth_sec) {
+                  store.set('auth_id', res.auth_id);
+                  store.set('auth_sec', res.auth_sec);
+                }
+
+                store.set('access_key', new URL(auth_url).searchParams.get('access_key'));
+                store.set('auth_time', Date.now());
+                $('#auth').val('1');
+                config.config.auth = '1';
+              } else {
+                Message.warning('授权失败');
+              }
+            });
+          });
+        } else {
+          MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', function () {
+            location.href = 'https://passport.bilibili.com/login';
+          });
+        }
+      });
+    }
+  }, {
+    key: "logout",
+    value: function logout() {
+      var _this3 = this;
+
+      if (!store.get('auth_id')) {
+        MessageBox.alert('没有发现授权记录');
+        return;
+      }
+
+      if (this.auth_clicked) {
+        Message.miaow();
+        return;
+      }
+
+      var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+          auth_id = _ref2[0],
+          auth_sec = _ref2[1];
+      ajax({
+        url: "".concat(config.config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
+        type: 'GET',
+        dataType: 'json'
+      }).then(function (res) {
+        if (!res.code) {
+          Message.success('取消成功');
+          store.set('auth_id', '');
+          store.set('auth_sec', '');
+          store.set('auth_time', '0');
+          store.set('access_key', '');
+          $('#auth').val('0');
+          config.config.auth = '0';
+        } else {
+          Message.warning('取消失败');
+        }
+      }).finally(function (_) {
+        return _this3.auth_clicked = false;
+      });
+    }
+  }, {
+    key: "initAuth",
+    value: function initAuth() {
+      var _this4 = this;
+
+      window.addEventListener('message', function (e) {
+        if (typeof e.data !== 'string') return;
+
+        if (e.data.split(':')[0] === 'bilibili-parse-login-credentials') {
+          $('iframe#auth_iframe').remove();
+          var url = e.data.split(': ')[1];
+          var _ref3 = [store.get('auth_id'), store.get('auth_sec')],
+              auth_id = _ref3[0],
+              auth_sec = _ref3[1];
+          ajax({
+            url: url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config.config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
+            type: 'GET',
+            dataType: 'json'
+          }).then(function (res) {
+            if (!res.code) {
+              Message.success('授权成功');
+
+              if (res.auth_id && res.auth_sec) {
+                store.set('auth_id', res.auth_id);
+                store.set('auth_sec', res.auth_sec);
+              }
+
+              store.set('access_key', new URL(url).searchParams.get('access_key'));
+              store.set('auth_time', Date.now());
+              $('#auth').val('1');
+              config.config.auth = '1';
+            } else {
+              Message.warning('授权失败');
+            }
+          }).finally(function (_) {
+            return _this4.auth_clicked = false;
+          });
+        }
+      });
+    }
+  }]);
+
+  return Auth;
+}();
+
+var auth = new Auth();
+;// CONCATENATED MODULE: ./src/js/check.js
+function check_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function check_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function check_createClass(Constructor, protoProps, staticProps) { if (protoProps) check_defineProperties(Constructor.prototype, protoProps); if (staticProps) check_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+
+var Check = /*#__PURE__*/function () {
+  function Check() {
+    check_classCallCheck(this, Check);
+
+    this.aid = '';
+    this.cid = '';
+    this.q = '';
+    this.epid = '';
+  }
+
+  check_createClass(Check, [{
+    key: "refresh",
+    value: function refresh() {
+      console.log('refresh...');
+      $('#video_download').hide();
+      $('#video_download_2').hide();
+      player.recover_player(); // 更新check
+
+      var vb = video.base();
+      this.aid = vb.aid();
+      this.cid = vb.cid();
+      this.epid = vb.epid();
+      this.q = video.get_quality().q;
+      window.bp_episodes = null; // todo
+    }
+  }]);
+
+  return Check;
+}();
+
+var check = new Check();
+;// CONCATENATED MODULE: ./src/html/arc_toolbar.html
 // Module
-var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
+var arc_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
 // Exports
-/* harmony default export */ __webpack_exports__["default"] = (code);
-
-/***/ }),
-
-/***/ "./src/html/config.html":
-/*!******************************!*\
-  !*** ./src/html/config.html ***!
-  \******************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ var arc_toolbar = (arc_toolbar_code);
+;// CONCATENATED MODULE: ./src/html/video_toolbar.html
 // Module
-var code = "<div id=\"bp_config\">\n  <div class=\"bp_config_bg\">\n    <span style=\"font-size:20px;\">\n      <b>bilibili视频下载 参数设置</b>\n      <b>\n        <a href=\"javascript:;\" onclick=\"bp_reset_config()\"> [重置配置] </a>\n        <a style=\"text-decoration:underline;\" href=\"javascript:;\" onclick=\"bp_show_help()\">&lt;通知&帮助&gt;</a>\n      </b>\n    </span>\n    <div style=\"margin:2% 0;\"><label>请求地址：</label>\n      <input id=\"base_api\" value=\"...\" style=\"width:30%;\">&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>请求方式：</label>\n      <select id=\"request_type\">\n        <option value=\"auto\">自动判断</option>\n        <option value=\"local\">本地请求</option>\n        <option value=\"online\">远程请求</option>\n      </select><br />\n      <small>注意：普通使用请勿修改；默认使用混合请求</small>\n    </div>\n    <div style=\"margin:2% 0;\"><label>视频格式：</label>\n      <select id=\"format\">\n        <option value=\"flv\">FLV</option>\n        <option value=\"dash\">DASH</option>\n        <option value=\"mp4\">MP4</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>切换CDN：</label>\n      <select id=\"host_key\">\n        ${host_key_option}\n      </select><br />\n      <small>注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>\n    </div>\n    <div style=\"margin:2% 0;\"><label>下载方式：</label>\n      <select id=\"download_type\">\n        <option value=\"a\">URL链接</option>\n        <option value=\"web\">Web浏览器</option>\n        <option value=\"blob\">Blob请求</option>\n        <option value=\"rpc\">RPC接口</option>\n        <option value=\"aria\">Aria命令</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>AriaNg地址：</label>\n      <input id=\"ariang_host\" value=\"...\" style=\"width:30%;\"><br />\n      <small>提示：url和web方式不会设置文件名</small>\n    </div>\n    <div style=\"margin:2% 0;\"><label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />\n      <input id=\"rpc_domain\" value=\"...\" style=\"width:25%;\"> :\n      <input id=\"rpc_port\" value=\"...\" style=\"width:10%;\"> |\n      <input id=\"rpc_token\" placeholder=\"没有密钥不用填\" value=\"...\" style=\"width:15%;\"> |\n      <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" value=\"...\" style=\"width:20%;\"><br />\n      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>\n    </div>\n    <div style=\"margin:2% 0;\">\n      <label>强制换源：</label>\n      <select id=\"replace_force\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;<label>弹幕速度：</label>\n      <input id=\"danmaku_speed\" value=\"...\" style=\"width:5%;\"> s\n      &nbsp;&nbsp;&nbsp;&nbsp;<label>弹幕字号：</label>\n      <input id=\"danmaku_fontsize\" value=\"...\" style=\"width:5%;\"> px\n      <br />\n      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>\n    </div>\n    <div style=\"margin:2% 0;\"><label>自动下载：</label>\n      <select id=\"auto_download\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select><br />\n      <small>说明：请求地址成功后将自动点击下载视频按钮</small>\n    </div>\n    <div style=\"margin:2% 0;\"><label>授权状态：</label>\n      <select id=\"auth\" disabled>\n        <option value=\"0\">未授权</option>\n        <option value=\"1\">已授权</option>\n      </select>\n      <a class=\"setting-context\" href=\"javascript:;\" onclick=\"bp_show_login()\">账号授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" onclick=\"bp_show_logout()\">取消授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" onclick=\"bp_show_login('0')\">手动授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" onclick=\"bp_show_login_help()\">这是什么？</a>\n    </div>\n    <div style=\"text-align:right\"><br />\n      <button class=\"setting-button\" onclick=\"bp_save_config()\">确定</button>\n    </div>\n  </div>\n  <style>\n    #bp_config {\n      opacity: 0;\n      display: none;\n      position: fixed;\n      inset: 0px;\n      top: 0px;\n      left: 0px;\n      width: 100%;\n      height: 100%;\n      z-index: 10000;\n    }\n\n    .bp_config_bg {\n      position: absolute;\n      background: rgb(255, 255, 255);\n      border-radius: 10px;\n      padding: 20px;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      width: 600px;\n      box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n    }\n\n    .setting-button {\n      width: 120px;\n      height: 40px;\n      border-width: 0px;\n      border-radius: 3px;\n      background: #1e90ff;\n      cursor: pointer;\n      outline: none;\n      color: white;\n      font-size: 17px;\n    }\n\n    .setting-button:hover {\n      background: #5599ff;\n    }\n\n    .setting-context {\n      margin: 0 1%;\n      color: blue;\n    }\n\n    .setting-context:hover {\n      color: red;\n    }\n  </style>\n</div>\n";
+var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
 // Exports
-/* harmony default export */ __webpack_exports__["default"] = (code);
-
-/***/ }),
-
-/***/ "./src/html/message.html":
-/*!*******************************!*\
-  !*** ./src/html/message.html ***!
-  \*******************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ var video_toolbar = (video_toolbar_code);
+;// CONCATENATED MODULE: ./src/html/toolbar.html
 // Module
-var code = "<div class=\"message-bg\"></div>\n<div id=\"message_box\">\n  <div class=\"message_box_bg\">\n    <span style=\"font-size:20px\"><b>提示：</b></span>\n    <div id=\"message_box_context\" style=\"margin:2% 0;\">...</div><br /><br />\n    <div class=\"message_box_btn\">\n      <button name=\"affirm\">确定</button>\n      <button name=\"cancel\">取消</button>\n    </div>\n  </div>\n</div>\n<style>\n  .message-bg {\n    position: fixed;\n    float: right;\n    right: 0;\n    top: 2%;\n    z-index: 30000;\n  }\n\n  .message {\n    margin-bottom: 15px;\n    padding: 2% 2%;\n    width: 300px;\n    display: flex;\n    margin-top: -70px;\n    opacity: 0;\n  }\n\n  .message-success {\n    background-color: #ddffdd;\n    border-left: 6px solid #4caf50;\n  }\n\n  .message-danger {\n    background-color: #ffdddd;\n    border-left: 6px solid #f44336;\n  }\n\n  .message-info {\n    background-color: #e7f3fe;\n    border-left: 6px solid #0c86de;\n  }\n\n  .message-warning {\n    background-color: #ffffcc;\n    border-left: 6px solid #ffeb3b;\n  }\n\n  .message-context {\n    font-size: 21px;\n    word-wrap: break-word;\n    word-break: break-all;\n  }\n\n  .message-context p {\n    margin: 0;\n  }\n\n  #message_box {\n    opacity: 0;\n    display: none;\n    position: fixed;\n    inset: 0px;\n    top: 0px;\n    left: 0px;\n    width: 100%;\n    height: 100%;\n    z-index: 20000;\n  }\n\n  .message_box_bg {\n    position: absolute;\n    background: rgb(255, 255, 255);\n    border-radius: 10px;\n    padding: 20px;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 400px;\n    box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n  }\n\n  .message_box_btn {\n    text-align: right;\n  }\n\n  .message_box_btn button {\n    margin: 0 5px;\n    width: 120px;\n    height: 40px;\n    border-width: 0px;\n    border-radius: 3px;\n    background: #1e90ff;\n    cursor: pointer;\n    outline: none;\n    color: white;\n    font-size: 17px;\n  }\n\n  .message_box_btn button:hover {\n    background: #5599ff;\n  }\n</style>\n";
+var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\n  scrollshow=\"true\">\n  <div id=\"setting_btn\" class=\"like-info\">\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\n  </div>\n  <div id=\"bilibili_parse\" class=\"like-info\">\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\n  </div>\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\n  </div>\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\n  </div>\n  <div id=\"video_download_all\" class=\"like-info\">\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\n  </div>\n  <div class=\"more\">更多<div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n  <style>\n    .tool-bar .more {\n      float: right;\n      cursor: pointer;\n      color: #757575;\n      font-size: 16px;\n      display: inline-block;\n      transition: all .3s;\n      position: relative;\n      text-align: center\n    }\n\n    .tool-bar .more:hover .more-ops-list {\n      display: block\n    }\n\n    .tool-bar:after {\n      display: block;\n      content: \"\";\n      clear: both\n    }\n\n    .more-ops-list {\n      display: none;\n      position: absolute;\n      width: 80px;\n      left: -65px;\n      z-index: 30;\n      text-align: center;\n      padding: 10px 0;\n      background: #fff;\n      border: 1px solid #e5e9ef;\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n      border-radius: 2px;\n      font-size: 14px;\n      color: #222\n    }\n\n    .more-ops-list li {\n      position: relative;\n      height: 34px;\n      line-height: 34px;\n      cursor: pointer;\n      transition: all .3s\n    }\n\n    .more-ops-list li:hover {\n      color: #00a1d6;\n      background: #e7e7e7\n    }\n  </style>\n</div>\n";
 // Exports
-/* harmony default export */ __webpack_exports__["default"] = (code);
+/* harmony default export */ var toolbar = (toolbar_code);
+;// CONCATENATED MODULE: ./node_modules/@vue/shared/dist/shared.esm-bundler.js
+/**
+ * Make a map and return a function for checking if a key
+ * is in that map.
+ * IMPORTANT: all calls of this function must be prefixed with
+ * \/\*#\_\_PURE\_\_\*\/
+ * So that rollup can tree-shake them if necessary.
+ */
+function makeMap(str, expectsLowerCase) {
+    const map = Object.create(null);
+    const list = str.split(',');
+    for (let i = 0; i < list.length; i++) {
+        map[list[i]] = true;
+    }
+    return expectsLowerCase ? val => !!map[val.toLowerCase()] : val => !!map[val];
+}
 
-/***/ }),
+/**
+ * dev only flag -> name mapping
+ */
+const PatchFlagNames = {
+    [1 /* TEXT */]: `TEXT`,
+    [2 /* CLASS */]: `CLASS`,
+    [4 /* STYLE */]: `STYLE`,
+    [8 /* PROPS */]: `PROPS`,
+    [16 /* FULL_PROPS */]: `FULL_PROPS`,
+    [32 /* HYDRATE_EVENTS */]: `HYDRATE_EVENTS`,
+    [64 /* STABLE_FRAGMENT */]: `STABLE_FRAGMENT`,
+    [128 /* KEYED_FRAGMENT */]: `KEYED_FRAGMENT`,
+    [256 /* UNKEYED_FRAGMENT */]: `UNKEYED_FRAGMENT`,
+    [512 /* NEED_PATCH */]: `NEED_PATCH`,
+    [1024 /* DYNAMIC_SLOTS */]: `DYNAMIC_SLOTS`,
+    [2048 /* DEV_ROOT_FRAGMENT */]: `DEV_ROOT_FRAGMENT`,
+    [-1 /* HOISTED */]: `HOISTED`,
+    [-2 /* BAIL */]: `BAIL`
+};
 
-/***/ "./src/html/toolbar.html":
-/*!*******************************!*\
-  !*** ./src/html/toolbar.html ***!
-  \*******************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+/**
+ * Dev only
+ */
+const slotFlagsText = {
+    [1 /* STABLE */]: 'STABLE',
+    [2 /* DYNAMIC */]: 'DYNAMIC',
+    [3 /* FORWARDED */]: 'FORWARDED'
+};
 
-__webpack_require__.r(__webpack_exports__);
-// Module
-var code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\n  scrollshow=\"true\">\n  <div id=\"setting_btn\" class=\"like-info\">\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\n  </div>\n  <div id=\"bilibili_parse\" class=\"like-info\">\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\n  </div>\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\n  </div>\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\n  </div>\n  <div id=\"video_download_all\" class=\"like-info\">\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\n  </div>\n  <div class=\"more\">更多<div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n  <style>\n    .tool-bar .more {\n      float: right;\n      cursor: pointer;\n      color: #757575;\n      font-size: 16px;\n      display: inline-block;\n      transition: all .3s;\n      position: relative;\n      text-align: center\n    }\n\n    .tool-bar .more:hover .more-ops-list {\n      display: block\n    }\n\n    .tool-bar:after {\n      display: block;\n      content: \"\";\n      clear: both\n    }\n\n    .more-ops-list {\n      display: none;\n      position: absolute;\n      width: 80px;\n      left: -65px;\n      z-index: 30;\n      text-align: center;\n      padding: 10px 0;\n      background: #fff;\n      border: 1px solid #e5e9ef;\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n      border-radius: 2px;\n      font-size: 14px;\n      color: #222\n    }\n\n    .more-ops-list li {\n      position: relative;\n      height: 34px;\n      line-height: 34px;\n      cursor: pointer;\n      transition: all .3s\n    }\n\n    .more-ops-list li:hover {\n      color: #00a1d6;\n      background: #e7e7e7\n    }\n  </style>\n</div>\n";
-// Exports
-/* harmony default export */ __webpack_exports__["default"] = (code);
+const GLOBALS_WHITE_LISTED = 'Infinity,undefined,NaN,isFinite,isNaN,parseFloat,parseInt,decodeURI,' +
+    'decodeURIComponent,encodeURI,encodeURIComponent,Math,Number,Date,Array,' +
+    'Object,Boolean,String,RegExp,Map,Set,JSON,Intl,BigInt';
+const isGloballyWhitelisted = /*#__PURE__*/ makeMap(GLOBALS_WHITE_LISTED);
 
-/***/ }),
+const range = 2;
+function generateCodeFrame(source, start = 0, end = source.length) {
+    // Split the content into individual lines but capture the newline sequence
+    // that separated each line. This is important because the actual sequence is
+    // needed to properly take into account the full line length for offset
+    // comparison
+    let lines = source.split(/(\r?\n)/);
+    // Separate the lines and newline sequences into separate arrays for easier referencing
+    const newlineSequences = lines.filter((_, idx) => idx % 2 === 1);
+    lines = lines.filter((_, idx) => idx % 2 === 0);
+    let count = 0;
+    const res = [];
+    for (let i = 0; i < lines.length; i++) {
+        count +=
+            lines[i].length +
+                ((newlineSequences[i] && newlineSequences[i].length) || 0);
+        if (count >= start) {
+            for (let j = i - range; j <= i + range || end > count; j++) {
+                if (j < 0 || j >= lines.length)
+                    continue;
+                const line = j + 1;
+                res.push(`${line}${' '.repeat(Math.max(3 - String(line).length, 0))}|  ${lines[j]}`);
+                const lineLength = lines[j].length;
+                const newLineSeqLength = (newlineSequences[j] && newlineSequences[j].length) || 0;
+                if (j === i) {
+                    // push underline
+                    const pad = start - (count - (lineLength + newLineSeqLength));
+                    const length = Math.max(1, end > count ? lineLength - pad : end - start);
+                    res.push(`   |  ` + ' '.repeat(pad) + '^'.repeat(length));
+                }
+                else if (j > i) {
+                    if (end > count) {
+                        const length = Math.max(Math.min(end - count, lineLength), 1);
+                        res.push(`   |  ` + '^'.repeat(length));
+                    }
+                    count += lineLength + newLineSeqLength;
+                }
+            }
+            break;
+        }
+    }
+    return res.join('\n');
+}
 
-/***/ "./src/html/video_toolbar.html":
-/*!*************************************!*\
-  !*** ./src/html/video_toolbar.html ***!
-  \*************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+/**
+ * On the client we only need to offer special cases for boolean attributes that
+ * have different names from their corresponding dom properties:
+ * - itemscope -> N/A
+ * - allowfullscreen -> allowFullscreen
+ * - formnovalidate -> formNoValidate
+ * - ismap -> isMap
+ * - nomodule -> noModule
+ * - novalidate -> noValidate
+ * - readonly -> readOnly
+ */
+const specialBooleanAttrs = `itemscope,allowfullscreen,formnovalidate,ismap,nomodule,novalidate,readonly`;
+const isSpecialBooleanAttr = /*#__PURE__*/ makeMap(specialBooleanAttrs);
+/**
+ * The full list is needed during SSR to produce the correct initial markup.
+ */
+const isBooleanAttr = /*#__PURE__*/ makeMap(specialBooleanAttrs +
+    `,async,autofocus,autoplay,controls,default,defer,disabled,hidden,` +
+    `loop,open,required,reversed,scoped,seamless,` +
+    `checked,muted,multiple,selected`);
+/**
+ * Boolean attributes should be included if the value is truthy or ''.
+ * e.g. `<select multiple>` compiles to `{ multiple: '' }`
+ */
+function includeBooleanAttr(value) {
+    return !!value || value === '';
+}
+const unsafeAttrCharRE = /[>/="'\u0009\u000a\u000c\u0020]/;
+const attrValidationCache = {};
+function isSSRSafeAttrName(name) {
+    if (attrValidationCache.hasOwnProperty(name)) {
+        return attrValidationCache[name];
+    }
+    const isUnsafe = unsafeAttrCharRE.test(name);
+    if (isUnsafe) {
+        console.error(`unsafe attribute name: ${name}`);
+    }
+    return (attrValidationCache[name] = !isUnsafe);
+}
+const propsToAttrMap = {
+    acceptCharset: 'accept-charset',
+    className: 'class',
+    htmlFor: 'for',
+    httpEquiv: 'http-equiv'
+};
+/**
+ * CSS properties that accept plain numbers
+ */
+const isNoUnitNumericStyleProp = /*#__PURE__*/ makeMap(`animation-iteration-count,border-image-outset,border-image-slice,` +
+    `border-image-width,box-flex,box-flex-group,box-ordinal-group,column-count,` +
+    `columns,flex,flex-grow,flex-positive,flex-shrink,flex-negative,flex-order,` +
+    `grid-row,grid-row-end,grid-row-span,grid-row-start,grid-column,` +
+    `grid-column-end,grid-column-span,grid-column-start,font-weight,line-clamp,` +
+    `line-height,opacity,order,orphans,tab-size,widows,z-index,zoom,` +
+    // SVG
+    `fill-opacity,flood-opacity,stop-opacity,stroke-dasharray,stroke-dashoffset,` +
+    `stroke-miterlimit,stroke-opacity,stroke-width`);
+/**
+ * Known attributes, this is used for stringification of runtime static nodes
+ * so that we don't stringify bindings that cannot be set from HTML.
+ * Don't also forget to allow `data-*` and `aria-*`!
+ * Generated from https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes
+ */
+const isKnownHtmlAttr = /*#__PURE__*/ makeMap(`accept,accept-charset,accesskey,action,align,allow,alt,async,` +
+    `autocapitalize,autocomplete,autofocus,autoplay,background,bgcolor,` +
+    `border,buffered,capture,challenge,charset,checked,cite,class,code,` +
+    `codebase,color,cols,colspan,content,contenteditable,contextmenu,controls,` +
+    `coords,crossorigin,csp,data,datetime,decoding,default,defer,dir,dirname,` +
+    `disabled,download,draggable,dropzone,enctype,enterkeyhint,for,form,` +
+    `formaction,formenctype,formmethod,formnovalidate,formtarget,headers,` +
+    `height,hidden,high,href,hreflang,http-equiv,icon,id,importance,integrity,` +
+    `ismap,itemprop,keytype,kind,label,lang,language,loading,list,loop,low,` +
+    `manifest,max,maxlength,minlength,media,min,multiple,muted,name,novalidate,` +
+    `open,optimum,pattern,ping,placeholder,poster,preload,radiogroup,readonly,` +
+    `referrerpolicy,rel,required,reversed,rows,rowspan,sandbox,scope,scoped,` +
+    `selected,shape,size,sizes,slot,span,spellcheck,src,srcdoc,srclang,srcset,` +
+    `start,step,style,summary,tabindex,target,title,translate,type,usemap,` +
+    `value,width,wrap`);
+/**
+ * Generated from https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute
+ */
+const isKnownSvgAttr = /*#__PURE__*/ makeMap(`xmlns,accent-height,accumulate,additive,alignment-baseline,alphabetic,amplitude,` +
+    `arabic-form,ascent,attributeName,attributeType,azimuth,baseFrequency,` +
+    `baseline-shift,baseProfile,bbox,begin,bias,by,calcMode,cap-height,class,` +
+    `clip,clipPathUnits,clip-path,clip-rule,color,color-interpolation,` +
+    `color-interpolation-filters,color-profile,color-rendering,` +
+    `contentScriptType,contentStyleType,crossorigin,cursor,cx,cy,d,decelerate,` +
+    `descent,diffuseConstant,direction,display,divisor,dominant-baseline,dur,dx,` +
+    `dy,edgeMode,elevation,enable-background,end,exponent,fill,fill-opacity,` +
+    `fill-rule,filter,filterRes,filterUnits,flood-color,flood-opacity,` +
+    `font-family,font-size,font-size-adjust,font-stretch,font-style,` +
+    `font-variant,font-weight,format,from,fr,fx,fy,g1,g2,glyph-name,` +
+    `glyph-orientation-horizontal,glyph-orientation-vertical,glyphRef,` +
+    `gradientTransform,gradientUnits,hanging,height,href,hreflang,horiz-adv-x,` +
+    `horiz-origin-x,id,ideographic,image-rendering,in,in2,intercept,k,k1,k2,k3,` +
+    `k4,kernelMatrix,kernelUnitLength,kerning,keyPoints,keySplines,keyTimes,` +
+    `lang,lengthAdjust,letter-spacing,lighting-color,limitingConeAngle,local,` +
+    `marker-end,marker-mid,marker-start,markerHeight,markerUnits,markerWidth,` +
+    `mask,maskContentUnits,maskUnits,mathematical,max,media,method,min,mode,` +
+    `name,numOctaves,offset,opacity,operator,order,orient,orientation,origin,` +
+    `overflow,overline-position,overline-thickness,panose-1,paint-order,path,` +
+    `pathLength,patternContentUnits,patternTransform,patternUnits,ping,` +
+    `pointer-events,points,pointsAtX,pointsAtY,pointsAtZ,preserveAlpha,` +
+    `preserveAspectRatio,primitiveUnits,r,radius,referrerPolicy,refX,refY,rel,` +
+    `rendering-intent,repeatCount,repeatDur,requiredExtensions,requiredFeatures,` +
+    `restart,result,rotate,rx,ry,scale,seed,shape-rendering,slope,spacing,` +
+    `specularConstant,specularExponent,speed,spreadMethod,startOffset,` +
+    `stdDeviation,stemh,stemv,stitchTiles,stop-color,stop-opacity,` +
+    `strikethrough-position,strikethrough-thickness,string,stroke,` +
+    `stroke-dasharray,stroke-dashoffset,stroke-linecap,stroke-linejoin,` +
+    `stroke-miterlimit,stroke-opacity,stroke-width,style,surfaceScale,` +
+    `systemLanguage,tabindex,tableValues,target,targetX,targetY,text-anchor,` +
+    `text-decoration,text-rendering,textLength,to,transform,transform-origin,` +
+    `type,u1,u2,underline-position,underline-thickness,unicode,unicode-bidi,` +
+    `unicode-range,units-per-em,v-alphabetic,v-hanging,v-ideographic,` +
+    `v-mathematical,values,vector-effect,version,vert-adv-y,vert-origin-x,` +
+    `vert-origin-y,viewBox,viewTarget,visibility,width,widths,word-spacing,` +
+    `writing-mode,x,x-height,x1,x2,xChannelSelector,xlink:actuate,xlink:arcrole,` +
+    `xlink:href,xlink:role,xlink:show,xlink:title,xlink:type,xml:base,xml:lang,` +
+    `xml:space,y,y1,y2,yChannelSelector,z,zoomAndPan`);
 
-__webpack_require__.r(__webpack_exports__);
-// Module
-var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\" onclick=\"bp_utils.bilibili_parse()\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
-// Exports
-/* harmony default export */ __webpack_exports__["default"] = (code);
+function normalizeStyle(value) {
+    if (isArray(value)) {
+        const res = {};
+        for (let i = 0; i < value.length; i++) {
+            const item = value[i];
+            const normalized = isString(item)
+                ? parseStringStyle(item)
+                : normalizeStyle(item);
+            if (normalized) {
+                for (const key in normalized) {
+                    res[key] = normalized[key];
+                }
+            }
+        }
+        return res;
+    }
+    else if (isString(value)) {
+        return value;
+    }
+    else if (isObject(value)) {
+        return value;
+    }
+}
+const listDelimiterRE = /;(?![^(]*\))/g;
+const propertyDelimiterRE = /:(.+)/;
+function parseStringStyle(cssText) {
+    const ret = {};
+    cssText.split(listDelimiterRE).forEach(item => {
+        if (item) {
+            const tmp = item.split(propertyDelimiterRE);
+            tmp.length > 1 && (ret[tmp[0].trim()] = tmp[1].trim());
+        }
+    });
+    return ret;
+}
+function stringifyStyle(styles) {
+    let ret = '';
+    if (!styles || isString(styles)) {
+        return ret;
+    }
+    for (const key in styles) {
+        const value = styles[key];
+        const normalizedKey = key.startsWith(`--`) ? key : hyphenate(key);
+        if (isString(value) ||
+            (typeof value === 'number' && isNoUnitNumericStyleProp(normalizedKey))) {
+            // only render valid values
+            ret += `${normalizedKey}:${value};`;
+        }
+    }
+    return ret;
+}
+function normalizeClass(value) {
+    let res = '';
+    if (isString(value)) {
+        res = value;
+    }
+    else if (isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+            const normalized = normalizeClass(value[i]);
+            if (normalized) {
+                res += normalized + ' ';
+            }
+        }
+    }
+    else if (isObject(value)) {
+        for (const name in value) {
+            if (value[name]) {
+                res += name + ' ';
+            }
+        }
+    }
+    return res.trim();
+}
+function normalizeProps(props) {
+    if (!props)
+        return null;
+    let { class: klass, style } = props;
+    if (klass && !isString(klass)) {
+        props.class = normalizeClass(klass);
+    }
+    if (style) {
+        props.style = normalizeStyle(style);
+    }
+    return props;
+}
 
-/***/ })
+// These tag configs are shared between compiler-dom and runtime-dom, so they
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+const HTML_TAGS = 'html,body,base,head,link,meta,style,title,address,article,aside,footer,' +
+    'header,h1,h2,h3,h4,h5,h6,nav,section,div,dd,dl,dt,figcaption,' +
+    'figure,picture,hr,img,li,main,ol,p,pre,ul,a,b,abbr,bdi,bdo,br,cite,code,' +
+    'data,dfn,em,i,kbd,mark,q,rp,rt,ruby,s,samp,small,span,strong,sub,sup,' +
+    'time,u,var,wbr,area,audio,map,track,video,embed,object,param,source,' +
+    'canvas,script,noscript,del,ins,caption,col,colgroup,table,thead,tbody,td,' +
+    'th,tr,button,datalist,fieldset,form,input,label,legend,meter,optgroup,' +
+    'option,output,progress,select,textarea,details,dialog,menu,' +
+    'summary,template,blockquote,iframe,tfoot';
+// https://developer.mozilla.org/en-US/docs/Web/SVG/Element
+const SVG_TAGS = 'svg,animate,animateMotion,animateTransform,circle,clipPath,color-profile,' +
+    'defs,desc,discard,ellipse,feBlend,feColorMatrix,feComponentTransfer,' +
+    'feComposite,feConvolveMatrix,feDiffuseLighting,feDisplacementMap,' +
+    'feDistanceLight,feDropShadow,feFlood,feFuncA,feFuncB,feFuncG,feFuncR,' +
+    'feGaussianBlur,feImage,feMerge,feMergeNode,feMorphology,feOffset,' +
+    'fePointLight,feSpecularLighting,feSpotLight,feTile,feTurbulence,filter,' +
+    'foreignObject,g,hatch,hatchpath,image,line,linearGradient,marker,mask,' +
+    'mesh,meshgradient,meshpatch,meshrow,metadata,mpath,path,pattern,' +
+    'polygon,polyline,radialGradient,rect,set,solidcolor,stop,switch,symbol,' +
+    'text,textPath,title,tspan,unknown,use,view';
+const VOID_TAGS = 'area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr';
+/**
+ * Compiler only.
+ * Do NOT use in runtime code paths unless behind `(process.env.NODE_ENV !== 'production')` flag.
+ */
+const isHTMLTag = /*#__PURE__*/ makeMap(HTML_TAGS);
+/**
+ * Compiler only.
+ * Do NOT use in runtime code paths unless behind `(process.env.NODE_ENV !== 'production')` flag.
+ */
+const isSVGTag = /*#__PURE__*/ makeMap(SVG_TAGS);
+/**
+ * Compiler only.
+ * Do NOT use in runtime code paths unless behind `(process.env.NODE_ENV !== 'production')` flag.
+ */
+const isVoidTag = /*#__PURE__*/ makeMap(VOID_TAGS);
 
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	!function() {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = function(exports, definition) {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	!function() {
-/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	!function() {
-/******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = function(exports) {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-!function() {
-/*!*************************!*\
-  !*** ./src/js/index.js ***!
-  \*************************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _main__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main */ "./src/js/main.js");
+const escapeRE = /["'&<>]/;
+function escapeHtml(string) {
+    const str = '' + string;
+    const match = escapeRE.exec(str);
+    if (!match) {
+        return str;
+    }
+    let html = '';
+    let escaped;
+    let index;
+    let lastIndex = 0;
+    for (index = match.index; index < str.length; index++) {
+        switch (str.charCodeAt(index)) {
+            case 34: // "
+                escaped = '&quot;';
+                break;
+            case 38: // &
+                escaped = '&amp;';
+                break;
+            case 39: // '
+                escaped = '&#39;';
+                break;
+            case 60: // <
+                escaped = '&lt;';
+                break;
+            case 62: // >
+                escaped = '&gt;';
+                break;
+            default:
+                continue;
+        }
+        if (lastIndex !== index) {
+            html += str.slice(lastIndex, index);
+        }
+        lastIndex = index + 1;
+        html += escaped;
+    }
+    return lastIndex !== index ? html + str.slice(lastIndex, index) : html;
+}
+// https://www.w3.org/TR/html52/syntax.html#comments
+const commentStripRE = /^-?>|<!--|-->|--!>|<!-$/g;
+function escapeHtmlComment(src) {
+    return src.replace(commentStripRE, '');
+}
+
+function looseCompareArrays(a, b) {
+    if (a.length !== b.length)
+        return false;
+    let equal = true;
+    for (let i = 0; equal && i < a.length; i++) {
+        equal = looseEqual(a[i], b[i]);
+    }
+    return equal;
+}
+function looseEqual(a, b) {
+    if (a === b)
+        return true;
+    let aValidType = isDate(a);
+    let bValidType = isDate(b);
+    if (aValidType || bValidType) {
+        return aValidType && bValidType ? a.getTime() === b.getTime() : false;
+    }
+    aValidType = isArray(a);
+    bValidType = isArray(b);
+    if (aValidType || bValidType) {
+        return aValidType && bValidType ? looseCompareArrays(a, b) : false;
+    }
+    aValidType = isObject(a);
+    bValidType = isObject(b);
+    if (aValidType || bValidType) {
+        /* istanbul ignore if: this if will probably never be called */
+        if (!aValidType || !bValidType) {
+            return false;
+        }
+        const aKeysCount = Object.keys(a).length;
+        const bKeysCount = Object.keys(b).length;
+        if (aKeysCount !== bKeysCount) {
+            return false;
+        }
+        for (const key in a) {
+            const aHasKey = a.hasOwnProperty(key);
+            const bHasKey = b.hasOwnProperty(key);
+            if ((aHasKey && !bHasKey) ||
+                (!aHasKey && bHasKey) ||
+                !looseEqual(a[key], b[key])) {
+                return false;
+            }
+        }
+    }
+    return String(a) === String(b);
+}
+function looseIndexOf(arr, val) {
+    return arr.findIndex(item => looseEqual(item, val));
+}
+
+/**
+ * For converting {{ interpolation }} values to displayed strings.
+ * @private
+ */
+const toDisplayString = (val) => {
+    return isString(val)
+        ? val
+        : val == null
+            ? ''
+            : isArray(val) ||
+                (isObject(val) &&
+                    (val.toString === objectToString || !isFunction(val.toString)))
+                ? JSON.stringify(val, replacer, 2)
+                : String(val);
+};
+const replacer = (_key, val) => {
+    // can't use isRef here since @vue/shared has no deps
+    if (val && val.__v_isRef) {
+        return replacer(_key, val.value);
+    }
+    else if (isMap(val)) {
+        return {
+            [`Map(${val.size})`]: [...val.entries()].reduce((entries, [key, val]) => {
+                entries[`${key} =>`] = val;
+                return entries;
+            }, {})
+        };
+    }
+    else if (isSet(val)) {
+        return {
+            [`Set(${val.size})`]: [...val.values()]
+        };
+    }
+    else if (isObject(val) && !isArray(val) && !isPlainObject(val)) {
+        return String(val);
+    }
+    return val;
+};
+
+const EMPTY_OBJ = ( true)
+    ? Object.freeze({})
+    : 0;
+const EMPTY_ARR = ( true) ? Object.freeze([]) : 0;
+const NOOP = () => { };
+/**
+ * Always return false.
+ */
+const NO = () => false;
+const onRE = /^on[^a-z]/;
+const isOn = (key) => onRE.test(key);
+const isModelListener = (key) => key.startsWith('onUpdate:');
+const extend = Object.assign;
+const remove = (arr, el) => {
+    const i = arr.indexOf(el);
+    if (i > -1) {
+        arr.splice(i, 1);
+    }
+};
+const shared_esm_bundler_hasOwnProperty = Object.prototype.hasOwnProperty;
+const hasOwn = (val, key) => shared_esm_bundler_hasOwnProperty.call(val, key);
+const isArray = Array.isArray;
+const isMap = (val) => toTypeString(val) === '[object Map]';
+const isSet = (val) => toTypeString(val) === '[object Set]';
+const isDate = (val) => val instanceof Date;
+const isFunction = (val) => typeof val === 'function';
+const isString = (val) => typeof val === 'string';
+const isSymbol = (val) => typeof val === 'symbol';
+const isObject = (val) => val !== null && typeof val === 'object';
+const isPromise = (val) => {
+    return isObject(val) && isFunction(val.then) && isFunction(val.catch);
+};
+const objectToString = Object.prototype.toString;
+const toTypeString = (value) => objectToString.call(value);
+const toRawType = (value) => {
+    // extract "RawType" from strings like "[object RawType]"
+    return toTypeString(value).slice(8, -1);
+};
+const isPlainObject = (val) => toTypeString(val) === '[object Object]';
+const isIntegerKey = (key) => isString(key) &&
+    key !== 'NaN' &&
+    key[0] !== '-' &&
+    '' + parseInt(key, 10) === key;
+const isReservedProp = /*#__PURE__*/ makeMap(
+// the leading comma is intentional so empty string "" is also included
+',key,ref,ref_for,ref_key,' +
+    'onVnodeBeforeMount,onVnodeMounted,' +
+    'onVnodeBeforeUpdate,onVnodeUpdated,' +
+    'onVnodeBeforeUnmount,onVnodeUnmounted');
+const isBuiltInDirective = /*#__PURE__*/ makeMap('bind,cloak,else-if,else,for,html,if,model,on,once,pre,show,slot,text,memo');
+const cacheStringFunction = (fn) => {
+    const cache = Object.create(null);
+    return ((str) => {
+        const hit = cache[str];
+        return hit || (cache[str] = fn(str));
+    });
+};
+const camelizeRE = /-(\w)/g;
+/**
+ * @private
+ */
+const camelize = cacheStringFunction((str) => {
+    return str.replace(camelizeRE, (_, c) => (c ? c.toUpperCase() : ''));
+});
+const hyphenateRE = /\B([A-Z])/g;
+/**
+ * @private
+ */
+const hyphenate = cacheStringFunction((str) => str.replace(hyphenateRE, '-$1').toLowerCase());
+/**
+ * @private
+ */
+const capitalize = cacheStringFunction((str) => str.charAt(0).toUpperCase() + str.slice(1));
+/**
+ * @private
+ */
+const toHandlerKey = cacheStringFunction((str) => str ? `on${capitalize(str)}` : ``);
+// compare whether a value has changed, accounting for NaN.
+const hasChanged = (value, oldValue) => !Object.is(value, oldValue);
+const invokeArrayFns = (fns, arg) => {
+    for (let i = 0; i < fns.length; i++) {
+        fns[i](arg);
+    }
+};
+const def = (obj, key, value) => {
+    Object.defineProperty(obj, key, {
+        configurable: true,
+        enumerable: false,
+        value
+    });
+};
+const toNumber = (val) => {
+    const n = parseFloat(val);
+    return isNaN(n) ? val : n;
+};
+let _globalThis;
+const getGlobalThis = () => {
+    return (_globalThis ||
+        (_globalThis =
+            typeof globalThis !== 'undefined'
+                ? globalThis
+                : typeof self !== 'undefined'
+                    ? self
+                    : typeof window !== 'undefined'
+                        ? window
+                        : typeof __webpack_require__.g !== 'undefined'
+                            ? __webpack_require__.g
+                            : {}));
+};
+
+
+
+;// CONCATENATED MODULE: ./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js
+
+
+function warn(msg, ...args) {
+    console.warn(`[Vue warn] ${msg}`, ...args);
+}
+
+let activeEffectScope;
+class EffectScope {
+    constructor(detached = false) {
+        /**
+         * @internal
+         */
+        this.active = true;
+        /**
+         * @internal
+         */
+        this.effects = [];
+        /**
+         * @internal
+         */
+        this.cleanups = [];
+        if (!detached && activeEffectScope) {
+            this.parent = activeEffectScope;
+            this.index =
+                (activeEffectScope.scopes || (activeEffectScope.scopes = [])).push(this) - 1;
+        }
+    }
+    run(fn) {
+        if (this.active) {
+            const currentEffectScope = activeEffectScope;
+            try {
+                activeEffectScope = this;
+                return fn();
+            }
+            finally {
+                activeEffectScope = currentEffectScope;
+            }
+        }
+        else if ((true)) {
+            warn(`cannot run an inactive effect scope.`);
+        }
+    }
+    /**
+     * This should only be called on non-detached scopes
+     * @internal
+     */
+    on() {
+        activeEffectScope = this;
+    }
+    /**
+     * This should only be called on non-detached scopes
+     * @internal
+     */
+    off() {
+        activeEffectScope = this.parent;
+    }
+    stop(fromParent) {
+        if (this.active) {
+            let i, l;
+            for (i = 0, l = this.effects.length; i < l; i++) {
+                this.effects[i].stop();
+            }
+            for (i = 0, l = this.cleanups.length; i < l; i++) {
+                this.cleanups[i]();
+            }
+            if (this.scopes) {
+                for (i = 0, l = this.scopes.length; i < l; i++) {
+                    this.scopes[i].stop(true);
+                }
+            }
+            // nested scope, dereference from parent to avoid memory leaks
+            if (this.parent && !fromParent) {
+                // optimized O(1) removal
+                const last = this.parent.scopes.pop();
+                if (last && last !== this) {
+                    this.parent.scopes[this.index] = last;
+                    last.index = this.index;
+                }
+            }
+            this.active = false;
+        }
+    }
+}
+function effectScope(detached) {
+    return new EffectScope(detached);
+}
+function recordEffectScope(effect, scope = activeEffectScope) {
+    if (scope && scope.active) {
+        scope.effects.push(effect);
+    }
+}
+function getCurrentScope() {
+    return activeEffectScope;
+}
+function onScopeDispose(fn) {
+    if (activeEffectScope) {
+        activeEffectScope.cleanups.push(fn);
+    }
+    else if ((true)) {
+        warn(`onScopeDispose() is called when there is no active effect scope` +
+            ` to be associated with.`);
+    }
+}
+
+const createDep = (effects) => {
+    const dep = new Set(effects);
+    dep.w = 0;
+    dep.n = 0;
+    return dep;
+};
+const wasTracked = (dep) => (dep.w & trackOpBit) > 0;
+const newTracked = (dep) => (dep.n & trackOpBit) > 0;
+const initDepMarkers = ({ deps }) => {
+    if (deps.length) {
+        for (let i = 0; i < deps.length; i++) {
+            deps[i].w |= trackOpBit; // set was tracked
+        }
+    }
+};
+const finalizeDepMarkers = (effect) => {
+    const { deps } = effect;
+    if (deps.length) {
+        let ptr = 0;
+        for (let i = 0; i < deps.length; i++) {
+            const dep = deps[i];
+            if (wasTracked(dep) && !newTracked(dep)) {
+                dep.delete(effect);
+            }
+            else {
+                deps[ptr++] = dep;
+            }
+            // clear bits
+            dep.w &= ~trackOpBit;
+            dep.n &= ~trackOpBit;
+        }
+        deps.length = ptr;
+    }
+};
+
+const targetMap = new WeakMap();
+// The number of effects currently being tracked recursively.
+let effectTrackDepth = 0;
+let trackOpBit = 1;
+/**
+ * The bitwise track markers support at most 30 levels of recursion.
+ * This value is chosen to enable modern JS engines to use a SMI on all platforms.
+ * When recursion depth is greater, fall back to using a full cleanup.
+ */
+const maxMarkerBits = 30;
+let activeEffect;
+const ITERATE_KEY = Symbol(( true) ? 'iterate' : 0);
+const MAP_KEY_ITERATE_KEY = Symbol(( true) ? 'Map key iterate' : 0);
+class ReactiveEffect {
+    constructor(fn, scheduler = null, scope) {
+        this.fn = fn;
+        this.scheduler = scheduler;
+        this.active = true;
+        this.deps = [];
+        this.parent = undefined;
+        recordEffectScope(this, scope);
+    }
+    run() {
+        if (!this.active) {
+            return this.fn();
+        }
+        let parent = activeEffect;
+        let lastShouldTrack = shouldTrack;
+        while (parent) {
+            if (parent === this) {
+                return;
+            }
+            parent = parent.parent;
+        }
+        try {
+            this.parent = activeEffect;
+            activeEffect = this;
+            shouldTrack = true;
+            trackOpBit = 1 << ++effectTrackDepth;
+            if (effectTrackDepth <= maxMarkerBits) {
+                initDepMarkers(this);
+            }
+            else {
+                cleanupEffect(this);
+            }
+            return this.fn();
+        }
+        finally {
+            if (effectTrackDepth <= maxMarkerBits) {
+                finalizeDepMarkers(this);
+            }
+            trackOpBit = 1 << --effectTrackDepth;
+            activeEffect = this.parent;
+            shouldTrack = lastShouldTrack;
+            this.parent = undefined;
+            if (this.deferStop) {
+                this.stop();
+            }
+        }
+    }
+    stop() {
+        // stopped while running itself - defer the cleanup
+        if (activeEffect === this) {
+            this.deferStop = true;
+        }
+        else if (this.active) {
+            cleanupEffect(this);
+            if (this.onStop) {
+                this.onStop();
+            }
+            this.active = false;
+        }
+    }
+}
+function cleanupEffect(effect) {
+    const { deps } = effect;
+    if (deps.length) {
+        for (let i = 0; i < deps.length; i++) {
+            deps[i].delete(effect);
+        }
+        deps.length = 0;
+    }
+}
+function effect(fn, options) {
+    if (fn.effect) {
+        fn = fn.effect.fn;
+    }
+    const _effect = new ReactiveEffect(fn);
+    if (options) {
+        extend(_effect, options);
+        if (options.scope)
+            recordEffectScope(_effect, options.scope);
+    }
+    if (!options || !options.lazy) {
+        _effect.run();
+    }
+    const runner = _effect.run.bind(_effect);
+    runner.effect = _effect;
+    return runner;
+}
+function stop(runner) {
+    runner.effect.stop();
+}
+let shouldTrack = true;
+const trackStack = [];
+function pauseTracking() {
+    trackStack.push(shouldTrack);
+    shouldTrack = false;
+}
+function enableTracking() {
+    trackStack.push(shouldTrack);
+    shouldTrack = true;
+}
+function resetTracking() {
+    const last = trackStack.pop();
+    shouldTrack = last === undefined ? true : last;
+}
+function track(target, type, key) {
+    if (shouldTrack && activeEffect) {
+        let depsMap = targetMap.get(target);
+        if (!depsMap) {
+            targetMap.set(target, (depsMap = new Map()));
+        }
+        let dep = depsMap.get(key);
+        if (!dep) {
+            depsMap.set(key, (dep = createDep()));
+        }
+        const eventInfo = ( true)
+            ? { effect: activeEffect, target, type, key }
+            : 0;
+        trackEffects(dep, eventInfo);
+    }
+}
+function trackEffects(dep, debuggerEventExtraInfo) {
+    let shouldTrack = false;
+    if (effectTrackDepth <= maxMarkerBits) {
+        if (!newTracked(dep)) {
+            dep.n |= trackOpBit; // set newly tracked
+            shouldTrack = !wasTracked(dep);
+        }
+    }
+    else {
+        // Full cleanup mode.
+        shouldTrack = !dep.has(activeEffect);
+    }
+    if (shouldTrack) {
+        dep.add(activeEffect);
+        activeEffect.deps.push(dep);
+        if (( true) && activeEffect.onTrack) {
+            activeEffect.onTrack(Object.assign({ effect: activeEffect }, debuggerEventExtraInfo));
+        }
+    }
+}
+function trigger(target, type, key, newValue, oldValue, oldTarget) {
+    const depsMap = targetMap.get(target);
+    if (!depsMap) {
+        // never been tracked
+        return;
+    }
+    let deps = [];
+    if (type === "clear" /* CLEAR */) {
+        // collection being cleared
+        // trigger all effects for target
+        deps = [...depsMap.values()];
+    }
+    else if (key === 'length' && isArray(target)) {
+        depsMap.forEach((dep, key) => {
+            if (key === 'length' || key >= newValue) {
+                deps.push(dep);
+            }
+        });
+    }
+    else {
+        // schedule runs for SET | ADD | DELETE
+        if (key !== void 0) {
+            deps.push(depsMap.get(key));
+        }
+        // also run for iteration key on ADD | DELETE | Map.SET
+        switch (type) {
+            case "add" /* ADD */:
+                if (!isArray(target)) {
+                    deps.push(depsMap.get(ITERATE_KEY));
+                    if (isMap(target)) {
+                        deps.push(depsMap.get(MAP_KEY_ITERATE_KEY));
+                    }
+                }
+                else if (isIntegerKey(key)) {
+                    // new index added to array -> length changes
+                    deps.push(depsMap.get('length'));
+                }
+                break;
+            case "delete" /* DELETE */:
+                if (!isArray(target)) {
+                    deps.push(depsMap.get(ITERATE_KEY));
+                    if (isMap(target)) {
+                        deps.push(depsMap.get(MAP_KEY_ITERATE_KEY));
+                    }
+                }
+                break;
+            case "set" /* SET */:
+                if (isMap(target)) {
+                    deps.push(depsMap.get(ITERATE_KEY));
+                }
+                break;
+        }
+    }
+    const eventInfo = ( true)
+        ? { target, type, key, newValue, oldValue, oldTarget }
+        : 0;
+    if (deps.length === 1) {
+        if (deps[0]) {
+            if ((true)) {
+                triggerEffects(deps[0], eventInfo);
+            }
+            else {}
+        }
+    }
+    else {
+        const effects = [];
+        for (const dep of deps) {
+            if (dep) {
+                effects.push(...dep);
+            }
+        }
+        if ((true)) {
+            triggerEffects(createDep(effects), eventInfo);
+        }
+        else {}
+    }
+}
+function triggerEffects(dep, debuggerEventExtraInfo) {
+    // spread into array for stabilization
+    for (const effect of isArray(dep) ? dep : [...dep]) {
+        if (effect !== activeEffect || effect.allowRecurse) {
+            if (( true) && effect.onTrigger) {
+                effect.onTrigger(extend({ effect }, debuggerEventExtraInfo));
+            }
+            if (effect.scheduler) {
+                effect.scheduler();
+            }
+            else {
+                effect.run();
+            }
+        }
+    }
+}
+
+const isNonTrackableKeys = /*#__PURE__*/ makeMap(`__proto__,__v_isRef,__isVue`);
+const builtInSymbols = new Set(
+/*#__PURE__*/
+Object.getOwnPropertyNames(Symbol)
+    .map(key => Symbol[key])
+    .filter(isSymbol));
+const get = /*#__PURE__*/ createGetter();
+const shallowGet = /*#__PURE__*/ createGetter(false, true);
+const readonlyGet = /*#__PURE__*/ createGetter(true);
+const shallowReadonlyGet = /*#__PURE__*/ createGetter(true, true);
+const arrayInstrumentations = /*#__PURE__*/ createArrayInstrumentations();
+function createArrayInstrumentations() {
+    const instrumentations = {};
+    ['includes', 'indexOf', 'lastIndexOf'].forEach(key => {
+        instrumentations[key] = function (...args) {
+            const arr = toRaw(this);
+            for (let i = 0, l = this.length; i < l; i++) {
+                track(arr, "get" /* GET */, i + '');
+            }
+            // we run the method using the original args first (which may be reactive)
+            const res = arr[key](...args);
+            if (res === -1 || res === false) {
+                // if that didn't work, run it again using raw values.
+                return arr[key](...args.map(toRaw));
+            }
+            else {
+                return res;
+            }
+        };
+    });
+    ['push', 'pop', 'shift', 'unshift', 'splice'].forEach(key => {
+        instrumentations[key] = function (...args) {
+            pauseTracking();
+            const res = toRaw(this)[key].apply(this, args);
+            resetTracking();
+            return res;
+        };
+    });
+    return instrumentations;
+}
+function createGetter(isReadonly = false, shallow = false) {
+    return function get(target, key, receiver) {
+        if (key === "__v_isReactive" /* IS_REACTIVE */) {
+            return !isReadonly;
+        }
+        else if (key === "__v_isReadonly" /* IS_READONLY */) {
+            return isReadonly;
+        }
+        else if (key === "__v_isShallow" /* IS_SHALLOW */) {
+            return shallow;
+        }
+        else if (key === "__v_raw" /* RAW */ &&
+            receiver ===
+                (isReadonly
+                    ? shallow
+                        ? shallowReadonlyMap
+                        : readonlyMap
+                    : shallow
+                        ? shallowReactiveMap
+                        : reactiveMap).get(target)) {
+            return target;
+        }
+        const targetIsArray = isArray(target);
+        if (!isReadonly && targetIsArray && hasOwn(arrayInstrumentations, key)) {
+            return Reflect.get(arrayInstrumentations, key, receiver);
+        }
+        const res = Reflect.get(target, key, receiver);
+        if (isSymbol(key) ? builtInSymbols.has(key) : isNonTrackableKeys(key)) {
+            return res;
+        }
+        if (!isReadonly) {
+            track(target, "get" /* GET */, key);
+        }
+        if (shallow) {
+            return res;
+        }
+        if (isRef(res)) {
+            // ref unwrapping - does not apply for Array + integer key.
+            const shouldUnwrap = !targetIsArray || !isIntegerKey(key);
+            return shouldUnwrap ? res.value : res;
+        }
+        if (isObject(res)) {
+            // Convert returned value into a proxy as well. we do the isObject check
+            // here to avoid invalid value warning. Also need to lazy access readonly
+            // and reactive here to avoid circular dependency.
+            return isReadonly ? readonly(res) : reactive(res);
+        }
+        return res;
+    };
+}
+const set = /*#__PURE__*/ createSetter();
+const shallowSet = /*#__PURE__*/ createSetter(true);
+function createSetter(shallow = false) {
+    return function set(target, key, value, receiver) {
+        let oldValue = target[key];
+        if (isReadonly(oldValue) && isRef(oldValue) && !isRef(value)) {
+            return false;
+        }
+        if (!shallow && !isReadonly(value)) {
+            if (!isShallow(value)) {
+                value = toRaw(value);
+                oldValue = toRaw(oldValue);
+            }
+            if (!isArray(target) && isRef(oldValue) && !isRef(value)) {
+                oldValue.value = value;
+                return true;
+            }
+        }
+        const hadKey = isArray(target) && isIntegerKey(key)
+            ? Number(key) < target.length
+            : hasOwn(target, key);
+        const result = Reflect.set(target, key, value, receiver);
+        // don't trigger if target is something up in the prototype chain of original
+        if (target === toRaw(receiver)) {
+            if (!hadKey) {
+                trigger(target, "add" /* ADD */, key, value);
+            }
+            else if (hasChanged(value, oldValue)) {
+                trigger(target, "set" /* SET */, key, value, oldValue);
+            }
+        }
+        return result;
+    };
+}
+function deleteProperty(target, key) {
+    const hadKey = hasOwn(target, key);
+    const oldValue = target[key];
+    const result = Reflect.deleteProperty(target, key);
+    if (result && hadKey) {
+        trigger(target, "delete" /* DELETE */, key, undefined, oldValue);
+    }
+    return result;
+}
+function has(target, key) {
+    const result = Reflect.has(target, key);
+    if (!isSymbol(key) || !builtInSymbols.has(key)) {
+        track(target, "has" /* HAS */, key);
+    }
+    return result;
+}
+function ownKeys(target) {
+    track(target, "iterate" /* ITERATE */, isArray(target) ? 'length' : ITERATE_KEY);
+    return Reflect.ownKeys(target);
+}
+const mutableHandlers = {
+    get,
+    set,
+    deleteProperty,
+    has,
+    ownKeys
+};
+const readonlyHandlers = {
+    get: readonlyGet,
+    set(target, key) {
+        if ((true)) {
+            warn(`Set operation on key "${String(key)}" failed: target is readonly.`, target);
+        }
+        return true;
+    },
+    deleteProperty(target, key) {
+        if ((true)) {
+            warn(`Delete operation on key "${String(key)}" failed: target is readonly.`, target);
+        }
+        return true;
+    }
+};
+const shallowReactiveHandlers = /*#__PURE__*/ extend({}, mutableHandlers, {
+    get: shallowGet,
+    set: shallowSet
+});
+// Props handlers are special in the sense that it should not unwrap top-level
+// refs (in order to allow refs to be explicitly passed down), but should
+// retain the reactivity of the normal readonly object.
+const shallowReadonlyHandlers = /*#__PURE__*/ extend({}, readonlyHandlers, {
+    get: shallowReadonlyGet
+});
+
+const toShallow = (value) => value;
+const getProto = (v) => Reflect.getPrototypeOf(v);
+function get$1(target, key, isReadonly = false, isShallow = false) {
+    // #1772: readonly(reactive(Map)) should return readonly + reactive version
+    // of the value
+    target = target["__v_raw" /* RAW */];
+    const rawTarget = toRaw(target);
+    const rawKey = toRaw(key);
+    if (key !== rawKey) {
+        !isReadonly && track(rawTarget, "get" /* GET */, key);
+    }
+    !isReadonly && track(rawTarget, "get" /* GET */, rawKey);
+    const { has } = getProto(rawTarget);
+    const wrap = isShallow ? toShallow : isReadonly ? toReadonly : toReactive;
+    if (has.call(rawTarget, key)) {
+        return wrap(target.get(key));
+    }
+    else if (has.call(rawTarget, rawKey)) {
+        return wrap(target.get(rawKey));
+    }
+    else if (target !== rawTarget) {
+        // #3602 readonly(reactive(Map))
+        // ensure that the nested reactive `Map` can do tracking for itself
+        target.get(key);
+    }
+}
+function has$1(key, isReadonly = false) {
+    const target = this["__v_raw" /* RAW */];
+    const rawTarget = toRaw(target);
+    const rawKey = toRaw(key);
+    if (key !== rawKey) {
+        !isReadonly && track(rawTarget, "has" /* HAS */, key);
+    }
+    !isReadonly && track(rawTarget, "has" /* HAS */, rawKey);
+    return key === rawKey
+        ? target.has(key)
+        : target.has(key) || target.has(rawKey);
+}
+function size(target, isReadonly = false) {
+    target = target["__v_raw" /* RAW */];
+    !isReadonly && track(toRaw(target), "iterate" /* ITERATE */, ITERATE_KEY);
+    return Reflect.get(target, 'size', target);
+}
+function add(value) {
+    value = toRaw(value);
+    const target = toRaw(this);
+    const proto = getProto(target);
+    const hadKey = proto.has.call(target, value);
+    if (!hadKey) {
+        target.add(value);
+        trigger(target, "add" /* ADD */, value, value);
+    }
+    return this;
+}
+function set$1(key, value) {
+    value = toRaw(value);
+    const target = toRaw(this);
+    const { has, get } = getProto(target);
+    let hadKey = has.call(target, key);
+    if (!hadKey) {
+        key = toRaw(key);
+        hadKey = has.call(target, key);
+    }
+    else if ((true)) {
+        checkIdentityKeys(target, has, key);
+    }
+    const oldValue = get.call(target, key);
+    target.set(key, value);
+    if (!hadKey) {
+        trigger(target, "add" /* ADD */, key, value);
+    }
+    else if (hasChanged(value, oldValue)) {
+        trigger(target, "set" /* SET */, key, value, oldValue);
+    }
+    return this;
+}
+function deleteEntry(key) {
+    const target = toRaw(this);
+    const { has, get } = getProto(target);
+    let hadKey = has.call(target, key);
+    if (!hadKey) {
+        key = toRaw(key);
+        hadKey = has.call(target, key);
+    }
+    else if ((true)) {
+        checkIdentityKeys(target, has, key);
+    }
+    const oldValue = get ? get.call(target, key) : undefined;
+    // forward the operation before queueing reactions
+    const result = target.delete(key);
+    if (hadKey) {
+        trigger(target, "delete" /* DELETE */, key, undefined, oldValue);
+    }
+    return result;
+}
+function clear() {
+    const target = toRaw(this);
+    const hadItems = target.size !== 0;
+    const oldTarget = ( true)
+        ? isMap(target)
+            ? new Map(target)
+            : new Set(target)
+        : 0;
+    // forward the operation before queueing reactions
+    const result = target.clear();
+    if (hadItems) {
+        trigger(target, "clear" /* CLEAR */, undefined, undefined, oldTarget);
+    }
+    return result;
+}
+function createForEach(isReadonly, isShallow) {
+    return function forEach(callback, thisArg) {
+        const observed = this;
+        const target = observed["__v_raw" /* RAW */];
+        const rawTarget = toRaw(target);
+        const wrap = isShallow ? toShallow : isReadonly ? toReadonly : toReactive;
+        !isReadonly && track(rawTarget, "iterate" /* ITERATE */, ITERATE_KEY);
+        return target.forEach((value, key) => {
+            // important: make sure the callback is
+            // 1. invoked with the reactive map as `this` and 3rd arg
+            // 2. the value received should be a corresponding reactive/readonly.
+            return callback.call(thisArg, wrap(value), wrap(key), observed);
+        });
+    };
+}
+function createIterableMethod(method, isReadonly, isShallow) {
+    return function (...args) {
+        const target = this["__v_raw" /* RAW */];
+        const rawTarget = toRaw(target);
+        const targetIsMap = isMap(rawTarget);
+        const isPair = method === 'entries' || (method === Symbol.iterator && targetIsMap);
+        const isKeyOnly = method === 'keys' && targetIsMap;
+        const innerIterator = target[method](...args);
+        const wrap = isShallow ? toShallow : isReadonly ? toReadonly : toReactive;
+        !isReadonly &&
+            track(rawTarget, "iterate" /* ITERATE */, isKeyOnly ? MAP_KEY_ITERATE_KEY : ITERATE_KEY);
+        // return a wrapped iterator which returns observed versions of the
+        // values emitted from the real iterator
+        return {
+            // iterator protocol
+            next() {
+                const { value, done } = innerIterator.next();
+                return done
+                    ? { value, done }
+                    : {
+                        value: isPair ? [wrap(value[0]), wrap(value[1])] : wrap(value),
+                        done
+                    };
+            },
+            // iterable protocol
+            [Symbol.iterator]() {
+                return this;
+            }
+        };
+    };
+}
+function createReadonlyMethod(type) {
+    return function (...args) {
+        if ((true)) {
+            const key = args[0] ? `on key "${args[0]}" ` : ``;
+            console.warn(`${capitalize(type)} operation ${key}failed: target is readonly.`, toRaw(this));
+        }
+        return type === "delete" /* DELETE */ ? false : this;
+    };
+}
+function createInstrumentations() {
+    const mutableInstrumentations = {
+        get(key) {
+            return get$1(this, key);
+        },
+        get size() {
+            return size(this);
+        },
+        has: has$1,
+        add,
+        set: set$1,
+        delete: deleteEntry,
+        clear,
+        forEach: createForEach(false, false)
+    };
+    const shallowInstrumentations = {
+        get(key) {
+            return get$1(this, key, false, true);
+        },
+        get size() {
+            return size(this);
+        },
+        has: has$1,
+        add,
+        set: set$1,
+        delete: deleteEntry,
+        clear,
+        forEach: createForEach(false, true)
+    };
+    const readonlyInstrumentations = {
+        get(key) {
+            return get$1(this, key, true);
+        },
+        get size() {
+            return size(this, true);
+        },
+        has(key) {
+            return has$1.call(this, key, true);
+        },
+        add: createReadonlyMethod("add" /* ADD */),
+        set: createReadonlyMethod("set" /* SET */),
+        delete: createReadonlyMethod("delete" /* DELETE */),
+        clear: createReadonlyMethod("clear" /* CLEAR */),
+        forEach: createForEach(true, false)
+    };
+    const shallowReadonlyInstrumentations = {
+        get(key) {
+            return get$1(this, key, true, true);
+        },
+        get size() {
+            return size(this, true);
+        },
+        has(key) {
+            return has$1.call(this, key, true);
+        },
+        add: createReadonlyMethod("add" /* ADD */),
+        set: createReadonlyMethod("set" /* SET */),
+        delete: createReadonlyMethod("delete" /* DELETE */),
+        clear: createReadonlyMethod("clear" /* CLEAR */),
+        forEach: createForEach(true, true)
+    };
+    const iteratorMethods = ['keys', 'values', 'entries', Symbol.iterator];
+    iteratorMethods.forEach(method => {
+        mutableInstrumentations[method] = createIterableMethod(method, false, false);
+        readonlyInstrumentations[method] = createIterableMethod(method, true, false);
+        shallowInstrumentations[method] = createIterableMethod(method, false, true);
+        shallowReadonlyInstrumentations[method] = createIterableMethod(method, true, true);
+    });
+    return [
+        mutableInstrumentations,
+        readonlyInstrumentations,
+        shallowInstrumentations,
+        shallowReadonlyInstrumentations
+    ];
+}
+const [mutableInstrumentations, readonlyInstrumentations, shallowInstrumentations, shallowReadonlyInstrumentations] = /* #__PURE__*/ createInstrumentations();
+function createInstrumentationGetter(isReadonly, shallow) {
+    const instrumentations = shallow
+        ? isReadonly
+            ? shallowReadonlyInstrumentations
+            : shallowInstrumentations
+        : isReadonly
+            ? readonlyInstrumentations
+            : mutableInstrumentations;
+    return (target, key, receiver) => {
+        if (key === "__v_isReactive" /* IS_REACTIVE */) {
+            return !isReadonly;
+        }
+        else if (key === "__v_isReadonly" /* IS_READONLY */) {
+            return isReadonly;
+        }
+        else if (key === "__v_raw" /* RAW */) {
+            return target;
+        }
+        return Reflect.get(hasOwn(instrumentations, key) && key in target
+            ? instrumentations
+            : target, key, receiver);
+    };
+}
+const mutableCollectionHandlers = {
+    get: /*#__PURE__*/ createInstrumentationGetter(false, false)
+};
+const shallowCollectionHandlers = {
+    get: /*#__PURE__*/ createInstrumentationGetter(false, true)
+};
+const readonlyCollectionHandlers = {
+    get: /*#__PURE__*/ createInstrumentationGetter(true, false)
+};
+const shallowReadonlyCollectionHandlers = {
+    get: /*#__PURE__*/ createInstrumentationGetter(true, true)
+};
+function checkIdentityKeys(target, has, key) {
+    const rawKey = toRaw(key);
+    if (rawKey !== key && has.call(target, rawKey)) {
+        const type = toRawType(target);
+        console.warn(`Reactive ${type} contains both the raw and reactive ` +
+            `versions of the same object${type === `Map` ? ` as keys` : ``}, ` +
+            `which can lead to inconsistencies. ` +
+            `Avoid differentiating between the raw and reactive versions ` +
+            `of an object and only use the reactive version if possible.`);
+    }
+}
+
+const reactiveMap = new WeakMap();
+const shallowReactiveMap = new WeakMap();
+const readonlyMap = new WeakMap();
+const shallowReadonlyMap = new WeakMap();
+function targetTypeMap(rawType) {
+    switch (rawType) {
+        case 'Object':
+        case 'Array':
+            return 1 /* COMMON */;
+        case 'Map':
+        case 'Set':
+        case 'WeakMap':
+        case 'WeakSet':
+            return 2 /* COLLECTION */;
+        default:
+            return 0 /* INVALID */;
+    }
+}
+function getTargetType(value) {
+    return value["__v_skip" /* SKIP */] || !Object.isExtensible(value)
+        ? 0 /* INVALID */
+        : targetTypeMap(toRawType(value));
+}
+function reactive(target) {
+    // if trying to observe a readonly proxy, return the readonly version.
+    if (isReadonly(target)) {
+        return target;
+    }
+    return createReactiveObject(target, false, mutableHandlers, mutableCollectionHandlers, reactiveMap);
+}
+/**
+ * Return a shallowly-reactive copy of the original object, where only the root
+ * level properties are reactive. It also does not auto-unwrap refs (even at the
+ * root level).
+ */
+function shallowReactive(target) {
+    return createReactiveObject(target, false, shallowReactiveHandlers, shallowCollectionHandlers, shallowReactiveMap);
+}
+/**
+ * Creates a readonly copy of the original object. Note the returned copy is not
+ * made reactive, but `readonly` can be called on an already reactive object.
+ */
+function readonly(target) {
+    return createReactiveObject(target, true, readonlyHandlers, readonlyCollectionHandlers, readonlyMap);
+}
+/**
+ * Returns a reactive-copy of the original object, where only the root level
+ * properties are readonly, and does NOT unwrap refs nor recursively convert
+ * returned properties.
+ * This is used for creating the props proxy object for stateful components.
+ */
+function shallowReadonly(target) {
+    return createReactiveObject(target, true, shallowReadonlyHandlers, shallowReadonlyCollectionHandlers, shallowReadonlyMap);
+}
+function createReactiveObject(target, isReadonly, baseHandlers, collectionHandlers, proxyMap) {
+    if (!isObject(target)) {
+        if ((true)) {
+            console.warn(`value cannot be made reactive: ${String(target)}`);
+        }
+        return target;
+    }
+    // target is already a Proxy, return it.
+    // exception: calling readonly() on a reactive object
+    if (target["__v_raw" /* RAW */] &&
+        !(isReadonly && target["__v_isReactive" /* IS_REACTIVE */])) {
+        return target;
+    }
+    // target already has corresponding Proxy
+    const existingProxy = proxyMap.get(target);
+    if (existingProxy) {
+        return existingProxy;
+    }
+    // only a whitelist of value types can be observed.
+    const targetType = getTargetType(target);
+    if (targetType === 0 /* INVALID */) {
+        return target;
+    }
+    const proxy = new Proxy(target, targetType === 2 /* COLLECTION */ ? collectionHandlers : baseHandlers);
+    proxyMap.set(target, proxy);
+    return proxy;
+}
+function isReactive(value) {
+    if (isReadonly(value)) {
+        return isReactive(value["__v_raw" /* RAW */]);
+    }
+    return !!(value && value["__v_isReactive" /* IS_REACTIVE */]);
+}
+function isReadonly(value) {
+    return !!(value && value["__v_isReadonly" /* IS_READONLY */]);
+}
+function isShallow(value) {
+    return !!(value && value["__v_isShallow" /* IS_SHALLOW */]);
+}
+function isProxy(value) {
+    return isReactive(value) || isReadonly(value);
+}
+function toRaw(observed) {
+    const raw = observed && observed["__v_raw" /* RAW */];
+    return raw ? toRaw(raw) : observed;
+}
+function markRaw(value) {
+    def(value, "__v_skip" /* SKIP */, true);
+    return value;
+}
+const toReactive = (value) => isObject(value) ? reactive(value) : value;
+const toReadonly = (value) => isObject(value) ? readonly(value) : value;
+
+function trackRefValue(ref) {
+    if (shouldTrack && activeEffect) {
+        ref = toRaw(ref);
+        if ((true)) {
+            trackEffects(ref.dep || (ref.dep = createDep()), {
+                target: ref,
+                type: "get" /* GET */,
+                key: 'value'
+            });
+        }
+        else {}
+    }
+}
+function triggerRefValue(ref, newVal) {
+    ref = toRaw(ref);
+    if (ref.dep) {
+        if ((true)) {
+            triggerEffects(ref.dep, {
+                target: ref,
+                type: "set" /* SET */,
+                key: 'value',
+                newValue: newVal
+            });
+        }
+        else {}
+    }
+}
+function isRef(r) {
+    return !!(r && r.__v_isRef === true);
+}
+function ref(value) {
+    return createRef(value, false);
+}
+function shallowRef(value) {
+    return createRef(value, true);
+}
+function createRef(rawValue, shallow) {
+    if (isRef(rawValue)) {
+        return rawValue;
+    }
+    return new RefImpl(rawValue, shallow);
+}
+class RefImpl {
+    constructor(value, __v_isShallow) {
+        this.__v_isShallow = __v_isShallow;
+        this.dep = undefined;
+        this.__v_isRef = true;
+        this._rawValue = __v_isShallow ? value : toRaw(value);
+        this._value = __v_isShallow ? value : toReactive(value);
+    }
+    get value() {
+        trackRefValue(this);
+        return this._value;
+    }
+    set value(newVal) {
+        newVal = this.__v_isShallow ? newVal : toRaw(newVal);
+        if (hasChanged(newVal, this._rawValue)) {
+            this._rawValue = newVal;
+            this._value = this.__v_isShallow ? newVal : toReactive(newVal);
+            triggerRefValue(this, newVal);
+        }
+    }
+}
+function triggerRef(ref) {
+    triggerRefValue(ref, ( true) ? ref.value : 0);
+}
+function unref(ref) {
+    return isRef(ref) ? ref.value : ref;
+}
+const shallowUnwrapHandlers = {
+    get: (target, key, receiver) => unref(Reflect.get(target, key, receiver)),
+    set: (target, key, value, receiver) => {
+        const oldValue = target[key];
+        if (isRef(oldValue) && !isRef(value)) {
+            oldValue.value = value;
+            return true;
+        }
+        else {
+            return Reflect.set(target, key, value, receiver);
+        }
+    }
+};
+function proxyRefs(objectWithRefs) {
+    return isReactive(objectWithRefs)
+        ? objectWithRefs
+        : new Proxy(objectWithRefs, shallowUnwrapHandlers);
+}
+class CustomRefImpl {
+    constructor(factory) {
+        this.dep = undefined;
+        this.__v_isRef = true;
+        const { get, set } = factory(() => trackRefValue(this), () => triggerRefValue(this));
+        this._get = get;
+        this._set = set;
+    }
+    get value() {
+        return this._get();
+    }
+    set value(newVal) {
+        this._set(newVal);
+    }
+}
+function customRef(factory) {
+    return new CustomRefImpl(factory);
+}
+function toRefs(object) {
+    if (( true) && !isProxy(object)) {
+        console.warn(`toRefs() expects a reactive object but received a plain one.`);
+    }
+    const ret = isArray(object) ? new Array(object.length) : {};
+    for (const key in object) {
+        ret[key] = toRef(object, key);
+    }
+    return ret;
+}
+class ObjectRefImpl {
+    constructor(_object, _key, _defaultValue) {
+        this._object = _object;
+        this._key = _key;
+        this._defaultValue = _defaultValue;
+        this.__v_isRef = true;
+    }
+    get value() {
+        const val = this._object[this._key];
+        return val === undefined ? this._defaultValue : val;
+    }
+    set value(newVal) {
+        this._object[this._key] = newVal;
+    }
+}
+function toRef(object, key, defaultValue) {
+    const val = object[key];
+    return isRef(val)
+        ? val
+        : new ObjectRefImpl(object, key, defaultValue);
+}
+
+class ComputedRefImpl {
+    constructor(getter, _setter, isReadonly, isSSR) {
+        this._setter = _setter;
+        this.dep = undefined;
+        this.__v_isRef = true;
+        this._dirty = true;
+        this.effect = new ReactiveEffect(getter, () => {
+            if (!this._dirty) {
+                this._dirty = true;
+                triggerRefValue(this);
+            }
+        });
+        this.effect.computed = this;
+        this.effect.active = this._cacheable = !isSSR;
+        this["__v_isReadonly" /* IS_READONLY */] = isReadonly;
+    }
+    get value() {
+        // the computed ref may get wrapped by other proxies e.g. readonly() #3376
+        const self = toRaw(this);
+        trackRefValue(self);
+        if (self._dirty || !self._cacheable) {
+            self._dirty = false;
+            self._value = self.effect.run();
+        }
+        return self._value;
+    }
+    set value(newValue) {
+        this._setter(newValue);
+    }
+}
+function computed(getterOrOptions, debugOptions, isSSR = false) {
+    let getter;
+    let setter;
+    const onlyGetter = isFunction(getterOrOptions);
+    if (onlyGetter) {
+        getter = getterOrOptions;
+        setter = ( true)
+            ? () => {
+                console.warn('Write operation failed: computed value is readonly');
+            }
+            : 0;
+    }
+    else {
+        getter = getterOrOptions.get;
+        setter = getterOrOptions.set;
+    }
+    const cRef = new ComputedRefImpl(getter, setter, onlyGetter || !setter, isSSR);
+    if (( true) && debugOptions && !isSSR) {
+        cRef.effect.onTrack = debugOptions.onTrack;
+        cRef.effect.onTrigger = debugOptions.onTrigger;
+    }
+    return cRef;
+}
+
+var _a;
+const tick = /*#__PURE__*/ Promise.resolve();
+const queue = [];
+let queued = false;
+const scheduler = (fn) => {
+    queue.push(fn);
+    if (!queued) {
+        queued = true;
+        tick.then(flush);
+    }
+};
+const flush = () => {
+    for (let i = 0; i < queue.length; i++) {
+        queue[i]();
+    }
+    queue.length = 0;
+    queued = false;
+};
+class DeferredComputedRefImpl {
+    constructor(getter) {
+        this.dep = undefined;
+        this._dirty = true;
+        this.__v_isRef = true;
+        this[_a] = true;
+        let compareTarget;
+        let hasCompareTarget = false;
+        let scheduled = false;
+        this.effect = new ReactiveEffect(getter, (computedTrigger) => {
+            if (this.dep) {
+                if (computedTrigger) {
+                    compareTarget = this._value;
+                    hasCompareTarget = true;
+                }
+                else if (!scheduled) {
+                    const valueToCompare = hasCompareTarget ? compareTarget : this._value;
+                    scheduled = true;
+                    hasCompareTarget = false;
+                    scheduler(() => {
+                        if (this.effect.active && this._get() !== valueToCompare) {
+                            triggerRefValue(this);
+                        }
+                        scheduled = false;
+                    });
+                }
+                // chained upstream computeds are notified synchronously to ensure
+                // value invalidation in case of sync access; normal effects are
+                // deferred to be triggered in scheduler.
+                for (const e of this.dep) {
+                    if (e.computed instanceof DeferredComputedRefImpl) {
+                        e.scheduler(true /* computedTrigger */);
+                    }
+                }
+            }
+            this._dirty = true;
+        });
+        this.effect.computed = this;
+    }
+    _get() {
+        if (this._dirty) {
+            this._dirty = false;
+            return (this._value = this.effect.run());
+        }
+        return this._value;
+    }
+    get value() {
+        trackRefValue(this);
+        // the computed ref may get wrapped by other proxies e.g. readonly() #3376
+        return toRaw(this)._get();
+    }
+}
+_a = "__v_isReadonly" /* IS_READONLY */;
+function deferredComputed(getter) {
+    return new DeferredComputedRefImpl(getter);
+}
+
+
+
+;// CONCATENATED MODULE: ./node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
+
+
+
+
+
+const stack = [];
+function pushWarningContext(vnode) {
+    stack.push(vnode);
+}
+function popWarningContext() {
+    stack.pop();
+}
+function runtime_core_esm_bundler_warn(msg, ...args) {
+    // avoid props formatting or warn handler tracking deps that might be mutated
+    // during patch, leading to infinite recursion.
+    pauseTracking();
+    const instance = stack.length ? stack[stack.length - 1].component : null;
+    const appWarnHandler = instance && instance.appContext.config.warnHandler;
+    const trace = getComponentTrace();
+    if (appWarnHandler) {
+        callWithErrorHandling(appWarnHandler, instance, 11 /* APP_WARN_HANDLER */, [
+            msg + args.join(''),
+            instance && instance.proxy,
+            trace
+                .map(({ vnode }) => `at <${formatComponentName(instance, vnode.type)}>`)
+                .join('\n'),
+            trace
+        ]);
+    }
+    else {
+        const warnArgs = [`[Vue warn]: ${msg}`, ...args];
+        /* istanbul ignore if */
+        if (trace.length &&
+            // avoid spamming console during tests
+            !false) {
+            warnArgs.push(`\n`, ...formatTrace(trace));
+        }
+        console.warn(...warnArgs);
+    }
+    resetTracking();
+}
+function getComponentTrace() {
+    let currentVNode = stack[stack.length - 1];
+    if (!currentVNode) {
+        return [];
+    }
+    // we can't just use the stack because it will be incomplete during updates
+    // that did not start from the root. Re-construct the parent chain using
+    // instance parent pointers.
+    const normalizedStack = [];
+    while (currentVNode) {
+        const last = normalizedStack[0];
+        if (last && last.vnode === currentVNode) {
+            last.recurseCount++;
+        }
+        else {
+            normalizedStack.push({
+                vnode: currentVNode,
+                recurseCount: 0
+            });
+        }
+        const parentInstance = currentVNode.component && currentVNode.component.parent;
+        currentVNode = parentInstance && parentInstance.vnode;
+    }
+    return normalizedStack;
+}
+/* istanbul ignore next */
+function formatTrace(trace) {
+    const logs = [];
+    trace.forEach((entry, i) => {
+        logs.push(...(i === 0 ? [] : [`\n`]), ...formatTraceEntry(entry));
+    });
+    return logs;
+}
+function formatTraceEntry({ vnode, recurseCount }) {
+    const postfix = recurseCount > 0 ? `... (${recurseCount} recursive calls)` : ``;
+    const isRoot = vnode.component ? vnode.component.parent == null : false;
+    const open = ` at <${formatComponentName(vnode.component, vnode.type, isRoot)}`;
+    const close = `>` + postfix;
+    return vnode.props
+        ? [open, ...formatProps(vnode.props), close]
+        : [open + close];
+}
+/* istanbul ignore next */
+function formatProps(props) {
+    const res = [];
+    const keys = Object.keys(props);
+    keys.slice(0, 3).forEach(key => {
+        res.push(...formatProp(key, props[key]));
+    });
+    if (keys.length > 3) {
+        res.push(` ...`);
+    }
+    return res;
+}
+/* istanbul ignore next */
+function formatProp(key, value, raw) {
+    if (isString(value)) {
+        value = JSON.stringify(value);
+        return raw ? value : [`${key}=${value}`];
+    }
+    else if (typeof value === 'number' ||
+        typeof value === 'boolean' ||
+        value == null) {
+        return raw ? value : [`${key}=${value}`];
+    }
+    else if (isRef(value)) {
+        value = formatProp(key, toRaw(value.value), true);
+        return raw ? value : [`${key}=Ref<`, value, `>`];
+    }
+    else if (isFunction(value)) {
+        return [`${key}=fn${value.name ? `<${value.name}>` : ``}`];
+    }
+    else {
+        value = toRaw(value);
+        return raw ? value : [`${key}=`, value];
+    }
+}
+
+const ErrorTypeStrings = {
+    ["sp" /* SERVER_PREFETCH */]: 'serverPrefetch hook',
+    ["bc" /* BEFORE_CREATE */]: 'beforeCreate hook',
+    ["c" /* CREATED */]: 'created hook',
+    ["bm" /* BEFORE_MOUNT */]: 'beforeMount hook',
+    ["m" /* MOUNTED */]: 'mounted hook',
+    ["bu" /* BEFORE_UPDATE */]: 'beforeUpdate hook',
+    ["u" /* UPDATED */]: 'updated',
+    ["bum" /* BEFORE_UNMOUNT */]: 'beforeUnmount hook',
+    ["um" /* UNMOUNTED */]: 'unmounted hook',
+    ["a" /* ACTIVATED */]: 'activated hook',
+    ["da" /* DEACTIVATED */]: 'deactivated hook',
+    ["ec" /* ERROR_CAPTURED */]: 'errorCaptured hook',
+    ["rtc" /* RENDER_TRACKED */]: 'renderTracked hook',
+    ["rtg" /* RENDER_TRIGGERED */]: 'renderTriggered hook',
+    [0 /* SETUP_FUNCTION */]: 'setup function',
+    [1 /* RENDER_FUNCTION */]: 'render function',
+    [2 /* WATCH_GETTER */]: 'watcher getter',
+    [3 /* WATCH_CALLBACK */]: 'watcher callback',
+    [4 /* WATCH_CLEANUP */]: 'watcher cleanup function',
+    [5 /* NATIVE_EVENT_HANDLER */]: 'native event handler',
+    [6 /* COMPONENT_EVENT_HANDLER */]: 'component event handler',
+    [7 /* VNODE_HOOK */]: 'vnode hook',
+    [8 /* DIRECTIVE_HOOK */]: 'directive hook',
+    [9 /* TRANSITION_HOOK */]: 'transition hook',
+    [10 /* APP_ERROR_HANDLER */]: 'app errorHandler',
+    [11 /* APP_WARN_HANDLER */]: 'app warnHandler',
+    [12 /* FUNCTION_REF */]: 'ref function',
+    [13 /* ASYNC_COMPONENT_LOADER */]: 'async component loader',
+    [14 /* SCHEDULER */]: 'scheduler flush. This is likely a Vue internals bug. ' +
+        'Please open an issue at https://new-issue.vuejs.org/?repo=vuejs/core'
+};
+function callWithErrorHandling(fn, instance, type, args) {
+    let res;
+    try {
+        res = args ? fn(...args) : fn();
+    }
+    catch (err) {
+        handleError(err, instance, type);
+    }
+    return res;
+}
+function callWithAsyncErrorHandling(fn, instance, type, args) {
+    if (isFunction(fn)) {
+        const res = callWithErrorHandling(fn, instance, type, args);
+        if (res && isPromise(res)) {
+            res.catch(err => {
+                handleError(err, instance, type);
+            });
+        }
+        return res;
+    }
+    const values = [];
+    for (let i = 0; i < fn.length; i++) {
+        values.push(callWithAsyncErrorHandling(fn[i], instance, type, args));
+    }
+    return values;
+}
+function handleError(err, instance, type, throwInDev = true) {
+    const contextVNode = instance ? instance.vnode : null;
+    if (instance) {
+        let cur = instance.parent;
+        // the exposed instance is the render proxy to keep it consistent with 2.x
+        const exposedInstance = instance.proxy;
+        // in production the hook receives only the error code
+        const errorInfo = ( true) ? ErrorTypeStrings[type] : 0;
+        while (cur) {
+            const errorCapturedHooks = cur.ec;
+            if (errorCapturedHooks) {
+                for (let i = 0; i < errorCapturedHooks.length; i++) {
+                    if (errorCapturedHooks[i](err, exposedInstance, errorInfo) === false) {
+                        return;
+                    }
+                }
+            }
+            cur = cur.parent;
+        }
+        // app-level handling
+        const appErrorHandler = instance.appContext.config.errorHandler;
+        if (appErrorHandler) {
+            callWithErrorHandling(appErrorHandler, null, 10 /* APP_ERROR_HANDLER */, [err, exposedInstance, errorInfo]);
+            return;
+        }
+    }
+    logError(err, type, contextVNode, throwInDev);
+}
+function logError(err, type, contextVNode, throwInDev = true) {
+    if ((true)) {
+        const info = ErrorTypeStrings[type];
+        if (contextVNode) {
+            pushWarningContext(contextVNode);
+        }
+        runtime_core_esm_bundler_warn(`Unhandled error${info ? ` during execution of ${info}` : ``}`);
+        if (contextVNode) {
+            popWarningContext();
+        }
+        // crash in dev by default so it's more noticeable
+        if (throwInDev) {
+            throw err;
+        }
+        else {
+            console.error(err);
+        }
+    }
+    else {}
+}
+
+let isFlushing = false;
+let isFlushPending = false;
+const runtime_core_esm_bundler_queue = [];
+let flushIndex = 0;
+const pendingPreFlushCbs = [];
+let activePreFlushCbs = null;
+let preFlushIndex = 0;
+const pendingPostFlushCbs = [];
+let activePostFlushCbs = null;
+let postFlushIndex = 0;
+const resolvedPromise = /*#__PURE__*/ Promise.resolve();
+let currentFlushPromise = null;
+let currentPreFlushParentJob = null;
+const RECURSION_LIMIT = 100;
+function nextTick(fn) {
+    const p = currentFlushPromise || resolvedPromise;
+    return fn ? p.then(this ? fn.bind(this) : fn) : p;
+}
+// #2768
+// Use binary-search to find a suitable position in the queue,
+// so that the queue maintains the increasing order of job's id,
+// which can prevent the job from being skipped and also can avoid repeated patching.
+function findInsertionIndex(id) {
+    // the start index should be `flushIndex + 1`
+    let start = flushIndex + 1;
+    let end = runtime_core_esm_bundler_queue.length;
+    while (start < end) {
+        const middle = (start + end) >>> 1;
+        const middleJobId = getId(runtime_core_esm_bundler_queue[middle]);
+        middleJobId < id ? (start = middle + 1) : (end = middle);
+    }
+    return start;
+}
+function queueJob(job) {
+    // the dedupe search uses the startIndex argument of Array.includes()
+    // by default the search index includes the current job that is being run
+    // so it cannot recursively trigger itself again.
+    // if the job is a watch() callback, the search will start with a +1 index to
+    // allow it recursively trigger itself - it is the user's responsibility to
+    // ensure it doesn't end up in an infinite loop.
+    if ((!runtime_core_esm_bundler_queue.length ||
+        !runtime_core_esm_bundler_queue.includes(job, isFlushing && job.allowRecurse ? flushIndex + 1 : flushIndex)) &&
+        job !== currentPreFlushParentJob) {
+        if (job.id == null) {
+            runtime_core_esm_bundler_queue.push(job);
+        }
+        else {
+            runtime_core_esm_bundler_queue.splice(findInsertionIndex(job.id), 0, job);
+        }
+        queueFlush();
+    }
+}
+function queueFlush() {
+    if (!isFlushing && !isFlushPending) {
+        isFlushPending = true;
+        currentFlushPromise = resolvedPromise.then(flushJobs);
+    }
+}
+function invalidateJob(job) {
+    const i = runtime_core_esm_bundler_queue.indexOf(job);
+    if (i > flushIndex) {
+        runtime_core_esm_bundler_queue.splice(i, 1);
+    }
+}
+function queueCb(cb, activeQueue, pendingQueue, index) {
+    if (!isArray(cb)) {
+        if (!activeQueue ||
+            !activeQueue.includes(cb, cb.allowRecurse ? index + 1 : index)) {
+            pendingQueue.push(cb);
+        }
+    }
+    else {
+        // if cb is an array, it is a component lifecycle hook which can only be
+        // triggered by a job, which is already deduped in the main queue, so
+        // we can skip duplicate check here to improve perf
+        pendingQueue.push(...cb);
+    }
+    queueFlush();
+}
+function queuePreFlushCb(cb) {
+    queueCb(cb, activePreFlushCbs, pendingPreFlushCbs, preFlushIndex);
+}
+function queuePostFlushCb(cb) {
+    queueCb(cb, activePostFlushCbs, pendingPostFlushCbs, postFlushIndex);
+}
+function flushPreFlushCbs(seen, parentJob = null) {
+    if (pendingPreFlushCbs.length) {
+        currentPreFlushParentJob = parentJob;
+        activePreFlushCbs = [...new Set(pendingPreFlushCbs)];
+        pendingPreFlushCbs.length = 0;
+        if ((true)) {
+            seen = seen || new Map();
+        }
+        for (preFlushIndex = 0; preFlushIndex < activePreFlushCbs.length; preFlushIndex++) {
+            if (( true) &&
+                checkRecursiveUpdates(seen, activePreFlushCbs[preFlushIndex])) {
+                continue;
+            }
+            activePreFlushCbs[preFlushIndex]();
+        }
+        activePreFlushCbs = null;
+        preFlushIndex = 0;
+        currentPreFlushParentJob = null;
+        // recursively flush until it drains
+        flushPreFlushCbs(seen, parentJob);
+    }
+}
+function flushPostFlushCbs(seen) {
+    if (pendingPostFlushCbs.length) {
+        const deduped = [...new Set(pendingPostFlushCbs)];
+        pendingPostFlushCbs.length = 0;
+        // #1947 already has active queue, nested flushPostFlushCbs call
+        if (activePostFlushCbs) {
+            activePostFlushCbs.push(...deduped);
+            return;
+        }
+        activePostFlushCbs = deduped;
+        if ((true)) {
+            seen = seen || new Map();
+        }
+        activePostFlushCbs.sort((a, b) => getId(a) - getId(b));
+        for (postFlushIndex = 0; postFlushIndex < activePostFlushCbs.length; postFlushIndex++) {
+            if (( true) &&
+                checkRecursiveUpdates(seen, activePostFlushCbs[postFlushIndex])) {
+                continue;
+            }
+            activePostFlushCbs[postFlushIndex]();
+        }
+        activePostFlushCbs = null;
+        postFlushIndex = 0;
+    }
+}
+const getId = (job) => job.id == null ? Infinity : job.id;
+function flushJobs(seen) {
+    isFlushPending = false;
+    isFlushing = true;
+    if ((true)) {
+        seen = seen || new Map();
+    }
+    flushPreFlushCbs(seen);
+    // Sort queue before flush.
+    // This ensures that:
+    // 1. Components are updated from parent to child. (because parent is always
+    //    created before the child so its render effect will have smaller
+    //    priority number)
+    // 2. If a component is unmounted during a parent component's update,
+    //    its update can be skipped.
+    runtime_core_esm_bundler_queue.sort((a, b) => getId(a) - getId(b));
+    // conditional usage of checkRecursiveUpdate must be determined out of
+    // try ... catch block since Rollup by default de-optimizes treeshaking
+    // inside try-catch. This can leave all warning code unshaked. Although
+    // they would get eventually shaken by a minifier like terser, some minifiers
+    // would fail to do that (e.g. https://github.com/evanw/esbuild/issues/1610)
+    const check = ( true)
+        ? (job) => checkRecursiveUpdates(seen, job)
+        : 0;
+    try {
+        for (flushIndex = 0; flushIndex < runtime_core_esm_bundler_queue.length; flushIndex++) {
+            const job = runtime_core_esm_bundler_queue[flushIndex];
+            if (job && job.active !== false) {
+                if (( true) && check(job)) {
+                    continue;
+                }
+                // console.log(`running:`, job.id)
+                callWithErrorHandling(job, null, 14 /* SCHEDULER */);
+            }
+        }
+    }
+    finally {
+        flushIndex = 0;
+        runtime_core_esm_bundler_queue.length = 0;
+        flushPostFlushCbs(seen);
+        isFlushing = false;
+        currentFlushPromise = null;
+        // some postFlushCb queued jobs!
+        // keep flushing until it drains.
+        if (runtime_core_esm_bundler_queue.length ||
+            pendingPreFlushCbs.length ||
+            pendingPostFlushCbs.length) {
+            flushJobs(seen);
+        }
+    }
+}
+function checkRecursiveUpdates(seen, fn) {
+    if (!seen.has(fn)) {
+        seen.set(fn, 1);
+    }
+    else {
+        const count = seen.get(fn);
+        if (count > RECURSION_LIMIT) {
+            const instance = fn.ownerInstance;
+            const componentName = instance && getComponentName(instance.type);
+            runtime_core_esm_bundler_warn(`Maximum recursive updates exceeded${componentName ? ` in component <${componentName}>` : ``}. ` +
+                `This means you have a reactive effect that is mutating its own ` +
+                `dependencies and thus recursively triggering itself. Possible sources ` +
+                `include component template, render function, updated hook or ` +
+                `watcher source function.`);
+            return true;
+        }
+        else {
+            seen.set(fn, count + 1);
+        }
+    }
+}
+
+/* eslint-disable no-restricted-globals */
+let isHmrUpdating = false;
+const hmrDirtyComponents = new Set();
+// Expose the HMR runtime on the global object
+// This makes it entirely tree-shakable without polluting the exports and makes
+// it easier to be used in toolings like vue-loader
+// Note: for a component to be eligible for HMR it also needs the __hmrId option
+// to be set so that its instances can be registered / removed.
+if ((true)) {
+    getGlobalThis().__VUE_HMR_RUNTIME__ = {
+        createRecord: tryWrap(createRecord),
+        rerender: tryWrap(rerender),
+        reload: tryWrap(reload)
+    };
+}
+const map = new Map();
+function registerHMR(instance) {
+    const id = instance.type.__hmrId;
+    let record = map.get(id);
+    if (!record) {
+        createRecord(id, instance.type);
+        record = map.get(id);
+    }
+    record.instances.add(instance);
+}
+function unregisterHMR(instance) {
+    map.get(instance.type.__hmrId).instances.delete(instance);
+}
+function createRecord(id, initialDef) {
+    if (map.has(id)) {
+        return false;
+    }
+    map.set(id, {
+        initialDef: normalizeClassComponent(initialDef),
+        instances: new Set()
+    });
+    return true;
+}
+function normalizeClassComponent(component) {
+    return isClassComponent(component) ? component.__vccOpts : component;
+}
+function rerender(id, newRender) {
+    const record = map.get(id);
+    if (!record) {
+        return;
+    }
+    // update initial record (for not-yet-rendered component)
+    record.initialDef.render = newRender;
+    [...record.instances].forEach(instance => {
+        if (newRender) {
+            instance.render = newRender;
+            normalizeClassComponent(instance.type).render = newRender;
+        }
+        instance.renderCache = [];
+        // this flag forces child components with slot content to update
+        isHmrUpdating = true;
+        instance.update();
+        isHmrUpdating = false;
+    });
+}
+function reload(id, newComp) {
+    const record = map.get(id);
+    if (!record)
+        return;
+    newComp = normalizeClassComponent(newComp);
+    // update initial def (for not-yet-rendered components)
+    updateComponentDef(record.initialDef, newComp);
+    // create a snapshot which avoids the set being mutated during updates
+    const instances = [...record.instances];
+    for (const instance of instances) {
+        const oldComp = normalizeClassComponent(instance.type);
+        if (!hmrDirtyComponents.has(oldComp)) {
+            // 1. Update existing comp definition to match new one
+            if (oldComp !== record.initialDef) {
+                updateComponentDef(oldComp, newComp);
+            }
+            // 2. mark definition dirty. This forces the renderer to replace the
+            // component on patch.
+            hmrDirtyComponents.add(oldComp);
+        }
+        // 3. invalidate options resolution cache
+        instance.appContext.optionsCache.delete(instance.type);
+        // 4. actually update
+        if (instance.ceReload) {
+            // custom element
+            hmrDirtyComponents.add(oldComp);
+            instance.ceReload(newComp.styles);
+            hmrDirtyComponents.delete(oldComp);
+        }
+        else if (instance.parent) {
+            // 4. Force the parent instance to re-render. This will cause all updated
+            // components to be unmounted and re-mounted. Queue the update so that we
+            // don't end up forcing the same parent to re-render multiple times.
+            queueJob(instance.parent.update);
+            // instance is the inner component of an async custom element
+            // invoke to reset styles
+            if (instance.parent.type.__asyncLoader &&
+                instance.parent.ceReload) {
+                instance.parent.ceReload(newComp.styles);
+            }
+        }
+        else if (instance.appContext.reload) {
+            // root instance mounted via createApp() has a reload method
+            instance.appContext.reload();
+        }
+        else if (typeof window !== 'undefined') {
+            // root instance inside tree created via raw render(). Force reload.
+            window.location.reload();
+        }
+        else {
+            console.warn('[HMR] Root or manually mounted instance modified. Full reload required.');
+        }
+    }
+    // 5. make sure to cleanup dirty hmr components after update
+    queuePostFlushCb(() => {
+        for (const instance of instances) {
+            hmrDirtyComponents.delete(normalizeClassComponent(instance.type));
+        }
+    });
+}
+function updateComponentDef(oldComp, newComp) {
+    extend(oldComp, newComp);
+    for (const key in oldComp) {
+        if (key !== '__file' && !(key in newComp)) {
+            delete oldComp[key];
+        }
+    }
+}
+function tryWrap(fn) {
+    return (id, arg) => {
+        try {
+            return fn(id, arg);
+        }
+        catch (e) {
+            console.error(e);
+            console.warn(`[HMR] Something went wrong during Vue component hot-reload. ` +
+                `Full reload required.`);
+        }
+    };
+}
+
+let devtools;
+let buffer = [];
+let devtoolsNotInstalled = false;
+function emit(event, ...args) {
+    if (devtools) {
+        devtools.emit(event, ...args);
+    }
+    else if (!devtoolsNotInstalled) {
+        buffer.push({ event, args });
+    }
+}
+function setDevtoolsHook(hook, target) {
+    var _a, _b;
+    devtools = hook;
+    if (devtools) {
+        devtools.enabled = true;
+        buffer.forEach(({ event, args }) => devtools.emit(event, ...args));
+        buffer = [];
+    }
+    else if (
+    // handle late devtools injection - only do this if we are in an actual
+    // browser environment to avoid the timer handle stalling test runner exit
+    // (#4815)
+    // eslint-disable-next-line no-restricted-globals
+    typeof window !== 'undefined' &&
+        // some envs mock window but not fully
+        window.HTMLElement &&
+        // also exclude jsdom
+        !((_b = (_a = window.navigator) === null || _a === void 0 ? void 0 : _a.userAgent) === null || _b === void 0 ? void 0 : _b.includes('jsdom'))) {
+        const replay = (target.__VUE_DEVTOOLS_HOOK_REPLAY__ =
+            target.__VUE_DEVTOOLS_HOOK_REPLAY__ || []);
+        replay.push((newHook) => {
+            setDevtoolsHook(newHook, target);
+        });
+        // clear buffer after 3s - the user probably doesn't have devtools installed
+        // at all, and keeping the buffer will cause memory leaks (#4738)
+        setTimeout(() => {
+            if (!devtools) {
+                target.__VUE_DEVTOOLS_HOOK_REPLAY__ = null;
+                devtoolsNotInstalled = true;
+                buffer = [];
+            }
+        }, 3000);
+    }
+    else {
+        // non-browser env, assume not installed
+        devtoolsNotInstalled = true;
+        buffer = [];
+    }
+}
+function devtoolsInitApp(app, version) {
+    emit("app:init" /* APP_INIT */, app, version, {
+        Fragment,
+        Text,
+        Comment,
+        Static
+    });
+}
+function devtoolsUnmountApp(app) {
+    emit("app:unmount" /* APP_UNMOUNT */, app);
+}
+const devtoolsComponentAdded = /*#__PURE__*/ createDevtoolsComponentHook("component:added" /* COMPONENT_ADDED */);
+const devtoolsComponentUpdated = 
+/*#__PURE__*/ createDevtoolsComponentHook("component:updated" /* COMPONENT_UPDATED */);
+const devtoolsComponentRemoved = 
+/*#__PURE__*/ createDevtoolsComponentHook("component:removed" /* COMPONENT_REMOVED */);
+function createDevtoolsComponentHook(hook) {
+    return (component) => {
+        emit(hook, component.appContext.app, component.uid, component.parent ? component.parent.uid : undefined, component);
+    };
+}
+const devtoolsPerfStart = /*#__PURE__*/ createDevtoolsPerformanceHook("perf:start" /* PERFORMANCE_START */);
+const devtoolsPerfEnd = /*#__PURE__*/ createDevtoolsPerformanceHook("perf:end" /* PERFORMANCE_END */);
+function createDevtoolsPerformanceHook(hook) {
+    return (component, type, time) => {
+        emit(hook, component.appContext.app, component.uid, component, type, time);
+    };
+}
+function devtoolsComponentEmit(component, event, params) {
+    emit("component:emit" /* COMPONENT_EMIT */, component.appContext.app, component, event, params);
+}
+
+function emit$1(instance, event, ...rawArgs) {
+    if (instance.isUnmounted)
+        return;
+    const props = instance.vnode.props || EMPTY_OBJ;
+    if ((true)) {
+        const { emitsOptions, propsOptions: [propsOptions] } = instance;
+        if (emitsOptions) {
+            if (!(event in emitsOptions) &&
+                !(false )) {
+                if (!propsOptions || !(toHandlerKey(event) in propsOptions)) {
+                    runtime_core_esm_bundler_warn(`Component emitted event "${event}" but it is neither declared in ` +
+                        `the emits option nor as an "${toHandlerKey(event)}" prop.`);
+                }
+            }
+            else {
+                const validator = emitsOptions[event];
+                if (isFunction(validator)) {
+                    const isValid = validator(...rawArgs);
+                    if (!isValid) {
+                        runtime_core_esm_bundler_warn(`Invalid event arguments: event validation failed for event "${event}".`);
+                    }
+                }
+            }
+        }
+    }
+    let args = rawArgs;
+    const isModelListener = event.startsWith('update:');
+    // for v-model update:xxx events, apply modifiers on args
+    const modelArg = isModelListener && event.slice(7);
+    if (modelArg && modelArg in props) {
+        const modifiersKey = `${modelArg === 'modelValue' ? 'model' : modelArg}Modifiers`;
+        const { number, trim } = props[modifiersKey] || EMPTY_OBJ;
+        if (trim) {
+            args = rawArgs.map(a => a.trim());
+        }
+        else if (number) {
+            args = rawArgs.map(toNumber);
+        }
+    }
+    if (true) {
+        devtoolsComponentEmit(instance, event, args);
+    }
+    if ((true)) {
+        const lowerCaseEvent = event.toLowerCase();
+        if (lowerCaseEvent !== event && props[toHandlerKey(lowerCaseEvent)]) {
+            runtime_core_esm_bundler_warn(`Event "${lowerCaseEvent}" is emitted in component ` +
+                `${formatComponentName(instance, instance.type)} but the handler is registered for "${event}". ` +
+                `Note that HTML attributes are case-insensitive and you cannot use ` +
+                `v-on to listen to camelCase events when using in-DOM templates. ` +
+                `You should probably use "${hyphenate(event)}" instead of "${event}".`);
+        }
+    }
+    let handlerName;
+    let handler = props[(handlerName = toHandlerKey(event))] ||
+        // also try camelCase event handler (#2249)
+        props[(handlerName = toHandlerKey(camelize(event)))];
+    // for v-model update:xxx events, also trigger kebab-case equivalent
+    // for props passed via kebab-case
+    if (!handler && isModelListener) {
+        handler = props[(handlerName = toHandlerKey(hyphenate(event)))];
+    }
+    if (handler) {
+        callWithAsyncErrorHandling(handler, instance, 6 /* COMPONENT_EVENT_HANDLER */, args);
+    }
+    const onceHandler = props[handlerName + `Once`];
+    if (onceHandler) {
+        if (!instance.emitted) {
+            instance.emitted = {};
+        }
+        else if (instance.emitted[handlerName]) {
+            return;
+        }
+        instance.emitted[handlerName] = true;
+        callWithAsyncErrorHandling(onceHandler, instance, 6 /* COMPONENT_EVENT_HANDLER */, args);
+    }
+}
+function normalizeEmitsOptions(comp, appContext, asMixin = false) {
+    const cache = appContext.emitsCache;
+    const cached = cache.get(comp);
+    if (cached !== undefined) {
+        return cached;
+    }
+    const raw = comp.emits;
+    let normalized = {};
+    // apply mixin/extends props
+    let hasExtends = false;
+    if (__VUE_OPTIONS_API__ && !isFunction(comp)) {
+        const extendEmits = (raw) => {
+            const normalizedFromExtend = normalizeEmitsOptions(raw, appContext, true);
+            if (normalizedFromExtend) {
+                hasExtends = true;
+                extend(normalized, normalizedFromExtend);
+            }
+        };
+        if (!asMixin && appContext.mixins.length) {
+            appContext.mixins.forEach(extendEmits);
+        }
+        if (comp.extends) {
+            extendEmits(comp.extends);
+        }
+        if (comp.mixins) {
+            comp.mixins.forEach(extendEmits);
+        }
+    }
+    if (!raw && !hasExtends) {
+        cache.set(comp, null);
+        return null;
+    }
+    if (isArray(raw)) {
+        raw.forEach(key => (normalized[key] = null));
+    }
+    else {
+        extend(normalized, raw);
+    }
+    cache.set(comp, normalized);
+    return normalized;
+}
+// Check if an incoming prop key is a declared emit event listener.
+// e.g. With `emits: { click: null }`, props named `onClick` and `onclick` are
+// both considered matched listeners.
+function isEmitListener(options, key) {
+    if (!options || !isOn(key)) {
+        return false;
+    }
+    key = key.slice(2).replace(/Once$/, '');
+    return (hasOwn(options, key[0].toLowerCase() + key.slice(1)) ||
+        hasOwn(options, hyphenate(key)) ||
+        hasOwn(options, key));
+}
+
+/**
+ * mark the current rendering instance for asset resolution (e.g.
+ * resolveComponent, resolveDirective) during render
+ */
+let currentRenderingInstance = null;
+let currentScopeId = null;
+/**
+ * Note: rendering calls maybe nested. The function returns the parent rendering
+ * instance if present, which should be restored after the render is done:
+ *
+ * ```js
+ * const prev = setCurrentRenderingInstance(i)
+ * // ...render
+ * setCurrentRenderingInstance(prev)
+ * ```
+ */
+function setCurrentRenderingInstance(instance) {
+    const prev = currentRenderingInstance;
+    currentRenderingInstance = instance;
+    currentScopeId = (instance && instance.type.__scopeId) || null;
+    return prev;
+}
+/**
+ * Set scope id when creating hoisted vnodes.
+ * @private compiler helper
+ */
+function pushScopeId(id) {
+    currentScopeId = id;
+}
+/**
+ * Technically we no longer need this after 3.0.8 but we need to keep the same
+ * API for backwards compat w/ code generated by compilers.
+ * @private
+ */
+function popScopeId() {
+    currentScopeId = null;
+}
+/**
+ * Only for backwards compat
+ * @private
+ */
+const withScopeId = (_id) => withCtx;
+/**
+ * Wrap a slot function to memoize current rendering instance
+ * @private compiler helper
+ */
+function withCtx(fn, ctx = currentRenderingInstance, isNonScopedSlot // false only
+) {
+    if (!ctx)
+        return fn;
+    // already normalized
+    if (fn._n) {
+        return fn;
+    }
+    const renderFnWithContext = (...args) => {
+        // If a user calls a compiled slot inside a template expression (#1745), it
+        // can mess up block tracking, so by default we disable block tracking and
+        // force bail out when invoking a compiled slot (indicated by the ._d flag).
+        // This isn't necessary if rendering a compiled `<slot>`, so we flip the
+        // ._d flag off when invoking the wrapped fn inside `renderSlot`.
+        if (renderFnWithContext._d) {
+            setBlockTracking(-1);
+        }
+        const prevInstance = setCurrentRenderingInstance(ctx);
+        const res = fn(...args);
+        setCurrentRenderingInstance(prevInstance);
+        if (renderFnWithContext._d) {
+            setBlockTracking(1);
+        }
+        if (true) {
+            devtoolsComponentUpdated(ctx);
+        }
+        return res;
+    };
+    // mark normalized to avoid duplicated wrapping
+    renderFnWithContext._n = true;
+    // mark this as compiled by default
+    // this is used in vnode.ts -> normalizeChildren() to set the slot
+    // rendering flag.
+    renderFnWithContext._c = true;
+    // disable block tracking by default
+    renderFnWithContext._d = true;
+    return renderFnWithContext;
+}
+
+/**
+ * dev only flag to track whether $attrs was used during render.
+ * If $attrs was used during render then the warning for failed attrs
+ * fallthrough can be suppressed.
+ */
+let accessedAttrs = false;
+function markAttrsAccessed() {
+    accessedAttrs = true;
+}
+function renderComponentRoot(instance) {
+    const { type: Component, vnode, proxy, withProxy, props, propsOptions: [propsOptions], slots, attrs, emit, render, renderCache, data, setupState, ctx, inheritAttrs } = instance;
+    let result;
+    let fallthroughAttrs;
+    const prev = setCurrentRenderingInstance(instance);
+    if ((true)) {
+        accessedAttrs = false;
+    }
+    try {
+        if (vnode.shapeFlag & 4 /* STATEFUL_COMPONENT */) {
+            // withProxy is a proxy with a different `has` trap only for
+            // runtime-compiled render functions using `with` block.
+            const proxyToUse = withProxy || proxy;
+            result = normalizeVNode(render.call(proxyToUse, proxyToUse, renderCache, props, setupState, data, ctx));
+            fallthroughAttrs = attrs;
+        }
+        else {
+            // functional
+            const render = Component;
+            // in dev, mark attrs accessed if optional props (attrs === props)
+            if (( true) && attrs === props) {
+                markAttrsAccessed();
+            }
+            result = normalizeVNode(render.length > 1
+                ? render(props, ( true)
+                    ? {
+                        get attrs() {
+                            markAttrsAccessed();
+                            return attrs;
+                        },
+                        slots,
+                        emit
+                    }
+                    : 0)
+                : render(props, null /* we know it doesn't need it */));
+            fallthroughAttrs = Component.props
+                ? attrs
+                : getFunctionalFallthrough(attrs);
+        }
+    }
+    catch (err) {
+        blockStack.length = 0;
+        handleError(err, instance, 1 /* RENDER_FUNCTION */);
+        result = createVNode(Comment);
+    }
+    // attr merging
+    // in dev mode, comments are preserved, and it's possible for a template
+    // to have comments along side the root element which makes it a fragment
+    let root = result;
+    let setRoot = undefined;
+    if (( true) &&
+        result.patchFlag > 0 &&
+        result.patchFlag & 2048 /* DEV_ROOT_FRAGMENT */) {
+        [root, setRoot] = getChildRoot(result);
+    }
+    if (fallthroughAttrs && inheritAttrs !== false) {
+        const keys = Object.keys(fallthroughAttrs);
+        const { shapeFlag } = root;
+        if (keys.length) {
+            if (shapeFlag & (1 /* ELEMENT */ | 6 /* COMPONENT */)) {
+                if (propsOptions && keys.some(isModelListener)) {
+                    // If a v-model listener (onUpdate:xxx) has a corresponding declared
+                    // prop, it indicates this component expects to handle v-model and
+                    // it should not fallthrough.
+                    // related: #1543, #1643, #1989
+                    fallthroughAttrs = filterModelListeners(fallthroughAttrs, propsOptions);
+                }
+                root = cloneVNode(root, fallthroughAttrs);
+            }
+            else if (( true) && !accessedAttrs && root.type !== Comment) {
+                const allAttrs = Object.keys(attrs);
+                const eventAttrs = [];
+                const extraAttrs = [];
+                for (let i = 0, l = allAttrs.length; i < l; i++) {
+                    const key = allAttrs[i];
+                    if (isOn(key)) {
+                        // ignore v-model handlers when they fail to fallthrough
+                        if (!isModelListener(key)) {
+                            // remove `on`, lowercase first letter to reflect event casing
+                            // accurately
+                            eventAttrs.push(key[2].toLowerCase() + key.slice(3));
+                        }
+                    }
+                    else {
+                        extraAttrs.push(key);
+                    }
+                }
+                if (extraAttrs.length) {
+                    runtime_core_esm_bundler_warn(`Extraneous non-props attributes (` +
+                        `${extraAttrs.join(', ')}) ` +
+                        `were passed to component but could not be automatically inherited ` +
+                        `because component renders fragment or text root nodes.`);
+                }
+                if (eventAttrs.length) {
+                    runtime_core_esm_bundler_warn(`Extraneous non-emits event listeners (` +
+                        `${eventAttrs.join(', ')}) ` +
+                        `were passed to component but could not be automatically inherited ` +
+                        `because component renders fragment or text root nodes. ` +
+                        `If the listener is intended to be a component custom event listener only, ` +
+                        `declare it using the "emits" option.`);
+                }
+            }
+        }
+    }
+    // inherit directives
+    if (vnode.dirs) {
+        if (( true) && !isElementRoot(root)) {
+            runtime_core_esm_bundler_warn(`Runtime directive used on component with non-element root node. ` +
+                `The directives will not function as intended.`);
+        }
+        root.dirs = root.dirs ? root.dirs.concat(vnode.dirs) : vnode.dirs;
+    }
+    // inherit transition data
+    if (vnode.transition) {
+        if (( true) && !isElementRoot(root)) {
+            runtime_core_esm_bundler_warn(`Component inside <Transition> renders non-element root node ` +
+                `that cannot be animated.`);
+        }
+        root.transition = vnode.transition;
+    }
+    if (( true) && setRoot) {
+        setRoot(root);
+    }
+    else {
+        result = root;
+    }
+    setCurrentRenderingInstance(prev);
+    return result;
+}
+/**
+ * dev only
+ * In dev mode, template root level comments are rendered, which turns the
+ * template into a fragment root, but we need to locate the single element
+ * root for attrs and scope id processing.
+ */
+const getChildRoot = (vnode) => {
+    const rawChildren = vnode.children;
+    const dynamicChildren = vnode.dynamicChildren;
+    const childRoot = filterSingleRoot(rawChildren);
+    if (!childRoot) {
+        return [vnode, undefined];
+    }
+    const index = rawChildren.indexOf(childRoot);
+    const dynamicIndex = dynamicChildren ? dynamicChildren.indexOf(childRoot) : -1;
+    const setRoot = (updatedRoot) => {
+        rawChildren[index] = updatedRoot;
+        if (dynamicChildren) {
+            if (dynamicIndex > -1) {
+                dynamicChildren[dynamicIndex] = updatedRoot;
+            }
+            else if (updatedRoot.patchFlag > 0) {
+                vnode.dynamicChildren = [...dynamicChildren, updatedRoot];
+            }
+        }
+    };
+    return [normalizeVNode(childRoot), setRoot];
+};
+function filterSingleRoot(children) {
+    let singleRoot;
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        if (isVNode(child)) {
+            // ignore user comment
+            if (child.type !== Comment || child.children === 'v-if') {
+                if (singleRoot) {
+                    // has more than 1 non-comment child, return now
+                    return;
+                }
+                else {
+                    singleRoot = child;
+                }
+            }
+        }
+        else {
+            return;
+        }
+    }
+    return singleRoot;
+}
+const getFunctionalFallthrough = (attrs) => {
+    let res;
+    for (const key in attrs) {
+        if (key === 'class' || key === 'style' || isOn(key)) {
+            (res || (res = {}))[key] = attrs[key];
+        }
+    }
+    return res;
+};
+const filterModelListeners = (attrs, props) => {
+    const res = {};
+    for (const key in attrs) {
+        if (!isModelListener(key) || !(key.slice(9) in props)) {
+            res[key] = attrs[key];
+        }
+    }
+    return res;
+};
+const isElementRoot = (vnode) => {
+    return (vnode.shapeFlag & (6 /* COMPONENT */ | 1 /* ELEMENT */) ||
+        vnode.type === Comment // potential v-if branch switch
+    );
+};
+function shouldUpdateComponent(prevVNode, nextVNode, optimized) {
+    const { props: prevProps, children: prevChildren, component } = prevVNode;
+    const { props: nextProps, children: nextChildren, patchFlag } = nextVNode;
+    const emits = component.emitsOptions;
+    // Parent component's render function was hot-updated. Since this may have
+    // caused the child component's slots content to have changed, we need to
+    // force the child to update as well.
+    if (( true) && (prevChildren || nextChildren) && isHmrUpdating) {
+        return true;
+    }
+    // force child update for runtime directive or transition on component vnode.
+    if (nextVNode.dirs || nextVNode.transition) {
+        return true;
+    }
+    if (optimized && patchFlag >= 0) {
+        if (patchFlag & 1024 /* DYNAMIC_SLOTS */) {
+            // slot content that references values that might have changed,
+            // e.g. in a v-for
+            return true;
+        }
+        if (patchFlag & 16 /* FULL_PROPS */) {
+            if (!prevProps) {
+                return !!nextProps;
+            }
+            // presence of this flag indicates props are always non-null
+            return hasPropsChanged(prevProps, nextProps, emits);
+        }
+        else if (patchFlag & 8 /* PROPS */) {
+            const dynamicProps = nextVNode.dynamicProps;
+            for (let i = 0; i < dynamicProps.length; i++) {
+                const key = dynamicProps[i];
+                if (nextProps[key] !== prevProps[key] &&
+                    !isEmitListener(emits, key)) {
+                    return true;
+                }
+            }
+        }
+    }
+    else {
+        // this path is only taken by manually written render functions
+        // so presence of any children leads to a forced update
+        if (prevChildren || nextChildren) {
+            if (!nextChildren || !nextChildren.$stable) {
+                return true;
+            }
+        }
+        if (prevProps === nextProps) {
+            return false;
+        }
+        if (!prevProps) {
+            return !!nextProps;
+        }
+        if (!nextProps) {
+            return true;
+        }
+        return hasPropsChanged(prevProps, nextProps, emits);
+    }
+    return false;
+}
+function hasPropsChanged(prevProps, nextProps, emitsOptions) {
+    const nextKeys = Object.keys(nextProps);
+    if (nextKeys.length !== Object.keys(prevProps).length) {
+        return true;
+    }
+    for (let i = 0; i < nextKeys.length; i++) {
+        const key = nextKeys[i];
+        if (nextProps[key] !== prevProps[key] &&
+            !isEmitListener(emitsOptions, key)) {
+            return true;
+        }
+    }
+    return false;
+}
+function updateHOCHostEl({ vnode, parent }, el // HostNode
+) {
+    while (parent && parent.subTree === vnode) {
+        (vnode = parent.vnode).el = el;
+        parent = parent.parent;
+    }
+}
+
+const isSuspense = (type) => type.__isSuspense;
+// Suspense exposes a component-like API, and is treated like a component
+// in the compiler, but internally it's a special built-in type that hooks
+// directly into the renderer.
+const SuspenseImpl = {
+    name: 'Suspense',
+    // In order to make Suspense tree-shakable, we need to avoid importing it
+    // directly in the renderer. The renderer checks for the __isSuspense flag
+    // on a vnode's type and calls the `process` method, passing in renderer
+    // internals.
+    __isSuspense: true,
+    process(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, 
+    // platform-specific impl passed from renderer
+    rendererInternals) {
+        if (n1 == null) {
+            mountSuspense(n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, rendererInternals);
+        }
+        else {
+            patchSuspense(n1, n2, container, anchor, parentComponent, isSVG, slotScopeIds, optimized, rendererInternals);
+        }
+    },
+    hydrate: hydrateSuspense,
+    create: createSuspenseBoundary,
+    normalize: normalizeSuspenseChildren
+};
+// Force-casted public typing for h and TSX props inference
+const Suspense = (SuspenseImpl );
+function triggerEvent(vnode, name) {
+    const eventListener = vnode.props && vnode.props[name];
+    if (isFunction(eventListener)) {
+        eventListener();
+    }
+}
+function mountSuspense(vnode, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, rendererInternals) {
+    const { p: patch, o: { createElement } } = rendererInternals;
+    const hiddenContainer = createElement('div');
+    const suspense = (vnode.suspense = createSuspenseBoundary(vnode, parentSuspense, parentComponent, container, hiddenContainer, anchor, isSVG, slotScopeIds, optimized, rendererInternals));
+    // start mounting the content subtree in an off-dom container
+    patch(null, (suspense.pendingBranch = vnode.ssContent), hiddenContainer, null, parentComponent, suspense, isSVG, slotScopeIds);
+    // now check if we have encountered any async deps
+    if (suspense.deps > 0) {
+        // has async
+        // invoke @fallback event
+        triggerEvent(vnode, 'onPending');
+        triggerEvent(vnode, 'onFallback');
+        // mount the fallback tree
+        patch(null, vnode.ssFallback, container, anchor, parentComponent, null, // fallback tree will not have suspense context
+        isSVG, slotScopeIds);
+        setActiveBranch(suspense, vnode.ssFallback);
+    }
+    else {
+        // Suspense has no async deps. Just resolve.
+        suspense.resolve();
+    }
+}
+function patchSuspense(n1, n2, container, anchor, parentComponent, isSVG, slotScopeIds, optimized, { p: patch, um: unmount, o: { createElement } }) {
+    const suspense = (n2.suspense = n1.suspense);
+    suspense.vnode = n2;
+    n2.el = n1.el;
+    const newBranch = n2.ssContent;
+    const newFallback = n2.ssFallback;
+    const { activeBranch, pendingBranch, isInFallback, isHydrating } = suspense;
+    if (pendingBranch) {
+        suspense.pendingBranch = newBranch;
+        if (isSameVNodeType(newBranch, pendingBranch)) {
+            // same root type but content may have changed.
+            patch(pendingBranch, newBranch, suspense.hiddenContainer, null, parentComponent, suspense, isSVG, slotScopeIds, optimized);
+            if (suspense.deps <= 0) {
+                suspense.resolve();
+            }
+            else if (isInFallback) {
+                patch(activeBranch, newFallback, container, anchor, parentComponent, null, // fallback tree will not have suspense context
+                isSVG, slotScopeIds, optimized);
+                setActiveBranch(suspense, newFallback);
+            }
+        }
+        else {
+            // toggled before pending tree is resolved
+            suspense.pendingId++;
+            if (isHydrating) {
+                // if toggled before hydration is finished, the current DOM tree is
+                // no longer valid. set it as the active branch so it will be unmounted
+                // when resolved
+                suspense.isHydrating = false;
+                suspense.activeBranch = pendingBranch;
+            }
+            else {
+                unmount(pendingBranch, parentComponent, suspense);
+            }
+            // increment pending ID. this is used to invalidate async callbacks
+            // reset suspense state
+            suspense.deps = 0;
+            // discard effects from pending branch
+            suspense.effects.length = 0;
+            // discard previous container
+            suspense.hiddenContainer = createElement('div');
+            if (isInFallback) {
+                // already in fallback state
+                patch(null, newBranch, suspense.hiddenContainer, null, parentComponent, suspense, isSVG, slotScopeIds, optimized);
+                if (suspense.deps <= 0) {
+                    suspense.resolve();
+                }
+                else {
+                    patch(activeBranch, newFallback, container, anchor, parentComponent, null, // fallback tree will not have suspense context
+                    isSVG, slotScopeIds, optimized);
+                    setActiveBranch(suspense, newFallback);
+                }
+            }
+            else if (activeBranch && isSameVNodeType(newBranch, activeBranch)) {
+                // toggled "back" to current active branch
+                patch(activeBranch, newBranch, container, anchor, parentComponent, suspense, isSVG, slotScopeIds, optimized);
+                // force resolve
+                suspense.resolve(true);
+            }
+            else {
+                // switched to a 3rd branch
+                patch(null, newBranch, suspense.hiddenContainer, null, parentComponent, suspense, isSVG, slotScopeIds, optimized);
+                if (suspense.deps <= 0) {
+                    suspense.resolve();
+                }
+            }
+        }
+    }
+    else {
+        if (activeBranch && isSameVNodeType(newBranch, activeBranch)) {
+            // root did not change, just normal patch
+            patch(activeBranch, newBranch, container, anchor, parentComponent, suspense, isSVG, slotScopeIds, optimized);
+            setActiveBranch(suspense, newBranch);
+        }
+        else {
+            // root node toggled
+            // invoke @pending event
+            triggerEvent(n2, 'onPending');
+            // mount pending branch in off-dom container
+            suspense.pendingBranch = newBranch;
+            suspense.pendingId++;
+            patch(null, newBranch, suspense.hiddenContainer, null, parentComponent, suspense, isSVG, slotScopeIds, optimized);
+            if (suspense.deps <= 0) {
+                // incoming branch has no async deps, resolve now.
+                suspense.resolve();
+            }
+            else {
+                const { timeout, pendingId } = suspense;
+                if (timeout > 0) {
+                    setTimeout(() => {
+                        if (suspense.pendingId === pendingId) {
+                            suspense.fallback(newFallback);
+                        }
+                    }, timeout);
+                }
+                else if (timeout === 0) {
+                    suspense.fallback(newFallback);
+                }
+            }
+        }
+    }
+}
+let hasWarned = false;
+function createSuspenseBoundary(vnode, parent, parentComponent, container, hiddenContainer, anchor, isSVG, slotScopeIds, optimized, rendererInternals, isHydrating = false) {
+    /* istanbul ignore if */
+    if ( true && !hasWarned) {
+        hasWarned = true;
+        // @ts-ignore `console.info` cannot be null error
+        console[console.info ? 'info' : 'log'](`<Suspense> is an experimental feature and its API will likely change.`);
+    }
+    const { p: patch, m: move, um: unmount, n: next, o: { parentNode, remove } } = rendererInternals;
+    const timeout = toNumber(vnode.props && vnode.props.timeout);
+    const suspense = {
+        vnode,
+        parent,
+        parentComponent,
+        isSVG,
+        container,
+        hiddenContainer,
+        anchor,
+        deps: 0,
+        pendingId: 0,
+        timeout: typeof timeout === 'number' ? timeout : -1,
+        activeBranch: null,
+        pendingBranch: null,
+        isInFallback: true,
+        isHydrating,
+        isUnmounted: false,
+        effects: [],
+        resolve(resume = false) {
+            if ((true)) {
+                if (!resume && !suspense.pendingBranch) {
+                    throw new Error(`suspense.resolve() is called without a pending branch.`);
+                }
+                if (suspense.isUnmounted) {
+                    throw new Error(`suspense.resolve() is called on an already unmounted suspense boundary.`);
+                }
+            }
+            const { vnode, activeBranch, pendingBranch, pendingId, effects, parentComponent, container } = suspense;
+            if (suspense.isHydrating) {
+                suspense.isHydrating = false;
+            }
+            else if (!resume) {
+                const delayEnter = activeBranch &&
+                    pendingBranch.transition &&
+                    pendingBranch.transition.mode === 'out-in';
+                if (delayEnter) {
+                    activeBranch.transition.afterLeave = () => {
+                        if (pendingId === suspense.pendingId) {
+                            move(pendingBranch, container, anchor, 0 /* ENTER */);
+                        }
+                    };
+                }
+                // this is initial anchor on mount
+                let { anchor } = suspense;
+                // unmount current active tree
+                if (activeBranch) {
+                    // if the fallback tree was mounted, it may have been moved
+                    // as part of a parent suspense. get the latest anchor for insertion
+                    anchor = next(activeBranch);
+                    unmount(activeBranch, parentComponent, suspense, true);
+                }
+                if (!delayEnter) {
+                    // move content from off-dom container to actual container
+                    move(pendingBranch, container, anchor, 0 /* ENTER */);
+                }
+            }
+            setActiveBranch(suspense, pendingBranch);
+            suspense.pendingBranch = null;
+            suspense.isInFallback = false;
+            // flush buffered effects
+            // check if there is a pending parent suspense
+            let parent = suspense.parent;
+            let hasUnresolvedAncestor = false;
+            while (parent) {
+                if (parent.pendingBranch) {
+                    // found a pending parent suspense, merge buffered post jobs
+                    // into that parent
+                    parent.effects.push(...effects);
+                    hasUnresolvedAncestor = true;
+                    break;
+                }
+                parent = parent.parent;
+            }
+            // no pending parent suspense, flush all jobs
+            if (!hasUnresolvedAncestor) {
+                queuePostFlushCb(effects);
+            }
+            suspense.effects = [];
+            // invoke @resolve event
+            triggerEvent(vnode, 'onResolve');
+        },
+        fallback(fallbackVNode) {
+            if (!suspense.pendingBranch) {
+                return;
+            }
+            const { vnode, activeBranch, parentComponent, container, isSVG } = suspense;
+            // invoke @fallback event
+            triggerEvent(vnode, 'onFallback');
+            const anchor = next(activeBranch);
+            const mountFallback = () => {
+                if (!suspense.isInFallback) {
+                    return;
+                }
+                // mount the fallback tree
+                patch(null, fallbackVNode, container, anchor, parentComponent, null, // fallback tree will not have suspense context
+                isSVG, slotScopeIds, optimized);
+                setActiveBranch(suspense, fallbackVNode);
+            };
+            const delayEnter = fallbackVNode.transition && fallbackVNode.transition.mode === 'out-in';
+            if (delayEnter) {
+                activeBranch.transition.afterLeave = mountFallback;
+            }
+            suspense.isInFallback = true;
+            // unmount current active branch
+            unmount(activeBranch, parentComponent, null, // no suspense so unmount hooks fire now
+            true // shouldRemove
+            );
+            if (!delayEnter) {
+                mountFallback();
+            }
+        },
+        move(container, anchor, type) {
+            suspense.activeBranch &&
+                move(suspense.activeBranch, container, anchor, type);
+            suspense.container = container;
+        },
+        next() {
+            return suspense.activeBranch && next(suspense.activeBranch);
+        },
+        registerDep(instance, setupRenderEffect) {
+            const isInPendingSuspense = !!suspense.pendingBranch;
+            if (isInPendingSuspense) {
+                suspense.deps++;
+            }
+            const hydratedEl = instance.vnode.el;
+            instance
+                .asyncDep.catch(err => {
+                handleError(err, instance, 0 /* SETUP_FUNCTION */);
+            })
+                .then(asyncSetupResult => {
+                // retry when the setup() promise resolves.
+                // component may have been unmounted before resolve.
+                if (instance.isUnmounted ||
+                    suspense.isUnmounted ||
+                    suspense.pendingId !== instance.suspenseId) {
+                    return;
+                }
+                // retry from this component
+                instance.asyncResolved = true;
+                const { vnode } = instance;
+                if ((true)) {
+                    pushWarningContext(vnode);
+                }
+                handleSetupResult(instance, asyncSetupResult, false);
+                if (hydratedEl) {
+                    // vnode may have been replaced if an update happened before the
+                    // async dep is resolved.
+                    vnode.el = hydratedEl;
+                }
+                const placeholder = !hydratedEl && instance.subTree.el;
+                setupRenderEffect(instance, vnode, 
+                // component may have been moved before resolve.
+                // if this is not a hydration, instance.subTree will be the comment
+                // placeholder.
+                parentNode(hydratedEl || instance.subTree.el), 
+                // anchor will not be used if this is hydration, so only need to
+                // consider the comment placeholder case.
+                hydratedEl ? null : next(instance.subTree), suspense, isSVG, optimized);
+                if (placeholder) {
+                    remove(placeholder);
+                }
+                updateHOCHostEl(instance, vnode.el);
+                if ((true)) {
+                    popWarningContext();
+                }
+                // only decrease deps count if suspense is not already resolved
+                if (isInPendingSuspense && --suspense.deps === 0) {
+                    suspense.resolve();
+                }
+            });
+        },
+        unmount(parentSuspense, doRemove) {
+            suspense.isUnmounted = true;
+            if (suspense.activeBranch) {
+                unmount(suspense.activeBranch, parentComponent, parentSuspense, doRemove);
+            }
+            if (suspense.pendingBranch) {
+                unmount(suspense.pendingBranch, parentComponent, parentSuspense, doRemove);
+            }
+        }
+    };
+    return suspense;
+}
+function hydrateSuspense(node, vnode, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, rendererInternals, hydrateNode) {
+    /* eslint-disable no-restricted-globals */
+    const suspense = (vnode.suspense = createSuspenseBoundary(vnode, parentSuspense, parentComponent, node.parentNode, document.createElement('div'), null, isSVG, slotScopeIds, optimized, rendererInternals, true /* hydrating */));
+    // there are two possible scenarios for server-rendered suspense:
+    // - success: ssr content should be fully resolved
+    // - failure: ssr content should be the fallback branch.
+    // however, on the client we don't really know if it has failed or not
+    // attempt to hydrate the DOM assuming it has succeeded, but we still
+    // need to construct a suspense boundary first
+    const result = hydrateNode(node, (suspense.pendingBranch = vnode.ssContent), parentComponent, suspense, slotScopeIds, optimized);
+    if (suspense.deps === 0) {
+        suspense.resolve();
+    }
+    return result;
+    /* eslint-enable no-restricted-globals */
+}
+function normalizeSuspenseChildren(vnode) {
+    const { shapeFlag, children } = vnode;
+    const isSlotChildren = shapeFlag & 32 /* SLOTS_CHILDREN */;
+    vnode.ssContent = normalizeSuspenseSlot(isSlotChildren ? children.default : children);
+    vnode.ssFallback = isSlotChildren
+        ? normalizeSuspenseSlot(children.fallback)
+        : createVNode(Comment);
+}
+function normalizeSuspenseSlot(s) {
+    let block;
+    if (isFunction(s)) {
+        const trackBlock = isBlockTreeEnabled && s._c;
+        if (trackBlock) {
+            // disableTracking: false
+            // allow block tracking for compiled slots
+            // (see ./componentRenderContext.ts)
+            s._d = false;
+            openBlock();
+        }
+        s = s();
+        if (trackBlock) {
+            s._d = true;
+            block = currentBlock;
+            closeBlock();
+        }
+    }
+    if (isArray(s)) {
+        const singleChild = filterSingleRoot(s);
+        if (( true) && !singleChild) {
+            runtime_core_esm_bundler_warn(`<Suspense> slots expect a single root node.`);
+        }
+        s = singleChild;
+    }
+    s = normalizeVNode(s);
+    if (block && !s.dynamicChildren) {
+        s.dynamicChildren = block.filter(c => c !== s);
+    }
+    return s;
+}
+function queueEffectWithSuspense(fn, suspense) {
+    if (suspense && suspense.pendingBranch) {
+        if (isArray(fn)) {
+            suspense.effects.push(...fn);
+        }
+        else {
+            suspense.effects.push(fn);
+        }
+    }
+    else {
+        queuePostFlushCb(fn);
+    }
+}
+function setActiveBranch(suspense, branch) {
+    suspense.activeBranch = branch;
+    const { vnode, parentComponent } = suspense;
+    const el = (vnode.el = branch.el);
+    // in case suspense is the root node of a component,
+    // recursively update the HOC el
+    if (parentComponent && parentComponent.subTree === vnode) {
+        parentComponent.vnode.el = el;
+        updateHOCHostEl(parentComponent, el);
+    }
+}
+
+function provide(key, value) {
+    if (!currentInstance) {
+        if ((true)) {
+            runtime_core_esm_bundler_warn(`provide() can only be used inside setup().`);
+        }
+    }
+    else {
+        let provides = currentInstance.provides;
+        // by default an instance inherits its parent's provides object
+        // but when it needs to provide values of its own, it creates its
+        // own provides object using parent provides object as prototype.
+        // this way in `inject` we can simply look up injections from direct
+        // parent and let the prototype chain do the work.
+        const parentProvides = currentInstance.parent && currentInstance.parent.provides;
+        if (parentProvides === provides) {
+            provides = currentInstance.provides = Object.create(parentProvides);
+        }
+        // TS doesn't allow symbol as index type
+        provides[key] = value;
+    }
+}
+function inject(key, defaultValue, treatDefaultAsFactory = false) {
+    // fallback to `currentRenderingInstance` so that this can be called in
+    // a functional component
+    const instance = currentInstance || currentRenderingInstance;
+    if (instance) {
+        // #2400
+        // to support `app.use` plugins,
+        // fallback to appContext's `provides` if the instance is at root
+        const provides = instance.parent == null
+            ? instance.vnode.appContext && instance.vnode.appContext.provides
+            : instance.parent.provides;
+        if (provides && key in provides) {
+            // TS doesn't allow symbol as index type
+            return provides[key];
+        }
+        else if (arguments.length > 1) {
+            return treatDefaultAsFactory && isFunction(defaultValue)
+                ? defaultValue.call(instance.proxy)
+                : defaultValue;
+        }
+        else if ((true)) {
+            runtime_core_esm_bundler_warn(`injection "${String(key)}" not found.`);
+        }
+    }
+    else if ((true)) {
+        runtime_core_esm_bundler_warn(`inject() can only be used inside setup() or functional components.`);
+    }
+}
+
+// Simple effect.
+function watchEffect(effect, options) {
+    return doWatch(effect, null, options);
+}
+function watchPostEffect(effect, options) {
+    return doWatch(effect, null, (( true)
+        ? Object.assign(Object.assign({}, options), { flush: 'post' }) : 0));
+}
+function watchSyncEffect(effect, options) {
+    return doWatch(effect, null, (( true)
+        ? Object.assign(Object.assign({}, options), { flush: 'sync' }) : 0));
+}
+// initial value for watchers to trigger on undefined initial values
+const INITIAL_WATCHER_VALUE = {};
+// implementation
+function watch(source, cb, options) {
+    if (( true) && !isFunction(cb)) {
+        runtime_core_esm_bundler_warn(`\`watch(fn, options?)\` signature has been moved to a separate API. ` +
+            `Use \`watchEffect(fn, options?)\` instead. \`watch\` now only ` +
+            `supports \`watch(source, cb, options?) signature.`);
+    }
+    return doWatch(source, cb, options);
+}
+function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) {
+    if (( true) && !cb) {
+        if (immediate !== undefined) {
+            runtime_core_esm_bundler_warn(`watch() "immediate" option is only respected when using the ` +
+                `watch(source, callback, options?) signature.`);
+        }
+        if (deep !== undefined) {
+            runtime_core_esm_bundler_warn(`watch() "deep" option is only respected when using the ` +
+                `watch(source, callback, options?) signature.`);
+        }
+    }
+    const warnInvalidSource = (s) => {
+        runtime_core_esm_bundler_warn(`Invalid watch source: `, s, `A watch source can only be a getter/effect function, a ref, ` +
+            `a reactive object, or an array of these types.`);
+    };
+    const instance = currentInstance;
+    let getter;
+    let forceTrigger = false;
+    let isMultiSource = false;
+    if (isRef(source)) {
+        getter = () => source.value;
+        forceTrigger = isShallow(source);
+    }
+    else if (isReactive(source)) {
+        getter = () => source;
+        deep = true;
+    }
+    else if (isArray(source)) {
+        isMultiSource = true;
+        forceTrigger = source.some(isReactive);
+        getter = () => source.map(s => {
+            if (isRef(s)) {
+                return s.value;
+            }
+            else if (isReactive(s)) {
+                return traverse(s);
+            }
+            else if (isFunction(s)) {
+                return callWithErrorHandling(s, instance, 2 /* WATCH_GETTER */);
+            }
+            else {
+                ( true) && warnInvalidSource(s);
+            }
+        });
+    }
+    else if (isFunction(source)) {
+        if (cb) {
+            // getter with cb
+            getter = () => callWithErrorHandling(source, instance, 2 /* WATCH_GETTER */);
+        }
+        else {
+            // no cb -> simple effect
+            getter = () => {
+                if (instance && instance.isUnmounted) {
+                    return;
+                }
+                if (cleanup) {
+                    cleanup();
+                }
+                return callWithAsyncErrorHandling(source, instance, 3 /* WATCH_CALLBACK */, [onCleanup]);
+            };
+        }
+    }
+    else {
+        getter = NOOP;
+        ( true) && warnInvalidSource(source);
+    }
+    if (cb && deep) {
+        const baseGetter = getter;
+        getter = () => traverse(baseGetter());
+    }
+    let cleanup;
+    let onCleanup = (fn) => {
+        cleanup = effect.onStop = () => {
+            callWithErrorHandling(fn, instance, 4 /* WATCH_CLEANUP */);
+        };
+    };
+    // in SSR there is no need to setup an actual effect, and it should be noop
+    // unless it's eager
+    if (isInSSRComponentSetup) {
+        // we will also not call the invalidate callback (+ runner is not set up)
+        onCleanup = NOOP;
+        if (!cb) {
+            getter();
+        }
+        else if (immediate) {
+            callWithAsyncErrorHandling(cb, instance, 3 /* WATCH_CALLBACK */, [
+                getter(),
+                isMultiSource ? [] : undefined,
+                onCleanup
+            ]);
+        }
+        return NOOP;
+    }
+    let oldValue = isMultiSource ? [] : INITIAL_WATCHER_VALUE;
+    const job = () => {
+        if (!effect.active) {
+            return;
+        }
+        if (cb) {
+            // watch(source, cb)
+            const newValue = effect.run();
+            if (deep ||
+                forceTrigger ||
+                (isMultiSource
+                    ? newValue.some((v, i) => hasChanged(v, oldValue[i]))
+                    : hasChanged(newValue, oldValue)) ||
+                (false  )) {
+                // cleanup before running cb again
+                if (cleanup) {
+                    cleanup();
+                }
+                callWithAsyncErrorHandling(cb, instance, 3 /* WATCH_CALLBACK */, [
+                    newValue,
+                    // pass undefined as the old value when it's changed for the first time
+                    oldValue === INITIAL_WATCHER_VALUE ? undefined : oldValue,
+                    onCleanup
+                ]);
+                oldValue = newValue;
+            }
+        }
+        else {
+            // watchEffect
+            effect.run();
+        }
+    };
+    // important: mark the job as a watcher callback so that scheduler knows
+    // it is allowed to self-trigger (#1727)
+    job.allowRecurse = !!cb;
+    let scheduler;
+    if (flush === 'sync') {
+        scheduler = job; // the scheduler function gets called directly
+    }
+    else if (flush === 'post') {
+        scheduler = () => queuePostRenderEffect(job, instance && instance.suspense);
+    }
+    else {
+        // default: 'pre'
+        scheduler = () => {
+            if (!instance || instance.isMounted) {
+                queuePreFlushCb(job);
+            }
+            else {
+                // with 'pre' option, the first call must happen before
+                // the component is mounted so it is called synchronously.
+                job();
+            }
+        };
+    }
+    const effect = new ReactiveEffect(getter, scheduler);
+    if ((true)) {
+        effect.onTrack = onTrack;
+        effect.onTrigger = onTrigger;
+    }
+    // initial run
+    if (cb) {
+        if (immediate) {
+            job();
+        }
+        else {
+            oldValue = effect.run();
+        }
+    }
+    else if (flush === 'post') {
+        queuePostRenderEffect(effect.run.bind(effect), instance && instance.suspense);
+    }
+    else {
+        effect.run();
+    }
+    return () => {
+        effect.stop();
+        if (instance && instance.scope) {
+            remove(instance.scope.effects, effect);
+        }
+    };
+}
+// this.$watch
+function instanceWatch(source, value, options) {
+    const publicThis = this.proxy;
+    const getter = isString(source)
+        ? source.includes('.')
+            ? createPathGetter(publicThis, source)
+            : () => publicThis[source]
+        : source.bind(publicThis, publicThis);
+    let cb;
+    if (isFunction(value)) {
+        cb = value;
+    }
+    else {
+        cb = value.handler;
+        options = value;
+    }
+    const cur = currentInstance;
+    setCurrentInstance(this);
+    const res = doWatch(getter, cb.bind(publicThis), options);
+    if (cur) {
+        setCurrentInstance(cur);
+    }
+    else {
+        unsetCurrentInstance();
+    }
+    return res;
+}
+function createPathGetter(ctx, path) {
+    const segments = path.split('.');
+    return () => {
+        let cur = ctx;
+        for (let i = 0; i < segments.length && cur; i++) {
+            cur = cur[segments[i]];
+        }
+        return cur;
+    };
+}
+function traverse(value, seen) {
+    if (!isObject(value) || value["__v_skip" /* SKIP */]) {
+        return value;
+    }
+    seen = seen || new Set();
+    if (seen.has(value)) {
+        return value;
+    }
+    seen.add(value);
+    if (isRef(value)) {
+        traverse(value.value, seen);
+    }
+    else if (isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+            traverse(value[i], seen);
+        }
+    }
+    else if (isSet(value) || isMap(value)) {
+        value.forEach((v) => {
+            traverse(v, seen);
+        });
+    }
+    else if (isPlainObject(value)) {
+        for (const key in value) {
+            traverse(value[key], seen);
+        }
+    }
+    return value;
+}
+
+function useTransitionState() {
+    const state = {
+        isMounted: false,
+        isLeaving: false,
+        isUnmounting: false,
+        leavingVNodes: new Map()
+    };
+    onMounted(() => {
+        state.isMounted = true;
+    });
+    onBeforeUnmount(() => {
+        state.isUnmounting = true;
+    });
+    return state;
+}
+const TransitionHookValidator = [Function, Array];
+const BaseTransitionImpl = {
+    name: `BaseTransition`,
+    props: {
+        mode: String,
+        appear: Boolean,
+        persisted: Boolean,
+        // enter
+        onBeforeEnter: TransitionHookValidator,
+        onEnter: TransitionHookValidator,
+        onAfterEnter: TransitionHookValidator,
+        onEnterCancelled: TransitionHookValidator,
+        // leave
+        onBeforeLeave: TransitionHookValidator,
+        onLeave: TransitionHookValidator,
+        onAfterLeave: TransitionHookValidator,
+        onLeaveCancelled: TransitionHookValidator,
+        // appear
+        onBeforeAppear: TransitionHookValidator,
+        onAppear: TransitionHookValidator,
+        onAfterAppear: TransitionHookValidator,
+        onAppearCancelled: TransitionHookValidator
+    },
+    setup(props, { slots }) {
+        const instance = getCurrentInstance();
+        const state = useTransitionState();
+        let prevTransitionKey;
+        return () => {
+            const children = slots.default && getTransitionRawChildren(slots.default(), true);
+            if (!children || !children.length) {
+                return;
+            }
+            let child = children[0];
+            if (children.length > 1) {
+                let hasFound = false;
+                // locate first non-comment child
+                for (const c of children) {
+                    if (c.type !== Comment) {
+                        if (( true) && hasFound) {
+                            // warn more than one non-comment child
+                            runtime_core_esm_bundler_warn('<transition> can only be used on a single element or component. ' +
+                                'Use <transition-group> for lists.');
+                            break;
+                        }
+                        child = c;
+                        hasFound = true;
+                        if (false)
+                            {}
+                    }
+                }
+            }
+            // there's no need to track reactivity for these props so use the raw
+            // props for a bit better perf
+            const rawProps = toRaw(props);
+            const { mode } = rawProps;
+            // check mode
+            if (( true) &&
+                mode &&
+                mode !== 'in-out' &&
+                mode !== 'out-in' &&
+                mode !== 'default') {
+                runtime_core_esm_bundler_warn(`invalid <transition> mode: ${mode}`);
+            }
+            if (state.isLeaving) {
+                return emptyPlaceholder(child);
+            }
+            // in the case of <transition><keep-alive/></transition>, we need to
+            // compare the type of the kept-alive children.
+            const innerChild = getKeepAliveChild(child);
+            if (!innerChild) {
+                return emptyPlaceholder(child);
+            }
+            const enterHooks = resolveTransitionHooks(innerChild, rawProps, state, instance);
+            setTransitionHooks(innerChild, enterHooks);
+            const oldChild = instance.subTree;
+            const oldInnerChild = oldChild && getKeepAliveChild(oldChild);
+            let transitionKeyChanged = false;
+            const { getTransitionKey } = innerChild.type;
+            if (getTransitionKey) {
+                const key = getTransitionKey();
+                if (prevTransitionKey === undefined) {
+                    prevTransitionKey = key;
+                }
+                else if (key !== prevTransitionKey) {
+                    prevTransitionKey = key;
+                    transitionKeyChanged = true;
+                }
+            }
+            // handle mode
+            if (oldInnerChild &&
+                oldInnerChild.type !== Comment &&
+                (!isSameVNodeType(innerChild, oldInnerChild) || transitionKeyChanged)) {
+                const leavingHooks = resolveTransitionHooks(oldInnerChild, rawProps, state, instance);
+                // update old tree's hooks in case of dynamic transition
+                setTransitionHooks(oldInnerChild, leavingHooks);
+                // switching between different views
+                if (mode === 'out-in') {
+                    state.isLeaving = true;
+                    // return placeholder node and queue update when leave finishes
+                    leavingHooks.afterLeave = () => {
+                        state.isLeaving = false;
+                        instance.update();
+                    };
+                    return emptyPlaceholder(child);
+                }
+                else if (mode === 'in-out' && innerChild.type !== Comment) {
+                    leavingHooks.delayLeave = (el, earlyRemove, delayedLeave) => {
+                        const leavingVNodesCache = getLeavingNodesForType(state, oldInnerChild);
+                        leavingVNodesCache[String(oldInnerChild.key)] = oldInnerChild;
+                        // early removal callback
+                        el._leaveCb = () => {
+                            earlyRemove();
+                            el._leaveCb = undefined;
+                            delete enterHooks.delayedLeave;
+                        };
+                        enterHooks.delayedLeave = delayedLeave;
+                    };
+                }
+            }
+            return child;
+        };
+    }
+};
+// export the public type for h/tsx inference
+// also to avoid inline import() in generated d.ts files
+const BaseTransition = BaseTransitionImpl;
+function getLeavingNodesForType(state, vnode) {
+    const { leavingVNodes } = state;
+    let leavingVNodesCache = leavingVNodes.get(vnode.type);
+    if (!leavingVNodesCache) {
+        leavingVNodesCache = Object.create(null);
+        leavingVNodes.set(vnode.type, leavingVNodesCache);
+    }
+    return leavingVNodesCache;
+}
+// The transition hooks are attached to the vnode as vnode.transition
+// and will be called at appropriate timing in the renderer.
+function resolveTransitionHooks(vnode, props, state, instance) {
+    const { appear, mode, persisted = false, onBeforeEnter, onEnter, onAfterEnter, onEnterCancelled, onBeforeLeave, onLeave, onAfterLeave, onLeaveCancelled, onBeforeAppear, onAppear, onAfterAppear, onAppearCancelled } = props;
+    const key = String(vnode.key);
+    const leavingVNodesCache = getLeavingNodesForType(state, vnode);
+    const callHook = (hook, args) => {
+        hook &&
+            callWithAsyncErrorHandling(hook, instance, 9 /* TRANSITION_HOOK */, args);
+    };
+    const hooks = {
+        mode,
+        persisted,
+        beforeEnter(el) {
+            let hook = onBeforeEnter;
+            if (!state.isMounted) {
+                if (appear) {
+                    hook = onBeforeAppear || onBeforeEnter;
+                }
+                else {
+                    return;
+                }
+            }
+            // for same element (v-show)
+            if (el._leaveCb) {
+                el._leaveCb(true /* cancelled */);
+            }
+            // for toggled element with same key (v-if)
+            const leavingVNode = leavingVNodesCache[key];
+            if (leavingVNode &&
+                isSameVNodeType(vnode, leavingVNode) &&
+                leavingVNode.el._leaveCb) {
+                // force early removal (not cancelled)
+                leavingVNode.el._leaveCb();
+            }
+            callHook(hook, [el]);
+        },
+        enter(el) {
+            let hook = onEnter;
+            let afterHook = onAfterEnter;
+            let cancelHook = onEnterCancelled;
+            if (!state.isMounted) {
+                if (appear) {
+                    hook = onAppear || onEnter;
+                    afterHook = onAfterAppear || onAfterEnter;
+                    cancelHook = onAppearCancelled || onEnterCancelled;
+                }
+                else {
+                    return;
+                }
+            }
+            let called = false;
+            const done = (el._enterCb = (cancelled) => {
+                if (called)
+                    return;
+                called = true;
+                if (cancelled) {
+                    callHook(cancelHook, [el]);
+                }
+                else {
+                    callHook(afterHook, [el]);
+                }
+                if (hooks.delayedLeave) {
+                    hooks.delayedLeave();
+                }
+                el._enterCb = undefined;
+            });
+            if (hook) {
+                hook(el, done);
+                if (hook.length <= 1) {
+                    done();
+                }
+            }
+            else {
+                done();
+            }
+        },
+        leave(el, remove) {
+            const key = String(vnode.key);
+            if (el._enterCb) {
+                el._enterCb(true /* cancelled */);
+            }
+            if (state.isUnmounting) {
+                return remove();
+            }
+            callHook(onBeforeLeave, [el]);
+            let called = false;
+            const done = (el._leaveCb = (cancelled) => {
+                if (called)
+                    return;
+                called = true;
+                remove();
+                if (cancelled) {
+                    callHook(onLeaveCancelled, [el]);
+                }
+                else {
+                    callHook(onAfterLeave, [el]);
+                }
+                el._leaveCb = undefined;
+                if (leavingVNodesCache[key] === vnode) {
+                    delete leavingVNodesCache[key];
+                }
+            });
+            leavingVNodesCache[key] = vnode;
+            if (onLeave) {
+                onLeave(el, done);
+                if (onLeave.length <= 1) {
+                    done();
+                }
+            }
+            else {
+                done();
+            }
+        },
+        clone(vnode) {
+            return resolveTransitionHooks(vnode, props, state, instance);
+        }
+    };
+    return hooks;
+}
+// the placeholder really only handles one special case: KeepAlive
+// in the case of a KeepAlive in a leave phase we need to return a KeepAlive
+// placeholder with empty content to avoid the KeepAlive instance from being
+// unmounted.
+function emptyPlaceholder(vnode) {
+    if (isKeepAlive(vnode)) {
+        vnode = cloneVNode(vnode);
+        vnode.children = null;
+        return vnode;
+    }
+}
+function getKeepAliveChild(vnode) {
+    return isKeepAlive(vnode)
+        ? vnode.children
+            ? vnode.children[0]
+            : undefined
+        : vnode;
+}
+function setTransitionHooks(vnode, hooks) {
+    if (vnode.shapeFlag & 6 /* COMPONENT */ && vnode.component) {
+        setTransitionHooks(vnode.component.subTree, hooks);
+    }
+    else if (vnode.shapeFlag & 128 /* SUSPENSE */) {
+        vnode.ssContent.transition = hooks.clone(vnode.ssContent);
+        vnode.ssFallback.transition = hooks.clone(vnode.ssFallback);
+    }
+    else {
+        vnode.transition = hooks;
+    }
+}
+function getTransitionRawChildren(children, keepComment = false, parentKey) {
+    let ret = [];
+    let keyedFragmentCount = 0;
+    for (let i = 0; i < children.length; i++) {
+        let child = children[i];
+        // #5360 inherit parent key in case of <template v-for>
+        const key = parentKey == null
+            ? child.key
+            : String(parentKey) + String(child.key != null ? child.key : i);
+        // handle fragment children case, e.g. v-for
+        if (child.type === Fragment) {
+            if (child.patchFlag & 128 /* KEYED_FRAGMENT */)
+                keyedFragmentCount++;
+            ret = ret.concat(getTransitionRawChildren(child.children, keepComment, key));
+        }
+        // comment placeholders should be skipped, e.g. v-if
+        else if (keepComment || child.type !== Comment) {
+            ret.push(key != null ? cloneVNode(child, { key }) : child);
+        }
+    }
+    // #1126 if a transition children list contains multiple sub fragments, these
+    // fragments will be merged into a flat children array. Since each v-for
+    // fragment may contain different static bindings inside, we need to de-op
+    // these children to force full diffs to ensure correct behavior.
+    if (keyedFragmentCount > 1) {
+        for (let i = 0; i < ret.length; i++) {
+            ret[i].patchFlag = -2 /* BAIL */;
+        }
+    }
+    return ret;
+}
+
+// implementation, close to no-op
+function defineComponent(options) {
+    return isFunction(options) ? { setup: options, name: options.name } : options;
+}
+
+const isAsyncWrapper = (i) => !!i.type.__asyncLoader;
+function defineAsyncComponent(source) {
+    if (isFunction(source)) {
+        source = { loader: source };
+    }
+    const { loader, loadingComponent, errorComponent, delay = 200, timeout, // undefined = never times out
+    suspensible = true, onError: userOnError } = source;
+    let pendingRequest = null;
+    let resolvedComp;
+    let retries = 0;
+    const retry = () => {
+        retries++;
+        pendingRequest = null;
+        return load();
+    };
+    const load = () => {
+        let thisRequest;
+        return (pendingRequest ||
+            (thisRequest = pendingRequest =
+                loader()
+                    .catch(err => {
+                    err = err instanceof Error ? err : new Error(String(err));
+                    if (userOnError) {
+                        return new Promise((resolve, reject) => {
+                            const userRetry = () => resolve(retry());
+                            const userFail = () => reject(err);
+                            userOnError(err, userRetry, userFail, retries + 1);
+                        });
+                    }
+                    else {
+                        throw err;
+                    }
+                })
+                    .then((comp) => {
+                    if (thisRequest !== pendingRequest && pendingRequest) {
+                        return pendingRequest;
+                    }
+                    if (( true) && !comp) {
+                        runtime_core_esm_bundler_warn(`Async component loader resolved to undefined. ` +
+                            `If you are using retry(), make sure to return its return value.`);
+                    }
+                    // interop module default
+                    if (comp &&
+                        (comp.__esModule || comp[Symbol.toStringTag] === 'Module')) {
+                        comp = comp.default;
+                    }
+                    if (( true) && comp && !isObject(comp) && !isFunction(comp)) {
+                        throw new Error(`Invalid async component load result: ${comp}`);
+                    }
+                    resolvedComp = comp;
+                    return comp;
+                })));
+    };
+    return defineComponent({
+        name: 'AsyncComponentWrapper',
+        __asyncLoader: load,
+        get __asyncResolved() {
+            return resolvedComp;
+        },
+        setup() {
+            const instance = currentInstance;
+            // already resolved
+            if (resolvedComp) {
+                return () => createInnerComp(resolvedComp, instance);
+            }
+            const onError = (err) => {
+                pendingRequest = null;
+                handleError(err, instance, 13 /* ASYNC_COMPONENT_LOADER */, !errorComponent /* do not throw in dev if user provided error component */);
+            };
+            // suspense-controlled or SSR.
+            if ((suspensible && instance.suspense) ||
+                (isInSSRComponentSetup)) {
+                return load()
+                    .then(comp => {
+                    return () => createInnerComp(comp, instance);
+                })
+                    .catch(err => {
+                    onError(err);
+                    return () => errorComponent
+                        ? createVNode(errorComponent, {
+                            error: err
+                        })
+                        : null;
+                });
+            }
+            const loaded = ref(false);
+            const error = ref();
+            const delayed = ref(!!delay);
+            if (delay) {
+                setTimeout(() => {
+                    delayed.value = false;
+                }, delay);
+            }
+            if (timeout != null) {
+                setTimeout(() => {
+                    if (!loaded.value && !error.value) {
+                        const err = new Error(`Async component timed out after ${timeout}ms.`);
+                        onError(err);
+                        error.value = err;
+                    }
+                }, timeout);
+            }
+            load()
+                .then(() => {
+                loaded.value = true;
+                if (instance.parent && isKeepAlive(instance.parent.vnode)) {
+                    // parent is keep-alive, force update so the loaded component's
+                    // name is taken into account
+                    queueJob(instance.parent.update);
+                }
+            })
+                .catch(err => {
+                onError(err);
+                error.value = err;
+            });
+            return () => {
+                if (loaded.value && resolvedComp) {
+                    return createInnerComp(resolvedComp, instance);
+                }
+                else if (error.value && errorComponent) {
+                    return createVNode(errorComponent, {
+                        error: error.value
+                    });
+                }
+                else if (loadingComponent && !delayed.value) {
+                    return createVNode(loadingComponent);
+                }
+            };
+        }
+    });
+}
+function createInnerComp(comp, { vnode: { ref, props, children } }) {
+    const vnode = createVNode(comp, props, children);
+    // ensure inner component inherits the async wrapper's ref owner
+    vnode.ref = ref;
+    return vnode;
+}
+
+const isKeepAlive = (vnode) => vnode.type.__isKeepAlive;
+const KeepAliveImpl = {
+    name: `KeepAlive`,
+    // Marker for special handling inside the renderer. We are not using a ===
+    // check directly on KeepAlive in the renderer, because importing it directly
+    // would prevent it from being tree-shaken.
+    __isKeepAlive: true,
+    props: {
+        include: [String, RegExp, Array],
+        exclude: [String, RegExp, Array],
+        max: [String, Number]
+    },
+    setup(props, { slots }) {
+        const instance = getCurrentInstance();
+        // KeepAlive communicates with the instantiated renderer via the
+        // ctx where the renderer passes in its internals,
+        // and the KeepAlive instance exposes activate/deactivate implementations.
+        // The whole point of this is to avoid importing KeepAlive directly in the
+        // renderer to facilitate tree-shaking.
+        const sharedContext = instance.ctx;
+        // if the internal renderer is not registered, it indicates that this is server-side rendering,
+        // for KeepAlive, we just need to render its children
+        if (!sharedContext.renderer) {
+            return slots.default;
+        }
+        const cache = new Map();
+        const keys = new Set();
+        let current = null;
+        if (true) {
+            instance.__v_cache = cache;
+        }
+        const parentSuspense = instance.suspense;
+        const { renderer: { p: patch, m: move, um: _unmount, o: { createElement } } } = sharedContext;
+        const storageContainer = createElement('div');
+        sharedContext.activate = (vnode, container, anchor, isSVG, optimized) => {
+            const instance = vnode.component;
+            move(vnode, container, anchor, 0 /* ENTER */, parentSuspense);
+            // in case props have changed
+            patch(instance.vnode, vnode, container, anchor, instance, parentSuspense, isSVG, vnode.slotScopeIds, optimized);
+            queuePostRenderEffect(() => {
+                instance.isDeactivated = false;
+                if (instance.a) {
+                    invokeArrayFns(instance.a);
+                }
+                const vnodeHook = vnode.props && vnode.props.onVnodeMounted;
+                if (vnodeHook) {
+                    invokeVNodeHook(vnodeHook, instance.parent, vnode);
+                }
+            }, parentSuspense);
+            if (true) {
+                // Update components tree
+                devtoolsComponentAdded(instance);
+            }
+        };
+        sharedContext.deactivate = (vnode) => {
+            const instance = vnode.component;
+            move(vnode, storageContainer, null, 1 /* LEAVE */, parentSuspense);
+            queuePostRenderEffect(() => {
+                if (instance.da) {
+                    invokeArrayFns(instance.da);
+                }
+                const vnodeHook = vnode.props && vnode.props.onVnodeUnmounted;
+                if (vnodeHook) {
+                    invokeVNodeHook(vnodeHook, instance.parent, vnode);
+                }
+                instance.isDeactivated = true;
+            }, parentSuspense);
+            if (true) {
+                // Update components tree
+                devtoolsComponentAdded(instance);
+            }
+        };
+        function unmount(vnode) {
+            // reset the shapeFlag so it can be properly unmounted
+            resetShapeFlag(vnode);
+            _unmount(vnode, instance, parentSuspense, true);
+        }
+        function pruneCache(filter) {
+            cache.forEach((vnode, key) => {
+                const name = getComponentName(vnode.type);
+                if (name && (!filter || !filter(name))) {
+                    pruneCacheEntry(key);
+                }
+            });
+        }
+        function pruneCacheEntry(key) {
+            const cached = cache.get(key);
+            if (!current || cached.type !== current.type) {
+                unmount(cached);
+            }
+            else if (current) {
+                // current active instance should no longer be kept-alive.
+                // we can't unmount it now but it might be later, so reset its flag now.
+                resetShapeFlag(current);
+            }
+            cache.delete(key);
+            keys.delete(key);
+        }
+        // prune cache on include/exclude prop change
+        watch(() => [props.include, props.exclude], ([include, exclude]) => {
+            include && pruneCache(name => matches(include, name));
+            exclude && pruneCache(name => !matches(exclude, name));
+        }, 
+        // prune post-render after `current` has been updated
+        { flush: 'post', deep: true });
+        // cache sub tree after render
+        let pendingCacheKey = null;
+        const cacheSubtree = () => {
+            // fix #1621, the pendingCacheKey could be 0
+            if (pendingCacheKey != null) {
+                cache.set(pendingCacheKey, getInnerChild(instance.subTree));
+            }
+        };
+        onMounted(cacheSubtree);
+        onUpdated(cacheSubtree);
+        onBeforeUnmount(() => {
+            cache.forEach(cached => {
+                const { subTree, suspense } = instance;
+                const vnode = getInnerChild(subTree);
+                if (cached.type === vnode.type) {
+                    // current instance will be unmounted as part of keep-alive's unmount
+                    resetShapeFlag(vnode);
+                    // but invoke its deactivated hook here
+                    const da = vnode.component.da;
+                    da && queuePostRenderEffect(da, suspense);
+                    return;
+                }
+                unmount(cached);
+            });
+        });
+        return () => {
+            pendingCacheKey = null;
+            if (!slots.default) {
+                return null;
+            }
+            const children = slots.default();
+            const rawVNode = children[0];
+            if (children.length > 1) {
+                if ((true)) {
+                    runtime_core_esm_bundler_warn(`KeepAlive should contain exactly one component child.`);
+                }
+                current = null;
+                return children;
+            }
+            else if (!isVNode(rawVNode) ||
+                (!(rawVNode.shapeFlag & 4 /* STATEFUL_COMPONENT */) &&
+                    !(rawVNode.shapeFlag & 128 /* SUSPENSE */))) {
+                current = null;
+                return rawVNode;
+            }
+            let vnode = getInnerChild(rawVNode);
+            const comp = vnode.type;
+            // for async components, name check should be based in its loaded
+            // inner component if available
+            const name = getComponentName(isAsyncWrapper(vnode)
+                ? vnode.type.__asyncResolved || {}
+                : comp);
+            const { include, exclude, max } = props;
+            if ((include && (!name || !matches(include, name))) ||
+                (exclude && name && matches(exclude, name))) {
+                current = vnode;
+                return rawVNode;
+            }
+            const key = vnode.key == null ? comp : vnode.key;
+            const cachedVNode = cache.get(key);
+            // clone vnode if it's reused because we are going to mutate it
+            if (vnode.el) {
+                vnode = cloneVNode(vnode);
+                if (rawVNode.shapeFlag & 128 /* SUSPENSE */) {
+                    rawVNode.ssContent = vnode;
+                }
+            }
+            // #1513 it's possible for the returned vnode to be cloned due to attr
+            // fallthrough or scopeId, so the vnode here may not be the final vnode
+            // that is mounted. Instead of caching it directly, we store the pending
+            // key and cache `instance.subTree` (the normalized vnode) in
+            // beforeMount/beforeUpdate hooks.
+            pendingCacheKey = key;
+            if (cachedVNode) {
+                // copy over mounted state
+                vnode.el = cachedVNode.el;
+                vnode.component = cachedVNode.component;
+                if (vnode.transition) {
+                    // recursively update transition hooks on subTree
+                    setTransitionHooks(vnode, vnode.transition);
+                }
+                // avoid vnode being mounted as fresh
+                vnode.shapeFlag |= 512 /* COMPONENT_KEPT_ALIVE */;
+                // make this key the freshest
+                keys.delete(key);
+                keys.add(key);
+            }
+            else {
+                keys.add(key);
+                // prune oldest entry
+                if (max && keys.size > parseInt(max, 10)) {
+                    pruneCacheEntry(keys.values().next().value);
+                }
+            }
+            // avoid vnode being unmounted
+            vnode.shapeFlag |= 256 /* COMPONENT_SHOULD_KEEP_ALIVE */;
+            current = vnode;
+            return rawVNode;
+        };
+    }
+};
+// export the public type for h/tsx inference
+// also to avoid inline import() in generated d.ts files
+const KeepAlive = KeepAliveImpl;
+function matches(pattern, name) {
+    if (isArray(pattern)) {
+        return pattern.some((p) => matches(p, name));
+    }
+    else if (isString(pattern)) {
+        return pattern.split(',').includes(name);
+    }
+    else if (pattern.test) {
+        return pattern.test(name);
+    }
+    /* istanbul ignore next */
+    return false;
+}
+function onActivated(hook, target) {
+    registerKeepAliveHook(hook, "a" /* ACTIVATED */, target);
+}
+function onDeactivated(hook, target) {
+    registerKeepAliveHook(hook, "da" /* DEACTIVATED */, target);
+}
+function registerKeepAliveHook(hook, type, target = currentInstance) {
+    // cache the deactivate branch check wrapper for injected hooks so the same
+    // hook can be properly deduped by the scheduler. "__wdc" stands for "with
+    // deactivation check".
+    const wrappedHook = hook.__wdc ||
+        (hook.__wdc = () => {
+            // only fire the hook if the target instance is NOT in a deactivated branch.
+            let current = target;
+            while (current) {
+                if (current.isDeactivated) {
+                    return;
+                }
+                current = current.parent;
+            }
+            return hook();
+        });
+    injectHook(type, wrappedHook, target);
+    // In addition to registering it on the target instance, we walk up the parent
+    // chain and register it on all ancestor instances that are keep-alive roots.
+    // This avoids the need to walk the entire component tree when invoking these
+    // hooks, and more importantly, avoids the need to track child components in
+    // arrays.
+    if (target) {
+        let current = target.parent;
+        while (current && current.parent) {
+            if (isKeepAlive(current.parent.vnode)) {
+                injectToKeepAliveRoot(wrappedHook, type, target, current);
+            }
+            current = current.parent;
+        }
+    }
+}
+function injectToKeepAliveRoot(hook, type, target, keepAliveRoot) {
+    // injectHook wraps the original for error handling, so make sure to remove
+    // the wrapped version.
+    const injected = injectHook(type, hook, keepAliveRoot, true /* prepend */);
+    onUnmounted(() => {
+        remove(keepAliveRoot[type], injected);
+    }, target);
+}
+function resetShapeFlag(vnode) {
+    let shapeFlag = vnode.shapeFlag;
+    if (shapeFlag & 256 /* COMPONENT_SHOULD_KEEP_ALIVE */) {
+        shapeFlag -= 256 /* COMPONENT_SHOULD_KEEP_ALIVE */;
+    }
+    if (shapeFlag & 512 /* COMPONENT_KEPT_ALIVE */) {
+        shapeFlag -= 512 /* COMPONENT_KEPT_ALIVE */;
+    }
+    vnode.shapeFlag = shapeFlag;
+}
+function getInnerChild(vnode) {
+    return vnode.shapeFlag & 128 /* SUSPENSE */ ? vnode.ssContent : vnode;
+}
+
+function injectHook(type, hook, target = currentInstance, prepend = false) {
+    if (target) {
+        const hooks = target[type] || (target[type] = []);
+        // cache the error handling wrapper for injected hooks so the same hook
+        // can be properly deduped by the scheduler. "__weh" stands for "with error
+        // handling".
+        const wrappedHook = hook.__weh ||
+            (hook.__weh = (...args) => {
+                if (target.isUnmounted) {
+                    return;
+                }
+                // disable tracking inside all lifecycle hooks
+                // since they can potentially be called inside effects.
+                pauseTracking();
+                // Set currentInstance during hook invocation.
+                // This assumes the hook does not synchronously trigger other hooks, which
+                // can only be false when the user does something really funky.
+                setCurrentInstance(target);
+                const res = callWithAsyncErrorHandling(hook, target, type, args);
+                unsetCurrentInstance();
+                resetTracking();
+                return res;
+            });
+        if (prepend) {
+            hooks.unshift(wrappedHook);
+        }
+        else {
+            hooks.push(wrappedHook);
+        }
+        return wrappedHook;
+    }
+    else if ((true)) {
+        const apiName = toHandlerKey(ErrorTypeStrings[type].replace(/ hook$/, ''));
+        runtime_core_esm_bundler_warn(`${apiName} is called when there is no active component instance to be ` +
+            `associated with. ` +
+            `Lifecycle injection APIs can only be used during execution of setup().` +
+            (` If you are using async setup(), make sure to register lifecycle ` +
+                    `hooks before the first await statement.`
+                ));
+    }
+}
+const createHook = (lifecycle) => (hook, target = currentInstance) => 
+// post-create lifecycle registrations are noops during SSR (except for serverPrefetch)
+(!isInSSRComponentSetup || lifecycle === "sp" /* SERVER_PREFETCH */) &&
+    injectHook(lifecycle, hook, target);
+const onBeforeMount = createHook("bm" /* BEFORE_MOUNT */);
+const onMounted = createHook("m" /* MOUNTED */);
+const onBeforeUpdate = createHook("bu" /* BEFORE_UPDATE */);
+const onUpdated = createHook("u" /* UPDATED */);
+const onBeforeUnmount = createHook("bum" /* BEFORE_UNMOUNT */);
+const onUnmounted = createHook("um" /* UNMOUNTED */);
+const onServerPrefetch = createHook("sp" /* SERVER_PREFETCH */);
+const onRenderTriggered = createHook("rtg" /* RENDER_TRIGGERED */);
+const onRenderTracked = createHook("rtc" /* RENDER_TRACKED */);
+function onErrorCaptured(hook, target = currentInstance) {
+    injectHook("ec" /* ERROR_CAPTURED */, hook, target);
+}
+
+function createDuplicateChecker() {
+    const cache = Object.create(null);
+    return (type, key) => {
+        if (cache[key]) {
+            runtime_core_esm_bundler_warn(`${type} property "${key}" is already defined in ${cache[key]}.`);
+        }
+        else {
+            cache[key] = type;
+        }
+    };
+}
+let shouldCacheAccess = true;
+function applyOptions(instance) {
+    const options = resolveMergedOptions(instance);
+    const publicThis = instance.proxy;
+    const ctx = instance.ctx;
+    // do not cache property access on public proxy during state initialization
+    shouldCacheAccess = false;
+    // call beforeCreate first before accessing other options since
+    // the hook may mutate resolved options (#2791)
+    if (options.beforeCreate) {
+        callHook(options.beforeCreate, instance, "bc" /* BEFORE_CREATE */);
+    }
+    const { 
+    // state
+    data: dataOptions, computed: computedOptions, methods, watch: watchOptions, provide: provideOptions, inject: injectOptions, 
+    // lifecycle
+    created, beforeMount, mounted, beforeUpdate, updated, activated, deactivated, beforeDestroy, beforeUnmount, destroyed, unmounted, render, renderTracked, renderTriggered, errorCaptured, serverPrefetch, 
+    // public API
+    expose, inheritAttrs, 
+    // assets
+    components, directives, filters } = options;
+    const checkDuplicateProperties = ( true) ? createDuplicateChecker() : 0;
+    if ((true)) {
+        const [propsOptions] = instance.propsOptions;
+        if (propsOptions) {
+            for (const key in propsOptions) {
+                checkDuplicateProperties("Props" /* PROPS */, key);
+            }
+        }
+    }
+    // options initialization order (to be consistent with Vue 2):
+    // - props (already done outside of this function)
+    // - inject
+    // - methods
+    // - data (deferred since it relies on `this` access)
+    // - computed
+    // - watch (deferred since it relies on `this` access)
+    if (injectOptions) {
+        resolveInjections(injectOptions, ctx, checkDuplicateProperties, instance.appContext.config.unwrapInjectedRef);
+    }
+    if (methods) {
+        for (const key in methods) {
+            const methodHandler = methods[key];
+            if (isFunction(methodHandler)) {
+                // In dev mode, we use the `createRenderContext` function to define
+                // methods to the proxy target, and those are read-only but
+                // reconfigurable, so it needs to be redefined here
+                if ((true)) {
+                    Object.defineProperty(ctx, key, {
+                        value: methodHandler.bind(publicThis),
+                        configurable: true,
+                        enumerable: true,
+                        writable: true
+                    });
+                }
+                else {}
+                if ((true)) {
+                    checkDuplicateProperties("Methods" /* METHODS */, key);
+                }
+            }
+            else if ((true)) {
+                runtime_core_esm_bundler_warn(`Method "${key}" has type "${typeof methodHandler}" in the component definition. ` +
+                    `Did you reference the function correctly?`);
+            }
+        }
+    }
+    if (dataOptions) {
+        if (( true) && !isFunction(dataOptions)) {
+            runtime_core_esm_bundler_warn(`The data option must be a function. ` +
+                `Plain object usage is no longer supported.`);
+        }
+        const data = dataOptions.call(publicThis, publicThis);
+        if (( true) && isPromise(data)) {
+            runtime_core_esm_bundler_warn(`data() returned a Promise - note data() cannot be async; If you ` +
+                `intend to perform data fetching before component renders, use ` +
+                `async setup() + <Suspense>.`);
+        }
+        if (!isObject(data)) {
+            ( true) && runtime_core_esm_bundler_warn(`data() should return an object.`);
+        }
+        else {
+            instance.data = reactive(data);
+            if ((true)) {
+                for (const key in data) {
+                    checkDuplicateProperties("Data" /* DATA */, key);
+                    // expose data on ctx during dev
+                    if (key[0] !== '$' && key[0] !== '_') {
+                        Object.defineProperty(ctx, key, {
+                            configurable: true,
+                            enumerable: true,
+                            get: () => data[key],
+                            set: NOOP
+                        });
+                    }
+                }
+            }
+        }
+    }
+    // state initialization complete at this point - start caching access
+    shouldCacheAccess = true;
+    if (computedOptions) {
+        for (const key in computedOptions) {
+            const opt = computedOptions[key];
+            const get = isFunction(opt)
+                ? opt.bind(publicThis, publicThis)
+                : isFunction(opt.get)
+                    ? opt.get.bind(publicThis, publicThis)
+                    : NOOP;
+            if (( true) && get === NOOP) {
+                runtime_core_esm_bundler_warn(`Computed property "${key}" has no getter.`);
+            }
+            const set = !isFunction(opt) && isFunction(opt.set)
+                ? opt.set.bind(publicThis)
+                : ( true)
+                    ? () => {
+                        runtime_core_esm_bundler_warn(`Write operation failed: computed property "${key}" is readonly.`);
+                    }
+                    : 0;
+            const c = runtime_core_esm_bundler_computed({
+                get,
+                set
+            });
+            Object.defineProperty(ctx, key, {
+                enumerable: true,
+                configurable: true,
+                get: () => c.value,
+                set: v => (c.value = v)
+            });
+            if ((true)) {
+                checkDuplicateProperties("Computed" /* COMPUTED */, key);
+            }
+        }
+    }
+    if (watchOptions) {
+        for (const key in watchOptions) {
+            createWatcher(watchOptions[key], ctx, publicThis, key);
+        }
+    }
+    if (provideOptions) {
+        const provides = isFunction(provideOptions)
+            ? provideOptions.call(publicThis)
+            : provideOptions;
+        Reflect.ownKeys(provides).forEach(key => {
+            provide(key, provides[key]);
+        });
+    }
+    if (created) {
+        callHook(created, instance, "c" /* CREATED */);
+    }
+    function registerLifecycleHook(register, hook) {
+        if (isArray(hook)) {
+            hook.forEach(_hook => register(_hook.bind(publicThis)));
+        }
+        else if (hook) {
+            register(hook.bind(publicThis));
+        }
+    }
+    registerLifecycleHook(onBeforeMount, beforeMount);
+    registerLifecycleHook(onMounted, mounted);
+    registerLifecycleHook(onBeforeUpdate, beforeUpdate);
+    registerLifecycleHook(onUpdated, updated);
+    registerLifecycleHook(onActivated, activated);
+    registerLifecycleHook(onDeactivated, deactivated);
+    registerLifecycleHook(onErrorCaptured, errorCaptured);
+    registerLifecycleHook(onRenderTracked, renderTracked);
+    registerLifecycleHook(onRenderTriggered, renderTriggered);
+    registerLifecycleHook(onBeforeUnmount, beforeUnmount);
+    registerLifecycleHook(onUnmounted, unmounted);
+    registerLifecycleHook(onServerPrefetch, serverPrefetch);
+    if (isArray(expose)) {
+        if (expose.length) {
+            const exposed = instance.exposed || (instance.exposed = {});
+            expose.forEach(key => {
+                Object.defineProperty(exposed, key, {
+                    get: () => publicThis[key],
+                    set: val => (publicThis[key] = val)
+                });
+            });
+        }
+        else if (!instance.exposed) {
+            instance.exposed = {};
+        }
+    }
+    // options that are handled when creating the instance but also need to be
+    // applied from mixins
+    if (render && instance.render === NOOP) {
+        instance.render = render;
+    }
+    if (inheritAttrs != null) {
+        instance.inheritAttrs = inheritAttrs;
+    }
+    // asset options.
+    if (components)
+        instance.components = components;
+    if (directives)
+        instance.directives = directives;
+}
+function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP, unwrapRef = false) {
+    if (isArray(injectOptions)) {
+        injectOptions = normalizeInject(injectOptions);
+    }
+    for (const key in injectOptions) {
+        const opt = injectOptions[key];
+        let injected;
+        if (isObject(opt)) {
+            if ('default' in opt) {
+                injected = inject(opt.from || key, opt.default, true /* treat default function as factory */);
+            }
+            else {
+                injected = inject(opt.from || key);
+            }
+        }
+        else {
+            injected = inject(opt);
+        }
+        if (isRef(injected)) {
+            // TODO remove the check in 3.3
+            if (unwrapRef) {
+                Object.defineProperty(ctx, key, {
+                    enumerable: true,
+                    configurable: true,
+                    get: () => injected.value,
+                    set: v => (injected.value = v)
+                });
+            }
+            else {
+                if ((true)) {
+                    runtime_core_esm_bundler_warn(`injected property "${key}" is a ref and will be auto-unwrapped ` +
+                        `and no longer needs \`.value\` in the next minor release. ` +
+                        `To opt-in to the new behavior now, ` +
+                        `set \`app.config.unwrapInjectedRef = true\` (this config is ` +
+                        `temporary and will not be needed in the future.)`);
+                }
+                ctx[key] = injected;
+            }
+        }
+        else {
+            ctx[key] = injected;
+        }
+        if ((true)) {
+            checkDuplicateProperties("Inject" /* INJECT */, key);
+        }
+    }
+}
+function callHook(hook, instance, type) {
+    callWithAsyncErrorHandling(isArray(hook)
+        ? hook.map(h => h.bind(instance.proxy))
+        : hook.bind(instance.proxy), instance, type);
+}
+function createWatcher(raw, ctx, publicThis, key) {
+    const getter = key.includes('.')
+        ? createPathGetter(publicThis, key)
+        : () => publicThis[key];
+    if (isString(raw)) {
+        const handler = ctx[raw];
+        if (isFunction(handler)) {
+            watch(getter, handler);
+        }
+        else if ((true)) {
+            runtime_core_esm_bundler_warn(`Invalid watch handler specified by key "${raw}"`, handler);
+        }
+    }
+    else if (isFunction(raw)) {
+        watch(getter, raw.bind(publicThis));
+    }
+    else if (isObject(raw)) {
+        if (isArray(raw)) {
+            raw.forEach(r => createWatcher(r, ctx, publicThis, key));
+        }
+        else {
+            const handler = isFunction(raw.handler)
+                ? raw.handler.bind(publicThis)
+                : ctx[raw.handler];
+            if (isFunction(handler)) {
+                watch(getter, handler, raw);
+            }
+            else if ((true)) {
+                runtime_core_esm_bundler_warn(`Invalid watch handler specified by key "${raw.handler}"`, handler);
+            }
+        }
+    }
+    else if ((true)) {
+        runtime_core_esm_bundler_warn(`Invalid watch option: "${key}"`, raw);
+    }
+}
+/**
+ * Resolve merged options and cache it on the component.
+ * This is done only once per-component since the merging does not involve
+ * instances.
+ */
+function resolveMergedOptions(instance) {
+    const base = instance.type;
+    const { mixins, extends: extendsOptions } = base;
+    const { mixins: globalMixins, optionsCache: cache, config: { optionMergeStrategies } } = instance.appContext;
+    const cached = cache.get(base);
+    let resolved;
+    if (cached) {
+        resolved = cached;
+    }
+    else if (!globalMixins.length && !mixins && !extendsOptions) {
+        {
+            resolved = base;
+        }
+    }
+    else {
+        resolved = {};
+        if (globalMixins.length) {
+            globalMixins.forEach(m => mergeOptions(resolved, m, optionMergeStrategies, true));
+        }
+        mergeOptions(resolved, base, optionMergeStrategies);
+    }
+    cache.set(base, resolved);
+    return resolved;
+}
+function mergeOptions(to, from, strats, asMixin = false) {
+    const { mixins, extends: extendsOptions } = from;
+    if (extendsOptions) {
+        mergeOptions(to, extendsOptions, strats, true);
+    }
+    if (mixins) {
+        mixins.forEach((m) => mergeOptions(to, m, strats, true));
+    }
+    for (const key in from) {
+        if (asMixin && key === 'expose') {
+            ( true) &&
+                runtime_core_esm_bundler_warn(`"expose" option is ignored when declared in mixins or extends. ` +
+                    `It should only be declared in the base component itself.`);
+        }
+        else {
+            const strat = internalOptionMergeStrats[key] || (strats && strats[key]);
+            to[key] = strat ? strat(to[key], from[key]) : from[key];
+        }
+    }
+    return to;
+}
+const internalOptionMergeStrats = {
+    data: mergeDataFn,
+    props: mergeObjectOptions,
+    emits: mergeObjectOptions,
+    // objects
+    methods: mergeObjectOptions,
+    computed: mergeObjectOptions,
+    // lifecycle
+    beforeCreate: mergeAsArray,
+    created: mergeAsArray,
+    beforeMount: mergeAsArray,
+    mounted: mergeAsArray,
+    beforeUpdate: mergeAsArray,
+    updated: mergeAsArray,
+    beforeDestroy: mergeAsArray,
+    beforeUnmount: mergeAsArray,
+    destroyed: mergeAsArray,
+    unmounted: mergeAsArray,
+    activated: mergeAsArray,
+    deactivated: mergeAsArray,
+    errorCaptured: mergeAsArray,
+    serverPrefetch: mergeAsArray,
+    // assets
+    components: mergeObjectOptions,
+    directives: mergeObjectOptions,
+    // watch
+    watch: mergeWatchOptions,
+    // provide / inject
+    provide: mergeDataFn,
+    inject: mergeInject
+};
+function mergeDataFn(to, from) {
+    if (!from) {
+        return to;
+    }
+    if (!to) {
+        return from;
+    }
+    return function mergedDataFn() {
+        return (extend)(isFunction(to) ? to.call(this, this) : to, isFunction(from) ? from.call(this, this) : from);
+    };
+}
+function mergeInject(to, from) {
+    return mergeObjectOptions(normalizeInject(to), normalizeInject(from));
+}
+function normalizeInject(raw) {
+    if (isArray(raw)) {
+        const res = {};
+        for (let i = 0; i < raw.length; i++) {
+            res[raw[i]] = raw[i];
+        }
+        return res;
+    }
+    return raw;
+}
+function mergeAsArray(to, from) {
+    return to ? [...new Set([].concat(to, from))] : from;
+}
+function mergeObjectOptions(to, from) {
+    return to ? extend(extend(Object.create(null), to), from) : from;
+}
+function mergeWatchOptions(to, from) {
+    if (!to)
+        return from;
+    if (!from)
+        return to;
+    const merged = extend(Object.create(null), to);
+    for (const key in from) {
+        merged[key] = mergeAsArray(to[key], from[key]);
+    }
+    return merged;
+}
+
+function initProps(instance, rawProps, isStateful, // result of bitwise flag comparison
+isSSR = false) {
+    const props = {};
+    const attrs = {};
+    def(attrs, InternalObjectKey, 1);
+    instance.propsDefaults = Object.create(null);
+    setFullProps(instance, rawProps, props, attrs);
+    // ensure all declared prop keys are present
+    for (const key in instance.propsOptions[0]) {
+        if (!(key in props)) {
+            props[key] = undefined;
+        }
+    }
+    // validation
+    if ((true)) {
+        validateProps(rawProps || {}, props, instance);
+    }
+    if (isStateful) {
+        // stateful
+        instance.props = isSSR ? props : shallowReactive(props);
+    }
+    else {
+        if (!instance.type.props) {
+            // functional w/ optional props, props === attrs
+            instance.props = attrs;
+        }
+        else {
+            // functional w/ declared props
+            instance.props = props;
+        }
+    }
+    instance.attrs = attrs;
+}
+function updateProps(instance, rawProps, rawPrevProps, optimized) {
+    const { props, attrs, vnode: { patchFlag } } = instance;
+    const rawCurrentProps = toRaw(props);
+    const [options] = instance.propsOptions;
+    let hasAttrsChanged = false;
+    if (
+    // always force full diff in dev
+    // - #1942 if hmr is enabled with sfc component
+    // - vite#872 non-sfc component used by sfc component
+    !(( true) &&
+        (instance.type.__hmrId ||
+            (instance.parent && instance.parent.type.__hmrId))) &&
+        (optimized || patchFlag > 0) &&
+        !(patchFlag & 16 /* FULL_PROPS */)) {
+        if (patchFlag & 8 /* PROPS */) {
+            // Compiler-generated props & no keys change, just set the updated
+            // the props.
+            const propsToUpdate = instance.vnode.dynamicProps;
+            for (let i = 0; i < propsToUpdate.length; i++) {
+                let key = propsToUpdate[i];
+                // skip if the prop key is a declared emit event listener
+                if (isEmitListener(instance.emitsOptions, key)) {
+                    continue;
+                }
+                // PROPS flag guarantees rawProps to be non-null
+                const value = rawProps[key];
+                if (options) {
+                    // attr / props separation was done on init and will be consistent
+                    // in this code path, so just check if attrs have it.
+                    if (hasOwn(attrs, key)) {
+                        if (value !== attrs[key]) {
+                            attrs[key] = value;
+                            hasAttrsChanged = true;
+                        }
+                    }
+                    else {
+                        const camelizedKey = camelize(key);
+                        props[camelizedKey] = resolvePropValue(options, rawCurrentProps, camelizedKey, value, instance, false /* isAbsent */);
+                    }
+                }
+                else {
+                    if (value !== attrs[key]) {
+                        attrs[key] = value;
+                        hasAttrsChanged = true;
+                    }
+                }
+            }
+        }
+    }
+    else {
+        // full props update.
+        if (setFullProps(instance, rawProps, props, attrs)) {
+            hasAttrsChanged = true;
+        }
+        // in case of dynamic props, check if we need to delete keys from
+        // the props object
+        let kebabKey;
+        for (const key in rawCurrentProps) {
+            if (!rawProps ||
+                // for camelCase
+                (!hasOwn(rawProps, key) &&
+                    // it's possible the original props was passed in as kebab-case
+                    // and converted to camelCase (#955)
+                    ((kebabKey = hyphenate(key)) === key || !hasOwn(rawProps, kebabKey)))) {
+                if (options) {
+                    if (rawPrevProps &&
+                        // for camelCase
+                        (rawPrevProps[key] !== undefined ||
+                            // for kebab-case
+                            rawPrevProps[kebabKey] !== undefined)) {
+                        props[key] = resolvePropValue(options, rawCurrentProps, key, undefined, instance, true /* isAbsent */);
+                    }
+                }
+                else {
+                    delete props[key];
+                }
+            }
+        }
+        // in the case of functional component w/o props declaration, props and
+        // attrs point to the same object so it should already have been updated.
+        if (attrs !== rawCurrentProps) {
+            for (const key in attrs) {
+                if (!rawProps ||
+                    (!hasOwn(rawProps, key) &&
+                        (!false ))) {
+                    delete attrs[key];
+                    hasAttrsChanged = true;
+                }
+            }
+        }
+    }
+    // trigger updates for $attrs in case it's used in component slots
+    if (hasAttrsChanged) {
+        trigger(instance, "set" /* SET */, '$attrs');
+    }
+    if ((true)) {
+        validateProps(rawProps || {}, props, instance);
+    }
+}
+function setFullProps(instance, rawProps, props, attrs) {
+    const [options, needCastKeys] = instance.propsOptions;
+    let hasAttrsChanged = false;
+    let rawCastValues;
+    if (rawProps) {
+        for (let key in rawProps) {
+            // key, ref are reserved and never passed down
+            if (isReservedProp(key)) {
+                continue;
+            }
+            const value = rawProps[key];
+            // prop option names are camelized during normalization, so to support
+            // kebab -> camel conversion here we need to camelize the key.
+            let camelKey;
+            if (options && hasOwn(options, (camelKey = camelize(key)))) {
+                if (!needCastKeys || !needCastKeys.includes(camelKey)) {
+                    props[camelKey] = value;
+                }
+                else {
+                    (rawCastValues || (rawCastValues = {}))[camelKey] = value;
+                }
+            }
+            else if (!isEmitListener(instance.emitsOptions, key)) {
+                if (!(key in attrs) || value !== attrs[key]) {
+                    attrs[key] = value;
+                    hasAttrsChanged = true;
+                }
+            }
+        }
+    }
+    if (needCastKeys) {
+        const rawCurrentProps = toRaw(props);
+        const castValues = rawCastValues || EMPTY_OBJ;
+        for (let i = 0; i < needCastKeys.length; i++) {
+            const key = needCastKeys[i];
+            props[key] = resolvePropValue(options, rawCurrentProps, key, castValues[key], instance, !hasOwn(castValues, key));
+        }
+    }
+    return hasAttrsChanged;
+}
+function resolvePropValue(options, props, key, value, instance, isAbsent) {
+    const opt = options[key];
+    if (opt != null) {
+        const hasDefault = hasOwn(opt, 'default');
+        // default values
+        if (hasDefault && value === undefined) {
+            const defaultValue = opt.default;
+            if (opt.type !== Function && isFunction(defaultValue)) {
+                const { propsDefaults } = instance;
+                if (key in propsDefaults) {
+                    value = propsDefaults[key];
+                }
+                else {
+                    setCurrentInstance(instance);
+                    value = propsDefaults[key] = defaultValue.call(null, props);
+                    unsetCurrentInstance();
+                }
+            }
+            else {
+                value = defaultValue;
+            }
+        }
+        // boolean casting
+        if (opt[0 /* shouldCast */]) {
+            if (isAbsent && !hasDefault) {
+                value = false;
+            }
+            else if (opt[1 /* shouldCastTrue */] &&
+                (value === '' || value === hyphenate(key))) {
+                value = true;
+            }
+        }
+    }
+    return value;
+}
+function normalizePropsOptions(comp, appContext, asMixin = false) {
+    const cache = appContext.propsCache;
+    const cached = cache.get(comp);
+    if (cached) {
+        return cached;
+    }
+    const raw = comp.props;
+    const normalized = {};
+    const needCastKeys = [];
+    // apply mixin/extends props
+    let hasExtends = false;
+    if (__VUE_OPTIONS_API__ && !isFunction(comp)) {
+        const extendProps = (raw) => {
+            hasExtends = true;
+            const [props, keys] = normalizePropsOptions(raw, appContext, true);
+            extend(normalized, props);
+            if (keys)
+                needCastKeys.push(...keys);
+        };
+        if (!asMixin && appContext.mixins.length) {
+            appContext.mixins.forEach(extendProps);
+        }
+        if (comp.extends) {
+            extendProps(comp.extends);
+        }
+        if (comp.mixins) {
+            comp.mixins.forEach(extendProps);
+        }
+    }
+    if (!raw && !hasExtends) {
+        cache.set(comp, EMPTY_ARR);
+        return EMPTY_ARR;
+    }
+    if (isArray(raw)) {
+        for (let i = 0; i < raw.length; i++) {
+            if (( true) && !isString(raw[i])) {
+                runtime_core_esm_bundler_warn(`props must be strings when using array syntax.`, raw[i]);
+            }
+            const normalizedKey = camelize(raw[i]);
+            if (validatePropName(normalizedKey)) {
+                normalized[normalizedKey] = EMPTY_OBJ;
+            }
+        }
+    }
+    else if (raw) {
+        if (( true) && !isObject(raw)) {
+            runtime_core_esm_bundler_warn(`invalid props options`, raw);
+        }
+        for (const key in raw) {
+            const normalizedKey = camelize(key);
+            if (validatePropName(normalizedKey)) {
+                const opt = raw[key];
+                const prop = (normalized[normalizedKey] =
+                    isArray(opt) || isFunction(opt) ? { type: opt } : opt);
+                if (prop) {
+                    const booleanIndex = getTypeIndex(Boolean, prop.type);
+                    const stringIndex = getTypeIndex(String, prop.type);
+                    prop[0 /* shouldCast */] = booleanIndex > -1;
+                    prop[1 /* shouldCastTrue */] =
+                        stringIndex < 0 || booleanIndex < stringIndex;
+                    // if the prop needs boolean casting or default value
+                    if (booleanIndex > -1 || hasOwn(prop, 'default')) {
+                        needCastKeys.push(normalizedKey);
+                    }
+                }
+            }
+        }
+    }
+    const res = [normalized, needCastKeys];
+    cache.set(comp, res);
+    return res;
+}
+function validatePropName(key) {
+    if (key[0] !== '$') {
+        return true;
+    }
+    else if ((true)) {
+        runtime_core_esm_bundler_warn(`Invalid prop name: "${key}" is a reserved property.`);
+    }
+    return false;
+}
+// use function string name to check type constructors
+// so that it works across vms / iframes.
+function getType(ctor) {
+    const match = ctor && ctor.toString().match(/^\s*function (\w+)/);
+    return match ? match[1] : ctor === null ? 'null' : '';
+}
+function isSameType(a, b) {
+    return getType(a) === getType(b);
+}
+function getTypeIndex(type, expectedTypes) {
+    if (isArray(expectedTypes)) {
+        return expectedTypes.findIndex(t => isSameType(t, type));
+    }
+    else if (isFunction(expectedTypes)) {
+        return isSameType(expectedTypes, type) ? 0 : -1;
+    }
+    return -1;
+}
+/**
+ * dev only
+ */
+function validateProps(rawProps, props, instance) {
+    const resolvedValues = toRaw(props);
+    const options = instance.propsOptions[0];
+    for (const key in options) {
+        let opt = options[key];
+        if (opt == null)
+            continue;
+        validateProp(key, resolvedValues[key], opt, !hasOwn(rawProps, key) && !hasOwn(rawProps, hyphenate(key)));
+    }
+}
+/**
+ * dev only
+ */
+function validateProp(name, value, prop, isAbsent) {
+    const { type, required, validator } = prop;
+    // required!
+    if (required && isAbsent) {
+        runtime_core_esm_bundler_warn('Missing required prop: "' + name + '"');
+        return;
+    }
+    // missing but optional
+    if (value == null && !prop.required) {
+        return;
+    }
+    // type check
+    if (type != null && type !== true) {
+        let isValid = false;
+        const types = isArray(type) ? type : [type];
+        const expectedTypes = [];
+        // value is valid as long as one of the specified types match
+        for (let i = 0; i < types.length && !isValid; i++) {
+            const { valid, expectedType } = assertType(value, types[i]);
+            expectedTypes.push(expectedType || '');
+            isValid = valid;
+        }
+        if (!isValid) {
+            runtime_core_esm_bundler_warn(getInvalidTypeMessage(name, value, expectedTypes));
+            return;
+        }
+    }
+    // custom validator
+    if (validator && !validator(value)) {
+        runtime_core_esm_bundler_warn('Invalid prop: custom validator check failed for prop "' + name + '".');
+    }
+}
+const isSimpleType = /*#__PURE__*/ makeMap('String,Number,Boolean,Function,Symbol,BigInt');
+/**
+ * dev only
+ */
+function assertType(value, type) {
+    let valid;
+    const expectedType = getType(type);
+    if (isSimpleType(expectedType)) {
+        const t = typeof value;
+        valid = t === expectedType.toLowerCase();
+        // for primitive wrapper objects
+        if (!valid && t === 'object') {
+            valid = value instanceof type;
+        }
+    }
+    else if (expectedType === 'Object') {
+        valid = isObject(value);
+    }
+    else if (expectedType === 'Array') {
+        valid = isArray(value);
+    }
+    else if (expectedType === 'null') {
+        valid = value === null;
+    }
+    else {
+        valid = value instanceof type;
+    }
+    return {
+        valid,
+        expectedType
+    };
+}
+/**
+ * dev only
+ */
+function getInvalidTypeMessage(name, value, expectedTypes) {
+    let message = `Invalid prop: type check failed for prop "${name}".` +
+        ` Expected ${expectedTypes.map(capitalize).join(' | ')}`;
+    const expectedType = expectedTypes[0];
+    const receivedType = toRawType(value);
+    const expectedValue = styleValue(value, expectedType);
+    const receivedValue = styleValue(value, receivedType);
+    // check if we need to specify expected value
+    if (expectedTypes.length === 1 &&
+        isExplicable(expectedType) &&
+        !isBoolean(expectedType, receivedType)) {
+        message += ` with value ${expectedValue}`;
+    }
+    message += `, got ${receivedType} `;
+    // check if we need to specify received value
+    if (isExplicable(receivedType)) {
+        message += `with value ${receivedValue}.`;
+    }
+    return message;
+}
+/**
+ * dev only
+ */
+function styleValue(value, type) {
+    if (type === 'String') {
+        return `"${value}"`;
+    }
+    else if (type === 'Number') {
+        return `${Number(value)}`;
+    }
+    else {
+        return `${value}`;
+    }
+}
+/**
+ * dev only
+ */
+function isExplicable(type) {
+    const explicitTypes = ['string', 'number', 'boolean'];
+    return explicitTypes.some(elem => type.toLowerCase() === elem);
+}
+/**
+ * dev only
+ */
+function isBoolean(...args) {
+    return args.some(elem => elem.toLowerCase() === 'boolean');
+}
+
+const isInternalKey = (key) => key[0] === '_' || key === '$stable';
+const normalizeSlotValue = (value) => isArray(value)
+    ? value.map(normalizeVNode)
+    : [normalizeVNode(value)];
+const normalizeSlot = (key, rawSlot, ctx) => {
+    const normalized = withCtx((...args) => {
+        if (( true) && currentInstance) {
+            runtime_core_esm_bundler_warn(`Slot "${key}" invoked outside of the render function: ` +
+                `this will not track dependencies used in the slot. ` +
+                `Invoke the slot function inside the render function instead.`);
+        }
+        return normalizeSlotValue(rawSlot(...args));
+    }, ctx);
+    normalized._c = false;
+    return normalized;
+};
+const normalizeObjectSlots = (rawSlots, slots, instance) => {
+    const ctx = rawSlots._ctx;
+    for (const key in rawSlots) {
+        if (isInternalKey(key))
+            continue;
+        const value = rawSlots[key];
+        if (isFunction(value)) {
+            slots[key] = normalizeSlot(key, value, ctx);
+        }
+        else if (value != null) {
+            if (true) {
+                runtime_core_esm_bundler_warn(`Non-function value encountered for slot "${key}". ` +
+                    `Prefer function slots for better performance.`);
+            }
+            const normalized = normalizeSlotValue(value);
+            slots[key] = () => normalized;
+        }
+    }
+};
+const normalizeVNodeSlots = (instance, children) => {
+    if (( true) &&
+        !isKeepAlive(instance.vnode) &&
+        !(false )) {
+        runtime_core_esm_bundler_warn(`Non-function value encountered for default slot. ` +
+            `Prefer function slots for better performance.`);
+    }
+    const normalized = normalizeSlotValue(children);
+    instance.slots.default = () => normalized;
+};
+const initSlots = (instance, children) => {
+    if (instance.vnode.shapeFlag & 32 /* SLOTS_CHILDREN */) {
+        const type = children._;
+        if (type) {
+            // users can get the shallow readonly version of the slots object through `this.$slots`,
+            // we should avoid the proxy object polluting the slots of the internal instance
+            instance.slots = toRaw(children);
+            // make compiler marker non-enumerable
+            def(children, '_', type);
+        }
+        else {
+            normalizeObjectSlots(children, (instance.slots = {}));
+        }
+    }
+    else {
+        instance.slots = {};
+        if (children) {
+            normalizeVNodeSlots(instance, children);
+        }
+    }
+    def(instance.slots, InternalObjectKey, 1);
+};
+const updateSlots = (instance, children, optimized) => {
+    const { vnode, slots } = instance;
+    let needDeletionCheck = true;
+    let deletionComparisonTarget = EMPTY_OBJ;
+    if (vnode.shapeFlag & 32 /* SLOTS_CHILDREN */) {
+        const type = children._;
+        if (type) {
+            // compiled slots.
+            if (( true) && isHmrUpdating) {
+                // Parent was HMR updated so slot content may have changed.
+                // force update slots and mark instance for hmr as well
+                extend(slots, children);
+            }
+            else if (optimized && type === 1 /* STABLE */) {
+                // compiled AND stable.
+                // no need to update, and skip stale slots removal.
+                needDeletionCheck = false;
+            }
+            else {
+                // compiled but dynamic (v-if/v-for on slots) - update slots, but skip
+                // normalization.
+                extend(slots, children);
+                // #2893
+                // when rendering the optimized slots by manually written render function,
+                // we need to delete the `slots._` flag if necessary to make subsequent updates reliable,
+                // i.e. let the `renderSlot` create the bailed Fragment
+                if (!optimized && type === 1 /* STABLE */) {
+                    delete slots._;
+                }
+            }
+        }
+        else {
+            needDeletionCheck = !children.$stable;
+            normalizeObjectSlots(children, slots);
+        }
+        deletionComparisonTarget = children;
+    }
+    else if (children) {
+        // non slot object children (direct value) passed to a component
+        normalizeVNodeSlots(instance, children);
+        deletionComparisonTarget = { default: 1 };
+    }
+    // delete stale slots
+    if (needDeletionCheck) {
+        for (const key in slots) {
+            if (!isInternalKey(key) && !(key in deletionComparisonTarget)) {
+                delete slots[key];
+            }
+        }
+    }
+};
+
+/**
+Runtime helper for applying directives to a vnode. Example usage:
+
+const comp = resolveComponent('comp')
+const foo = resolveDirective('foo')
+const bar = resolveDirective('bar')
+
+return withDirectives(h(comp), [
+  [foo, this.x],
+  [bar, this.y]
+])
+*/
+function validateDirectiveName(name) {
+    if (isBuiltInDirective(name)) {
+        runtime_core_esm_bundler_warn('Do not use built-in directive ids as custom directive id: ' + name);
+    }
+}
+/**
+ * Adds directives to a VNode.
+ */
+function withDirectives(vnode, directives) {
+    const internalInstance = currentRenderingInstance;
+    if (internalInstance === null) {
+        ( true) && runtime_core_esm_bundler_warn(`withDirectives can only be used inside render functions.`);
+        return vnode;
+    }
+    const instance = getExposeProxy(internalInstance) ||
+        internalInstance.proxy;
+    const bindings = vnode.dirs || (vnode.dirs = []);
+    for (let i = 0; i < directives.length; i++) {
+        let [dir, value, arg, modifiers = EMPTY_OBJ] = directives[i];
+        if (isFunction(dir)) {
+            dir = {
+                mounted: dir,
+                updated: dir
+            };
+        }
+        if (dir.deep) {
+            traverse(value);
+        }
+        bindings.push({
+            dir,
+            instance,
+            value,
+            oldValue: void 0,
+            arg,
+            modifiers
+        });
+    }
+    return vnode;
+}
+function invokeDirectiveHook(vnode, prevVNode, instance, name) {
+    const bindings = vnode.dirs;
+    const oldBindings = prevVNode && prevVNode.dirs;
+    for (let i = 0; i < bindings.length; i++) {
+        const binding = bindings[i];
+        if (oldBindings) {
+            binding.oldValue = oldBindings[i].value;
+        }
+        let hook = binding.dir[name];
+        if (hook) {
+            // disable tracking inside all lifecycle hooks
+            // since they can potentially be called inside effects.
+            pauseTracking();
+            callWithAsyncErrorHandling(hook, instance, 8 /* DIRECTIVE_HOOK */, [
+                vnode.el,
+                binding,
+                vnode,
+                prevVNode
+            ]);
+            resetTracking();
+        }
+    }
+}
+
+function createAppContext() {
+    return {
+        app: null,
+        config: {
+            isNativeTag: NO,
+            performance: false,
+            globalProperties: {},
+            optionMergeStrategies: {},
+            errorHandler: undefined,
+            warnHandler: undefined,
+            compilerOptions: {}
+        },
+        mixins: [],
+        components: {},
+        directives: {},
+        provides: Object.create(null),
+        optionsCache: new WeakMap(),
+        propsCache: new WeakMap(),
+        emitsCache: new WeakMap()
+    };
+}
+let uid = 0;
+function createAppAPI(render, hydrate) {
+    return function createApp(rootComponent, rootProps = null) {
+        if (!isFunction(rootComponent)) {
+            rootComponent = Object.assign({}, rootComponent);
+        }
+        if (rootProps != null && !isObject(rootProps)) {
+            ( true) && runtime_core_esm_bundler_warn(`root props passed to app.mount() must be an object.`);
+            rootProps = null;
+        }
+        const context = createAppContext();
+        const installedPlugins = new Set();
+        let isMounted = false;
+        const app = (context.app = {
+            _uid: uid++,
+            _component: rootComponent,
+            _props: rootProps,
+            _container: null,
+            _context: context,
+            _instance: null,
+            version,
+            get config() {
+                return context.config;
+            },
+            set config(v) {
+                if ((true)) {
+                    runtime_core_esm_bundler_warn(`app.config cannot be replaced. Modify individual options instead.`);
+                }
+            },
+            use(plugin, ...options) {
+                if (installedPlugins.has(plugin)) {
+                    ( true) && runtime_core_esm_bundler_warn(`Plugin has already been applied to target app.`);
+                }
+                else if (plugin && isFunction(plugin.install)) {
+                    installedPlugins.add(plugin);
+                    plugin.install(app, ...options);
+                }
+                else if (isFunction(plugin)) {
+                    installedPlugins.add(plugin);
+                    plugin(app, ...options);
+                }
+                else if ((true)) {
+                    runtime_core_esm_bundler_warn(`A plugin must either be a function or an object with an "install" ` +
+                        `function.`);
+                }
+                return app;
+            },
+            mixin(mixin) {
+                if (__VUE_OPTIONS_API__) {
+                    if (!context.mixins.includes(mixin)) {
+                        context.mixins.push(mixin);
+                    }
+                    else if ((true)) {
+                        runtime_core_esm_bundler_warn('Mixin has already been applied to target app' +
+                            (mixin.name ? `: ${mixin.name}` : ''));
+                    }
+                }
+                else if ((true)) {
+                    runtime_core_esm_bundler_warn('Mixins are only available in builds supporting Options API');
+                }
+                return app;
+            },
+            component(name, component) {
+                if ((true)) {
+                    validateComponentName(name, context.config);
+                }
+                if (!component) {
+                    return context.components[name];
+                }
+                if (( true) && context.components[name]) {
+                    runtime_core_esm_bundler_warn(`Component "${name}" has already been registered in target app.`);
+                }
+                context.components[name] = component;
+                return app;
+            },
+            directive(name, directive) {
+                if ((true)) {
+                    validateDirectiveName(name);
+                }
+                if (!directive) {
+                    return context.directives[name];
+                }
+                if (( true) && context.directives[name]) {
+                    runtime_core_esm_bundler_warn(`Directive "${name}" has already been registered in target app.`);
+                }
+                context.directives[name] = directive;
+                return app;
+            },
+            mount(rootContainer, isHydrate, isSVG) {
+                if (!isMounted) {
+                    const vnode = createVNode(rootComponent, rootProps);
+                    // store app context on the root VNode.
+                    // this will be set on the root instance on initial mount.
+                    vnode.appContext = context;
+                    // HMR root reload
+                    if ((true)) {
+                        context.reload = () => {
+                            render(cloneVNode(vnode), rootContainer, isSVG);
+                        };
+                    }
+                    if (isHydrate && hydrate) {
+                        hydrate(vnode, rootContainer);
+                    }
+                    else {
+                        render(vnode, rootContainer, isSVG);
+                    }
+                    isMounted = true;
+                    app._container = rootContainer;
+                    rootContainer.__vue_app__ = app;
+                    if (true) {
+                        app._instance = vnode.component;
+                        devtoolsInitApp(app, version);
+                    }
+                    return getExposeProxy(vnode.component) || vnode.component.proxy;
+                }
+                else if ((true)) {
+                    runtime_core_esm_bundler_warn(`App has already been mounted.\n` +
+                        `If you want to remount the same app, move your app creation logic ` +
+                        `into a factory function and create fresh app instances for each ` +
+                        `mount - e.g. \`const createMyApp = () => createApp(App)\``);
+                }
+            },
+            unmount() {
+                if (isMounted) {
+                    render(null, app._container);
+                    if (true) {
+                        app._instance = null;
+                        devtoolsUnmountApp(app);
+                    }
+                    delete app._container.__vue_app__;
+                }
+                else if ((true)) {
+                    runtime_core_esm_bundler_warn(`Cannot unmount an app that is not mounted.`);
+                }
+            },
+            provide(key, value) {
+                if (( true) && key in context.provides) {
+                    runtime_core_esm_bundler_warn(`App already provides property with key "${String(key)}". ` +
+                        `It will be overwritten with the new value.`);
+                }
+                // TypeScript doesn't allow symbols as index type
+                // https://github.com/Microsoft/TypeScript/issues/24587
+                context.provides[key] = value;
+                return app;
+            }
+        });
+        return app;
+    };
+}
+
+/**
+ * Function for handling a template ref
+ */
+function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
+    if (isArray(rawRef)) {
+        rawRef.forEach((r, i) => setRef(r, oldRawRef && (isArray(oldRawRef) ? oldRawRef[i] : oldRawRef), parentSuspense, vnode, isUnmount));
+        return;
+    }
+    if (isAsyncWrapper(vnode) && !isUnmount) {
+        // when mounting async components, nothing needs to be done,
+        // because the template ref is forwarded to inner component
+        return;
+    }
+    const refValue = vnode.shapeFlag & 4 /* STATEFUL_COMPONENT */
+        ? getExposeProxy(vnode.component) || vnode.component.proxy
+        : vnode.el;
+    const value = isUnmount ? null : refValue;
+    const { i: owner, r: ref } = rawRef;
+    if (( true) && !owner) {
+        runtime_core_esm_bundler_warn(`Missing ref owner context. ref cannot be used on hoisted vnodes. ` +
+            `A vnode with ref must be created inside the render function.`);
+        return;
+    }
+    const oldRef = oldRawRef && oldRawRef.r;
+    const refs = owner.refs === EMPTY_OBJ ? (owner.refs = {}) : owner.refs;
+    const setupState = owner.setupState;
+    // dynamic ref changed. unset old ref
+    if (oldRef != null && oldRef !== ref) {
+        if (isString(oldRef)) {
+            refs[oldRef] = null;
+            if (hasOwn(setupState, oldRef)) {
+                setupState[oldRef] = null;
+            }
+        }
+        else if (isRef(oldRef)) {
+            oldRef.value = null;
+        }
+    }
+    if (isFunction(ref)) {
+        callWithErrorHandling(ref, owner, 12 /* FUNCTION_REF */, [value, refs]);
+    }
+    else {
+        const _isString = isString(ref);
+        const _isRef = isRef(ref);
+        if (_isString || _isRef) {
+            const doSet = () => {
+                if (rawRef.f) {
+                    const existing = _isString ? refs[ref] : ref.value;
+                    if (isUnmount) {
+                        isArray(existing) && remove(existing, refValue);
+                    }
+                    else {
+                        if (!isArray(existing)) {
+                            if (_isString) {
+                                refs[ref] = [refValue];
+                                if (hasOwn(setupState, ref)) {
+                                    setupState[ref] = refs[ref];
+                                }
+                            }
+                            else {
+                                ref.value = [refValue];
+                                if (rawRef.k)
+                                    refs[rawRef.k] = ref.value;
+                            }
+                        }
+                        else if (!existing.includes(refValue)) {
+                            existing.push(refValue);
+                        }
+                    }
+                }
+                else if (_isString) {
+                    refs[ref] = value;
+                    if (hasOwn(setupState, ref)) {
+                        setupState[ref] = value;
+                    }
+                }
+                else if (isRef(ref)) {
+                    ref.value = value;
+                    if (rawRef.k)
+                        refs[rawRef.k] = value;
+                }
+                else if ((true)) {
+                    runtime_core_esm_bundler_warn('Invalid template ref type:', ref, `(${typeof ref})`);
+                }
+            };
+            if (value) {
+                doSet.id = -1;
+                queuePostRenderEffect(doSet, parentSuspense);
+            }
+            else {
+                doSet();
+            }
+        }
+        else if ((true)) {
+            runtime_core_esm_bundler_warn('Invalid template ref type:', ref, `(${typeof ref})`);
+        }
+    }
+}
+
+let hasMismatch = false;
+const isSVGContainer = (container) => /svg/.test(container.namespaceURI) && container.tagName !== 'foreignObject';
+const isComment = (node) => node.nodeType === 8 /* COMMENT */;
+// Note: hydration is DOM-specific
+// But we have to place it in core due to tight coupling with core - splitting
+// it out creates a ton of unnecessary complexity.
+// Hydration also depends on some renderer internal logic which needs to be
+// passed in via arguments.
+function createHydrationFunctions(rendererInternals) {
+    const { mt: mountComponent, p: patch, o: { patchProp, nextSibling, parentNode, remove, insert, createComment } } = rendererInternals;
+    const hydrate = (vnode, container) => {
+        if (!container.hasChildNodes()) {
+            ( true) &&
+                runtime_core_esm_bundler_warn(`Attempting to hydrate existing markup but container is empty. ` +
+                    `Performing full mount instead.`);
+            patch(null, vnode, container);
+            flushPostFlushCbs();
+            return;
+        }
+        hasMismatch = false;
+        hydrateNode(container.firstChild, vnode, null, null, null);
+        flushPostFlushCbs();
+        if (hasMismatch && !false) {
+            // this error should show up in production
+            console.error(`Hydration completed but contains mismatches.`);
+        }
+    };
+    const hydrateNode = (node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized = false) => {
+        const isFragmentStart = isComment(node) && node.data === '[';
+        const onMismatch = () => handleMismatch(node, vnode, parentComponent, parentSuspense, slotScopeIds, isFragmentStart);
+        const { type, ref, shapeFlag } = vnode;
+        const domType = node.nodeType;
+        vnode.el = node;
+        let nextNode = null;
+        switch (type) {
+            case Text:
+                if (domType !== 3 /* TEXT */) {
+                    nextNode = onMismatch();
+                }
+                else {
+                    if (node.data !== vnode.children) {
+                        hasMismatch = true;
+                        ( true) &&
+                            runtime_core_esm_bundler_warn(`Hydration text mismatch:` +
+                                `\n- Client: ${JSON.stringify(node.data)}` +
+                                `\n- Server: ${JSON.stringify(vnode.children)}`);
+                        node.data = vnode.children;
+                    }
+                    nextNode = nextSibling(node);
+                }
+                break;
+            case Comment:
+                if (domType !== 8 /* COMMENT */ || isFragmentStart) {
+                    nextNode = onMismatch();
+                }
+                else {
+                    nextNode = nextSibling(node);
+                }
+                break;
+            case Static:
+                if (domType !== 1 /* ELEMENT */) {
+                    nextNode = onMismatch();
+                }
+                else {
+                    // determine anchor, adopt content
+                    nextNode = node;
+                    // if the static vnode has its content stripped during build,
+                    // adopt it from the server-rendered HTML.
+                    const needToAdoptContent = !vnode.children.length;
+                    for (let i = 0; i < vnode.staticCount; i++) {
+                        if (needToAdoptContent)
+                            vnode.children += nextNode.outerHTML;
+                        if (i === vnode.staticCount - 1) {
+                            vnode.anchor = nextNode;
+                        }
+                        nextNode = nextSibling(nextNode);
+                    }
+                    return nextNode;
+                }
+                break;
+            case Fragment:
+                if (!isFragmentStart) {
+                    nextNode = onMismatch();
+                }
+                else {
+                    nextNode = hydrateFragment(node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized);
+                }
+                break;
+            default:
+                if (shapeFlag & 1 /* ELEMENT */) {
+                    if (domType !== 1 /* ELEMENT */ ||
+                        vnode.type.toLowerCase() !==
+                            node.tagName.toLowerCase()) {
+                        nextNode = onMismatch();
+                    }
+                    else {
+                        nextNode = hydrateElement(node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized);
+                    }
+                }
+                else if (shapeFlag & 6 /* COMPONENT */) {
+                    // when setting up the render effect, if the initial vnode already
+                    // has .el set, the component will perform hydration instead of mount
+                    // on its sub-tree.
+                    vnode.slotScopeIds = slotScopeIds;
+                    const container = parentNode(node);
+                    mountComponent(vnode, container, null, parentComponent, parentSuspense, isSVGContainer(container), optimized);
+                    // component may be async, so in the case of fragments we cannot rely
+                    // on component's rendered output to determine the end of the fragment
+                    // instead, we do a lookahead to find the end anchor node.
+                    nextNode = isFragmentStart
+                        ? locateClosingAsyncAnchor(node)
+                        : nextSibling(node);
+                    // #3787
+                    // if component is async, it may get moved / unmounted before its
+                    // inner component is loaded, so we need to give it a placeholder
+                    // vnode that matches its adopted DOM.
+                    if (isAsyncWrapper(vnode)) {
+                        let subTree;
+                        if (isFragmentStart) {
+                            subTree = createVNode(Fragment);
+                            subTree.anchor = nextNode
+                                ? nextNode.previousSibling
+                                : container.lastChild;
+                        }
+                        else {
+                            subTree =
+                                node.nodeType === 3 ? createTextVNode('') : createVNode('div');
+                        }
+                        subTree.el = node;
+                        vnode.component.subTree = subTree;
+                    }
+                }
+                else if (shapeFlag & 64 /* TELEPORT */) {
+                    if (domType !== 8 /* COMMENT */) {
+                        nextNode = onMismatch();
+                    }
+                    else {
+                        nextNode = vnode.type.hydrate(node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized, rendererInternals, hydrateChildren);
+                    }
+                }
+                else if (shapeFlag & 128 /* SUSPENSE */) {
+                    nextNode = vnode.type.hydrate(node, vnode, parentComponent, parentSuspense, isSVGContainer(parentNode(node)), slotScopeIds, optimized, rendererInternals, hydrateNode);
+                }
+                else if ((true)) {
+                    runtime_core_esm_bundler_warn('Invalid HostVNode type:', type, `(${typeof type})`);
+                }
+        }
+        if (ref != null) {
+            setRef(ref, null, parentSuspense, vnode);
+        }
+        return nextNode;
+    };
+    const hydrateElement = (el, vnode, parentComponent, parentSuspense, slotScopeIds, optimized) => {
+        optimized = optimized || !!vnode.dynamicChildren;
+        const { type, props, patchFlag, shapeFlag, dirs } = vnode;
+        // #4006 for form elements with non-string v-model value bindings
+        // e.g. <option :value="obj">, <input type="checkbox" :true-value="1">
+        const forcePatchValue = (type === 'input' && dirs) || type === 'option';
+        // skip props & children if this is hoisted static nodes
+        // #5405 in dev, always hydrate children for HMR
+        if (true /* HOISTED */) {
+            if (dirs) {
+                invokeDirectiveHook(vnode, null, parentComponent, 'created');
+            }
+            // props
+            if (props) {
+                if (forcePatchValue ||
+                    !optimized ||
+                    patchFlag & (16 /* FULL_PROPS */ | 32 /* HYDRATE_EVENTS */)) {
+                    for (const key in props) {
+                        if ((forcePatchValue && key.endsWith('value')) ||
+                            (isOn(key) && !isReservedProp(key))) {
+                            patchProp(el, key, null, props[key], false, undefined, parentComponent);
+                        }
+                    }
+                }
+                else if (props.onClick) {
+                    // Fast path for click listeners (which is most often) to avoid
+                    // iterating through props.
+                    patchProp(el, 'onClick', null, props.onClick, false, undefined, parentComponent);
+                }
+            }
+            // vnode / directive hooks
+            let vnodeHooks;
+            if ((vnodeHooks = props && props.onVnodeBeforeMount)) {
+                invokeVNodeHook(vnodeHooks, parentComponent, vnode);
+            }
+            if (dirs) {
+                invokeDirectiveHook(vnode, null, parentComponent, 'beforeMount');
+            }
+            if ((vnodeHooks = props && props.onVnodeMounted) || dirs) {
+                queueEffectWithSuspense(() => {
+                    vnodeHooks && invokeVNodeHook(vnodeHooks, parentComponent, vnode);
+                    dirs && invokeDirectiveHook(vnode, null, parentComponent, 'mounted');
+                }, parentSuspense);
+            }
+            // children
+            if (shapeFlag & 16 /* ARRAY_CHILDREN */ &&
+                // skip if element has innerHTML / textContent
+                !(props && (props.innerHTML || props.textContent))) {
+                let next = hydrateChildren(el.firstChild, vnode, el, parentComponent, parentSuspense, slotScopeIds, optimized);
+                let hasWarned = false;
+                while (next) {
+                    hasMismatch = true;
+                    if (( true) && !hasWarned) {
+                        runtime_core_esm_bundler_warn(`Hydration children mismatch in <${vnode.type}>: ` +
+                            `server rendered element contains more child nodes than client vdom.`);
+                        hasWarned = true;
+                    }
+                    // The SSRed DOM contains more nodes than it should. Remove them.
+                    const cur = next;
+                    next = next.nextSibling;
+                    remove(cur);
+                }
+            }
+            else if (shapeFlag & 8 /* TEXT_CHILDREN */) {
+                if (el.textContent !== vnode.children) {
+                    hasMismatch = true;
+                    ( true) &&
+                        runtime_core_esm_bundler_warn(`Hydration text content mismatch in <${vnode.type}>:\n` +
+                            `- Client: ${el.textContent}\n` +
+                            `- Server: ${vnode.children}`);
+                    el.textContent = vnode.children;
+                }
+            }
+        }
+        return el.nextSibling;
+    };
+    const hydrateChildren = (node, parentVNode, container, parentComponent, parentSuspense, slotScopeIds, optimized) => {
+        optimized = optimized || !!parentVNode.dynamicChildren;
+        const children = parentVNode.children;
+        const l = children.length;
+        let hasWarned = false;
+        for (let i = 0; i < l; i++) {
+            const vnode = optimized
+                ? children[i]
+                : (children[i] = normalizeVNode(children[i]));
+            if (node) {
+                node = hydrateNode(node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized);
+            }
+            else if (vnode.type === Text && !vnode.children) {
+                continue;
+            }
+            else {
+                hasMismatch = true;
+                if (( true) && !hasWarned) {
+                    runtime_core_esm_bundler_warn(`Hydration children mismatch in <${container.tagName.toLowerCase()}>: ` +
+                        `server rendered element contains fewer child nodes than client vdom.`);
+                    hasWarned = true;
+                }
+                // the SSRed DOM didn't contain enough nodes. Mount the missing ones.
+                patch(null, vnode, container, null, parentComponent, parentSuspense, isSVGContainer(container), slotScopeIds);
+            }
+        }
+        return node;
+    };
+    const hydrateFragment = (node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized) => {
+        const { slotScopeIds: fragmentSlotScopeIds } = vnode;
+        if (fragmentSlotScopeIds) {
+            slotScopeIds = slotScopeIds
+                ? slotScopeIds.concat(fragmentSlotScopeIds)
+                : fragmentSlotScopeIds;
+        }
+        const container = parentNode(node);
+        const next = hydrateChildren(nextSibling(node), vnode, container, parentComponent, parentSuspense, slotScopeIds, optimized);
+        if (next && isComment(next) && next.data === ']') {
+            return nextSibling((vnode.anchor = next));
+        }
+        else {
+            // fragment didn't hydrate successfully, since we didn't get a end anchor
+            // back. This should have led to node/children mismatch warnings.
+            hasMismatch = true;
+            // since the anchor is missing, we need to create one and insert it
+            insert((vnode.anchor = createComment(`]`)), container, next);
+            return next;
+        }
+    };
+    const handleMismatch = (node, vnode, parentComponent, parentSuspense, slotScopeIds, isFragment) => {
+        hasMismatch = true;
+        ( true) &&
+            runtime_core_esm_bundler_warn(`Hydration node mismatch:\n- Client vnode:`, vnode.type, `\n- Server rendered DOM:`, node, node.nodeType === 3 /* TEXT */
+                ? `(text)`
+                : isComment(node) && node.data === '['
+                    ? `(start of fragment)`
+                    : ``);
+        vnode.el = null;
+        if (isFragment) {
+            // remove excessive fragment nodes
+            const end = locateClosingAsyncAnchor(node);
+            while (true) {
+                const next = nextSibling(node);
+                if (next && next !== end) {
+                    remove(next);
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        const next = nextSibling(node);
+        const container = parentNode(node);
+        remove(node);
+        patch(null, vnode, container, next, parentComponent, parentSuspense, isSVGContainer(container), slotScopeIds);
+        return next;
+    };
+    const locateClosingAsyncAnchor = (node) => {
+        let match = 0;
+        while (node) {
+            node = nextSibling(node);
+            if (node && isComment(node)) {
+                if (node.data === '[')
+                    match++;
+                if (node.data === ']') {
+                    if (match === 0) {
+                        return nextSibling(node);
+                    }
+                    else {
+                        match--;
+                    }
+                }
+            }
+        }
+        return node;
+    };
+    return [hydrate, hydrateNode];
+}
+
+/* eslint-disable no-restricted-globals */
+let supported;
+let perf;
+function startMeasure(instance, type) {
+    if (instance.appContext.config.performance && isSupported()) {
+        perf.mark(`vue-${type}-${instance.uid}`);
+    }
+    if (true) {
+        devtoolsPerfStart(instance, type, isSupported() ? perf.now() : Date.now());
+    }
+}
+function endMeasure(instance, type) {
+    if (instance.appContext.config.performance && isSupported()) {
+        const startTag = `vue-${type}-${instance.uid}`;
+        const endTag = startTag + `:end`;
+        perf.mark(endTag);
+        perf.measure(`<${formatComponentName(instance, instance.type)}> ${type}`, startTag, endTag);
+        perf.clearMarks(startTag);
+        perf.clearMarks(endTag);
+    }
+    if (true) {
+        devtoolsPerfEnd(instance, type, isSupported() ? perf.now() : Date.now());
+    }
+}
+function isSupported() {
+    if (supported !== undefined) {
+        return supported;
+    }
+    if (typeof window !== 'undefined' && window.performance) {
+        supported = true;
+        perf = window.performance;
+    }
+    else {
+        supported = false;
+    }
+    return supported;
+}
+
+/**
+ * This is only called in esm-bundler builds.
+ * It is called when a renderer is created, in `baseCreateRenderer` so that
+ * importing runtime-core is side-effects free.
+ *
+ * istanbul-ignore-next
+ */
+function initFeatureFlags() {
+    const needWarn = [];
+    if (typeof __VUE_OPTIONS_API__ !== 'boolean') {
+        ( true) && needWarn.push(`__VUE_OPTIONS_API__`);
+        getGlobalThis().__VUE_OPTIONS_API__ = true;
+    }
+    if (typeof __VUE_PROD_DEVTOOLS__ !== 'boolean') {
+        ( true) && needWarn.push(`__VUE_PROD_DEVTOOLS__`);
+        getGlobalThis().__VUE_PROD_DEVTOOLS__ = false;
+    }
+    if (( true) && needWarn.length) {
+        const multi = needWarn.length > 1;
+        console.warn(`Feature flag${multi ? `s` : ``} ${needWarn.join(', ')} ${multi ? `are` : `is`} not explicitly defined. You are running the esm-bundler build of Vue, ` +
+            `which expects these compile-time feature flags to be globally injected ` +
+            `via the bundler config in order to get better tree-shaking in the ` +
+            `production bundle.\n\n` +
+            `For more details, see https://link.vuejs.org/feature-flags.`);
+    }
+}
+
+const queuePostRenderEffect = queueEffectWithSuspense
+    ;
+/**
+ * The createRenderer function accepts two generic arguments:
+ * HostNode and HostElement, corresponding to Node and Element types in the
+ * host environment. For example, for runtime-dom, HostNode would be the DOM
+ * `Node` interface and HostElement would be the DOM `Element` interface.
+ *
+ * Custom renderers can pass in the platform specific types like this:
+ *
+ * ``` js
+ * const { render, createApp } = createRenderer<Node, Element>({
+ *   patchProp,
+ *   ...nodeOps
+ * })
+ * ```
+ */
+function createRenderer(options) {
+    return baseCreateRenderer(options);
+}
+// Separate API for creating hydration-enabled renderer.
+// Hydration logic is only used when calling this function, making it
+// tree-shakable.
+function createHydrationRenderer(options) {
+    return baseCreateRenderer(options, createHydrationFunctions);
+}
+// implementation
+function baseCreateRenderer(options, createHydrationFns) {
+    // compile-time feature flags check
+    {
+        initFeatureFlags();
+    }
+    const target = getGlobalThis();
+    target.__VUE__ = true;
+    if (true) {
+        setDevtoolsHook(target.__VUE_DEVTOOLS_GLOBAL_HOOK__, target);
+    }
+    const { insert: hostInsert, remove: hostRemove, patchProp: hostPatchProp, createElement: hostCreateElement, createText: hostCreateText, createComment: hostCreateComment, setText: hostSetText, setElementText: hostSetElementText, parentNode: hostParentNode, nextSibling: hostNextSibling, setScopeId: hostSetScopeId = NOOP, cloneNode: hostCloneNode, insertStaticContent: hostInsertStaticContent } = options;
+    // Note: functions inside this closure should use `const xxx = () => {}`
+    // style in order to prevent being inlined by minifiers.
+    const patch = (n1, n2, container, anchor = null, parentComponent = null, parentSuspense = null, isSVG = false, slotScopeIds = null, optimized = ( true) && isHmrUpdating ? false : !!n2.dynamicChildren) => {
+        if (n1 === n2) {
+            return;
+        }
+        // patching & not same type, unmount old tree
+        if (n1 && !isSameVNodeType(n1, n2)) {
+            anchor = getNextHostNode(n1);
+            unmount(n1, parentComponent, parentSuspense, true);
+            n1 = null;
+        }
+        if (n2.patchFlag === -2 /* BAIL */) {
+            optimized = false;
+            n2.dynamicChildren = null;
+        }
+        const { type, ref, shapeFlag } = n2;
+        switch (type) {
+            case Text:
+                processText(n1, n2, container, anchor);
+                break;
+            case Comment:
+                processCommentNode(n1, n2, container, anchor);
+                break;
+            case Static:
+                if (n1 == null) {
+                    mountStaticNode(n2, container, anchor, isSVG);
+                }
+                else if ((true)) {
+                    patchStaticNode(n1, n2, container, isSVG);
+                }
+                break;
+            case Fragment:
+                processFragment(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                break;
+            default:
+                if (shapeFlag & 1 /* ELEMENT */) {
+                    processElement(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                }
+                else if (shapeFlag & 6 /* COMPONENT */) {
+                    processComponent(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                }
+                else if (shapeFlag & 64 /* TELEPORT */) {
+                    type.process(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, internals);
+                }
+                else if (shapeFlag & 128 /* SUSPENSE */) {
+                    type.process(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, internals);
+                }
+                else if ((true)) {
+                    runtime_core_esm_bundler_warn('Invalid VNode type:', type, `(${typeof type})`);
+                }
+        }
+        // set ref
+        if (ref != null && parentComponent) {
+            setRef(ref, n1 && n1.ref, parentSuspense, n2 || n1, !n2);
+        }
+    };
+    const processText = (n1, n2, container, anchor) => {
+        if (n1 == null) {
+            hostInsert((n2.el = hostCreateText(n2.children)), container, anchor);
+        }
+        else {
+            const el = (n2.el = n1.el);
+            if (n2.children !== n1.children) {
+                hostSetText(el, n2.children);
+            }
+        }
+    };
+    const processCommentNode = (n1, n2, container, anchor) => {
+        if (n1 == null) {
+            hostInsert((n2.el = hostCreateComment(n2.children || '')), container, anchor);
+        }
+        else {
+            // there's no support for dynamic comments
+            n2.el = n1.el;
+        }
+    };
+    const mountStaticNode = (n2, container, anchor, isSVG) => {
+        [n2.el, n2.anchor] = hostInsertStaticContent(n2.children, container, anchor, isSVG, n2.el, n2.anchor);
+    };
+    /**
+     * Dev / HMR only
+     */
+    const patchStaticNode = (n1, n2, container, isSVG) => {
+        // static nodes are only patched during dev for HMR
+        if (n2.children !== n1.children) {
+            const anchor = hostNextSibling(n1.anchor);
+            // remove existing
+            removeStaticNode(n1);
+            [n2.el, n2.anchor] = hostInsertStaticContent(n2.children, container, anchor, isSVG);
+        }
+        else {
+            n2.el = n1.el;
+            n2.anchor = n1.anchor;
+        }
+    };
+    const moveStaticNode = ({ el, anchor }, container, nextSibling) => {
+        let next;
+        while (el && el !== anchor) {
+            next = hostNextSibling(el);
+            hostInsert(el, container, nextSibling);
+            el = next;
+        }
+        hostInsert(anchor, container, nextSibling);
+    };
+    const removeStaticNode = ({ el, anchor }) => {
+        let next;
+        while (el && el !== anchor) {
+            next = hostNextSibling(el);
+            hostRemove(el);
+            el = next;
+        }
+        hostRemove(anchor);
+    };
+    const processElement = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
+        isSVG = isSVG || n2.type === 'svg';
+        if (n1 == null) {
+            mountElement(n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        }
+        else {
+            patchElement(n1, n2, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        }
+    };
+    const mountElement = (vnode, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
+        let el;
+        let vnodeHook;
+        const { type, props, shapeFlag, transition, patchFlag, dirs } = vnode;
+        if (false /* HOISTED */) {}
+        else {
+            el = vnode.el = hostCreateElement(vnode.type, isSVG, props && props.is, props);
+            // mount children first, since some props may rely on child content
+            // being already rendered, e.g. `<select value>`
+            if (shapeFlag & 8 /* TEXT_CHILDREN */) {
+                hostSetElementText(el, vnode.children);
+            }
+            else if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+                mountChildren(vnode.children, el, null, parentComponent, parentSuspense, isSVG && type !== 'foreignObject', slotScopeIds, optimized);
+            }
+            if (dirs) {
+                invokeDirectiveHook(vnode, null, parentComponent, 'created');
+            }
+            // props
+            if (props) {
+                for (const key in props) {
+                    if (key !== 'value' && !isReservedProp(key)) {
+                        hostPatchProp(el, key, null, props[key], isSVG, vnode.children, parentComponent, parentSuspense, unmountChildren);
+                    }
+                }
+                /**
+                 * Special case for setting value on DOM elements:
+                 * - it can be order-sensitive (e.g. should be set *after* min/max, #2325, #4024)
+                 * - it needs to be forced (#1471)
+                 * #2353 proposes adding another renderer option to configure this, but
+                 * the properties affects are so finite it is worth special casing it
+                 * here to reduce the complexity. (Special casing it also should not
+                 * affect non-DOM renderers)
+                 */
+                if ('value' in props) {
+                    hostPatchProp(el, 'value', null, props.value);
+                }
+                if ((vnodeHook = props.onVnodeBeforeMount)) {
+                    invokeVNodeHook(vnodeHook, parentComponent, vnode);
+                }
+            }
+            // scopeId
+            setScopeId(el, vnode, vnode.scopeId, slotScopeIds, parentComponent);
+        }
+        if (true) {
+            Object.defineProperty(el, '__vnode', {
+                value: vnode,
+                enumerable: false
+            });
+            Object.defineProperty(el, '__vueParentComponent', {
+                value: parentComponent,
+                enumerable: false
+            });
+        }
+        if (dirs) {
+            invokeDirectiveHook(vnode, null, parentComponent, 'beforeMount');
+        }
+        // #1583 For inside suspense + suspense not resolved case, enter hook should call when suspense resolved
+        // #1689 For inside suspense + suspense resolved case, just call it
+        const needCallTransitionHooks = (!parentSuspense || (parentSuspense && !parentSuspense.pendingBranch)) &&
+            transition &&
+            !transition.persisted;
+        if (needCallTransitionHooks) {
+            transition.beforeEnter(el);
+        }
+        hostInsert(el, container, anchor);
+        if ((vnodeHook = props && props.onVnodeMounted) ||
+            needCallTransitionHooks ||
+            dirs) {
+            queuePostRenderEffect(() => {
+                vnodeHook && invokeVNodeHook(vnodeHook, parentComponent, vnode);
+                needCallTransitionHooks && transition.enter(el);
+                dirs && invokeDirectiveHook(vnode, null, parentComponent, 'mounted');
+            }, parentSuspense);
+        }
+    };
+    const setScopeId = (el, vnode, scopeId, slotScopeIds, parentComponent) => {
+        if (scopeId) {
+            hostSetScopeId(el, scopeId);
+        }
+        if (slotScopeIds) {
+            for (let i = 0; i < slotScopeIds.length; i++) {
+                hostSetScopeId(el, slotScopeIds[i]);
+            }
+        }
+        if (parentComponent) {
+            let subTree = parentComponent.subTree;
+            if (( true) &&
+                subTree.patchFlag > 0 &&
+                subTree.patchFlag & 2048 /* DEV_ROOT_FRAGMENT */) {
+                subTree =
+                    filterSingleRoot(subTree.children) || subTree;
+            }
+            if (vnode === subTree) {
+                const parentVNode = parentComponent.vnode;
+                setScopeId(el, parentVNode, parentVNode.scopeId, parentVNode.slotScopeIds, parentComponent.parent);
+            }
+        }
+    };
+    const mountChildren = (children, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, start = 0) => {
+        for (let i = start; i < children.length; i++) {
+            const child = (children[i] = optimized
+                ? cloneIfMounted(children[i])
+                : normalizeVNode(children[i]));
+            patch(null, child, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        }
+    };
+    const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
+        const el = (n2.el = n1.el);
+        let { patchFlag, dynamicChildren, dirs } = n2;
+        // #1426 take the old vnode's patch flag into account since user may clone a
+        // compiler-generated vnode, which de-opts to FULL_PROPS
+        patchFlag |= n1.patchFlag & 16 /* FULL_PROPS */;
+        const oldProps = n1.props || EMPTY_OBJ;
+        const newProps = n2.props || EMPTY_OBJ;
+        let vnodeHook;
+        // disable recurse in beforeUpdate hooks
+        parentComponent && toggleRecurse(parentComponent, false);
+        if ((vnodeHook = newProps.onVnodeBeforeUpdate)) {
+            invokeVNodeHook(vnodeHook, parentComponent, n2, n1);
+        }
+        if (dirs) {
+            invokeDirectiveHook(n2, n1, parentComponent, 'beforeUpdate');
+        }
+        parentComponent && toggleRecurse(parentComponent, true);
+        if (( true) && isHmrUpdating) {
+            // HMR updated, force full diff
+            patchFlag = 0;
+            optimized = false;
+            dynamicChildren = null;
+        }
+        const areChildrenSVG = isSVG && n2.type !== 'foreignObject';
+        if (dynamicChildren) {
+            patchBlockChildren(n1.dynamicChildren, dynamicChildren, el, parentComponent, parentSuspense, areChildrenSVG, slotScopeIds);
+            if (( true) && parentComponent && parentComponent.type.__hmrId) {
+                traverseStaticChildren(n1, n2);
+            }
+        }
+        else if (!optimized) {
+            // full diff
+            patchChildren(n1, n2, el, null, parentComponent, parentSuspense, areChildrenSVG, slotScopeIds, false);
+        }
+        if (patchFlag > 0) {
+            // the presence of a patchFlag means this element's render code was
+            // generated by the compiler and can take the fast path.
+            // in this path old node and new node are guaranteed to have the same shape
+            // (i.e. at the exact same position in the source template)
+            if (patchFlag & 16 /* FULL_PROPS */) {
+                // element props contain dynamic keys, full diff needed
+                patchProps(el, n2, oldProps, newProps, parentComponent, parentSuspense, isSVG);
+            }
+            else {
+                // class
+                // this flag is matched when the element has dynamic class bindings.
+                if (patchFlag & 2 /* CLASS */) {
+                    if (oldProps.class !== newProps.class) {
+                        hostPatchProp(el, 'class', null, newProps.class, isSVG);
+                    }
+                }
+                // style
+                // this flag is matched when the element has dynamic style bindings
+                if (patchFlag & 4 /* STYLE */) {
+                    hostPatchProp(el, 'style', oldProps.style, newProps.style, isSVG);
+                }
+                // props
+                // This flag is matched when the element has dynamic prop/attr bindings
+                // other than class and style. The keys of dynamic prop/attrs are saved for
+                // faster iteration.
+                // Note dynamic keys like :[foo]="bar" will cause this optimization to
+                // bail out and go through a full diff because we need to unset the old key
+                if (patchFlag & 8 /* PROPS */) {
+                    // if the flag is present then dynamicProps must be non-null
+                    const propsToUpdate = n2.dynamicProps;
+                    for (let i = 0; i < propsToUpdate.length; i++) {
+                        const key = propsToUpdate[i];
+                        const prev = oldProps[key];
+                        const next = newProps[key];
+                        // #1471 force patch value
+                        if (next !== prev || key === 'value') {
+                            hostPatchProp(el, key, prev, next, isSVG, n1.children, parentComponent, parentSuspense, unmountChildren);
+                        }
+                    }
+                }
+            }
+            // text
+            // This flag is matched when the element has only dynamic text children.
+            if (patchFlag & 1 /* TEXT */) {
+                if (n1.children !== n2.children) {
+                    hostSetElementText(el, n2.children);
+                }
+            }
+        }
+        else if (!optimized && dynamicChildren == null) {
+            // unoptimized, full diff
+            patchProps(el, n2, oldProps, newProps, parentComponent, parentSuspense, isSVG);
+        }
+        if ((vnodeHook = newProps.onVnodeUpdated) || dirs) {
+            queuePostRenderEffect(() => {
+                vnodeHook && invokeVNodeHook(vnodeHook, parentComponent, n2, n1);
+                dirs && invokeDirectiveHook(n2, n1, parentComponent, 'updated');
+            }, parentSuspense);
+        }
+    };
+    // The fast path for blocks.
+    const patchBlockChildren = (oldChildren, newChildren, fallbackContainer, parentComponent, parentSuspense, isSVG, slotScopeIds) => {
+        for (let i = 0; i < newChildren.length; i++) {
+            const oldVNode = oldChildren[i];
+            const newVNode = newChildren[i];
+            // Determine the container (parent element) for the patch.
+            const container = 
+            // oldVNode may be an errored async setup() component inside Suspense
+            // which will not have a mounted element
+            oldVNode.el &&
+                // - In the case of a Fragment, we need to provide the actual parent
+                // of the Fragment itself so it can move its children.
+                (oldVNode.type === Fragment ||
+                    // - In the case of different nodes, there is going to be a replacement
+                    // which also requires the correct parent container
+                    !isSameVNodeType(oldVNode, newVNode) ||
+                    // - In the case of a component, it could contain anything.
+                    oldVNode.shapeFlag & (6 /* COMPONENT */ | 64 /* TELEPORT */))
+                ? hostParentNode(oldVNode.el)
+                : // In other cases, the parent container is not actually used so we
+                    // just pass the block element here to avoid a DOM parentNode call.
+                    fallbackContainer;
+            patch(oldVNode, newVNode, container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, true);
+        }
+    };
+    const patchProps = (el, vnode, oldProps, newProps, parentComponent, parentSuspense, isSVG) => {
+        if (oldProps !== newProps) {
+            for (const key in newProps) {
+                // empty string is not valid prop
+                if (isReservedProp(key))
+                    continue;
+                const next = newProps[key];
+                const prev = oldProps[key];
+                // defer patching value
+                if (next !== prev && key !== 'value') {
+                    hostPatchProp(el, key, prev, next, isSVG, vnode.children, parentComponent, parentSuspense, unmountChildren);
+                }
+            }
+            if (oldProps !== EMPTY_OBJ) {
+                for (const key in oldProps) {
+                    if (!isReservedProp(key) && !(key in newProps)) {
+                        hostPatchProp(el, key, oldProps[key], null, isSVG, vnode.children, parentComponent, parentSuspense, unmountChildren);
+                    }
+                }
+            }
+            if ('value' in newProps) {
+                hostPatchProp(el, 'value', oldProps.value, newProps.value);
+            }
+        }
+    };
+    const processFragment = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
+        const fragmentStartAnchor = (n2.el = n1 ? n1.el : hostCreateText(''));
+        const fragmentEndAnchor = (n2.anchor = n1 ? n1.anchor : hostCreateText(''));
+        let { patchFlag, dynamicChildren, slotScopeIds: fragmentSlotScopeIds } = n2;
+        if (( true) && isHmrUpdating) {
+            // HMR updated, force full diff
+            patchFlag = 0;
+            optimized = false;
+            dynamicChildren = null;
+        }
+        // check if this is a slot fragment with :slotted scope ids
+        if (fragmentSlotScopeIds) {
+            slotScopeIds = slotScopeIds
+                ? slotScopeIds.concat(fragmentSlotScopeIds)
+                : fragmentSlotScopeIds;
+        }
+        if (n1 == null) {
+            hostInsert(fragmentStartAnchor, container, anchor);
+            hostInsert(fragmentEndAnchor, container, anchor);
+            // a fragment can only have array children
+            // since they are either generated by the compiler, or implicitly created
+            // from arrays.
+            mountChildren(n2.children, container, fragmentEndAnchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        }
+        else {
+            if (patchFlag > 0 &&
+                patchFlag & 64 /* STABLE_FRAGMENT */ &&
+                dynamicChildren &&
+                // #2715 the previous fragment could've been a BAILed one as a result
+                // of renderSlot() with no valid children
+                n1.dynamicChildren) {
+                // a stable fragment (template root or <template v-for>) doesn't need to
+                // patch children order, but it may contain dynamicChildren.
+                patchBlockChildren(n1.dynamicChildren, dynamicChildren, container, parentComponent, parentSuspense, isSVG, slotScopeIds);
+                if (( true) && parentComponent && parentComponent.type.__hmrId) {
+                    traverseStaticChildren(n1, n2);
+                }
+                else if (
+                // #2080 if the stable fragment has a key, it's a <template v-for> that may
+                //  get moved around. Make sure all root level vnodes inherit el.
+                // #2134 or if it's a component root, it may also get moved around
+                // as the component is being moved.
+                n2.key != null ||
+                    (parentComponent && n2 === parentComponent.subTree)) {
+                    traverseStaticChildren(n1, n2, true /* shallow */);
+                }
+            }
+            else {
+                // keyed / unkeyed, or manual fragments.
+                // for keyed & unkeyed, since they are compiler generated from v-for,
+                // each child is guaranteed to be a block so the fragment will never
+                // have dynamicChildren.
+                patchChildren(n1, n2, container, fragmentEndAnchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+            }
+        }
+    };
+    const processComponent = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
+        n2.slotScopeIds = slotScopeIds;
+        if (n1 == null) {
+            if (n2.shapeFlag & 512 /* COMPONENT_KEPT_ALIVE */) {
+                parentComponent.ctx.activate(n2, container, anchor, isSVG, optimized);
+            }
+            else {
+                mountComponent(n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized);
+            }
+        }
+        else {
+            updateComponent(n1, n2, optimized);
+        }
+    };
+    const mountComponent = (initialVNode, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
+        const instance = (initialVNode.component = createComponentInstance(initialVNode, parentComponent, parentSuspense));
+        if (( true) && instance.type.__hmrId) {
+            registerHMR(instance);
+        }
+        if ((true)) {
+            pushWarningContext(initialVNode);
+            startMeasure(instance, `mount`);
+        }
+        // inject renderer internals for keepAlive
+        if (isKeepAlive(initialVNode)) {
+            instance.ctx.renderer = internals;
+        }
+        // resolve props and slots for setup context
+        {
+            if ((true)) {
+                startMeasure(instance, `init`);
+            }
+            setupComponent(instance);
+            if ((true)) {
+                endMeasure(instance, `init`);
+            }
+        }
+        // setup() is async. This component relies on async logic to be resolved
+        // before proceeding
+        if (instance.asyncDep) {
+            parentSuspense && parentSuspense.registerDep(instance, setupRenderEffect);
+            // Give it a placeholder if this is not hydration
+            // TODO handle self-defined fallback
+            if (!initialVNode.el) {
+                const placeholder = (instance.subTree = createVNode(Comment));
+                processCommentNode(null, placeholder, container, anchor);
+            }
+            return;
+        }
+        setupRenderEffect(instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized);
+        if ((true)) {
+            popWarningContext();
+            endMeasure(instance, `mount`);
+        }
+    };
+    const updateComponent = (n1, n2, optimized) => {
+        const instance = (n2.component = n1.component);
+        if (shouldUpdateComponent(n1, n2, optimized)) {
+            if (instance.asyncDep &&
+                !instance.asyncResolved) {
+                // async & still pending - just update props and slots
+                // since the component's reactive effect for render isn't set-up yet
+                if ((true)) {
+                    pushWarningContext(n2);
+                }
+                updateComponentPreRender(instance, n2, optimized);
+                if ((true)) {
+                    popWarningContext();
+                }
+                return;
+            }
+            else {
+                // normal update
+                instance.next = n2;
+                // in case the child component is also queued, remove it to avoid
+                // double updating the same child component in the same flush.
+                invalidateJob(instance.update);
+                // instance.update is the reactive effect.
+                instance.update();
+            }
+        }
+        else {
+            // no update needed. just copy over properties
+            n2.component = n1.component;
+            n2.el = n1.el;
+            instance.vnode = n2;
+        }
+    };
+    const setupRenderEffect = (instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized) => {
+        const componentUpdateFn = () => {
+            if (!instance.isMounted) {
+                let vnodeHook;
+                const { el, props } = initialVNode;
+                const { bm, m, parent } = instance;
+                const isAsyncWrapperVNode = isAsyncWrapper(initialVNode);
+                toggleRecurse(instance, false);
+                // beforeMount hook
+                if (bm) {
+                    invokeArrayFns(bm);
+                }
+                // onVnodeBeforeMount
+                if (!isAsyncWrapperVNode &&
+                    (vnodeHook = props && props.onVnodeBeforeMount)) {
+                    invokeVNodeHook(vnodeHook, parent, initialVNode);
+                }
+                toggleRecurse(instance, true);
+                if (el && hydrateNode) {
+                    // vnode has adopted host node - perform hydration instead of mount.
+                    const hydrateSubTree = () => {
+                        if ((true)) {
+                            startMeasure(instance, `render`);
+                        }
+                        instance.subTree = renderComponentRoot(instance);
+                        if ((true)) {
+                            endMeasure(instance, `render`);
+                        }
+                        if ((true)) {
+                            startMeasure(instance, `hydrate`);
+                        }
+                        hydrateNode(el, instance.subTree, instance, parentSuspense, null);
+                        if ((true)) {
+                            endMeasure(instance, `hydrate`);
+                        }
+                    };
+                    if (isAsyncWrapperVNode) {
+                        initialVNode.type.__asyncLoader().then(
+                        // note: we are moving the render call into an async callback,
+                        // which means it won't track dependencies - but it's ok because
+                        // a server-rendered async wrapper is already in resolved state
+                        // and it will never need to change.
+                        () => !instance.isUnmounted && hydrateSubTree());
+                    }
+                    else {
+                        hydrateSubTree();
+                    }
+                }
+                else {
+                    if ((true)) {
+                        startMeasure(instance, `render`);
+                    }
+                    const subTree = (instance.subTree = renderComponentRoot(instance));
+                    if ((true)) {
+                        endMeasure(instance, `render`);
+                    }
+                    if ((true)) {
+                        startMeasure(instance, `patch`);
+                    }
+                    patch(null, subTree, container, anchor, instance, parentSuspense, isSVG);
+                    if ((true)) {
+                        endMeasure(instance, `patch`);
+                    }
+                    initialVNode.el = subTree.el;
+                }
+                // mounted hook
+                if (m) {
+                    queuePostRenderEffect(m, parentSuspense);
+                }
+                // onVnodeMounted
+                if (!isAsyncWrapperVNode &&
+                    (vnodeHook = props && props.onVnodeMounted)) {
+                    const scopedInitialVNode = initialVNode;
+                    queuePostRenderEffect(() => invokeVNodeHook(vnodeHook, parent, scopedInitialVNode), parentSuspense);
+                }
+                // activated hook for keep-alive roots.
+                // #1742 activated hook must be accessed after first render
+                // since the hook may be injected by a child keep-alive
+                if (initialVNode.shapeFlag & 256 /* COMPONENT_SHOULD_KEEP_ALIVE */) {
+                    instance.a && queuePostRenderEffect(instance.a, parentSuspense);
+                }
+                instance.isMounted = true;
+                if (true) {
+                    devtoolsComponentAdded(instance);
+                }
+                // #2458: deference mount-only object parameters to prevent memleaks
+                initialVNode = container = anchor = null;
+            }
+            else {
+                // updateComponent
+                // This is triggered by mutation of component's own state (next: null)
+                // OR parent calling processComponent (next: VNode)
+                let { next, bu, u, parent, vnode } = instance;
+                let originNext = next;
+                let vnodeHook;
+                if ((true)) {
+                    pushWarningContext(next || instance.vnode);
+                }
+                // Disallow component effect recursion during pre-lifecycle hooks.
+                toggleRecurse(instance, false);
+                if (next) {
+                    next.el = vnode.el;
+                    updateComponentPreRender(instance, next, optimized);
+                }
+                else {
+                    next = vnode;
+                }
+                // beforeUpdate hook
+                if (bu) {
+                    invokeArrayFns(bu);
+                }
+                // onVnodeBeforeUpdate
+                if ((vnodeHook = next.props && next.props.onVnodeBeforeUpdate)) {
+                    invokeVNodeHook(vnodeHook, parent, next, vnode);
+                }
+                toggleRecurse(instance, true);
+                // render
+                if ((true)) {
+                    startMeasure(instance, `render`);
+                }
+                const nextTree = renderComponentRoot(instance);
+                if ((true)) {
+                    endMeasure(instance, `render`);
+                }
+                const prevTree = instance.subTree;
+                instance.subTree = nextTree;
+                if ((true)) {
+                    startMeasure(instance, `patch`);
+                }
+                patch(prevTree, nextTree, 
+                // parent may have changed if it's in a teleport
+                hostParentNode(prevTree.el), 
+                // anchor may have changed if it's in a fragment
+                getNextHostNode(prevTree), instance, parentSuspense, isSVG);
+                if ((true)) {
+                    endMeasure(instance, `patch`);
+                }
+                next.el = nextTree.el;
+                if (originNext === null) {
+                    // self-triggered update. In case of HOC, update parent component
+                    // vnode el. HOC is indicated by parent instance's subTree pointing
+                    // to child component's vnode
+                    updateHOCHostEl(instance, nextTree.el);
+                }
+                // updated hook
+                if (u) {
+                    queuePostRenderEffect(u, parentSuspense);
+                }
+                // onVnodeUpdated
+                if ((vnodeHook = next.props && next.props.onVnodeUpdated)) {
+                    queuePostRenderEffect(() => invokeVNodeHook(vnodeHook, parent, next, vnode), parentSuspense);
+                }
+                if (true) {
+                    devtoolsComponentUpdated(instance);
+                }
+                if ((true)) {
+                    popWarningContext();
+                }
+            }
+        };
+        // create reactive effect for rendering
+        const effect = (instance.effect = new ReactiveEffect(componentUpdateFn, () => queueJob(instance.update), instance.scope // track it in component's effect scope
+        ));
+        const update = (instance.update = effect.run.bind(effect));
+        update.id = instance.uid;
+        // allowRecurse
+        // #1801, #2043 component render effects should allow recursive updates
+        toggleRecurse(instance, true);
+        if ((true)) {
+            effect.onTrack = instance.rtc
+                ? e => invokeArrayFns(instance.rtc, e)
+                : void 0;
+            effect.onTrigger = instance.rtg
+                ? e => invokeArrayFns(instance.rtg, e)
+                : void 0;
+            // @ts-ignore (for scheduler)
+            update.ownerInstance = instance;
+        }
+        update();
+    };
+    const updateComponentPreRender = (instance, nextVNode, optimized) => {
+        nextVNode.component = instance;
+        const prevProps = instance.vnode.props;
+        instance.vnode = nextVNode;
+        instance.next = null;
+        updateProps(instance, nextVNode.props, prevProps, optimized);
+        updateSlots(instance, nextVNode.children, optimized);
+        pauseTracking();
+        // props update may have triggered pre-flush watchers.
+        // flush them before the render update.
+        flushPreFlushCbs(undefined, instance.update);
+        resetTracking();
+    };
+    const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized = false) => {
+        const c1 = n1 && n1.children;
+        const prevShapeFlag = n1 ? n1.shapeFlag : 0;
+        const c2 = n2.children;
+        const { patchFlag, shapeFlag } = n2;
+        // fast path
+        if (patchFlag > 0) {
+            if (patchFlag & 128 /* KEYED_FRAGMENT */) {
+                // this could be either fully-keyed or mixed (some keyed some not)
+                // presence of patchFlag means children are guaranteed to be arrays
+                patchKeyedChildren(c1, c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                return;
+            }
+            else if (patchFlag & 256 /* UNKEYED_FRAGMENT */) {
+                // unkeyed
+                patchUnkeyedChildren(c1, c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                return;
+            }
+        }
+        // children has 3 possibilities: text, array or no children.
+        if (shapeFlag & 8 /* TEXT_CHILDREN */) {
+            // text children fast path
+            if (prevShapeFlag & 16 /* ARRAY_CHILDREN */) {
+                unmountChildren(c1, parentComponent, parentSuspense);
+            }
+            if (c2 !== c1) {
+                hostSetElementText(container, c2);
+            }
+        }
+        else {
+            if (prevShapeFlag & 16 /* ARRAY_CHILDREN */) {
+                // prev children was array
+                if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+                    // two arrays, cannot assume anything, do full diff
+                    patchKeyedChildren(c1, c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                }
+                else {
+                    // no new children, just unmount old
+                    unmountChildren(c1, parentComponent, parentSuspense, true);
+                }
+            }
+            else {
+                // prev children was text OR null
+                // new children is array OR null
+                if (prevShapeFlag & 8 /* TEXT_CHILDREN */) {
+                    hostSetElementText(container, '');
+                }
+                // mount new if array
+                if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+                    mountChildren(c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                }
+            }
+        }
+    };
+    const patchUnkeyedChildren = (c1, c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
+        c1 = c1 || EMPTY_ARR;
+        c2 = c2 || EMPTY_ARR;
+        const oldLength = c1.length;
+        const newLength = c2.length;
+        const commonLength = Math.min(oldLength, newLength);
+        let i;
+        for (i = 0; i < commonLength; i++) {
+            const nextChild = (c2[i] = optimized
+                ? cloneIfMounted(c2[i])
+                : normalizeVNode(c2[i]));
+            patch(c1[i], nextChild, container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        }
+        if (oldLength > newLength) {
+            // remove old
+            unmountChildren(c1, parentComponent, parentSuspense, true, false, commonLength);
+        }
+        else {
+            // mount new
+            mountChildren(c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, commonLength);
+        }
+    };
+    // can be all-keyed or mixed
+    const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
+        let i = 0;
+        const l2 = c2.length;
+        let e1 = c1.length - 1; // prev ending index
+        let e2 = l2 - 1; // next ending index
+        // 1. sync from start
+        // (a b) c
+        // (a b) d e
+        while (i <= e1 && i <= e2) {
+            const n1 = c1[i];
+            const n2 = (c2[i] = optimized
+                ? cloneIfMounted(c2[i])
+                : normalizeVNode(c2[i]));
+            if (isSameVNodeType(n1, n2)) {
+                patch(n1, n2, container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+            }
+            else {
+                break;
+            }
+            i++;
+        }
+        // 2. sync from end
+        // a (b c)
+        // d e (b c)
+        while (i <= e1 && i <= e2) {
+            const n1 = c1[e1];
+            const n2 = (c2[e2] = optimized
+                ? cloneIfMounted(c2[e2])
+                : normalizeVNode(c2[e2]));
+            if (isSameVNodeType(n1, n2)) {
+                patch(n1, n2, container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+            }
+            else {
+                break;
+            }
+            e1--;
+            e2--;
+        }
+        // 3. common sequence + mount
+        // (a b)
+        // (a b) c
+        // i = 2, e1 = 1, e2 = 2
+        // (a b)
+        // c (a b)
+        // i = 0, e1 = -1, e2 = 0
+        if (i > e1) {
+            if (i <= e2) {
+                const nextPos = e2 + 1;
+                const anchor = nextPos < l2 ? c2[nextPos].el : parentAnchor;
+                while (i <= e2) {
+                    patch(null, (c2[i] = optimized
+                        ? cloneIfMounted(c2[i])
+                        : normalizeVNode(c2[i])), container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                    i++;
+                }
+            }
+        }
+        // 4. common sequence + unmount
+        // (a b) c
+        // (a b)
+        // i = 2, e1 = 2, e2 = 1
+        // a (b c)
+        // (b c)
+        // i = 0, e1 = 0, e2 = -1
+        else if (i > e2) {
+            while (i <= e1) {
+                unmount(c1[i], parentComponent, parentSuspense, true);
+                i++;
+            }
+        }
+        // 5. unknown sequence
+        // [i ... e1 + 1]: a b [c d e] f g
+        // [i ... e2 + 1]: a b [e d c h] f g
+        // i = 2, e1 = 4, e2 = 5
+        else {
+            const s1 = i; // prev starting index
+            const s2 = i; // next starting index
+            // 5.1 build key:index map for newChildren
+            const keyToNewIndexMap = new Map();
+            for (i = s2; i <= e2; i++) {
+                const nextChild = (c2[i] = optimized
+                    ? cloneIfMounted(c2[i])
+                    : normalizeVNode(c2[i]));
+                if (nextChild.key != null) {
+                    if (( true) && keyToNewIndexMap.has(nextChild.key)) {
+                        runtime_core_esm_bundler_warn(`Duplicate keys found during update:`, JSON.stringify(nextChild.key), `Make sure keys are unique.`);
+                    }
+                    keyToNewIndexMap.set(nextChild.key, i);
+                }
+            }
+            // 5.2 loop through old children left to be patched and try to patch
+            // matching nodes & remove nodes that are no longer present
+            let j;
+            let patched = 0;
+            const toBePatched = e2 - s2 + 1;
+            let moved = false;
+            // used to track whether any node has moved
+            let maxNewIndexSoFar = 0;
+            // works as Map<newIndex, oldIndex>
+            // Note that oldIndex is offset by +1
+            // and oldIndex = 0 is a special value indicating the new node has
+            // no corresponding old node.
+            // used for determining longest stable subsequence
+            const newIndexToOldIndexMap = new Array(toBePatched);
+            for (i = 0; i < toBePatched; i++)
+                newIndexToOldIndexMap[i] = 0;
+            for (i = s1; i <= e1; i++) {
+                const prevChild = c1[i];
+                if (patched >= toBePatched) {
+                    // all new children have been patched so this can only be a removal
+                    unmount(prevChild, parentComponent, parentSuspense, true);
+                    continue;
+                }
+                let newIndex;
+                if (prevChild.key != null) {
+                    newIndex = keyToNewIndexMap.get(prevChild.key);
+                }
+                else {
+                    // key-less node, try to locate a key-less node of the same type
+                    for (j = s2; j <= e2; j++) {
+                        if (newIndexToOldIndexMap[j - s2] === 0 &&
+                            isSameVNodeType(prevChild, c2[j])) {
+                            newIndex = j;
+                            break;
+                        }
+                    }
+                }
+                if (newIndex === undefined) {
+                    unmount(prevChild, parentComponent, parentSuspense, true);
+                }
+                else {
+                    newIndexToOldIndexMap[newIndex - s2] = i + 1;
+                    if (newIndex >= maxNewIndexSoFar) {
+                        maxNewIndexSoFar = newIndex;
+                    }
+                    else {
+                        moved = true;
+                    }
+                    patch(prevChild, c2[newIndex], container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                    patched++;
+                }
+            }
+            // 5.3 move and mount
+            // generate longest stable subsequence only when nodes have moved
+            const increasingNewIndexSequence = moved
+                ? getSequence(newIndexToOldIndexMap)
+                : EMPTY_ARR;
+            j = increasingNewIndexSequence.length - 1;
+            // looping backwards so that we can use last patched node as anchor
+            for (i = toBePatched - 1; i >= 0; i--) {
+                const nextIndex = s2 + i;
+                const nextChild = c2[nextIndex];
+                const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : parentAnchor;
+                if (newIndexToOldIndexMap[i] === 0) {
+                    // mount new
+                    patch(null, nextChild, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                }
+                else if (moved) {
+                    // move if:
+                    // There is no stable subsequence (e.g. a reverse)
+                    // OR current node is not among the stable sequence
+                    if (j < 0 || i !== increasingNewIndexSequence[j]) {
+                        move(nextChild, container, anchor, 2 /* REORDER */);
+                    }
+                    else {
+                        j--;
+                    }
+                }
+            }
+        }
+    };
+    const move = (vnode, container, anchor, moveType, parentSuspense = null) => {
+        const { el, type, transition, children, shapeFlag } = vnode;
+        if (shapeFlag & 6 /* COMPONENT */) {
+            move(vnode.component.subTree, container, anchor, moveType);
+            return;
+        }
+        if (shapeFlag & 128 /* SUSPENSE */) {
+            vnode.suspense.move(container, anchor, moveType);
+            return;
+        }
+        if (shapeFlag & 64 /* TELEPORT */) {
+            type.move(vnode, container, anchor, internals);
+            return;
+        }
+        if (type === Fragment) {
+            hostInsert(el, container, anchor);
+            for (let i = 0; i < children.length; i++) {
+                move(children[i], container, anchor, moveType);
+            }
+            hostInsert(vnode.anchor, container, anchor);
+            return;
+        }
+        if (type === Static) {
+            moveStaticNode(vnode, container, anchor);
+            return;
+        }
+        // single nodes
+        const needTransition = moveType !== 2 /* REORDER */ &&
+            shapeFlag & 1 /* ELEMENT */ &&
+            transition;
+        if (needTransition) {
+            if (moveType === 0 /* ENTER */) {
+                transition.beforeEnter(el);
+                hostInsert(el, container, anchor);
+                queuePostRenderEffect(() => transition.enter(el), parentSuspense);
+            }
+            else {
+                const { leave, delayLeave, afterLeave } = transition;
+                const remove = () => hostInsert(el, container, anchor);
+                const performLeave = () => {
+                    leave(el, () => {
+                        remove();
+                        afterLeave && afterLeave();
+                    });
+                };
+                if (delayLeave) {
+                    delayLeave(el, remove, performLeave);
+                }
+                else {
+                    performLeave();
+                }
+            }
+        }
+        else {
+            hostInsert(el, container, anchor);
+        }
+    };
+    const unmount = (vnode, parentComponent, parentSuspense, doRemove = false, optimized = false) => {
+        const { type, props, ref, children, dynamicChildren, shapeFlag, patchFlag, dirs } = vnode;
+        // unset ref
+        if (ref != null) {
+            setRef(ref, null, parentSuspense, vnode, true);
+        }
+        if (shapeFlag & 256 /* COMPONENT_SHOULD_KEEP_ALIVE */) {
+            parentComponent.ctx.deactivate(vnode);
+            return;
+        }
+        const shouldInvokeDirs = shapeFlag & 1 /* ELEMENT */ && dirs;
+        const shouldInvokeVnodeHook = !isAsyncWrapper(vnode);
+        let vnodeHook;
+        if (shouldInvokeVnodeHook &&
+            (vnodeHook = props && props.onVnodeBeforeUnmount)) {
+            invokeVNodeHook(vnodeHook, parentComponent, vnode);
+        }
+        if (shapeFlag & 6 /* COMPONENT */) {
+            unmountComponent(vnode.component, parentSuspense, doRemove);
+        }
+        else {
+            if (shapeFlag & 128 /* SUSPENSE */) {
+                vnode.suspense.unmount(parentSuspense, doRemove);
+                return;
+            }
+            if (shouldInvokeDirs) {
+                invokeDirectiveHook(vnode, null, parentComponent, 'beforeUnmount');
+            }
+            if (shapeFlag & 64 /* TELEPORT */) {
+                vnode.type.remove(vnode, parentComponent, parentSuspense, optimized, internals, doRemove);
+            }
+            else if (dynamicChildren &&
+                // #1153: fast path should not be taken for non-stable (v-for) fragments
+                (type !== Fragment ||
+                    (patchFlag > 0 && patchFlag & 64 /* STABLE_FRAGMENT */))) {
+                // fast path for block nodes: only need to unmount dynamic children.
+                unmountChildren(dynamicChildren, parentComponent, parentSuspense, false, true);
+            }
+            else if ((type === Fragment &&
+                patchFlag &
+                    (128 /* KEYED_FRAGMENT */ | 256 /* UNKEYED_FRAGMENT */)) ||
+                (!optimized && shapeFlag & 16 /* ARRAY_CHILDREN */)) {
+                unmountChildren(children, parentComponent, parentSuspense);
+            }
+            if (doRemove) {
+                remove(vnode);
+            }
+        }
+        if ((shouldInvokeVnodeHook &&
+            (vnodeHook = props && props.onVnodeUnmounted)) ||
+            shouldInvokeDirs) {
+            queuePostRenderEffect(() => {
+                vnodeHook && invokeVNodeHook(vnodeHook, parentComponent, vnode);
+                shouldInvokeDirs &&
+                    invokeDirectiveHook(vnode, null, parentComponent, 'unmounted');
+            }, parentSuspense);
+        }
+    };
+    const remove = vnode => {
+        const { type, el, anchor, transition } = vnode;
+        if (type === Fragment) {
+            if (( true) &&
+                vnode.patchFlag > 0 &&
+                vnode.patchFlag & 2048 /* DEV_ROOT_FRAGMENT */ &&
+                transition &&
+                !transition.persisted) {
+                vnode.children.forEach(child => {
+                    if (child.type === Comment) {
+                        hostRemove(child.el);
+                    }
+                    else {
+                        remove(child);
+                    }
+                });
+            }
+            else {
+                removeFragment(el, anchor);
+            }
+            return;
+        }
+        if (type === Static) {
+            removeStaticNode(vnode);
+            return;
+        }
+        const performRemove = () => {
+            hostRemove(el);
+            if (transition && !transition.persisted && transition.afterLeave) {
+                transition.afterLeave();
+            }
+        };
+        if (vnode.shapeFlag & 1 /* ELEMENT */ &&
+            transition &&
+            !transition.persisted) {
+            const { leave, delayLeave } = transition;
+            const performLeave = () => leave(el, performRemove);
+            if (delayLeave) {
+                delayLeave(vnode.el, performRemove, performLeave);
+            }
+            else {
+                performLeave();
+            }
+        }
+        else {
+            performRemove();
+        }
+    };
+    const removeFragment = (cur, end) => {
+        // For fragments, directly remove all contained DOM nodes.
+        // (fragment child nodes cannot have transition)
+        let next;
+        while (cur !== end) {
+            next = hostNextSibling(cur);
+            hostRemove(cur);
+            cur = next;
+        }
+        hostRemove(end);
+    };
+    const unmountComponent = (instance, parentSuspense, doRemove) => {
+        if (( true) && instance.type.__hmrId) {
+            unregisterHMR(instance);
+        }
+        const { bum, scope, update, subTree, um } = instance;
+        // beforeUnmount hook
+        if (bum) {
+            invokeArrayFns(bum);
+        }
+        // stop effects in component scope
+        scope.stop();
+        // update may be null if a component is unmounted before its async
+        // setup has resolved.
+        if (update) {
+            // so that scheduler will no longer invoke it
+            update.active = false;
+            unmount(subTree, instance, parentSuspense, doRemove);
+        }
+        // unmounted hook
+        if (um) {
+            queuePostRenderEffect(um, parentSuspense);
+        }
+        queuePostRenderEffect(() => {
+            instance.isUnmounted = true;
+        }, parentSuspense);
+        // A component with async dep inside a pending suspense is unmounted before
+        // its async dep resolves. This should remove the dep from the suspense, and
+        // cause the suspense to resolve immediately if that was the last dep.
+        if (parentSuspense &&
+            parentSuspense.pendingBranch &&
+            !parentSuspense.isUnmounted &&
+            instance.asyncDep &&
+            !instance.asyncResolved &&
+            instance.suspenseId === parentSuspense.pendingId) {
+            parentSuspense.deps--;
+            if (parentSuspense.deps === 0) {
+                parentSuspense.resolve();
+            }
+        }
+        if (true) {
+            devtoolsComponentRemoved(instance);
+        }
+    };
+    const unmountChildren = (children, parentComponent, parentSuspense, doRemove = false, optimized = false, start = 0) => {
+        for (let i = start; i < children.length; i++) {
+            unmount(children[i], parentComponent, parentSuspense, doRemove, optimized);
+        }
+    };
+    const getNextHostNode = vnode => {
+        if (vnode.shapeFlag & 6 /* COMPONENT */) {
+            return getNextHostNode(vnode.component.subTree);
+        }
+        if (vnode.shapeFlag & 128 /* SUSPENSE */) {
+            return vnode.suspense.next();
+        }
+        return hostNextSibling((vnode.anchor || vnode.el));
+    };
+    const render = (vnode, container, isSVG) => {
+        if (vnode == null) {
+            if (container._vnode) {
+                unmount(container._vnode, null, null, true);
+            }
+        }
+        else {
+            patch(container._vnode || null, vnode, container, null, null, null, isSVG);
+        }
+        flushPostFlushCbs();
+        container._vnode = vnode;
+    };
+    const internals = {
+        p: patch,
+        um: unmount,
+        m: move,
+        r: remove,
+        mt: mountComponent,
+        mc: mountChildren,
+        pc: patchChildren,
+        pbc: patchBlockChildren,
+        n: getNextHostNode,
+        o: options
+    };
+    let hydrate;
+    let hydrateNode;
+    if (createHydrationFns) {
+        [hydrate, hydrateNode] = createHydrationFns(internals);
+    }
+    return {
+        render,
+        hydrate,
+        createApp: createAppAPI(render, hydrate)
+    };
+}
+function toggleRecurse({ effect, update }, allowed) {
+    effect.allowRecurse = update.allowRecurse = allowed;
+}
+/**
+ * #1156
+ * When a component is HMR-enabled, we need to make sure that all static nodes
+ * inside a block also inherit the DOM element from the previous tree so that
+ * HMR updates (which are full updates) can retrieve the element for patching.
+ *
+ * #2080
+ * Inside keyed `template` fragment static children, if a fragment is moved,
+ * the children will always be moved. Therefore, in order to ensure correct move
+ * position, el should be inherited from previous nodes.
+ */
+function traverseStaticChildren(n1, n2, shallow = false) {
+    const ch1 = n1.children;
+    const ch2 = n2.children;
+    if (isArray(ch1) && isArray(ch2)) {
+        for (let i = 0; i < ch1.length; i++) {
+            // this is only called in the optimized path so array children are
+            // guaranteed to be vnodes
+            const c1 = ch1[i];
+            let c2 = ch2[i];
+            if (c2.shapeFlag & 1 /* ELEMENT */ && !c2.dynamicChildren) {
+                if (c2.patchFlag <= 0 || c2.patchFlag === 32 /* HYDRATE_EVENTS */) {
+                    c2 = ch2[i] = cloneIfMounted(ch2[i]);
+                    c2.el = c1.el;
+                }
+                if (!shallow)
+                    traverseStaticChildren(c1, c2);
+            }
+            // also inherit for comment nodes, but not placeholders (e.g. v-if which
+            // would have received .el during block patch)
+            if (( true) && c2.type === Comment && !c2.el) {
+                c2.el = c1.el;
+            }
+        }
+    }
+}
+// https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+function getSequence(arr) {
+    const p = arr.slice();
+    const result = [0];
+    let i, j, u, v, c;
+    const len = arr.length;
+    for (i = 0; i < len; i++) {
+        const arrI = arr[i];
+        if (arrI !== 0) {
+            j = result[result.length - 1];
+            if (arr[j] < arrI) {
+                p[i] = j;
+                result.push(i);
+                continue;
+            }
+            u = 0;
+            v = result.length - 1;
+            while (u < v) {
+                c = (u + v) >> 1;
+                if (arr[result[c]] < arrI) {
+                    u = c + 1;
+                }
+                else {
+                    v = c;
+                }
+            }
+            if (arrI < arr[result[u]]) {
+                if (u > 0) {
+                    p[i] = result[u - 1];
+                }
+                result[u] = i;
+            }
+        }
+    }
+    u = result.length;
+    v = result[u - 1];
+    while (u-- > 0) {
+        result[u] = v;
+        v = p[v];
+    }
+    return result;
+}
+
+const isTeleport = (type) => type.__isTeleport;
+const isTeleportDisabled = (props) => props && (props.disabled || props.disabled === '');
+const isTargetSVG = (target) => typeof SVGElement !== 'undefined' && target instanceof SVGElement;
+const resolveTarget = (props, select) => {
+    const targetSelector = props && props.to;
+    if (isString(targetSelector)) {
+        if (!select) {
+            ( true) &&
+                runtime_core_esm_bundler_warn(`Current renderer does not support string target for Teleports. ` +
+                    `(missing querySelector renderer option)`);
+            return null;
+        }
+        else {
+            const target = select(targetSelector);
+            if (!target) {
+                ( true) &&
+                    runtime_core_esm_bundler_warn(`Failed to locate Teleport target with selector "${targetSelector}". ` +
+                        `Note the target element must exist before the component is mounted - ` +
+                        `i.e. the target cannot be rendered by the component itself, and ` +
+                        `ideally should be outside of the entire Vue component tree.`);
+            }
+            return target;
+        }
+    }
+    else {
+        if (( true) && !targetSelector && !isTeleportDisabled(props)) {
+            runtime_core_esm_bundler_warn(`Invalid Teleport target: ${targetSelector}`);
+        }
+        return targetSelector;
+    }
+};
+const TeleportImpl = {
+    __isTeleport: true,
+    process(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, internals) {
+        const { mc: mountChildren, pc: patchChildren, pbc: patchBlockChildren, o: { insert, querySelector, createText, createComment } } = internals;
+        const disabled = isTeleportDisabled(n2.props);
+        let { shapeFlag, children, dynamicChildren } = n2;
+        // #3302
+        // HMR updated, force full diff
+        if (( true) && isHmrUpdating) {
+            optimized = false;
+            dynamicChildren = null;
+        }
+        if (n1 == null) {
+            // insert anchors in the main view
+            const placeholder = (n2.el = ( true)
+                ? createComment('teleport start')
+                : 0);
+            const mainAnchor = (n2.anchor = ( true)
+                ? createComment('teleport end')
+                : 0);
+            insert(placeholder, container, anchor);
+            insert(mainAnchor, container, anchor);
+            const target = (n2.target = resolveTarget(n2.props, querySelector));
+            const targetAnchor = (n2.targetAnchor = createText(''));
+            if (target) {
+                insert(targetAnchor, target);
+                // #2652 we could be teleporting from a non-SVG tree into an SVG tree
+                isSVG = isSVG || isTargetSVG(target);
+            }
+            else if (( true) && !disabled) {
+                runtime_core_esm_bundler_warn('Invalid Teleport target on mount:', target, `(${typeof target})`);
+            }
+            const mount = (container, anchor) => {
+                // Teleport *always* has Array children. This is enforced in both the
+                // compiler and vnode children normalization.
+                if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+                    mountChildren(children, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+                }
+            };
+            if (disabled) {
+                mount(container, mainAnchor);
+            }
+            else if (target) {
+                mount(target, targetAnchor);
+            }
+        }
+        else {
+            // update content
+            n2.el = n1.el;
+            const mainAnchor = (n2.anchor = n1.anchor);
+            const target = (n2.target = n1.target);
+            const targetAnchor = (n2.targetAnchor = n1.targetAnchor);
+            const wasDisabled = isTeleportDisabled(n1.props);
+            const currentContainer = wasDisabled ? container : target;
+            const currentAnchor = wasDisabled ? mainAnchor : targetAnchor;
+            isSVG = isSVG || isTargetSVG(target);
+            if (dynamicChildren) {
+                // fast path when the teleport happens to be a block root
+                patchBlockChildren(n1.dynamicChildren, dynamicChildren, currentContainer, parentComponent, parentSuspense, isSVG, slotScopeIds);
+                // even in block tree mode we need to make sure all root-level nodes
+                // in the teleport inherit previous DOM references so that they can
+                // be moved in future patches.
+                traverseStaticChildren(n1, n2, true);
+            }
+            else if (!optimized) {
+                patchChildren(n1, n2, currentContainer, currentAnchor, parentComponent, parentSuspense, isSVG, slotScopeIds, false);
+            }
+            if (disabled) {
+                if (!wasDisabled) {
+                    // enabled -> disabled
+                    // move into main container
+                    moveTeleport(n2, container, mainAnchor, internals, 1 /* TOGGLE */);
+                }
+            }
+            else {
+                // target changed
+                if ((n2.props && n2.props.to) !== (n1.props && n1.props.to)) {
+                    const nextTarget = (n2.target = resolveTarget(n2.props, querySelector));
+                    if (nextTarget) {
+                        moveTeleport(n2, nextTarget, null, internals, 0 /* TARGET_CHANGE */);
+                    }
+                    else if ((true)) {
+                        runtime_core_esm_bundler_warn('Invalid Teleport target on update:', target, `(${typeof target})`);
+                    }
+                }
+                else if (wasDisabled) {
+                    // disabled -> enabled
+                    // move into teleport target
+                    moveTeleport(n2, target, targetAnchor, internals, 1 /* TOGGLE */);
+                }
+            }
+        }
+    },
+    remove(vnode, parentComponent, parentSuspense, optimized, { um: unmount, o: { remove: hostRemove } }, doRemove) {
+        const { shapeFlag, children, anchor, targetAnchor, target, props } = vnode;
+        if (target) {
+            hostRemove(targetAnchor);
+        }
+        // an unmounted teleport should always remove its children if not disabled
+        if (doRemove || !isTeleportDisabled(props)) {
+            hostRemove(anchor);
+            if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+                for (let i = 0; i < children.length; i++) {
+                    const child = children[i];
+                    unmount(child, parentComponent, parentSuspense, true, !!child.dynamicChildren);
+                }
+            }
+        }
+    },
+    move: moveTeleport,
+    hydrate: hydrateTeleport
+};
+function moveTeleport(vnode, container, parentAnchor, { o: { insert }, m: move }, moveType = 2 /* REORDER */) {
+    // move target anchor if this is a target change.
+    if (moveType === 0 /* TARGET_CHANGE */) {
+        insert(vnode.targetAnchor, container, parentAnchor);
+    }
+    const { el, anchor, shapeFlag, children, props } = vnode;
+    const isReorder = moveType === 2 /* REORDER */;
+    // move main view anchor if this is a re-order.
+    if (isReorder) {
+        insert(el, container, parentAnchor);
+    }
+    // if this is a re-order and teleport is enabled (content is in target)
+    // do not move children. So the opposite is: only move children if this
+    // is not a reorder, or the teleport is disabled
+    if (!isReorder || isTeleportDisabled(props)) {
+        // Teleport has either Array children or no children.
+        if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+            for (let i = 0; i < children.length; i++) {
+                move(children[i], container, parentAnchor, 2 /* REORDER */);
+            }
+        }
+    }
+    // move main view anchor if this is a re-order.
+    if (isReorder) {
+        insert(anchor, container, parentAnchor);
+    }
+}
+function hydrateTeleport(node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized, { o: { nextSibling, parentNode, querySelector } }, hydrateChildren) {
+    const target = (vnode.target = resolveTarget(vnode.props, querySelector));
+    if (target) {
+        // if multiple teleports rendered to the same target element, we need to
+        // pick up from where the last teleport finished instead of the first node
+        const targetNode = target._lpa || target.firstChild;
+        if (vnode.shapeFlag & 16 /* ARRAY_CHILDREN */) {
+            if (isTeleportDisabled(vnode.props)) {
+                vnode.anchor = hydrateChildren(nextSibling(node), vnode, parentNode(node), parentComponent, parentSuspense, slotScopeIds, optimized);
+                vnode.targetAnchor = targetNode;
+            }
+            else {
+                vnode.anchor = nextSibling(node);
+                vnode.targetAnchor = hydrateChildren(targetNode, vnode, target, parentComponent, parentSuspense, slotScopeIds, optimized);
+            }
+            target._lpa =
+                vnode.targetAnchor && nextSibling(vnode.targetAnchor);
+        }
+    }
+    return vnode.anchor && nextSibling(vnode.anchor);
+}
+// Force-casted public typing for h and TSX props inference
+const Teleport = TeleportImpl;
+
+const COMPONENTS = 'components';
+const DIRECTIVES = 'directives';
+/**
+ * @private
+ */
+function resolveComponent(name, maybeSelfReference) {
+    return resolveAsset(COMPONENTS, name, true, maybeSelfReference) || name;
+}
+const NULL_DYNAMIC_COMPONENT = Symbol();
+/**
+ * @private
+ */
+function resolveDynamicComponent(component) {
+    if (isString(component)) {
+        return resolveAsset(COMPONENTS, component, false) || component;
+    }
+    else {
+        // invalid types will fallthrough to createVNode and raise warning
+        return (component || NULL_DYNAMIC_COMPONENT);
+    }
+}
+/**
+ * @private
+ */
+function resolveDirective(name) {
+    return resolveAsset(DIRECTIVES, name);
+}
+// implementation
+function resolveAsset(type, name, warnMissing = true, maybeSelfReference = false) {
+    const instance = currentRenderingInstance || currentInstance;
+    if (instance) {
+        const Component = instance.type;
+        // explicit self name has highest priority
+        if (type === COMPONENTS) {
+            const selfName = getComponentName(Component);
+            if (selfName &&
+                (selfName === name ||
+                    selfName === camelize(name) ||
+                    selfName === capitalize(camelize(name)))) {
+                return Component;
+            }
+        }
+        const res = 
+        // local registration
+        // check instance[type] first which is resolved for options API
+        resolve(instance[type] || Component[type], name) ||
+            // global registration
+            resolve(instance.appContext[type], name);
+        if (!res && maybeSelfReference) {
+            // fallback to implicit self-reference
+            return Component;
+        }
+        if (( true) && warnMissing && !res) {
+            const extra = type === COMPONENTS
+                ? `\nIf this is a native custom element, make sure to exclude it from ` +
+                    `component resolution via compilerOptions.isCustomElement.`
+                : ``;
+            runtime_core_esm_bundler_warn(`Failed to resolve ${type.slice(0, -1)}: ${name}${extra}`);
+        }
+        return res;
+    }
+    else if ((true)) {
+        runtime_core_esm_bundler_warn(`resolve${capitalize(type.slice(0, -1))} ` +
+            `can only be used in render() or setup().`);
+    }
+}
+function resolve(registry, name) {
+    return (registry &&
+        (registry[name] ||
+            registry[camelize(name)] ||
+            registry[capitalize(camelize(name))]));
+}
+
+const Fragment = Symbol(( true) ? 'Fragment' : 0);
+const Text = Symbol(( true) ? 'Text' : 0);
+const Comment = Symbol(( true) ? 'Comment' : 0);
+const Static = Symbol(( true) ? 'Static' : 0);
+// Since v-if and v-for are the two possible ways node structure can dynamically
+// change, once we consider v-if branches and each v-for fragment a block, we
+// can divide a template into nested blocks, and within each block the node
+// structure would be stable. This allows us to skip most children diffing
+// and only worry about the dynamic nodes (indicated by patch flags).
+const blockStack = [];
+let currentBlock = null;
+/**
+ * Open a block.
+ * This must be called before `createBlock`. It cannot be part of `createBlock`
+ * because the children of the block are evaluated before `createBlock` itself
+ * is called. The generated code typically looks like this:
+ *
+ * ```js
+ * function render() {
+ *   return (openBlock(),createBlock('div', null, [...]))
+ * }
+ * ```
+ * disableTracking is true when creating a v-for fragment block, since a v-for
+ * fragment always diffs its children.
+ *
+ * @private
+ */
+function openBlock(disableTracking = false) {
+    blockStack.push((currentBlock = disableTracking ? null : []));
+}
+function closeBlock() {
+    blockStack.pop();
+    currentBlock = blockStack[blockStack.length - 1] || null;
+}
+// Whether we should be tracking dynamic child nodes inside a block.
+// Only tracks when this value is > 0
+// We are not using a simple boolean because this value may need to be
+// incremented/decremented by nested usage of v-once (see below)
+let isBlockTreeEnabled = 1;
+/**
+ * Block tracking sometimes needs to be disabled, for example during the
+ * creation of a tree that needs to be cached by v-once. The compiler generates
+ * code like this:
+ *
+ * ``` js
+ * _cache[1] || (
+ *   setBlockTracking(-1),
+ *   _cache[1] = createVNode(...),
+ *   setBlockTracking(1),
+ *   _cache[1]
+ * )
+ * ```
+ *
+ * @private
+ */
+function setBlockTracking(value) {
+    isBlockTreeEnabled += value;
+}
+function setupBlock(vnode) {
+    // save current block children on the block vnode
+    vnode.dynamicChildren =
+        isBlockTreeEnabled > 0 ? currentBlock || EMPTY_ARR : null;
+    // close block
+    closeBlock();
+    // a block is always going to be patched, so track it as a child of its
+    // parent block
+    if (isBlockTreeEnabled > 0 && currentBlock) {
+        currentBlock.push(vnode);
+    }
+    return vnode;
+}
+/**
+ * @private
+ */
+function createElementBlock(type, props, children, patchFlag, dynamicProps, shapeFlag) {
+    return setupBlock(createBaseVNode(type, props, children, patchFlag, dynamicProps, shapeFlag, true /* isBlock */));
+}
+/**
+ * Create a block root vnode. Takes the same exact arguments as `createVNode`.
+ * A block root keeps track of dynamic nodes within the block in the
+ * `dynamicChildren` array.
+ *
+ * @private
+ */
+function createBlock(type, props, children, patchFlag, dynamicProps) {
+    return setupBlock(createVNode(type, props, children, patchFlag, dynamicProps, true /* isBlock: prevent a block from tracking itself */));
+}
+function isVNode(value) {
+    return value ? value.__v_isVNode === true : false;
+}
+function isSameVNodeType(n1, n2) {
+    if (( true) &&
+        n2.shapeFlag & 6 /* COMPONENT */ &&
+        hmrDirtyComponents.has(n2.type)) {
+        // HMR only: if the component has been hot-updated, force a reload.
+        return false;
+    }
+    return n1.type === n2.type && n1.key === n2.key;
+}
+let vnodeArgsTransformer;
+/**
+ * Internal API for registering an arguments transform for createVNode
+ * used for creating stubs in the test-utils
+ * It is *internal* but needs to be exposed for test-utils to pick up proper
+ * typings
+ */
+function transformVNodeArgs(transformer) {
+    vnodeArgsTransformer = transformer;
+}
+const createVNodeWithArgsTransform = (...args) => {
+    return _createVNode(...(vnodeArgsTransformer
+        ? vnodeArgsTransformer(args, currentRenderingInstance)
+        : args));
+};
+const InternalObjectKey = `__vInternal`;
+const normalizeKey = ({ key }) => key != null ? key : null;
+const normalizeRef = ({ ref, ref_key, ref_for }) => {
+    return (ref != null
+        ? isString(ref) || isRef(ref) || isFunction(ref)
+            ? { i: currentRenderingInstance, r: ref, k: ref_key, f: !!ref_for }
+            : ref
+        : null);
+};
+function createBaseVNode(type, props = null, children = null, patchFlag = 0, dynamicProps = null, shapeFlag = type === Fragment ? 0 : 1 /* ELEMENT */, isBlockNode = false, needFullChildrenNormalization = false) {
+    const vnode = {
+        __v_isVNode: true,
+        __v_skip: true,
+        type,
+        props,
+        key: props && normalizeKey(props),
+        ref: props && normalizeRef(props),
+        scopeId: currentScopeId,
+        slotScopeIds: null,
+        children,
+        component: null,
+        suspense: null,
+        ssContent: null,
+        ssFallback: null,
+        dirs: null,
+        transition: null,
+        el: null,
+        anchor: null,
+        target: null,
+        targetAnchor: null,
+        staticCount: 0,
+        shapeFlag,
+        patchFlag,
+        dynamicProps,
+        dynamicChildren: null,
+        appContext: null
+    };
+    if (needFullChildrenNormalization) {
+        normalizeChildren(vnode, children);
+        // normalize suspense children
+        if (shapeFlag & 128 /* SUSPENSE */) {
+            type.normalize(vnode);
+        }
+    }
+    else if (children) {
+        // compiled element vnode - if children is passed, only possible types are
+        // string or Array.
+        vnode.shapeFlag |= isString(children)
+            ? 8 /* TEXT_CHILDREN */
+            : 16 /* ARRAY_CHILDREN */;
+    }
+    // validate key
+    if (( true) && vnode.key !== vnode.key) {
+        runtime_core_esm_bundler_warn(`VNode created with invalid key (NaN). VNode type:`, vnode.type);
+    }
+    // track vnode for block tree
+    if (isBlockTreeEnabled > 0 &&
+        // avoid a block node from tracking itself
+        !isBlockNode &&
+        // has current parent block
+        currentBlock &&
+        // presence of a patch flag indicates this node needs patching on updates.
+        // component nodes also should always be patched, because even if the
+        // component doesn't need to update, it needs to persist the instance on to
+        // the next vnode so that it can be properly unmounted later.
+        (vnode.patchFlag > 0 || shapeFlag & 6 /* COMPONENT */) &&
+        // the EVENTS flag is only for hydration and if it is the only flag, the
+        // vnode should not be considered dynamic due to handler caching.
+        vnode.patchFlag !== 32 /* HYDRATE_EVENTS */) {
+        currentBlock.push(vnode);
+    }
+    return vnode;
+}
+const createVNode = (( true) ? createVNodeWithArgsTransform : 0);
+function _createVNode(type, props = null, children = null, patchFlag = 0, dynamicProps = null, isBlockNode = false) {
+    if (!type || type === NULL_DYNAMIC_COMPONENT) {
+        if (( true) && !type) {
+            runtime_core_esm_bundler_warn(`Invalid vnode type when creating vnode: ${type}.`);
+        }
+        type = Comment;
+    }
+    if (isVNode(type)) {
+        // createVNode receiving an existing vnode. This happens in cases like
+        // <component :is="vnode"/>
+        // #2078 make sure to merge refs during the clone instead of overwriting it
+        const cloned = cloneVNode(type, props, true /* mergeRef: true */);
+        if (children) {
+            normalizeChildren(cloned, children);
+        }
+        return cloned;
+    }
+    // class component normalization.
+    if (isClassComponent(type)) {
+        type = type.__vccOpts;
+    }
+    // class & style normalization.
+    if (props) {
+        // for reactive or proxy objects, we need to clone it to enable mutation.
+        props = guardReactiveProps(props);
+        let { class: klass, style } = props;
+        if (klass && !isString(klass)) {
+            props.class = normalizeClass(klass);
+        }
+        if (isObject(style)) {
+            // reactive state objects need to be cloned since they are likely to be
+            // mutated
+            if (isProxy(style) && !isArray(style)) {
+                style = extend({}, style);
+            }
+            props.style = normalizeStyle(style);
+        }
+    }
+    // encode the vnode type information into a bitmap
+    const shapeFlag = isString(type)
+        ? 1 /* ELEMENT */
+        : isSuspense(type)
+            ? 128 /* SUSPENSE */
+            : isTeleport(type)
+                ? 64 /* TELEPORT */
+                : isObject(type)
+                    ? 4 /* STATEFUL_COMPONENT */
+                    : isFunction(type)
+                        ? 2 /* FUNCTIONAL_COMPONENT */
+                        : 0;
+    if (( true) && shapeFlag & 4 /* STATEFUL_COMPONENT */ && isProxy(type)) {
+        type = toRaw(type);
+        runtime_core_esm_bundler_warn(`Vue received a Component which was made a reactive object. This can ` +
+            `lead to unnecessary performance overhead, and should be avoided by ` +
+            `marking the component with \`markRaw\` or using \`shallowRef\` ` +
+            `instead of \`ref\`.`, `\nComponent that was made reactive: `, type);
+    }
+    return createBaseVNode(type, props, children, patchFlag, dynamicProps, shapeFlag, isBlockNode, true);
+}
+function guardReactiveProps(props) {
+    if (!props)
+        return null;
+    return isProxy(props) || InternalObjectKey in props
+        ? extend({}, props)
+        : props;
+}
+function cloneVNode(vnode, extraProps, mergeRef = false) {
+    // This is intentionally NOT using spread or extend to avoid the runtime
+    // key enumeration cost.
+    const { props, ref, patchFlag, children } = vnode;
+    const mergedProps = extraProps ? mergeProps(props || {}, extraProps) : props;
+    const cloned = {
+        __v_isVNode: true,
+        __v_skip: true,
+        type: vnode.type,
+        props: mergedProps,
+        key: mergedProps && normalizeKey(mergedProps),
+        ref: extraProps && extraProps.ref
+            ? // #2078 in the case of <component :is="vnode" ref="extra"/>
+                // if the vnode itself already has a ref, cloneVNode will need to merge
+                // the refs so the single vnode can be set on multiple refs
+                mergeRef && ref
+                    ? isArray(ref)
+                        ? ref.concat(normalizeRef(extraProps))
+                        : [ref, normalizeRef(extraProps)]
+                    : normalizeRef(extraProps)
+            : ref,
+        scopeId: vnode.scopeId,
+        slotScopeIds: vnode.slotScopeIds,
+        children: ( true) && patchFlag === -1 /* HOISTED */ && isArray(children)
+            ? children.map(deepCloneVNode)
+            : children,
+        target: vnode.target,
+        targetAnchor: vnode.targetAnchor,
+        staticCount: vnode.staticCount,
+        shapeFlag: vnode.shapeFlag,
+        // if the vnode is cloned with extra props, we can no longer assume its
+        // existing patch flag to be reliable and need to add the FULL_PROPS flag.
+        // note: preserve flag for fragments since they use the flag for children
+        // fast paths only.
+        patchFlag: extraProps && vnode.type !== Fragment
+            ? patchFlag === -1 // hoisted node
+                ? 16 /* FULL_PROPS */
+                : patchFlag | 16 /* FULL_PROPS */
+            : patchFlag,
+        dynamicProps: vnode.dynamicProps,
+        dynamicChildren: vnode.dynamicChildren,
+        appContext: vnode.appContext,
+        dirs: vnode.dirs,
+        transition: vnode.transition,
+        // These should technically only be non-null on mounted VNodes. However,
+        // they *should* be copied for kept-alive vnodes. So we just always copy
+        // them since them being non-null during a mount doesn't affect the logic as
+        // they will simply be overwritten.
+        component: vnode.component,
+        suspense: vnode.suspense,
+        ssContent: vnode.ssContent && cloneVNode(vnode.ssContent),
+        ssFallback: vnode.ssFallback && cloneVNode(vnode.ssFallback),
+        el: vnode.el,
+        anchor: vnode.anchor
+    };
+    return cloned;
+}
+/**
+ * Dev only, for HMR of hoisted vnodes reused in v-for
+ * https://github.com/vitejs/vite/issues/2022
+ */
+function deepCloneVNode(vnode) {
+    const cloned = cloneVNode(vnode);
+    if (isArray(vnode.children)) {
+        cloned.children = vnode.children.map(deepCloneVNode);
+    }
+    return cloned;
+}
+/**
+ * @private
+ */
+function createTextVNode(text = ' ', flag = 0) {
+    return createVNode(Text, null, text, flag);
+}
+/**
+ * @private
+ */
+function createStaticVNode(content, numberOfNodes) {
+    // A static vnode can contain multiple stringified elements, and the number
+    // of elements is necessary for hydration.
+    const vnode = createVNode(Static, null, content);
+    vnode.staticCount = numberOfNodes;
+    return vnode;
+}
+/**
+ * @private
+ */
+function createCommentVNode(text = '', 
+// when used as the v-else branch, the comment node must be created as a
+// block to ensure correct updates.
+asBlock = false) {
+    return asBlock
+        ? (openBlock(), createBlock(Comment, null, text))
+        : createVNode(Comment, null, text);
+}
+function normalizeVNode(child) {
+    if (child == null || typeof child === 'boolean') {
+        // empty placeholder
+        return createVNode(Comment);
+    }
+    else if (isArray(child)) {
+        // fragment
+        return createVNode(Fragment, null, 
+        // #3666, avoid reference pollution when reusing vnode
+        child.slice());
+    }
+    else if (typeof child === 'object') {
+        // already vnode, this should be the most common since compiled templates
+        // always produce all-vnode children arrays
+        return cloneIfMounted(child);
+    }
+    else {
+        // strings and numbers
+        return createVNode(Text, null, String(child));
+    }
+}
+// optimized normalization for template-compiled render fns
+function cloneIfMounted(child) {
+    return child.el === null || child.memo ? child : cloneVNode(child);
+}
+function normalizeChildren(vnode, children) {
+    let type = 0;
+    const { shapeFlag } = vnode;
+    if (children == null) {
+        children = null;
+    }
+    else if (isArray(children)) {
+        type = 16 /* ARRAY_CHILDREN */;
+    }
+    else if (typeof children === 'object') {
+        if (shapeFlag & (1 /* ELEMENT */ | 64 /* TELEPORT */)) {
+            // Normalize slot to plain children for plain element and Teleport
+            const slot = children.default;
+            if (slot) {
+                // _c marker is added by withCtx() indicating this is a compiled slot
+                slot._c && (slot._d = false);
+                normalizeChildren(vnode, slot());
+                slot._c && (slot._d = true);
+            }
+            return;
+        }
+        else {
+            type = 32 /* SLOTS_CHILDREN */;
+            const slotFlag = children._;
+            if (!slotFlag && !(InternalObjectKey in children)) {
+                children._ctx = currentRenderingInstance;
+            }
+            else if (slotFlag === 3 /* FORWARDED */ && currentRenderingInstance) {
+                // a child component receives forwarded slots from the parent.
+                // its slot type is determined by its parent's slot type.
+                if (currentRenderingInstance.slots._ === 1 /* STABLE */) {
+                    children._ = 1 /* STABLE */;
+                }
+                else {
+                    children._ = 2 /* DYNAMIC */;
+                    vnode.patchFlag |= 1024 /* DYNAMIC_SLOTS */;
+                }
+            }
+        }
+    }
+    else if (isFunction(children)) {
+        children = { default: children, _ctx: currentRenderingInstance };
+        type = 32 /* SLOTS_CHILDREN */;
+    }
+    else {
+        children = String(children);
+        // force teleport children to array so it can be moved around
+        if (shapeFlag & 64 /* TELEPORT */) {
+            type = 16 /* ARRAY_CHILDREN */;
+            children = [createTextVNode(children)];
+        }
+        else {
+            type = 8 /* TEXT_CHILDREN */;
+        }
+    }
+    vnode.children = children;
+    vnode.shapeFlag |= type;
+}
+function mergeProps(...args) {
+    const ret = {};
+    for (let i = 0; i < args.length; i++) {
+        const toMerge = args[i];
+        for (const key in toMerge) {
+            if (key === 'class') {
+                if (ret.class !== toMerge.class) {
+                    ret.class = normalizeClass([ret.class, toMerge.class]);
+                }
+            }
+            else if (key === 'style') {
+                ret.style = normalizeStyle([ret.style, toMerge.style]);
+            }
+            else if (isOn(key)) {
+                const existing = ret[key];
+                const incoming = toMerge[key];
+                if (incoming &&
+                    existing !== incoming &&
+                    !(isArray(existing) && existing.includes(incoming))) {
+                    ret[key] = existing
+                        ? [].concat(existing, incoming)
+                        : incoming;
+                }
+            }
+            else if (key !== '') {
+                ret[key] = toMerge[key];
+            }
+        }
+    }
+    return ret;
+}
+function invokeVNodeHook(hook, instance, vnode, prevVNode = null) {
+    callWithAsyncErrorHandling(hook, instance, 7 /* VNODE_HOOK */, [
+        vnode,
+        prevVNode
+    ]);
+}
+
+/**
+ * Actual implementation
+ */
+function renderList(source, renderItem, cache, index) {
+    let ret;
+    const cached = (cache && cache[index]);
+    if (isArray(source) || isString(source)) {
+        ret = new Array(source.length);
+        for (let i = 0, l = source.length; i < l; i++) {
+            ret[i] = renderItem(source[i], i, undefined, cached && cached[i]);
+        }
+    }
+    else if (typeof source === 'number') {
+        if (( true) && !Number.isInteger(source)) {
+            runtime_core_esm_bundler_warn(`The v-for range expect an integer value but got ${source}.`);
+            return [];
+        }
+        ret = new Array(source);
+        for (let i = 0; i < source; i++) {
+            ret[i] = renderItem(i + 1, i, undefined, cached && cached[i]);
+        }
+    }
+    else if (isObject(source)) {
+        if (source[Symbol.iterator]) {
+            ret = Array.from(source, (item, i) => renderItem(item, i, undefined, cached && cached[i]));
+        }
+        else {
+            const keys = Object.keys(source);
+            ret = new Array(keys.length);
+            for (let i = 0, l = keys.length; i < l; i++) {
+                const key = keys[i];
+                ret[i] = renderItem(source[key], key, i, cached && cached[i]);
+            }
+        }
+    }
+    else {
+        ret = [];
+    }
+    if (cache) {
+        cache[index] = ret;
+    }
+    return ret;
+}
+
+/**
+ * Compiler runtime helper for creating dynamic slots object
+ * @private
+ */
+function createSlots(slots, dynamicSlots) {
+    for (let i = 0; i < dynamicSlots.length; i++) {
+        const slot = dynamicSlots[i];
+        // array of dynamic slot generated by <template v-for="..." #[...]>
+        if (isArray(slot)) {
+            for (let j = 0; j < slot.length; j++) {
+                slots[slot[j].name] = slot[j].fn;
+            }
+        }
+        else if (slot) {
+            // conditional single slot generated by <template v-if="..." #foo>
+            slots[slot.name] = slot.fn;
+        }
+    }
+    return slots;
+}
+
+/**
+ * Compiler runtime helper for rendering `<slot/>`
+ * @private
+ */
+function renderSlot(slots, name, props = {}, 
+// this is not a user-facing function, so the fallback is always generated by
+// the compiler and guaranteed to be a function returning an array
+fallback, noSlotted) {
+    if (currentRenderingInstance.isCE ||
+        (currentRenderingInstance.parent &&
+            isAsyncWrapper(currentRenderingInstance.parent) &&
+            currentRenderingInstance.parent.isCE)) {
+        return createVNode('slot', name === 'default' ? null : { name }, fallback && fallback());
+    }
+    let slot = slots[name];
+    if (( true) && slot && slot.length > 1) {
+        runtime_core_esm_bundler_warn(`SSR-optimized slot function detected in a non-SSR-optimized render ` +
+            `function. You need to mark this component with $dynamic-slots in the ` +
+            `parent template.`);
+        slot = () => [];
+    }
+    // a compiled slot disables block tracking by default to avoid manual
+    // invocation interfering with template-based block tracking, but in
+    // `renderSlot` we can be sure that it's template-based so we can force
+    // enable it.
+    if (slot && slot._c) {
+        slot._d = false;
+    }
+    openBlock();
+    const validSlotContent = slot && ensureValidVNode(slot(props));
+    const rendered = createBlock(Fragment, { key: props.key || `_${name}` }, validSlotContent || (fallback ? fallback() : []), validSlotContent && slots._ === 1 /* STABLE */
+        ? 64 /* STABLE_FRAGMENT */
+        : -2 /* BAIL */);
+    if (!noSlotted && rendered.scopeId) {
+        rendered.slotScopeIds = [rendered.scopeId + '-s'];
+    }
+    if (slot && slot._c) {
+        slot._d = true;
+    }
+    return rendered;
+}
+function ensureValidVNode(vnodes) {
+    return vnodes.some(child => {
+        if (!isVNode(child))
+            return true;
+        if (child.type === Comment)
+            return false;
+        if (child.type === Fragment &&
+            !ensureValidVNode(child.children))
+            return false;
+        return true;
+    })
+        ? vnodes
+        : null;
+}
+
+/**
+ * For prefixing keys in v-on="obj" with "on"
+ * @private
+ */
+function toHandlers(obj) {
+    const ret = {};
+    if (( true) && !isObject(obj)) {
+        runtime_core_esm_bundler_warn(`v-on with no argument expects an object value.`);
+        return ret;
+    }
+    for (const key in obj) {
+        ret[toHandlerKey(key)] = obj[key];
+    }
+    return ret;
+}
+
+/**
+ * #2437 In Vue 3, functional components do not have a public instance proxy but
+ * they exist in the internal parent chain. For code that relies on traversing
+ * public $parent chains, skip functional ones and go to the parent instead.
+ */
+const getPublicInstance = (i) => {
+    if (!i)
+        return null;
+    if (isStatefulComponent(i))
+        return getExposeProxy(i) || i.proxy;
+    return getPublicInstance(i.parent);
+};
+const publicPropertiesMap = 
+// Move PURE marker to new line to workaround compiler discarding it
+// due to type annotation
+/*#__PURE__*/ extend(Object.create(null), {
+    $: i => i,
+    $el: i => i.vnode.el,
+    $data: i => i.data,
+    $props: i => (( true) ? shallowReadonly(i.props) : 0),
+    $attrs: i => (( true) ? shallowReadonly(i.attrs) : 0),
+    $slots: i => (( true) ? shallowReadonly(i.slots) : 0),
+    $refs: i => (( true) ? shallowReadonly(i.refs) : 0),
+    $parent: i => getPublicInstance(i.parent),
+    $root: i => getPublicInstance(i.root),
+    $emit: i => i.emit,
+    $options: i => (__VUE_OPTIONS_API__ ? resolveMergedOptions(i) : i.type),
+    $forceUpdate: i => () => queueJob(i.update),
+    $nextTick: i => nextTick.bind(i.proxy),
+    $watch: i => (__VUE_OPTIONS_API__ ? instanceWatch.bind(i) : NOOP)
+});
+const PublicInstanceProxyHandlers = {
+    get({ _: instance }, key) {
+        const { ctx, setupState, data, props, accessCache, type, appContext } = instance;
+        // for internal formatters to know that this is a Vue instance
+        if (( true) && key === '__isVue') {
+            return true;
+        }
+        // prioritize <script setup> bindings during dev.
+        // this allows even properties that start with _ or $ to be used - so that
+        // it aligns with the production behavior where the render fn is inlined and
+        // indeed has access to all declared variables.
+        if (( true) &&
+            setupState !== EMPTY_OBJ &&
+            setupState.__isScriptSetup &&
+            hasOwn(setupState, key)) {
+            return setupState[key];
+        }
+        // data / props / ctx
+        // This getter gets called for every property access on the render context
+        // during render and is a major hotspot. The most expensive part of this
+        // is the multiple hasOwn() calls. It's much faster to do a simple property
+        // access on a plain object, so we use an accessCache object (with null
+        // prototype) to memoize what access type a key corresponds to.
+        let normalizedProps;
+        if (key[0] !== '$') {
+            const n = accessCache[key];
+            if (n !== undefined) {
+                switch (n) {
+                    case 1 /* SETUP */:
+                        return setupState[key];
+                    case 2 /* DATA */:
+                        return data[key];
+                    case 4 /* CONTEXT */:
+                        return ctx[key];
+                    case 3 /* PROPS */:
+                        return props[key];
+                    // default: just fallthrough
+                }
+            }
+            else if (setupState !== EMPTY_OBJ && hasOwn(setupState, key)) {
+                accessCache[key] = 1 /* SETUP */;
+                return setupState[key];
+            }
+            else if (data !== EMPTY_OBJ && hasOwn(data, key)) {
+                accessCache[key] = 2 /* DATA */;
+                return data[key];
+            }
+            else if (
+            // only cache other properties when instance has declared (thus stable)
+            // props
+            (normalizedProps = instance.propsOptions[0]) &&
+                hasOwn(normalizedProps, key)) {
+                accessCache[key] = 3 /* PROPS */;
+                return props[key];
+            }
+            else if (ctx !== EMPTY_OBJ && hasOwn(ctx, key)) {
+                accessCache[key] = 4 /* CONTEXT */;
+                return ctx[key];
+            }
+            else if (!__VUE_OPTIONS_API__ || shouldCacheAccess) {
+                accessCache[key] = 0 /* OTHER */;
+            }
+        }
+        const publicGetter = publicPropertiesMap[key];
+        let cssModule, globalProperties;
+        // public $xxx properties
+        if (publicGetter) {
+            if (key === '$attrs') {
+                track(instance, "get" /* GET */, key);
+                ( true) && markAttrsAccessed();
+            }
+            return publicGetter(instance);
+        }
+        else if (
+        // css module (injected by vue-loader)
+        (cssModule = type.__cssModules) &&
+            (cssModule = cssModule[key])) {
+            return cssModule;
+        }
+        else if (ctx !== EMPTY_OBJ && hasOwn(ctx, key)) {
+            // user may set custom properties to `this` that start with `$`
+            accessCache[key] = 4 /* CONTEXT */;
+            return ctx[key];
+        }
+        else if (
+        // global properties
+        ((globalProperties = appContext.config.globalProperties),
+            hasOwn(globalProperties, key))) {
+            {
+                return globalProperties[key];
+            }
+        }
+        else if (( true) &&
+            currentRenderingInstance &&
+            (!isString(key) ||
+                // #1091 avoid internal isRef/isVNode checks on component instance leading
+                // to infinite warning loop
+                key.indexOf('__v') !== 0)) {
+            if (data !== EMPTY_OBJ &&
+                (key[0] === '$' || key[0] === '_') &&
+                hasOwn(data, key)) {
+                runtime_core_esm_bundler_warn(`Property ${JSON.stringify(key)} must be accessed via $data because it starts with a reserved ` +
+                    `character ("$" or "_") and is not proxied on the render context.`);
+            }
+            else if (instance === currentRenderingInstance) {
+                runtime_core_esm_bundler_warn(`Property ${JSON.stringify(key)} was accessed during render ` +
+                    `but is not defined on instance.`);
+            }
+        }
+    },
+    set({ _: instance }, key, value) {
+        const { data, setupState, ctx } = instance;
+        if (setupState !== EMPTY_OBJ && hasOwn(setupState, key)) {
+            setupState[key] = value;
+            return true;
+        }
+        else if (data !== EMPTY_OBJ && hasOwn(data, key)) {
+            data[key] = value;
+            return true;
+        }
+        else if (hasOwn(instance.props, key)) {
+            ( true) &&
+                runtime_core_esm_bundler_warn(`Attempting to mutate prop "${key}". Props are readonly.`, instance);
+            return false;
+        }
+        if (key[0] === '$' && key.slice(1) in instance) {
+            ( true) &&
+                runtime_core_esm_bundler_warn(`Attempting to mutate public property "${key}". ` +
+                    `Properties starting with $ are reserved and readonly.`, instance);
+            return false;
+        }
+        else {
+            if (( true) && key in instance.appContext.config.globalProperties) {
+                Object.defineProperty(ctx, key, {
+                    enumerable: true,
+                    configurable: true,
+                    value
+                });
+            }
+            else {
+                ctx[key] = value;
+            }
+        }
+        return true;
+    },
+    has({ _: { data, setupState, accessCache, ctx, appContext, propsOptions } }, key) {
+        let normalizedProps;
+        return (!!accessCache[key] ||
+            (data !== EMPTY_OBJ && hasOwn(data, key)) ||
+            (setupState !== EMPTY_OBJ && hasOwn(setupState, key)) ||
+            ((normalizedProps = propsOptions[0]) && hasOwn(normalizedProps, key)) ||
+            hasOwn(ctx, key) ||
+            hasOwn(publicPropertiesMap, key) ||
+            hasOwn(appContext.config.globalProperties, key));
+    },
+    defineProperty(target, key, descriptor) {
+        if (descriptor.get != null) {
+            // invalidate key cache of a getter based property #5417
+            target._.accessCache[key] = 0;
+        }
+        else if (hasOwn(descriptor, 'value')) {
+            this.set(target, key, descriptor.value, null);
+        }
+        return Reflect.defineProperty(target, key, descriptor);
+    }
+};
+if (true) {
+    PublicInstanceProxyHandlers.ownKeys = (target) => {
+        runtime_core_esm_bundler_warn(`Avoid app logic that relies on enumerating keys on a component instance. ` +
+            `The keys will be empty in production mode to avoid performance overhead.`);
+        return Reflect.ownKeys(target);
+    };
+}
+const RuntimeCompiledPublicInstanceProxyHandlers = /*#__PURE__*/ extend({}, PublicInstanceProxyHandlers, {
+    get(target, key) {
+        // fast path for unscopables when using `with` block
+        if (key === Symbol.unscopables) {
+            return;
+        }
+        return PublicInstanceProxyHandlers.get(target, key, target);
+    },
+    has(_, key) {
+        const has = key[0] !== '_' && !isGloballyWhitelisted(key);
+        if (( true) && !has && PublicInstanceProxyHandlers.has(_, key)) {
+            runtime_core_esm_bundler_warn(`Property ${JSON.stringify(key)} should not start with _ which is a reserved prefix for Vue internals.`);
+        }
+        return has;
+    }
+});
+// dev only
+// In dev mode, the proxy target exposes the same properties as seen on `this`
+// for easier console inspection. In prod mode it will be an empty object so
+// these properties definitions can be skipped.
+function createDevRenderContext(instance) {
+    const target = {};
+    // expose internal instance for proxy handlers
+    Object.defineProperty(target, `_`, {
+        configurable: true,
+        enumerable: false,
+        get: () => instance
+    });
+    // expose public properties
+    Object.keys(publicPropertiesMap).forEach(key => {
+        Object.defineProperty(target, key, {
+            configurable: true,
+            enumerable: false,
+            get: () => publicPropertiesMap[key](instance),
+            // intercepted by the proxy so no need for implementation,
+            // but needed to prevent set errors
+            set: NOOP
+        });
+    });
+    return target;
+}
+// dev only
+function exposePropsOnRenderContext(instance) {
+    const { ctx, propsOptions: [propsOptions] } = instance;
+    if (propsOptions) {
+        Object.keys(propsOptions).forEach(key => {
+            Object.defineProperty(ctx, key, {
+                enumerable: true,
+                configurable: true,
+                get: () => instance.props[key],
+                set: NOOP
+            });
+        });
+    }
+}
+// dev only
+function exposeSetupStateOnRenderContext(instance) {
+    const { ctx, setupState } = instance;
+    Object.keys(toRaw(setupState)).forEach(key => {
+        if (!setupState.__isScriptSetup) {
+            if (key[0] === '$' || key[0] === '_') {
+                runtime_core_esm_bundler_warn(`setup() return property ${JSON.stringify(key)} should not start with "$" or "_" ` +
+                    `which are reserved prefixes for Vue internals.`);
+                return;
+            }
+            Object.defineProperty(ctx, key, {
+                enumerable: true,
+                configurable: true,
+                get: () => setupState[key],
+                set: NOOP
+            });
+        }
+    });
+}
+
+const emptyAppContext = createAppContext();
+let uid$1 = 0;
+function createComponentInstance(vnode, parent, suspense) {
+    const type = vnode.type;
+    // inherit parent app context - or - if root, adopt from root vnode
+    const appContext = (parent ? parent.appContext : vnode.appContext) || emptyAppContext;
+    const instance = {
+        uid: uid$1++,
+        vnode,
+        type,
+        parent,
+        appContext,
+        root: null,
+        next: null,
+        subTree: null,
+        effect: null,
+        update: null,
+        scope: new EffectScope(true /* detached */),
+        render: null,
+        proxy: null,
+        exposed: null,
+        exposeProxy: null,
+        withProxy: null,
+        provides: parent ? parent.provides : Object.create(appContext.provides),
+        accessCache: null,
+        renderCache: [],
+        // local resovled assets
+        components: null,
+        directives: null,
+        // resolved props and emits options
+        propsOptions: normalizePropsOptions(type, appContext),
+        emitsOptions: normalizeEmitsOptions(type, appContext),
+        // emit
+        emit: null,
+        emitted: null,
+        // props default value
+        propsDefaults: EMPTY_OBJ,
+        // inheritAttrs
+        inheritAttrs: type.inheritAttrs,
+        // state
+        ctx: EMPTY_OBJ,
+        data: EMPTY_OBJ,
+        props: EMPTY_OBJ,
+        attrs: EMPTY_OBJ,
+        slots: EMPTY_OBJ,
+        refs: EMPTY_OBJ,
+        setupState: EMPTY_OBJ,
+        setupContext: null,
+        // suspense related
+        suspense,
+        suspenseId: suspense ? suspense.pendingId : 0,
+        asyncDep: null,
+        asyncResolved: false,
+        // lifecycle hooks
+        // not using enums here because it results in computed properties
+        isMounted: false,
+        isUnmounted: false,
+        isDeactivated: false,
+        bc: null,
+        c: null,
+        bm: null,
+        m: null,
+        bu: null,
+        u: null,
+        um: null,
+        bum: null,
+        da: null,
+        a: null,
+        rtg: null,
+        rtc: null,
+        ec: null,
+        sp: null
+    };
+    if ((true)) {
+        instance.ctx = createDevRenderContext(instance);
+    }
+    else {}
+    instance.root = parent ? parent.root : instance;
+    instance.emit = emit$1.bind(null, instance);
+    // apply custom element special handling
+    if (vnode.ce) {
+        vnode.ce(instance);
+    }
+    return instance;
+}
+let currentInstance = null;
+const getCurrentInstance = () => currentInstance || currentRenderingInstance;
+const setCurrentInstance = (instance) => {
+    currentInstance = instance;
+    instance.scope.on();
+};
+const unsetCurrentInstance = () => {
+    currentInstance && currentInstance.scope.off();
+    currentInstance = null;
+};
+const isBuiltInTag = /*#__PURE__*/ makeMap('slot,component');
+function validateComponentName(name, config) {
+    const appIsNativeTag = config.isNativeTag || NO;
+    if (isBuiltInTag(name) || appIsNativeTag(name)) {
+        runtime_core_esm_bundler_warn('Do not use built-in or reserved HTML elements as component id: ' + name);
+    }
+}
+function isStatefulComponent(instance) {
+    return instance.vnode.shapeFlag & 4 /* STATEFUL_COMPONENT */;
+}
+let isInSSRComponentSetup = false;
+function setupComponent(instance, isSSR = false) {
+    isInSSRComponentSetup = isSSR;
+    const { props, children } = instance.vnode;
+    const isStateful = isStatefulComponent(instance);
+    initProps(instance, props, isStateful, isSSR);
+    initSlots(instance, children);
+    const setupResult = isStateful
+        ? setupStatefulComponent(instance, isSSR)
+        : undefined;
+    isInSSRComponentSetup = false;
+    return setupResult;
+}
+function setupStatefulComponent(instance, isSSR) {
+    var _a;
+    const Component = instance.type;
+    if ((true)) {
+        if (Component.name) {
+            validateComponentName(Component.name, instance.appContext.config);
+        }
+        if (Component.components) {
+            const names = Object.keys(Component.components);
+            for (let i = 0; i < names.length; i++) {
+                validateComponentName(names[i], instance.appContext.config);
+            }
+        }
+        if (Component.directives) {
+            const names = Object.keys(Component.directives);
+            for (let i = 0; i < names.length; i++) {
+                validateDirectiveName(names[i]);
+            }
+        }
+        if (Component.compilerOptions && isRuntimeOnly()) {
+            runtime_core_esm_bundler_warn(`"compilerOptions" is only supported when using a build of Vue that ` +
+                `includes the runtime compiler. Since you are using a runtime-only ` +
+                `build, the options should be passed via your build tool config instead.`);
+        }
+    }
+    // 0. create render proxy property access cache
+    instance.accessCache = Object.create(null);
+    // 1. create public instance / render proxy
+    // also mark it raw so it's never observed
+    instance.proxy = markRaw(new Proxy(instance.ctx, PublicInstanceProxyHandlers));
+    if ((true)) {
+        exposePropsOnRenderContext(instance);
+    }
+    // 2. call setup()
+    const { setup } = Component;
+    if (setup) {
+        const setupContext = (instance.setupContext =
+            setup.length > 1 ? createSetupContext(instance) : null);
+        setCurrentInstance(instance);
+        pauseTracking();
+        const setupResult = callWithErrorHandling(setup, instance, 0 /* SETUP_FUNCTION */, [( true) ? shallowReadonly(instance.props) : 0, setupContext]);
+        resetTracking();
+        unsetCurrentInstance();
+        if (isPromise(setupResult)) {
+            setupResult.then(unsetCurrentInstance, unsetCurrentInstance);
+            if (isSSR) {
+                // return the promise so server-renderer can wait on it
+                return setupResult
+                    .then((resolvedResult) => {
+                    handleSetupResult(instance, resolvedResult, isSSR);
+                })
+                    .catch(e => {
+                    handleError(e, instance, 0 /* SETUP_FUNCTION */);
+                });
+            }
+            else {
+                // async setup returned Promise.
+                // bail here and wait for re-entry.
+                instance.asyncDep = setupResult;
+                if (( true) && !instance.suspense) {
+                    const name = (_a = Component.name) !== null && _a !== void 0 ? _a : 'Anonymous';
+                    runtime_core_esm_bundler_warn(`Component <${name}>: setup function returned a promise, but no ` +
+                        `<Suspense> boundary was found in the parent component tree. ` +
+                        `A component with async setup() must be nested in a <Suspense> ` +
+                        `in order to be rendered.`);
+                }
+            }
+        }
+        else {
+            handleSetupResult(instance, setupResult, isSSR);
+        }
+    }
+    else {
+        finishComponentSetup(instance, isSSR);
+    }
+}
+function handleSetupResult(instance, setupResult, isSSR) {
+    if (isFunction(setupResult)) {
+        // setup returned an inline render function
+        if (instance.type.__ssrInlineRender) {
+            // when the function's name is `ssrRender` (compiled by SFC inline mode),
+            // set it as ssrRender instead.
+            instance.ssrRender = setupResult;
+        }
+        else {
+            instance.render = setupResult;
+        }
+    }
+    else if (isObject(setupResult)) {
+        if (( true) && isVNode(setupResult)) {
+            runtime_core_esm_bundler_warn(`setup() should not return VNodes directly - ` +
+                `return a render function instead.`);
+        }
+        // setup returned bindings.
+        // assuming a render function compiled from template is present.
+        if (true) {
+            instance.devtoolsRawSetupState = setupResult;
+        }
+        instance.setupState = proxyRefs(setupResult);
+        if ((true)) {
+            exposeSetupStateOnRenderContext(instance);
+        }
+    }
+    else if (( true) && setupResult !== undefined) {
+        runtime_core_esm_bundler_warn(`setup() should return an object. Received: ${setupResult === null ? 'null' : typeof setupResult}`);
+    }
+    finishComponentSetup(instance, isSSR);
+}
+let compile;
+let installWithProxy;
+/**
+ * For runtime-dom to register the compiler.
+ * Note the exported method uses any to avoid d.ts relying on the compiler types.
+ */
+function registerRuntimeCompiler(_compile) {
+    compile = _compile;
+    installWithProxy = i => {
+        if (i.render._rc) {
+            i.withProxy = new Proxy(i.ctx, RuntimeCompiledPublicInstanceProxyHandlers);
+        }
+    };
+}
+// dev only
+const isRuntimeOnly = () => !compile;
+function finishComponentSetup(instance, isSSR, skipOptions) {
+    const Component = instance.type;
+    // template / render function normalization
+    // could be already set when returned from setup()
+    if (!instance.render) {
+        // only do on-the-fly compile if not in SSR - SSR on-the-fly compilation
+        // is done by server-renderer
+        if (!isSSR && compile && !Component.render) {
+            const template = Component.template;
+            if (template) {
+                if ((true)) {
+                    startMeasure(instance, `compile`);
+                }
+                const { isCustomElement, compilerOptions } = instance.appContext.config;
+                const { delimiters, compilerOptions: componentCompilerOptions } = Component;
+                const finalCompilerOptions = extend(extend({
+                    isCustomElement,
+                    delimiters
+                }, compilerOptions), componentCompilerOptions);
+                Component.render = compile(template, finalCompilerOptions);
+                if ((true)) {
+                    endMeasure(instance, `compile`);
+                }
+            }
+        }
+        instance.render = (Component.render || NOOP);
+        // for runtime-compiled render functions using `with` blocks, the render
+        // proxy used needs a different `has` handler which is more performant and
+        // also only allows a whitelist of globals to fallthrough.
+        if (installWithProxy) {
+            installWithProxy(instance);
+        }
+    }
+    // support for 2.x options
+    if (__VUE_OPTIONS_API__ && !(false )) {
+        setCurrentInstance(instance);
+        pauseTracking();
+        applyOptions(instance);
+        resetTracking();
+        unsetCurrentInstance();
+    }
+    // warn missing template/render
+    // the runtime compilation of template in SSR is done by server-render
+    if (( true) && !Component.render && instance.render === NOOP && !isSSR) {
+        /* istanbul ignore if */
+        if (!compile && Component.template) {
+            runtime_core_esm_bundler_warn(`Component provided template option but ` +
+                `runtime compilation is not supported in this build of Vue.` +
+                (` Configure your bundler to alias "vue" to "vue/dist/vue.esm-bundler.js".`
+                    ) /* should not happen */);
+        }
+        else {
+            runtime_core_esm_bundler_warn(`Component is missing template or render function.`);
+        }
+    }
+}
+function createAttrsProxy(instance) {
+    return new Proxy(instance.attrs, ( true)
+        ? {
+            get(target, key) {
+                markAttrsAccessed();
+                track(instance, "get" /* GET */, '$attrs');
+                return target[key];
+            },
+            set() {
+                runtime_core_esm_bundler_warn(`setupContext.attrs is readonly.`);
+                return false;
+            },
+            deleteProperty() {
+                runtime_core_esm_bundler_warn(`setupContext.attrs is readonly.`);
+                return false;
+            }
+        }
+        : 0);
+}
+function createSetupContext(instance) {
+    const expose = exposed => {
+        if (( true) && instance.exposed) {
+            runtime_core_esm_bundler_warn(`expose() should be called only once per setup().`);
+        }
+        instance.exposed = exposed || {};
+    };
+    let attrs;
+    if ((true)) {
+        // We use getters in dev in case libs like test-utils overwrite instance
+        // properties (overwrites should not be done in prod)
+        return Object.freeze({
+            get attrs() {
+                return attrs || (attrs = createAttrsProxy(instance));
+            },
+            get slots() {
+                return shallowReadonly(instance.slots);
+            },
+            get emit() {
+                return (event, ...args) => instance.emit(event, ...args);
+            },
+            expose
+        });
+    }
+    else {}
+}
+function getExposeProxy(instance) {
+    if (instance.exposed) {
+        return (instance.exposeProxy ||
+            (instance.exposeProxy = new Proxy(proxyRefs(markRaw(instance.exposed)), {
+                get(target, key) {
+                    if (key in target) {
+                        return target[key];
+                    }
+                    else if (key in publicPropertiesMap) {
+                        return publicPropertiesMap[key](instance);
+                    }
+                }
+            })));
+    }
+}
+const classifyRE = /(?:^|[-_])(\w)/g;
+const classify = (str) => str.replace(classifyRE, c => c.toUpperCase()).replace(/[-_]/g, '');
+function getComponentName(Component) {
+    return isFunction(Component)
+        ? Component.displayName || Component.name
+        : Component.name;
+}
+/* istanbul ignore next */
+function formatComponentName(instance, Component, isRoot = false) {
+    let name = getComponentName(Component);
+    if (!name && Component.__file) {
+        const match = Component.__file.match(/([^/\\]+)\.\w+$/);
+        if (match) {
+            name = match[1];
+        }
+    }
+    if (!name && instance && instance.parent) {
+        // try to infer the name based on reverse resolution
+        const inferFromRegistry = (registry) => {
+            for (const key in registry) {
+                if (registry[key] === Component) {
+                    return key;
+                }
+            }
+        };
+        name =
+            inferFromRegistry(instance.components ||
+                instance.parent.type.components) || inferFromRegistry(instance.appContext.components);
+    }
+    return name ? classify(name) : isRoot ? `App` : `Anonymous`;
+}
+function isClassComponent(value) {
+    return isFunction(value) && '__vccOpts' in value;
+}
+
+const runtime_core_esm_bundler_computed = ((getterOrOptions, debugOptions) => {
+    // @ts-ignore
+    return computed(getterOrOptions, debugOptions, isInSSRComponentSetup);
+});
+
+// dev only
+const warnRuntimeUsage = (method) => runtime_core_esm_bundler_warn(`${method}() is a compiler-hint helper that is only usable inside ` +
+    `<script setup> of a single file component. Its arguments should be ` +
+    `compiled away and passing it at runtime has no effect.`);
+// implementation
+function defineProps() {
+    if ((true)) {
+        warnRuntimeUsage(`defineProps`);
+    }
+    return null;
+}
+// implementation
+function defineEmits() {
+    if ((true)) {
+        warnRuntimeUsage(`defineEmits`);
+    }
+    return null;
+}
+/**
+ * Vue `<script setup>` compiler macro for declaring a component's exposed
+ * instance properties when it is accessed by a parent component via template
+ * refs.
+ *
+ * `<script setup>` components are closed by default - i.e. variables inside
+ * the `<script setup>` scope is not exposed to parent unless explicitly exposed
+ * via `defineExpose`.
+ *
+ * This is only usable inside `<script setup>`, is compiled away in the
+ * output and should **not** be actually called at runtime.
+ */
+function defineExpose(exposed) {
+    if ((true)) {
+        warnRuntimeUsage(`defineExpose`);
+    }
+}
+/**
+ * Vue `<script setup>` compiler macro for providing props default values when
+ * using type-based `defineProps` declaration.
+ *
+ * Example usage:
+ * ```ts
+ * withDefaults(defineProps<{
+ *   size?: number
+ *   labels?: string[]
+ * }>(), {
+ *   size: 3,
+ *   labels: () => ['default label']
+ * })
+ * ```
+ *
+ * This is only usable inside `<script setup>`, is compiled away in the output
+ * and should **not** be actually called at runtime.
+ */
+function withDefaults(props, defaults) {
+    if ((true)) {
+        warnRuntimeUsage(`withDefaults`);
+    }
+    return null;
+}
+function useSlots() {
+    return getContext().slots;
+}
+function useAttrs() {
+    return getContext().attrs;
+}
+function getContext() {
+    const i = getCurrentInstance();
+    if (( true) && !i) {
+        runtime_core_esm_bundler_warn(`useContext() called without active instance.`);
+    }
+    return i.setupContext || (i.setupContext = createSetupContext(i));
+}
+/**
+ * Runtime helper for merging default declarations. Imported by compiled code
+ * only.
+ * @internal
+ */
+function mergeDefaults(raw, defaults) {
+    const props = isArray(raw)
+        ? raw.reduce((normalized, p) => ((normalized[p] = {}), normalized), {})
+        : raw;
+    for (const key in defaults) {
+        const opt = props[key];
+        if (opt) {
+            if (isArray(opt) || isFunction(opt)) {
+                props[key] = { type: opt, default: defaults[key] };
+            }
+            else {
+                opt.default = defaults[key];
+            }
+        }
+        else if (opt === null) {
+            props[key] = { default: defaults[key] };
+        }
+        else if ((true)) {
+            runtime_core_esm_bundler_warn(`props default key "${key}" has no corresponding declaration.`);
+        }
+    }
+    return props;
+}
+/**
+ * Used to create a proxy for the rest element when destructuring props with
+ * defineProps().
+ * @internal
+ */
+function createPropsRestProxy(props, excludedKeys) {
+    const ret = {};
+    for (const key in props) {
+        if (!excludedKeys.includes(key)) {
+            Object.defineProperty(ret, key, {
+                enumerable: true,
+                get: () => props[key]
+            });
+        }
+    }
+    return ret;
+}
+/**
+ * `<script setup>` helper for persisting the current instance context over
+ * async/await flows.
+ *
+ * `@vue/compiler-sfc` converts the following:
+ *
+ * ```ts
+ * const x = await foo()
+ * ```
+ *
+ * into:
+ *
+ * ```ts
+ * let __temp, __restore
+ * const x = (([__temp, __restore] = withAsyncContext(() => foo())),__temp=await __temp,__restore(),__temp)
+ * ```
+ * @internal
+ */
+function withAsyncContext(getAwaitable) {
+    const ctx = getCurrentInstance();
+    if (( true) && !ctx) {
+        runtime_core_esm_bundler_warn(`withAsyncContext called without active current instance. ` +
+            `This is likely a bug.`);
+    }
+    let awaitable = getAwaitable();
+    unsetCurrentInstance();
+    if (isPromise(awaitable)) {
+        awaitable = awaitable.catch(e => {
+            setCurrentInstance(ctx);
+            throw e;
+        });
+    }
+    return [awaitable, () => setCurrentInstance(ctx)];
+}
+
+// Actual implementation
+function h(type, propsOrChildren, children) {
+    const l = arguments.length;
+    if (l === 2) {
+        if (isObject(propsOrChildren) && !isArray(propsOrChildren)) {
+            // single vnode without props
+            if (isVNode(propsOrChildren)) {
+                return createVNode(type, null, [propsOrChildren]);
+            }
+            // props without children
+            return createVNode(type, propsOrChildren);
+        }
+        else {
+            // omit props
+            return createVNode(type, null, propsOrChildren);
+        }
+    }
+    else {
+        if (l > 3) {
+            children = Array.prototype.slice.call(arguments, 2);
+        }
+        else if (l === 3 && isVNode(children)) {
+            children = [children];
+        }
+        return createVNode(type, propsOrChildren, children);
+    }
+}
+
+const ssrContextKey = Symbol(( true) ? `ssrContext` : 0);
+const useSSRContext = () => {
+    {
+        const ctx = inject(ssrContextKey);
+        if (!ctx) {
+            runtime_core_esm_bundler_warn(`Server rendering context not provided. Make sure to only call ` +
+                `useSSRContext() conditionally in the server build.`);
+        }
+        return ctx;
+    }
+};
+
+function runtime_core_esm_bundler_isShallow(value) {
+    return !!(value && value["__v_isShallow" /* IS_SHALLOW */]);
+}
+
+function initCustomFormatter() {
+    /* eslint-disable no-restricted-globals */
+    if ( false || typeof window === 'undefined') {
+        return;
+    }
+    const vueStyle = { style: 'color:#3ba776' };
+    const numberStyle = { style: 'color:#0b1bc9' };
+    const stringStyle = { style: 'color:#b62e24' };
+    const keywordStyle = { style: 'color:#9d288c' };
+    // custom formatter for Chrome
+    // https://www.mattzeunert.com/2016/02/19/custom-chrome-devtools-object-formatters.html
+    const formatter = {
+        header(obj) {
+            // TODO also format ComponentPublicInstance & ctx.slots/attrs in setup
+            if (!isObject(obj)) {
+                return null;
+            }
+            if (obj.__isVue) {
+                return ['div', vueStyle, `VueInstance`];
+            }
+            else if (isRef(obj)) {
+                return [
+                    'div',
+                    {},
+                    ['span', vueStyle, genRefFlag(obj)],
+                    '<',
+                    formatValue(obj.value),
+                    `>`
+                ];
+            }
+            else if (isReactive(obj)) {
+                return [
+                    'div',
+                    {},
+                    ['span', vueStyle, runtime_core_esm_bundler_isShallow(obj) ? 'ShallowReactive' : 'Reactive'],
+                    '<',
+                    formatValue(obj),
+                    `>${isReadonly(obj) ? ` (readonly)` : ``}`
+                ];
+            }
+            else if (isReadonly(obj)) {
+                return [
+                    'div',
+                    {},
+                    ['span', vueStyle, runtime_core_esm_bundler_isShallow(obj) ? 'ShallowReadonly' : 'Readonly'],
+                    '<',
+                    formatValue(obj),
+                    '>'
+                ];
+            }
+            return null;
+        },
+        hasBody(obj) {
+            return obj && obj.__isVue;
+        },
+        body(obj) {
+            if (obj && obj.__isVue) {
+                return [
+                    'div',
+                    {},
+                    ...formatInstance(obj.$)
+                ];
+            }
+        }
+    };
+    function formatInstance(instance) {
+        const blocks = [];
+        if (instance.type.props && instance.props) {
+            blocks.push(createInstanceBlock('props', toRaw(instance.props)));
+        }
+        if (instance.setupState !== EMPTY_OBJ) {
+            blocks.push(createInstanceBlock('setup', instance.setupState));
+        }
+        if (instance.data !== EMPTY_OBJ) {
+            blocks.push(createInstanceBlock('data', toRaw(instance.data)));
+        }
+        const computed = extractKeys(instance, 'computed');
+        if (computed) {
+            blocks.push(createInstanceBlock('computed', computed));
+        }
+        const injected = extractKeys(instance, 'inject');
+        if (injected) {
+            blocks.push(createInstanceBlock('injected', injected));
+        }
+        blocks.push([
+            'div',
+            {},
+            [
+                'span',
+                {
+                    style: keywordStyle.style + ';opacity:0.66'
+                },
+                '$ (internal): '
+            ],
+            ['object', { object: instance }]
+        ]);
+        return blocks;
+    }
+    function createInstanceBlock(type, target) {
+        target = extend({}, target);
+        if (!Object.keys(target).length) {
+            return ['span', {}];
+        }
+        return [
+            'div',
+            { style: 'line-height:1.25em;margin-bottom:0.6em' },
+            [
+                'div',
+                {
+                    style: 'color:#476582'
+                },
+                type
+            ],
+            [
+                'div',
+                {
+                    style: 'padding-left:1.25em'
+                },
+                ...Object.keys(target).map(key => {
+                    return [
+                        'div',
+                        {},
+                        ['span', keywordStyle, key + ': '],
+                        formatValue(target[key], false)
+                    ];
+                })
+            ]
+        ];
+    }
+    function formatValue(v, asRaw = true) {
+        if (typeof v === 'number') {
+            return ['span', numberStyle, v];
+        }
+        else if (typeof v === 'string') {
+            return ['span', stringStyle, JSON.stringify(v)];
+        }
+        else if (typeof v === 'boolean') {
+            return ['span', keywordStyle, v];
+        }
+        else if (isObject(v)) {
+            return ['object', { object: asRaw ? toRaw(v) : v }];
+        }
+        else {
+            return ['span', stringStyle, String(v)];
+        }
+    }
+    function extractKeys(instance, type) {
+        const Comp = instance.type;
+        if (isFunction(Comp)) {
+            return;
+        }
+        const extracted = {};
+        for (const key in instance.ctx) {
+            if (isKeyOfType(Comp, key, type)) {
+                extracted[key] = instance.ctx[key];
+            }
+        }
+        return extracted;
+    }
+    function isKeyOfType(Comp, key, type) {
+        const opts = Comp[type];
+        if ((isArray(opts) && opts.includes(key)) ||
+            (isObject(opts) && key in opts)) {
+            return true;
+        }
+        if (Comp.extends && isKeyOfType(Comp.extends, key, type)) {
+            return true;
+        }
+        if (Comp.mixins && Comp.mixins.some(m => isKeyOfType(m, key, type))) {
+            return true;
+        }
+    }
+    function genRefFlag(v) {
+        if (runtime_core_esm_bundler_isShallow(v)) {
+            return `ShallowRef`;
+        }
+        if (v.effect) {
+            return `ComputedRef`;
+        }
+        return `Ref`;
+    }
+    if (window.devtoolsFormatters) {
+        window.devtoolsFormatters.push(formatter);
+    }
+    else {
+        window.devtoolsFormatters = [formatter];
+    }
+}
+
+function withMemo(memo, render, cache, index) {
+    const cached = cache[index];
+    if (cached && isMemoSame(cached, memo)) {
+        return cached;
+    }
+    const ret = render();
+    // shallow clone
+    ret.memo = memo.slice();
+    return (cache[index] = ret);
+}
+function isMemoSame(cached, memo) {
+    const prev = cached.memo;
+    if (prev.length != memo.length) {
+        return false;
+    }
+    for (let i = 0; i < prev.length; i++) {
+        if (prev[i] !== memo[i]) {
+            return false;
+        }
+    }
+    // make sure to let parent block track it when returning cached
+    if (isBlockTreeEnabled > 0 && currentBlock) {
+        currentBlock.push(cached);
+    }
+    return true;
+}
+
+// Core API ------------------------------------------------------------------
+const version = "3.2.33";
+const _ssrUtils = {
+    createComponentInstance,
+    setupComponent,
+    renderComponentRoot,
+    setCurrentRenderingInstance,
+    isVNode,
+    normalizeVNode
+};
+/**
+ * SSR utils for \@vue/server-renderer. Only exposed in cjs builds.
+ * @internal
+ */
+const ssrUtils = (_ssrUtils );
+/**
+ * @internal only exposed in compat builds
+ */
+const resolveFilter = null;
+/**
+ * @internal only exposed in compat builds.
+ */
+const compatUtils = (null);
+
+
+
+;// CONCATENATED MODULE: ./node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js
+
+
+
+
+const svgNS = 'http://www.w3.org/2000/svg';
+const doc = (typeof document !== 'undefined' ? document : null);
+const templateContainer = doc && /*#__PURE__*/ doc.createElement('template');
+const nodeOps = {
+    insert: (child, parent, anchor) => {
+        parent.insertBefore(child, anchor || null);
+    },
+    remove: child => {
+        const parent = child.parentNode;
+        if (parent) {
+            parent.removeChild(child);
+        }
+    },
+    createElement: (tag, isSVG, is, props) => {
+        const el = isSVG
+            ? doc.createElementNS(svgNS, tag)
+            : doc.createElement(tag, is ? { is } : undefined);
+        if (tag === 'select' && props && props.multiple != null) {
+            el.setAttribute('multiple', props.multiple);
+        }
+        return el;
+    },
+    createText: text => doc.createTextNode(text),
+    createComment: text => doc.createComment(text),
+    setText: (node, text) => {
+        node.nodeValue = text;
+    },
+    setElementText: (el, text) => {
+        el.textContent = text;
+    },
+    parentNode: node => node.parentNode,
+    nextSibling: node => node.nextSibling,
+    querySelector: selector => doc.querySelector(selector),
+    setScopeId(el, id) {
+        el.setAttribute(id, '');
+    },
+    cloneNode(el) {
+        const cloned = el.cloneNode(true);
+        // #3072
+        // - in `patchDOMProp`, we store the actual value in the `el._value` property.
+        // - normally, elements using `:value` bindings will not be hoisted, but if
+        //   the bound value is a constant, e.g. `:value="true"` - they do get
+        //   hoisted.
+        // - in production, hoisted nodes are cloned when subsequent inserts, but
+        //   cloneNode() does not copy the custom property we attached.
+        // - This may need to account for other custom DOM properties we attach to
+        //   elements in addition to `_value` in the future.
+        if (`_value` in el) {
+            cloned._value = el._value;
+        }
+        return cloned;
+    },
+    // __UNSAFE__
+    // Reason: innerHTML.
+    // Static content here can only come from compiled templates.
+    // As long as the user only uses trusted templates, this is safe.
+    insertStaticContent(content, parent, anchor, isSVG, start, end) {
+        // <parent> before | first ... last | anchor </parent>
+        const before = anchor ? anchor.previousSibling : parent.lastChild;
+        // #5308 can only take cached path if:
+        // - has a single root node
+        // - nextSibling info is still available
+        if (start && (start === end || start.nextSibling)) {
+            // cached
+            while (true) {
+                parent.insertBefore(start.cloneNode(true), anchor);
+                if (start === end || !(start = start.nextSibling))
+                    break;
+            }
+        }
+        else {
+            // fresh insert
+            templateContainer.innerHTML = isSVG ? `<svg>${content}</svg>` : content;
+            const template = templateContainer.content;
+            if (isSVG) {
+                // remove outer svg wrapper
+                const wrapper = template.firstChild;
+                while (wrapper.firstChild) {
+                    template.appendChild(wrapper.firstChild);
+                }
+                template.removeChild(wrapper);
+            }
+            parent.insertBefore(template, anchor);
+        }
+        return [
+            // first
+            before ? before.nextSibling : parent.firstChild,
+            // last
+            anchor ? anchor.previousSibling : parent.lastChild
+        ];
+    }
+};
+
+// compiler should normalize class + :class bindings on the same element
+// into a single binding ['staticClass', dynamic]
+function patchClass(el, value, isSVG) {
+    // directly setting className should be faster than setAttribute in theory
+    // if this is an element during a transition, take the temporary transition
+    // classes into account.
+    const transitionClasses = el._vtc;
+    if (transitionClasses) {
+        value = (value ? [value, ...transitionClasses] : [...transitionClasses]).join(' ');
+    }
+    if (value == null) {
+        el.removeAttribute('class');
+    }
+    else if (isSVG) {
+        el.setAttribute('class', value);
+    }
+    else {
+        el.className = value;
+    }
+}
+
+function patchStyle(el, prev, next) {
+    const style = el.style;
+    const isCssString = isString(next);
+    if (next && !isCssString) {
+        for (const key in next) {
+            setStyle(style, key, next[key]);
+        }
+        if (prev && !isString(prev)) {
+            for (const key in prev) {
+                if (next[key] == null) {
+                    setStyle(style, key, '');
+                }
+            }
+        }
+    }
+    else {
+        const currentDisplay = style.display;
+        if (isCssString) {
+            if (prev !== next) {
+                style.cssText = next;
+            }
+        }
+        else if (prev) {
+            el.removeAttribute('style');
+        }
+        // indicates that the `display` of the element is controlled by `v-show`,
+        // so we always keep the current `display` value regardless of the `style`
+        // value, thus handing over control to `v-show`.
+        if ('_vod' in el) {
+            style.display = currentDisplay;
+        }
+    }
+}
+const importantRE = /\s*!important$/;
+function setStyle(style, name, val) {
+    if (isArray(val)) {
+        val.forEach(v => setStyle(style, name, v));
+    }
+    else {
+        if (val == null)
+            val = '';
+        if (name.startsWith('--')) {
+            // custom property definition
+            style.setProperty(name, val);
+        }
+        else {
+            const prefixed = autoPrefix(style, name);
+            if (importantRE.test(val)) {
+                // !important
+                style.setProperty(hyphenate(prefixed), val.replace(importantRE, ''), 'important');
+            }
+            else {
+                style[prefixed] = val;
+            }
+        }
+    }
+}
+const prefixes = ['Webkit', 'Moz', 'ms'];
+const prefixCache = {};
+function autoPrefix(style, rawName) {
+    const cached = prefixCache[rawName];
+    if (cached) {
+        return cached;
+    }
+    let name = camelize(rawName);
+    if (name !== 'filter' && name in style) {
+        return (prefixCache[rawName] = name);
+    }
+    name = capitalize(name);
+    for (let i = 0; i < prefixes.length; i++) {
+        const prefixed = prefixes[i] + name;
+        if (prefixed in style) {
+            return (prefixCache[rawName] = prefixed);
+        }
+    }
+    return rawName;
+}
+
+const xlinkNS = 'http://www.w3.org/1999/xlink';
+function patchAttr(el, key, value, isSVG, instance) {
+    if (isSVG && key.startsWith('xlink:')) {
+        if (value == null) {
+            el.removeAttributeNS(xlinkNS, key.slice(6, key.length));
+        }
+        else {
+            el.setAttributeNS(xlinkNS, key, value);
+        }
+    }
+    else {
+        // note we are only checking boolean attributes that don't have a
+        // corresponding dom prop of the same name here.
+        const isBoolean = isSpecialBooleanAttr(key);
+        if (value == null || (isBoolean && !includeBooleanAttr(value))) {
+            el.removeAttribute(key);
+        }
+        else {
+            el.setAttribute(key, isBoolean ? '' : value);
+        }
+    }
+}
+
+// __UNSAFE__
+// functions. The user is responsible for using them with only trusted content.
+function patchDOMProp(el, key, value, 
+// the following args are passed only due to potential innerHTML/textContent
+// overriding existing VNodes, in which case the old tree must be properly
+// unmounted.
+prevChildren, parentComponent, parentSuspense, unmountChildren) {
+    if (key === 'innerHTML' || key === 'textContent') {
+        if (prevChildren) {
+            unmountChildren(prevChildren, parentComponent, parentSuspense);
+        }
+        el[key] = value == null ? '' : value;
+        return;
+    }
+    if (key === 'value' &&
+        el.tagName !== 'PROGRESS' &&
+        // custom elements may use _value internally
+        !el.tagName.includes('-')) {
+        // store value as _value as well since
+        // non-string values will be stringified.
+        el._value = value;
+        const newValue = value == null ? '' : value;
+        if (el.value !== newValue ||
+            // #4956: always set for OPTION elements because its value falls back to
+            // textContent if no value attribute is present. And setting .value for
+            // OPTION has no side effect
+            el.tagName === 'OPTION') {
+            el.value = newValue;
+        }
+        if (value == null) {
+            el.removeAttribute(key);
+        }
+        return;
+    }
+    let needRemove = false;
+    if (value === '' || value == null) {
+        const type = typeof el[key];
+        if (type === 'boolean') {
+            // e.g. <select multiple> compiles to { multiple: '' }
+            value = includeBooleanAttr(value);
+        }
+        else if (value == null && type === 'string') {
+            // e.g. <div :id="null">
+            value = '';
+            needRemove = true;
+        }
+        else if (type === 'number') {
+            // e.g. <img :width="null">
+            // the value of some IDL attr must be greater than 0, e.g. input.size = 0 -> error
+            value = 0;
+            needRemove = true;
+        }
+    }
+    // some properties perform value validation and throw,
+    // some properties has getter, no setter, will error in 'use strict'
+    // eg. <select :type="null"></select> <select :willValidate="null"></select>
+    try {
+        el[key] = value;
+    }
+    catch (e) {
+        if ((true)) {
+            runtime_core_esm_bundler_warn(`Failed setting prop "${key}" on <${el.tagName.toLowerCase()}>: ` +
+                `value ${value} is invalid.`, e);
+        }
+    }
+    needRemove && el.removeAttribute(key);
+}
+
+// Async edge case fix requires storing an event listener's attach timestamp.
+const [_getNow, skipTimestampCheck] = /*#__PURE__*/ (() => {
+    let _getNow = Date.now;
+    let skipTimestampCheck = false;
+    if (typeof window !== 'undefined') {
+        // Determine what event timestamp the browser is using. Annoyingly, the
+        // timestamp can either be hi-res (relative to page load) or low-res
+        // (relative to UNIX epoch), so in order to compare time we have to use the
+        // same timestamp type when saving the flush timestamp.
+        if (Date.now() > document.createEvent('Event').timeStamp) {
+            // if the low-res timestamp which is bigger than the event timestamp
+            // (which is evaluated AFTER) it means the event is using a hi-res timestamp,
+            // and we need to use the hi-res version for event listeners as well.
+            _getNow = () => performance.now();
+        }
+        // #3485: Firefox <= 53 has incorrect Event.timeStamp implementation
+        // and does not fire microtasks in between event propagation, so safe to exclude.
+        const ffMatch = navigator.userAgent.match(/firefox\/(\d+)/i);
+        skipTimestampCheck = !!(ffMatch && Number(ffMatch[1]) <= 53);
+    }
+    return [_getNow, skipTimestampCheck];
+})();
+// To avoid the overhead of repeatedly calling performance.now(), we cache
+// and use the same timestamp for all event listeners attached in the same tick.
+let cachedNow = 0;
+const p = /*#__PURE__*/ Promise.resolve();
+const runtime_dom_esm_bundler_reset = () => {
+    cachedNow = 0;
+};
+const getNow = () => cachedNow || (p.then(runtime_dom_esm_bundler_reset), (cachedNow = _getNow()));
+function addEventListener(el, event, handler, options) {
+    el.addEventListener(event, handler, options);
+}
+function removeEventListener(el, event, handler, options) {
+    el.removeEventListener(event, handler, options);
+}
+function patchEvent(el, rawName, prevValue, nextValue, instance = null) {
+    // vei = vue event invokers
+    const invokers = el._vei || (el._vei = {});
+    const existingInvoker = invokers[rawName];
+    if (nextValue && existingInvoker) {
+        // patch
+        existingInvoker.value = nextValue;
+    }
+    else {
+        const [name, options] = parseName(rawName);
+        if (nextValue) {
+            // add
+            const invoker = (invokers[rawName] = createInvoker(nextValue, instance));
+            addEventListener(el, name, invoker, options);
+        }
+        else if (existingInvoker) {
+            // remove
+            removeEventListener(el, name, existingInvoker, options);
+            invokers[rawName] = undefined;
+        }
+    }
+}
+const optionsModifierRE = /(?:Once|Passive|Capture)$/;
+function parseName(name) {
+    let options;
+    if (optionsModifierRE.test(name)) {
+        options = {};
+        let m;
+        while ((m = name.match(optionsModifierRE))) {
+            name = name.slice(0, name.length - m[0].length);
+            options[m[0].toLowerCase()] = true;
+        }
+    }
+    return [hyphenate(name.slice(2)), options];
+}
+function createInvoker(initialValue, instance) {
+    const invoker = (e) => {
+        // async edge case #6566: inner click event triggers patch, event handler
+        // attached to outer element during patch, and triggered again. This
+        // happens because browsers fire microtask ticks between event propagation.
+        // the solution is simple: we save the timestamp when a handler is attached,
+        // and the handler would only fire if the event passed to it was fired
+        // AFTER it was attached.
+        const timeStamp = e.timeStamp || _getNow();
+        if (skipTimestampCheck || timeStamp >= invoker.attached - 1) {
+            callWithAsyncErrorHandling(patchStopImmediatePropagation(e, invoker.value), instance, 5 /* NATIVE_EVENT_HANDLER */, [e]);
+        }
+    };
+    invoker.value = initialValue;
+    invoker.attached = getNow();
+    return invoker;
+}
+function patchStopImmediatePropagation(e, value) {
+    if (isArray(value)) {
+        const originalStop = e.stopImmediatePropagation;
+        e.stopImmediatePropagation = () => {
+            originalStop.call(e);
+            e._stopped = true;
+        };
+        return value.map(fn => (e) => !e._stopped && fn && fn(e));
+    }
+    else {
+        return value;
+    }
+}
+
+const nativeOnRE = /^on[a-z]/;
+const patchProp = (el, key, prevValue, nextValue, isSVG = false, prevChildren, parentComponent, parentSuspense, unmountChildren) => {
+    if (key === 'class') {
+        patchClass(el, nextValue, isSVG);
+    }
+    else if (key === 'style') {
+        patchStyle(el, prevValue, nextValue);
+    }
+    else if (isOn(key)) {
+        // ignore v-model listeners
+        if (!isModelListener(key)) {
+            patchEvent(el, key, prevValue, nextValue, parentComponent);
+        }
+    }
+    else if (key[0] === '.'
+        ? ((key = key.slice(1)), true)
+        : key[0] === '^'
+            ? ((key = key.slice(1)), false)
+            : shouldSetAsProp(el, key, nextValue, isSVG)) {
+        patchDOMProp(el, key, nextValue, prevChildren, parentComponent, parentSuspense, unmountChildren);
+    }
+    else {
+        // special case for <input v-model type="checkbox"> with
+        // :true-value & :false-value
+        // store value as dom properties since non-string values will be
+        // stringified.
+        if (key === 'true-value') {
+            el._trueValue = nextValue;
+        }
+        else if (key === 'false-value') {
+            el._falseValue = nextValue;
+        }
+        patchAttr(el, key, nextValue, isSVG);
+    }
+};
+function shouldSetAsProp(el, key, value, isSVG) {
+    if (isSVG) {
+        // most keys must be set as attribute on svg elements to work
+        // ...except innerHTML & textContent
+        if (key === 'innerHTML' || key === 'textContent') {
+            return true;
+        }
+        // or native onclick with function values
+        if (key in el && nativeOnRE.test(key) && isFunction(value)) {
+            return true;
+        }
+        return false;
+    }
+    // these are enumerated attrs, however their corresponding DOM properties
+    // are actually booleans - this leads to setting it with a string "false"
+    // value leading it to be coerced to `true`, so we need to always treat
+    // them as attributes.
+    // Note that `contentEditable` doesn't have this problem: its DOM
+    // property is also enumerated string values.
+    if (key === 'spellcheck' || key === 'draggable' || key === 'translate') {
+        return false;
+    }
+    // #1787, #2840 form property on form elements is readonly and must be set as
+    // attribute.
+    if (key === 'form') {
+        return false;
+    }
+    // #1526 <input list> must be set as attribute
+    if (key === 'list' && el.tagName === 'INPUT') {
+        return false;
+    }
+    // #2766 <textarea type> must be set as attribute
+    if (key === 'type' && el.tagName === 'TEXTAREA') {
+        return false;
+    }
+    // native onclick with string value, must be set as attribute
+    if (nativeOnRE.test(key) && isString(value)) {
+        return false;
+    }
+    return key in el;
+}
+
+function defineCustomElement(options, hydate) {
+    const Comp = defineComponent(options);
+    class VueCustomElement extends VueElement {
+        constructor(initialProps) {
+            super(Comp, initialProps, hydate);
+        }
+    }
+    VueCustomElement.def = Comp;
+    return VueCustomElement;
+}
+const defineSSRCustomElement = ((options) => {
+    // @ts-ignore
+    return defineCustomElement(options, hydrate);
+});
+const BaseClass = (typeof HTMLElement !== 'undefined' ? HTMLElement : class {
+});
+class VueElement extends BaseClass {
+    constructor(_def, _props = {}, hydrate) {
+        super();
+        this._def = _def;
+        this._props = _props;
+        /**
+         * @internal
+         */
+        this._instance = null;
+        this._connected = false;
+        this._resolved = false;
+        this._numberProps = null;
+        if (this.shadowRoot && hydrate) {
+            hydrate(this._createVNode(), this.shadowRoot);
+        }
+        else {
+            if (( true) && this.shadowRoot) {
+                runtime_core_esm_bundler_warn(`Custom element has pre-rendered declarative shadow root but is not ` +
+                    `defined as hydratable. Use \`defineSSRCustomElement\`.`);
+            }
+            this.attachShadow({ mode: 'open' });
+        }
+    }
+    connectedCallback() {
+        this._connected = true;
+        if (!this._instance) {
+            this._resolveDef();
+        }
+    }
+    disconnectedCallback() {
+        this._connected = false;
+        nextTick(() => {
+            if (!this._connected) {
+                render(null, this.shadowRoot);
+                this._instance = null;
+            }
+        });
+    }
+    /**
+     * resolve inner component definition (handle possible async component)
+     */
+    _resolveDef() {
+        if (this._resolved) {
+            return;
+        }
+        this._resolved = true;
+        // set initial attrs
+        for (let i = 0; i < this.attributes.length; i++) {
+            this._setAttr(this.attributes[i].name);
+        }
+        // watch future attr changes
+        new MutationObserver(mutations => {
+            for (const m of mutations) {
+                this._setAttr(m.attributeName);
+            }
+        }).observe(this, { attributes: true });
+        const resolve = (def) => {
+            const { props, styles } = def;
+            const hasOptions = !isArray(props);
+            const rawKeys = props ? (hasOptions ? Object.keys(props) : props) : [];
+            // cast Number-type props set before resolve
+            let numberProps;
+            if (hasOptions) {
+                for (const key in this._props) {
+                    const opt = props[key];
+                    if (opt === Number || (opt && opt.type === Number)) {
+                        this._props[key] = toNumber(this._props[key]);
+                        (numberProps || (numberProps = Object.create(null)))[key] = true;
+                    }
+                }
+            }
+            this._numberProps = numberProps;
+            // check if there are props set pre-upgrade or connect
+            for (const key of Object.keys(this)) {
+                if (key[0] !== '_') {
+                    this._setProp(key, this[key], true, false);
+                }
+            }
+            // defining getter/setters on prototype
+            for (const key of rawKeys.map(camelize)) {
+                Object.defineProperty(this, key, {
+                    get() {
+                        return this._getProp(key);
+                    },
+                    set(val) {
+                        this._setProp(key, val);
+                    }
+                });
+            }
+            // apply CSS
+            this._applyStyles(styles);
+            // initial render
+            this._update();
+        };
+        const asyncDef = this._def.__asyncLoader;
+        if (asyncDef) {
+            asyncDef().then(resolve);
+        }
+        else {
+            resolve(this._def);
+        }
+    }
+    _setAttr(key) {
+        let value = this.getAttribute(key);
+        if (this._numberProps && this._numberProps[key]) {
+            value = toNumber(value);
+        }
+        this._setProp(camelize(key), value, false);
+    }
+    /**
+     * @internal
+     */
+    _getProp(key) {
+        return this._props[key];
+    }
+    /**
+     * @internal
+     */
+    _setProp(key, val, shouldReflect = true, shouldUpdate = true) {
+        if (val !== this._props[key]) {
+            this._props[key] = val;
+            if (shouldUpdate && this._instance) {
+                this._update();
+            }
+            // reflect
+            if (shouldReflect) {
+                if (val === true) {
+                    this.setAttribute(hyphenate(key), '');
+                }
+                else if (typeof val === 'string' || typeof val === 'number') {
+                    this.setAttribute(hyphenate(key), val + '');
+                }
+                else if (!val) {
+                    this.removeAttribute(hyphenate(key));
+                }
+            }
+        }
+    }
+    _update() {
+        render(this._createVNode(), this.shadowRoot);
+    }
+    _createVNode() {
+        const vnode = createVNode(this._def, extend({}, this._props));
+        if (!this._instance) {
+            vnode.ce = instance => {
+                this._instance = instance;
+                instance.isCE = true;
+                // HMR
+                if ((true)) {
+                    instance.ceReload = newStyles => {
+                        // always reset styles
+                        if (this._styles) {
+                            this._styles.forEach(s => this.shadowRoot.removeChild(s));
+                            this._styles.length = 0;
+                        }
+                        this._applyStyles(newStyles);
+                        // if this is an async component, ceReload is called from the inner
+                        // component so no need to reload the async wrapper
+                        if (!this._def.__asyncLoader) {
+                            // reload
+                            this._instance = null;
+                            this._update();
+                        }
+                    };
+                }
+                // intercept emit
+                instance.emit = (event, ...args) => {
+                    this.dispatchEvent(new CustomEvent(event, {
+                        detail: args
+                    }));
+                };
+                // locate nearest Vue custom element parent for provide/inject
+                let parent = this;
+                while ((parent =
+                    parent && (parent.parentNode || parent.host))) {
+                    if (parent instanceof VueElement) {
+                        instance.parent = parent._instance;
+                        break;
+                    }
+                }
+            };
+        }
+        return vnode;
+    }
+    _applyStyles(styles) {
+        if (styles) {
+            styles.forEach(css => {
+                const s = document.createElement('style');
+                s.textContent = css;
+                this.shadowRoot.appendChild(s);
+                // record for HMR
+                if ((true)) {
+                    (this._styles || (this._styles = [])).push(s);
+                }
+            });
+        }
+    }
+}
+
+function useCssModule(name = '$style') {
+    /* istanbul ignore else */
+    {
+        const instance = getCurrentInstance();
+        if (!instance) {
+            ( true) && runtime_core_esm_bundler_warn(`useCssModule must be called inside setup()`);
+            return EMPTY_OBJ;
+        }
+        const modules = instance.type.__cssModules;
+        if (!modules) {
+            ( true) && runtime_core_esm_bundler_warn(`Current instance does not have CSS modules injected.`);
+            return EMPTY_OBJ;
+        }
+        const mod = modules[name];
+        if (!mod) {
+            ( true) &&
+                runtime_core_esm_bundler_warn(`Current instance does not have CSS module named "${name}".`);
+            return EMPTY_OBJ;
+        }
+        return mod;
+    }
+}
+
+/**
+ * Runtime helper for SFC's CSS variable injection feature.
+ * @private
+ */
+function useCssVars(getter) {
+    const instance = getCurrentInstance();
+    /* istanbul ignore next */
+    if (!instance) {
+        ( true) &&
+            runtime_core_esm_bundler_warn(`useCssVars is called without current active component instance.`);
+        return;
+    }
+    const setVars = () => setVarsOnVNode(instance.subTree, getter(instance.proxy));
+    watchPostEffect(setVars);
+    onMounted(() => {
+        const ob = new MutationObserver(setVars);
+        ob.observe(instance.subTree.el.parentNode, { childList: true });
+        onUnmounted(() => ob.disconnect());
+    });
+}
+function setVarsOnVNode(vnode, vars) {
+    if (vnode.shapeFlag & 128 /* SUSPENSE */) {
+        const suspense = vnode.suspense;
+        vnode = suspense.activeBranch;
+        if (suspense.pendingBranch && !suspense.isHydrating) {
+            suspense.effects.push(() => {
+                setVarsOnVNode(suspense.activeBranch, vars);
+            });
+        }
+    }
+    // drill down HOCs until it's a non-component vnode
+    while (vnode.component) {
+        vnode = vnode.component.subTree;
+    }
+    if (vnode.shapeFlag & 1 /* ELEMENT */ && vnode.el) {
+        setVarsOnNode(vnode.el, vars);
+    }
+    else if (vnode.type === Fragment) {
+        vnode.children.forEach(c => setVarsOnVNode(c, vars));
+    }
+    else if (vnode.type === Static) {
+        let { el, anchor } = vnode;
+        while (el) {
+            setVarsOnNode(el, vars);
+            if (el === anchor)
+                break;
+            el = el.nextSibling;
+        }
+    }
+}
+function setVarsOnNode(el, vars) {
+    if (el.nodeType === 1) {
+        const style = el.style;
+        for (const key in vars) {
+            style.setProperty(`--${key}`, vars[key]);
+        }
+    }
+}
+
+const TRANSITION = 'transition';
+const ANIMATION = 'animation';
+// DOM Transition is a higher-order-component based on the platform-agnostic
+// base Transition component, with DOM-specific logic.
+const Transition = (props, { slots }) => h(BaseTransition, resolveTransitionProps(props), slots);
+Transition.displayName = 'Transition';
+const DOMTransitionPropsValidators = {
+    name: String,
+    type: String,
+    css: {
+        type: Boolean,
+        default: true
+    },
+    duration: [String, Number, Object],
+    enterFromClass: String,
+    enterActiveClass: String,
+    enterToClass: String,
+    appearFromClass: String,
+    appearActiveClass: String,
+    appearToClass: String,
+    leaveFromClass: String,
+    leaveActiveClass: String,
+    leaveToClass: String
+};
+const TransitionPropsValidators = (Transition.props =
+    /*#__PURE__*/ extend({}, BaseTransition.props, DOMTransitionPropsValidators));
+/**
+ * #3227 Incoming hooks may be merged into arrays when wrapping Transition
+ * with custom HOCs.
+ */
+const runtime_dom_esm_bundler_callHook = (hook, args = []) => {
+    if (isArray(hook)) {
+        hook.forEach(h => h(...args));
+    }
+    else if (hook) {
+        hook(...args);
+    }
+};
+/**
+ * Check if a hook expects a callback (2nd arg), which means the user
+ * intends to explicitly control the end of the transition.
+ */
+const hasExplicitCallback = (hook) => {
+    return hook
+        ? isArray(hook)
+            ? hook.some(h => h.length > 1)
+            : hook.length > 1
+        : false;
+};
+function resolveTransitionProps(rawProps) {
+    const baseProps = {};
+    for (const key in rawProps) {
+        if (!(key in DOMTransitionPropsValidators)) {
+            baseProps[key] = rawProps[key];
+        }
+    }
+    if (rawProps.css === false) {
+        return baseProps;
+    }
+    const { name = 'v', type, duration, enterFromClass = `${name}-enter-from`, enterActiveClass = `${name}-enter-active`, enterToClass = `${name}-enter-to`, appearFromClass = enterFromClass, appearActiveClass = enterActiveClass, appearToClass = enterToClass, leaveFromClass = `${name}-leave-from`, leaveActiveClass = `${name}-leave-active`, leaveToClass = `${name}-leave-to` } = rawProps;
+    const durations = normalizeDuration(duration);
+    const enterDuration = durations && durations[0];
+    const leaveDuration = durations && durations[1];
+    const { onBeforeEnter, onEnter, onEnterCancelled, onLeave, onLeaveCancelled, onBeforeAppear = onBeforeEnter, onAppear = onEnter, onAppearCancelled = onEnterCancelled } = baseProps;
+    const finishEnter = (el, isAppear, done) => {
+        removeTransitionClass(el, isAppear ? appearToClass : enterToClass);
+        removeTransitionClass(el, isAppear ? appearActiveClass : enterActiveClass);
+        done && done();
+    };
+    const finishLeave = (el, done) => {
+        removeTransitionClass(el, leaveToClass);
+        removeTransitionClass(el, leaveActiveClass);
+        done && done();
+    };
+    const makeEnterHook = (isAppear) => {
+        return (el, done) => {
+            const hook = isAppear ? onAppear : onEnter;
+            const resolve = () => finishEnter(el, isAppear, done);
+            runtime_dom_esm_bundler_callHook(hook, [el, resolve]);
+            nextFrame(() => {
+                removeTransitionClass(el, isAppear ? appearFromClass : enterFromClass);
+                addTransitionClass(el, isAppear ? appearToClass : enterToClass);
+                if (!hasExplicitCallback(hook)) {
+                    whenTransitionEnds(el, type, enterDuration, resolve);
+                }
+            });
+        };
+    };
+    return extend(baseProps, {
+        onBeforeEnter(el) {
+            runtime_dom_esm_bundler_callHook(onBeforeEnter, [el]);
+            addTransitionClass(el, enterFromClass);
+            addTransitionClass(el, enterActiveClass);
+        },
+        onBeforeAppear(el) {
+            runtime_dom_esm_bundler_callHook(onBeforeAppear, [el]);
+            addTransitionClass(el, appearFromClass);
+            addTransitionClass(el, appearActiveClass);
+        },
+        onEnter: makeEnterHook(false),
+        onAppear: makeEnterHook(true),
+        onLeave(el, done) {
+            const resolve = () => finishLeave(el, done);
+            addTransitionClass(el, leaveFromClass);
+            // force reflow so *-leave-from classes immediately take effect (#2593)
+            forceReflow();
+            addTransitionClass(el, leaveActiveClass);
+            nextFrame(() => {
+                removeTransitionClass(el, leaveFromClass);
+                addTransitionClass(el, leaveToClass);
+                if (!hasExplicitCallback(onLeave)) {
+                    whenTransitionEnds(el, type, leaveDuration, resolve);
+                }
+            });
+            runtime_dom_esm_bundler_callHook(onLeave, [el, resolve]);
+        },
+        onEnterCancelled(el) {
+            finishEnter(el, false);
+            runtime_dom_esm_bundler_callHook(onEnterCancelled, [el]);
+        },
+        onAppearCancelled(el) {
+            finishEnter(el, true);
+            runtime_dom_esm_bundler_callHook(onAppearCancelled, [el]);
+        },
+        onLeaveCancelled(el) {
+            finishLeave(el);
+            runtime_dom_esm_bundler_callHook(onLeaveCancelled, [el]);
+        }
+    });
+}
+function normalizeDuration(duration) {
+    if (duration == null) {
+        return null;
+    }
+    else if (isObject(duration)) {
+        return [NumberOf(duration.enter), NumberOf(duration.leave)];
+    }
+    else {
+        const n = NumberOf(duration);
+        return [n, n];
+    }
+}
+function NumberOf(val) {
+    const res = toNumber(val);
+    if ((true))
+        validateDuration(res);
+    return res;
+}
+function validateDuration(val) {
+    if (typeof val !== 'number') {
+        runtime_core_esm_bundler_warn(`<transition> explicit duration is not a valid number - ` +
+            `got ${JSON.stringify(val)}.`);
+    }
+    else if (isNaN(val)) {
+        runtime_core_esm_bundler_warn(`<transition> explicit duration is NaN - ` +
+            'the duration expression might be incorrect.');
+    }
+}
+function addTransitionClass(el, cls) {
+    cls.split(/\s+/).forEach(c => c && el.classList.add(c));
+    (el._vtc ||
+        (el._vtc = new Set())).add(cls);
+}
+function removeTransitionClass(el, cls) {
+    cls.split(/\s+/).forEach(c => c && el.classList.remove(c));
+    const { _vtc } = el;
+    if (_vtc) {
+        _vtc.delete(cls);
+        if (!_vtc.size) {
+            el._vtc = undefined;
+        }
+    }
+}
+function nextFrame(cb) {
+    requestAnimationFrame(() => {
+        requestAnimationFrame(cb);
+    });
+}
+let endId = 0;
+function whenTransitionEnds(el, expectedType, explicitTimeout, resolve) {
+    const id = (el._endId = ++endId);
+    const resolveIfNotStale = () => {
+        if (id === el._endId) {
+            resolve();
+        }
+    };
+    if (explicitTimeout) {
+        return setTimeout(resolveIfNotStale, explicitTimeout);
+    }
+    const { type, timeout, propCount } = getTransitionInfo(el, expectedType);
+    if (!type) {
+        return resolve();
+    }
+    const endEvent = type + 'end';
+    let ended = 0;
+    const end = () => {
+        el.removeEventListener(endEvent, onEnd);
+        resolveIfNotStale();
+    };
+    const onEnd = (e) => {
+        if (e.target === el && ++ended >= propCount) {
+            end();
+        }
+    };
+    setTimeout(() => {
+        if (ended < propCount) {
+            end();
+        }
+    }, timeout + 1);
+    el.addEventListener(endEvent, onEnd);
+}
+function getTransitionInfo(el, expectedType) {
+    const styles = window.getComputedStyle(el);
+    // JSDOM may return undefined for transition properties
+    const getStyleProperties = (key) => (styles[key] || '').split(', ');
+    const transitionDelays = getStyleProperties(TRANSITION + 'Delay');
+    const transitionDurations = getStyleProperties(TRANSITION + 'Duration');
+    const transitionTimeout = getTimeout(transitionDelays, transitionDurations);
+    const animationDelays = getStyleProperties(ANIMATION + 'Delay');
+    const animationDurations = getStyleProperties(ANIMATION + 'Duration');
+    const animationTimeout = getTimeout(animationDelays, animationDurations);
+    let type = null;
+    let timeout = 0;
+    let propCount = 0;
+    /* istanbul ignore if */
+    if (expectedType === TRANSITION) {
+        if (transitionTimeout > 0) {
+            type = TRANSITION;
+            timeout = transitionTimeout;
+            propCount = transitionDurations.length;
+        }
+    }
+    else if (expectedType === ANIMATION) {
+        if (animationTimeout > 0) {
+            type = ANIMATION;
+            timeout = animationTimeout;
+            propCount = animationDurations.length;
+        }
+    }
+    else {
+        timeout = Math.max(transitionTimeout, animationTimeout);
+        type =
+            timeout > 0
+                ? transitionTimeout > animationTimeout
+                    ? TRANSITION
+                    : ANIMATION
+                : null;
+        propCount = type
+            ? type === TRANSITION
+                ? transitionDurations.length
+                : animationDurations.length
+            : 0;
+    }
+    const hasTransform = type === TRANSITION &&
+        /\b(transform|all)(,|$)/.test(styles[TRANSITION + 'Property']);
+    return {
+        type,
+        timeout,
+        propCount,
+        hasTransform
+    };
+}
+function getTimeout(delays, durations) {
+    while (delays.length < durations.length) {
+        delays = delays.concat(delays);
+    }
+    return Math.max(...durations.map((d, i) => toMs(d) + toMs(delays[i])));
+}
+// Old versions of Chromium (below 61.0.3163.100) formats floating pointer
+// numbers in a locale-dependent way, using a comma instead of a dot.
+// If comma is not replaced with a dot, the input will be rounded down
+// (i.e. acting as a floor function) causing unexpected behaviors
+function toMs(s) {
+    return Number(s.slice(0, -1).replace(',', '.')) * 1000;
+}
+// synchronously force layout to put elements into a certain state
+function forceReflow() {
+    return document.body.offsetHeight;
+}
+
+const positionMap = new WeakMap();
+const newPositionMap = new WeakMap();
+const TransitionGroupImpl = {
+    name: 'TransitionGroup',
+    props: /*#__PURE__*/ extend({}, TransitionPropsValidators, {
+        tag: String,
+        moveClass: String
+    }),
+    setup(props, { slots }) {
+        const instance = getCurrentInstance();
+        const state = useTransitionState();
+        let prevChildren;
+        let children;
+        onUpdated(() => {
+            // children is guaranteed to exist after initial render
+            if (!prevChildren.length) {
+                return;
+            }
+            const moveClass = props.moveClass || `${props.name || 'v'}-move`;
+            if (!hasCSSTransform(prevChildren[0].el, instance.vnode.el, moveClass)) {
+                return;
+            }
+            // we divide the work into three loops to avoid mixing DOM reads and writes
+            // in each iteration - which helps prevent layout thrashing.
+            prevChildren.forEach(callPendingCbs);
+            prevChildren.forEach(recordPosition);
+            const movedChildren = prevChildren.filter(applyTranslation);
+            // force reflow to put everything in position
+            forceReflow();
+            movedChildren.forEach(c => {
+                const el = c.el;
+                const style = el.style;
+                addTransitionClass(el, moveClass);
+                style.transform = style.webkitTransform = style.transitionDuration = '';
+                const cb = (el._moveCb = (e) => {
+                    if (e && e.target !== el) {
+                        return;
+                    }
+                    if (!e || /transform$/.test(e.propertyName)) {
+                        el.removeEventListener('transitionend', cb);
+                        el._moveCb = null;
+                        removeTransitionClass(el, moveClass);
+                    }
+                });
+                el.addEventListener('transitionend', cb);
+            });
+        });
+        return () => {
+            const rawProps = toRaw(props);
+            const cssTransitionProps = resolveTransitionProps(rawProps);
+            let tag = rawProps.tag || Fragment;
+            prevChildren = children;
+            children = slots.default ? getTransitionRawChildren(slots.default()) : [];
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                if (child.key != null) {
+                    setTransitionHooks(child, resolveTransitionHooks(child, cssTransitionProps, state, instance));
+                }
+                else if ((true)) {
+                    runtime_core_esm_bundler_warn(`<TransitionGroup> children must be keyed.`);
+                }
+            }
+            if (prevChildren) {
+                for (let i = 0; i < prevChildren.length; i++) {
+                    const child = prevChildren[i];
+                    setTransitionHooks(child, resolveTransitionHooks(child, cssTransitionProps, state, instance));
+                    positionMap.set(child, child.el.getBoundingClientRect());
+                }
+            }
+            return createVNode(tag, null, children);
+        };
+    }
+};
+const TransitionGroup = TransitionGroupImpl;
+function callPendingCbs(c) {
+    const el = c.el;
+    if (el._moveCb) {
+        el._moveCb();
+    }
+    if (el._enterCb) {
+        el._enterCb();
+    }
+}
+function recordPosition(c) {
+    newPositionMap.set(c, c.el.getBoundingClientRect());
+}
+function applyTranslation(c) {
+    const oldPos = positionMap.get(c);
+    const newPos = newPositionMap.get(c);
+    const dx = oldPos.left - newPos.left;
+    const dy = oldPos.top - newPos.top;
+    if (dx || dy) {
+        const s = c.el.style;
+        s.transform = s.webkitTransform = `translate(${dx}px,${dy}px)`;
+        s.transitionDuration = '0s';
+        return c;
+    }
+}
+function hasCSSTransform(el, root, moveClass) {
+    // Detect whether an element with the move class applied has
+    // CSS transitions. Since the element may be inside an entering
+    // transition at this very moment, we make a clone of it and remove
+    // all other transition classes applied to ensure only the move class
+    // is applied.
+    const clone = el.cloneNode();
+    if (el._vtc) {
+        el._vtc.forEach(cls => {
+            cls.split(/\s+/).forEach(c => c && clone.classList.remove(c));
+        });
+    }
+    moveClass.split(/\s+/).forEach(c => c && clone.classList.add(c));
+    clone.style.display = 'none';
+    const container = (root.nodeType === 1 ? root : root.parentNode);
+    container.appendChild(clone);
+    const { hasTransform } = getTransitionInfo(clone);
+    container.removeChild(clone);
+    return hasTransform;
+}
+
+const getModelAssigner = (vnode) => {
+    const fn = vnode.props['onUpdate:modelValue'];
+    return isArray(fn) ? value => invokeArrayFns(fn, value) : fn;
+};
+function onCompositionStart(e) {
+    e.target.composing = true;
+}
+function onCompositionEnd(e) {
+    const target = e.target;
+    if (target.composing) {
+        target.composing = false;
+        runtime_dom_esm_bundler_trigger(target, 'input');
+    }
+}
+function runtime_dom_esm_bundler_trigger(el, type) {
+    const e = document.createEvent('HTMLEvents');
+    e.initEvent(type, true, true);
+    el.dispatchEvent(e);
+}
+// We are exporting the v-model runtime directly as vnode hooks so that it can
+// be tree-shaken in case v-model is never used.
+const vModelText = {
+    created(el, { modifiers: { lazy, trim, number } }, vnode) {
+        el._assign = getModelAssigner(vnode);
+        const castToNumber = number || (vnode.props && vnode.props.type === 'number');
+        addEventListener(el, lazy ? 'change' : 'input', e => {
+            if (e.target.composing)
+                return;
+            let domValue = el.value;
+            if (trim) {
+                domValue = domValue.trim();
+            }
+            else if (castToNumber) {
+                domValue = toNumber(domValue);
+            }
+            el._assign(domValue);
+        });
+        if (trim) {
+            addEventListener(el, 'change', () => {
+                el.value = el.value.trim();
+            });
+        }
+        if (!lazy) {
+            addEventListener(el, 'compositionstart', onCompositionStart);
+            addEventListener(el, 'compositionend', onCompositionEnd);
+            // Safari < 10.2 & UIWebView doesn't fire compositionend when
+            // switching focus before confirming composition choice
+            // this also fixes the issue where some browsers e.g. iOS Chrome
+            // fires "change" instead of "input" on autocomplete.
+            addEventListener(el, 'change', onCompositionEnd);
+        }
+    },
+    // set value on mounted so it's after min/max for type="range"
+    mounted(el, { value }) {
+        el.value = value == null ? '' : value;
+    },
+    beforeUpdate(el, { value, modifiers: { lazy, trim, number } }, vnode) {
+        el._assign = getModelAssigner(vnode);
+        // avoid clearing unresolved text. #2302
+        if (el.composing)
+            return;
+        if (document.activeElement === el) {
+            if (lazy) {
+                return;
+            }
+            if (trim && el.value.trim() === value) {
+                return;
+            }
+            if ((number || el.type === 'number') && toNumber(el.value) === value) {
+                return;
+            }
+        }
+        const newValue = value == null ? '' : value;
+        if (el.value !== newValue) {
+            el.value = newValue;
+        }
+    }
+};
+const vModelCheckbox = {
+    // #4096 array checkboxes need to be deep traversed
+    deep: true,
+    created(el, _, vnode) {
+        el._assign = getModelAssigner(vnode);
+        addEventListener(el, 'change', () => {
+            const modelValue = el._modelValue;
+            const elementValue = getValue(el);
+            const checked = el.checked;
+            const assign = el._assign;
+            if (isArray(modelValue)) {
+                const index = looseIndexOf(modelValue, elementValue);
+                const found = index !== -1;
+                if (checked && !found) {
+                    assign(modelValue.concat(elementValue));
+                }
+                else if (!checked && found) {
+                    const filtered = [...modelValue];
+                    filtered.splice(index, 1);
+                    assign(filtered);
+                }
+            }
+            else if (isSet(modelValue)) {
+                const cloned = new Set(modelValue);
+                if (checked) {
+                    cloned.add(elementValue);
+                }
+                else {
+                    cloned.delete(elementValue);
+                }
+                assign(cloned);
+            }
+            else {
+                assign(getCheckboxValue(el, checked));
+            }
+        });
+    },
+    // set initial checked on mount to wait for true-value/false-value
+    mounted: setChecked,
+    beforeUpdate(el, binding, vnode) {
+        el._assign = getModelAssigner(vnode);
+        setChecked(el, binding, vnode);
+    }
+};
+function setChecked(el, { value, oldValue }, vnode) {
+    el._modelValue = value;
+    if (isArray(value)) {
+        el.checked = looseIndexOf(value, vnode.props.value) > -1;
+    }
+    else if (isSet(value)) {
+        el.checked = value.has(vnode.props.value);
+    }
+    else if (value !== oldValue) {
+        el.checked = looseEqual(value, getCheckboxValue(el, true));
+    }
+}
+const vModelRadio = {
+    created(el, { value }, vnode) {
+        el.checked = looseEqual(value, vnode.props.value);
+        el._assign = getModelAssigner(vnode);
+        addEventListener(el, 'change', () => {
+            el._assign(getValue(el));
+        });
+    },
+    beforeUpdate(el, { value, oldValue }, vnode) {
+        el._assign = getModelAssigner(vnode);
+        if (value !== oldValue) {
+            el.checked = looseEqual(value, vnode.props.value);
+        }
+    }
+};
+const vModelSelect = {
+    // <select multiple> value need to be deep traversed
+    deep: true,
+    created(el, { value, modifiers: { number } }, vnode) {
+        const isSetModel = isSet(value);
+        addEventListener(el, 'change', () => {
+            const selectedVal = Array.prototype.filter
+                .call(el.options, (o) => o.selected)
+                .map((o) => number ? toNumber(getValue(o)) : getValue(o));
+            el._assign(el.multiple
+                ? isSetModel
+                    ? new Set(selectedVal)
+                    : selectedVal
+                : selectedVal[0]);
+        });
+        el._assign = getModelAssigner(vnode);
+    },
+    // set value in mounted & updated because <select> relies on its children
+    // <option>s.
+    mounted(el, { value }) {
+        setSelected(el, value);
+    },
+    beforeUpdate(el, _binding, vnode) {
+        el._assign = getModelAssigner(vnode);
+    },
+    updated(el, { value }) {
+        setSelected(el, value);
+    }
+};
+function setSelected(el, value) {
+    const isMultiple = el.multiple;
+    if (isMultiple && !isArray(value) && !isSet(value)) {
+        ( true) &&
+            runtime_core_esm_bundler_warn(`<select multiple v-model> expects an Array or Set value for its binding, ` +
+                `but got ${Object.prototype.toString.call(value).slice(8, -1)}.`);
+        return;
+    }
+    for (let i = 0, l = el.options.length; i < l; i++) {
+        const option = el.options[i];
+        const optionValue = getValue(option);
+        if (isMultiple) {
+            if (isArray(value)) {
+                option.selected = looseIndexOf(value, optionValue) > -1;
+            }
+            else {
+                option.selected = value.has(optionValue);
+            }
+        }
+        else {
+            if (looseEqual(getValue(option), value)) {
+                if (el.selectedIndex !== i)
+                    el.selectedIndex = i;
+                return;
+            }
+        }
+    }
+    if (!isMultiple && el.selectedIndex !== -1) {
+        el.selectedIndex = -1;
+    }
+}
+// retrieve raw value set via :value bindings
+function getValue(el) {
+    return '_value' in el ? el._value : el.value;
+}
+// retrieve raw value for true-value and false-value set via :true-value or :false-value bindings
+function getCheckboxValue(el, checked) {
+    const key = checked ? '_trueValue' : '_falseValue';
+    return key in el ? el[key] : checked;
+}
+const vModelDynamic = {
+    created(el, binding, vnode) {
+        callModelHook(el, binding, vnode, null, 'created');
+    },
+    mounted(el, binding, vnode) {
+        callModelHook(el, binding, vnode, null, 'mounted');
+    },
+    beforeUpdate(el, binding, vnode, prevVNode) {
+        callModelHook(el, binding, vnode, prevVNode, 'beforeUpdate');
+    },
+    updated(el, binding, vnode, prevVNode) {
+        callModelHook(el, binding, vnode, prevVNode, 'updated');
+    }
+};
+function callModelHook(el, binding, vnode, prevVNode, hook) {
+    let modelToUse;
+    switch (el.tagName) {
+        case 'SELECT':
+            modelToUse = vModelSelect;
+            break;
+        case 'TEXTAREA':
+            modelToUse = vModelText;
+            break;
+        default:
+            switch (vnode.props && vnode.props.type) {
+                case 'checkbox':
+                    modelToUse = vModelCheckbox;
+                    break;
+                case 'radio':
+                    modelToUse = vModelRadio;
+                    break;
+                default:
+                    modelToUse = vModelText;
+            }
+    }
+    const fn = modelToUse[hook];
+    fn && fn(el, binding, vnode, prevVNode);
+}
+// SSR vnode transforms, only used when user includes client-oriented render
+// function in SSR
+function initVModelForSSR() {
+    vModelText.getSSRProps = ({ value }) => ({ value });
+    vModelRadio.getSSRProps = ({ value }, vnode) => {
+        if (vnode.props && looseEqual(vnode.props.value, value)) {
+            return { checked: true };
+        }
+    };
+    vModelCheckbox.getSSRProps = ({ value }, vnode) => {
+        if (isArray(value)) {
+            if (vnode.props && looseIndexOf(value, vnode.props.value) > -1) {
+                return { checked: true };
+            }
+        }
+        else if (isSet(value)) {
+            if (vnode.props && value.has(vnode.props.value)) {
+                return { checked: true };
+            }
+        }
+        else if (value) {
+            return { checked: true };
+        }
+    };
+}
+
+const systemModifiers = ['ctrl', 'shift', 'alt', 'meta'];
+const modifierGuards = {
+    stop: e => e.stopPropagation(),
+    prevent: e => e.preventDefault(),
+    self: e => e.target !== e.currentTarget,
+    ctrl: e => !e.ctrlKey,
+    shift: e => !e.shiftKey,
+    alt: e => !e.altKey,
+    meta: e => !e.metaKey,
+    left: e => 'button' in e && e.button !== 0,
+    middle: e => 'button' in e && e.button !== 1,
+    right: e => 'button' in e && e.button !== 2,
+    exact: (e, modifiers) => systemModifiers.some(m => e[`${m}Key`] && !modifiers.includes(m))
+};
+/**
+ * @private
+ */
+const withModifiers = (fn, modifiers) => {
+    return (event, ...args) => {
+        for (let i = 0; i < modifiers.length; i++) {
+            const guard = modifierGuards[modifiers[i]];
+            if (guard && guard(event, modifiers))
+                return;
+        }
+        return fn(event, ...args);
+    };
+};
+// Kept for 2.x compat.
+// Note: IE11 compat for `spacebar` and `del` is removed for now.
+const keyNames = {
+    esc: 'escape',
+    space: ' ',
+    up: 'arrow-up',
+    left: 'arrow-left',
+    right: 'arrow-right',
+    down: 'arrow-down',
+    delete: 'backspace'
+};
+/**
+ * @private
+ */
+const withKeys = (fn, modifiers) => {
+    return (event) => {
+        if (!('key' in event)) {
+            return;
+        }
+        const eventKey = hyphenate(event.key);
+        if (modifiers.some(k => k === eventKey || keyNames[k] === eventKey)) {
+            return fn(event);
+        }
+    };
+};
+
+const vShow = {
+    beforeMount(el, { value }, { transition }) {
+        el._vod = el.style.display === 'none' ? '' : el.style.display;
+        if (transition && value) {
+            transition.beforeEnter(el);
+        }
+        else {
+            setDisplay(el, value);
+        }
+    },
+    mounted(el, { value }, { transition }) {
+        if (transition && value) {
+            transition.enter(el);
+        }
+    },
+    updated(el, { value, oldValue }, { transition }) {
+        if (!value === !oldValue)
+            return;
+        if (transition) {
+            if (value) {
+                transition.beforeEnter(el);
+                setDisplay(el, true);
+                transition.enter(el);
+            }
+            else {
+                transition.leave(el, () => {
+                    setDisplay(el, false);
+                });
+            }
+        }
+        else {
+            setDisplay(el, value);
+        }
+    },
+    beforeUnmount(el, { value }) {
+        setDisplay(el, value);
+    }
+};
+function setDisplay(el, value) {
+    el.style.display = value ? el._vod : 'none';
+}
+// SSR vnode transforms, only used when user includes client-oriented render
+// function in SSR
+function initVShowForSSR() {
+    vShow.getSSRProps = ({ value }) => {
+        if (!value) {
+            return { style: { display: 'none' } };
+        }
+    };
+}
+
+const rendererOptions = /*#__PURE__*/ extend({ patchProp }, nodeOps);
+// lazy create the renderer - this makes core renderer logic tree-shakable
+// in case the user only imports reactivity utilities from Vue.
+let renderer;
+let enabledHydration = false;
+function ensureRenderer() {
+    return (renderer ||
+        (renderer = createRenderer(rendererOptions)));
+}
+function ensureHydrationRenderer() {
+    renderer = enabledHydration
+        ? renderer
+        : createHydrationRenderer(rendererOptions);
+    enabledHydration = true;
+    return renderer;
+}
+// use explicit type casts here to avoid import() calls in rolled-up d.ts
+const render = ((...args) => {
+    ensureRenderer().render(...args);
+});
+const hydrate = ((...args) => {
+    ensureHydrationRenderer().hydrate(...args);
+});
+const createApp = ((...args) => {
+    const app = ensureRenderer().createApp(...args);
+    if ((true)) {
+        injectNativeTagCheck(app);
+        injectCompilerOptionsCheck(app);
+    }
+    const { mount } = app;
+    app.mount = (containerOrSelector) => {
+        const container = normalizeContainer(containerOrSelector);
+        if (!container)
+            return;
+        const component = app._component;
+        if (!isFunction(component) && !component.render && !component.template) {
+            // __UNSAFE__
+            // Reason: potential execution of JS expressions in in-DOM template.
+            // The user must make sure the in-DOM template is trusted. If it's
+            // rendered by the server, the template should not contain any user data.
+            component.template = container.innerHTML;
+        }
+        // clear content before mounting
+        container.innerHTML = '';
+        const proxy = mount(container, false, container instanceof SVGElement);
+        if (container instanceof Element) {
+            container.removeAttribute('v-cloak');
+            container.setAttribute('data-v-app', '');
+        }
+        return proxy;
+    };
+    return app;
+});
+const createSSRApp = ((...args) => {
+    const app = ensureHydrationRenderer().createApp(...args);
+    if ((true)) {
+        injectNativeTagCheck(app);
+        injectCompilerOptionsCheck(app);
+    }
+    const { mount } = app;
+    app.mount = (containerOrSelector) => {
+        const container = normalizeContainer(containerOrSelector);
+        if (container) {
+            return mount(container, true, container instanceof SVGElement);
+        }
+    };
+    return app;
+});
+function injectNativeTagCheck(app) {
+    // Inject `isNativeTag`
+    // this is used for component name validation (dev only)
+    Object.defineProperty(app.config, 'isNativeTag', {
+        value: (tag) => isHTMLTag(tag) || isSVGTag(tag),
+        writable: false
+    });
+}
+// dev only
+function injectCompilerOptionsCheck(app) {
+    if (isRuntimeOnly()) {
+        const isCustomElement = app.config.isCustomElement;
+        Object.defineProperty(app.config, 'isCustomElement', {
+            get() {
+                return isCustomElement;
+            },
+            set() {
+                runtime_core_esm_bundler_warn(`The \`isCustomElement\` config option is deprecated. Use ` +
+                    `\`compilerOptions.isCustomElement\` instead.`);
+            }
+        });
+        const compilerOptions = app.config.compilerOptions;
+        const msg = `The \`compilerOptions\` config option is only respected when using ` +
+            `a build of Vue.js that includes the runtime compiler (aka "full build"). ` +
+            `Since you are using the runtime-only build, \`compilerOptions\` ` +
+            `must be passed to \`@vue/compiler-dom\` in the build setup instead.\n` +
+            `- For vue-loader: pass it via vue-loader's \`compilerOptions\` loader option.\n` +
+            `- For vue-cli: see https://cli.vuejs.org/guide/webpack.html#modifying-options-of-a-loader\n` +
+            `- For vite: pass it via @vitejs/plugin-vue options. See https://github.com/vitejs/vite/tree/main/packages/plugin-vue#example-for-passing-options-to-vuecompiler-dom`;
+        Object.defineProperty(app.config, 'compilerOptions', {
+            get() {
+                runtime_core_esm_bundler_warn(msg);
+                return compilerOptions;
+            },
+            set() {
+                runtime_core_esm_bundler_warn(msg);
+            }
+        });
+    }
+}
+function normalizeContainer(container) {
+    if (isString(container)) {
+        const res = document.querySelector(container);
+        if (( true) && !res) {
+            runtime_core_esm_bundler_warn(`Failed to mount app: mount target selector "${container}" returned null.`);
+        }
+        return res;
+    }
+    if (( true) &&
+        window.ShadowRoot &&
+        container instanceof window.ShadowRoot &&
+        container.mode === 'closed') {
+        runtime_core_esm_bundler_warn(`mounting on a ShadowRoot with \`{mode: "closed"}\` may lead to unpredictable bugs`);
+    }
+    return container;
+}
+let ssrDirectiveInitialized = false;
+/**
+ * @internal
+ */
+const initDirectivesForSSR = () => {
+        if (!ssrDirectiveInitialized) {
+            ssrDirectiveInitialized = true;
+            initVModelForSSR();
+            initVShowForSSR();
+        }
+    }
+    ;
+
+
+
+;// CONCATENATED MODULE: ./node_modules/vue/dist/vue.runtime.esm-bundler.js
+
+
+
+function initDev() {
+    {
+        initCustomFormatter();
+    }
+}
+
+// This entry exports the runtime only, and is built as
+if ((true)) {
+    initDev();
+}
+const vue_runtime_esm_bundler_compile = () => {
+    if ((true)) {
+        runtime_core_esm_bundler_warn(`Runtime compilation is not supported in this build of Vue.` +
+            (` Configure your bundler to alias "vue" to "vue/dist/vue.esm-bundler.js".`
+                ) /* should not happen */);
+    }
+};
+
+
+
+;// CONCATENATED MODULE: ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[8].use[0]!./src/template/config.vue?vue&type=template&id=15d0b82e&scoped=true
+
+
+var _withScopeId = function _withScopeId(n) {
+  return pushScopeId("data-v-15d0b82e"), n = n(), popScopeId(), n;
+};
+
+var _hoisted_1 = {
+  id: "bp_config"
+};
+var _hoisted_2 = {
+  class: "bp_config_bg"
+};
+var _hoisted_3 = {
+  style: {
+    "font-size": "20px"
+  }
+};
+
+var _hoisted_4 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("b", null, "bilibili视频下载 参数设置", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_5 = {
+  style: {
+    "margin": "2% 0"
+  }
+};
+
+var _hoisted_6 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "请求地址：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_7 = ["value"];
+
+var _hoisted_8 = /*#__PURE__*/createTextVNode("     ");
+
+var _hoisted_9 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "请求方式：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_10 = ["value"];
+
+var _hoisted_11 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "auto"
+  }, "自动判断", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_12 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "local"
+  }, "本地请求", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_13 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "online"
+  }, "远程请求", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_14 = [_hoisted_11, _hoisted_12, _hoisted_13];
+
+var _hoisted_15 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_16 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("small", null, "注意：普通使用请勿修改；默认使用混合请求", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_17 = {
+  style: {
+    "margin": "2% 0"
+  }
+};
+
+var _hoisted_18 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "视频格式：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_19 = ["value"];
+
+var _hoisted_20 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "flv"
+  }, "FLV", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_21 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "dash"
+  }, "DASH", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_22 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "mp4"
+  }, "MP4", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_23 = [_hoisted_20, _hoisted_21, _hoisted_22];
+
+var _hoisted_24 = /*#__PURE__*/createTextVNode("     ");
+
+var _hoisted_25 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "切换CDN：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_26 = ["value"];
+var _hoisted_27 = ["value"];
+
+var _hoisted_28 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_29 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("small", null, "注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_30 = {
+  style: {
+    "margin": "2% 0"
+  }
+};
+
+var _hoisted_31 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "下载方式：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_32 = ["value"];
+
+var _hoisted_33 = /*#__PURE__*/createStaticVNode("<option value=\"a\" data-v-15d0b82e>URL链接</option><option value=\"web\" data-v-15d0b82e>Web浏览器</option><option value=\"blob\" data-v-15d0b82e>Blob请求</option><option value=\"rpc\" data-v-15d0b82e>RPC接口</option><option value=\"aria\" data-v-15d0b82e>Aria命令</option>", 5);
+
+var _hoisted_38 = [_hoisted_33];
+
+var _hoisted_39 = /*#__PURE__*/createTextVNode("     ");
+
+var _hoisted_40 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "AriaNg地址：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_41 = ["value"];
+
+var _hoisted_42 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_43 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("small", null, "提示：url和web方式不会设置文件名", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_44 = {
+  style: {
+    "margin": "2% 0"
+  }
+};
+
+var _hoisted_45 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_46 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_47 = ["value"];
+
+var _hoisted_48 = /*#__PURE__*/createTextVNode(" : ");
+
+var _hoisted_49 = ["value"];
+
+var _hoisted_50 = /*#__PURE__*/createTextVNode(" | ");
+
+var _hoisted_51 = ["value"];
+
+var _hoisted_52 = /*#__PURE__*/createTextVNode(" | ");
+
+var _hoisted_53 = ["value"];
+
+var _hoisted_54 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_55 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("small", null, "注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_56 = {
+  style: {
+    "margin": "2% 0"
+  }
+};
+
+var _hoisted_57 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "强制换源：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_58 = ["value"];
+
+var _hoisted_59 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "0"
+  }, "关闭", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_60 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "1"
+  }, "开启", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_61 = [_hoisted_59, _hoisted_60];
+
+var _hoisted_62 = /*#__PURE__*/createTextVNode("     ");
+
+var _hoisted_63 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "弹幕速度：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_64 = ["value"];
+
+var _hoisted_65 = /*#__PURE__*/createTextVNode(" s     ");
+
+var _hoisted_66 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "弹幕字号：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_67 = ["value"];
+
+var _hoisted_68 = /*#__PURE__*/createTextVNode(" px ");
+
+var _hoisted_69 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_70 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("small", null, "说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_71 = {
+  style: {
+    "margin": "2% 0"
+  }
+};
+
+var _hoisted_72 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "自动下载：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_73 = ["value"];
+
+var _hoisted_74 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "0"
+  }, "关闭", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_75 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("option", {
+    value: "1"
+  }, "开启", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_76 = [_hoisted_74, _hoisted_75];
+
+var _hoisted_77 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_78 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("small", null, "说明：请求地址成功后将自动点击下载视频按钮", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_79 = {
+  style: {
+    "margin": "2% 0"
+  }
+};
+
+var _hoisted_80 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("label", null, "授权状态：", -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_81 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("select", {
+    id: "auth",
+    value: "{{config.auth}}",
+    disabled: ""
+  }, [/*#__PURE__*/createBaseVNode("option", {
+    value: "0"
+  }, "未授权"), /*#__PURE__*/createBaseVNode("option", {
+    value: "1"
+  }, "已授权")], -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_82 = {
+  style: {
+    "text-align": "right"
+  }
+};
+
+var _hoisted_83 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1, [createBaseVNode("div", _hoisted_2, [createBaseVNode("span", _hoisted_3, [_hoisted_4, createBaseVNode("b", null, [createBaseVNode("a", {
+    href: "javascript:;",
+    onClick: _cache[0] || (_cache[0] = function ($event) {
+      return $options.reset_config();
+    })
+  }, " [重置] "), createBaseVNode("a", {
+    style: {
+      "text-decoration": "underline"
+    },
+    href: "javascript:;",
+    onClick: _cache[1] || (_cache[1] = function ($event) {
+      return $options.show_help();
+    })
+  }, "<通知/帮助>")])]), createBaseVNode("div", _hoisted_5, [_hoisted_6, createBaseVNode("input", {
+    value: $data.config.base_api,
+    onInput: _cache[2] || (_cache[2] = function ($event) {
+      return $data.config.base_api = $event.target.value;
+    }),
+    style: {
+      "width": "30%"
+    }
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_7), _hoisted_8, _hoisted_9, createBaseVNode("select", {
+    value: $data.config.request_type,
+    onInput: _cache[3] || (_cache[3] = function ($event) {
+      return $data.config.request_type = $event.target.value;
+    })
+  }, _hoisted_14, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_10), _hoisted_15, _hoisted_16]), createBaseVNode("div", _hoisted_17, [_hoisted_18, createBaseVNode("select", {
+    value: $data.config.format,
+    onInput: _cache[4] || (_cache[4] = function ($event) {
+      return $data.config.format = $event.target.value;
+    })
+  }, _hoisted_23, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_19), _hoisted_24, _hoisted_25, createBaseVNode("select", {
+    value: $data.config.host_key,
+    onInput: _cache[5] || (_cache[5] = function ($event) {
+      return $data.config.host_key = $event.target.value;
+    })
+  }, [(openBlock(true), createElementBlock(Fragment, null, renderList($data.host_key_options, function (e) {
+    return openBlock(), createElementBlock("option", {
+      value: e.value,
+      key: e.text
+    }, toDisplayString(e.text), 9
+    /* TEXT, PROPS */
+    , _hoisted_27);
+  }), 128
+  /* KEYED_FRAGMENT */
+  ))], 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_26), _hoisted_28, _hoisted_29]), createBaseVNode("div", _hoisted_30, [_hoisted_31, createBaseVNode("select", {
+    value: $data.config.download_type,
+    onInput: _cache[6] || (_cache[6] = function ($event) {
+      return $data.config.download_type = $event.target.value;
+    })
+  }, _hoisted_38, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_32), _hoisted_39, _hoisted_40, createBaseVNode("input", {
+    value: $data.config.ariang_host,
+    onInput: _cache[7] || (_cache[7] = function ($event) {
+      return $data.config.ariang_host = $event.target.value;
+    }),
+    style: {
+      "width": "30%"
+    }
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_41), _hoisted_42, _hoisted_43]), createBaseVNode("div", _hoisted_44, [_hoisted_45, _hoisted_46, createBaseVNode("input", {
+    value: $data.config.rpc_domain,
+    onInput: _cache[8] || (_cache[8] = function ($event) {
+      return $data.config.rpc_domain = $event.target.value;
+    }),
+    style: {
+      "width": "25%"
+    }
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_47), _hoisted_48, createBaseVNode("input", {
+    value: $data.config.rpc_port,
+    onInput: _cache[9] || (_cache[9] = function ($event) {
+      return $data.config.rpc_port = $event.target.value;
+    }),
+    style: {
+      "width": "10%"
+    }
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_49), _hoisted_50, createBaseVNode("input", {
+    value: $data.config.rpc_token,
+    onInput: _cache[10] || (_cache[10] = function ($event) {
+      return $data.config.rpc_token = $event.target.value;
+    }),
+    placeholder: "没有密钥不用填",
+    style: {
+      "width": "15%"
+    }
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_51), _hoisted_52, createBaseVNode("input", {
+    value: $data.config.rpc_dir,
+    onInput: _cache[11] || (_cache[11] = function ($event) {
+      return $data.config.rpc_dir = $event.target.value;
+    }),
+    placeholder: "留空使用默认目录",
+    style: {
+      "width": "20%"
+    }
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_53), _hoisted_54, _hoisted_55]), createBaseVNode("div", _hoisted_56, [_hoisted_57, createBaseVNode("select", {
+    value: $data.config.replace_force,
+    onInput: _cache[12] || (_cache[12] = function ($event) {
+      return $data.config.replace_force = $event.target.value;
+    })
+  }, _hoisted_61, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_58), _hoisted_62, _hoisted_63, createBaseVNode("input", {
+    value: $data.config.danmaku_speed,
+    onInput: _cache[13] || (_cache[13] = function ($event) {
+      return $data.config.danmaku_speed = $event.target.value;
+    }),
+    style: {
+      "width": "5%"
+    }
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_64), _hoisted_65, _hoisted_66, createBaseVNode("input", {
+    value: $data.config.danmaku_fontsize,
+    onInput: _cache[14] || (_cache[14] = function ($event) {
+      return $data.config.danmaku_fontsize = $event.target.value;
+    }),
+    style: {
+      "width": "5%"
+    }
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_67), _hoisted_68, _hoisted_69, _hoisted_70]), createBaseVNode("div", _hoisted_71, [_hoisted_72, createBaseVNode("select", {
+    value: $data.config.auto_download,
+    onInput: _cache[15] || (_cache[15] = function ($event) {
+      return $data.config.auto_download = $event.target.value;
+    })
+  }, _hoisted_76, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_73), _hoisted_77, _hoisted_78]), createBaseVNode("div", _hoisted_79, [_hoisted_80, createCommentVNode("-id=\"auth\"-"), _hoisted_81, createBaseVNode("a", {
+    class: "setting-context",
+    href: "javascript:;",
+    onClick: _cache[16] || (_cache[16] = function ($event) {
+      return $options.show_login();
+    })
+  }, "账号授权"), createBaseVNode("a", {
+    class: "setting-context",
+    href: "javascript:;",
+    onClick: _cache[17] || (_cache[17] = function ($event) {
+      return $options.show_logout();
+    })
+  }, "取消授权"), createBaseVNode("a", {
+    class: "setting-context",
+    href: "javascript:;",
+    onClick: _cache[18] || (_cache[18] = function ($event) {
+      return $options.show_login('0');
+    })
+  }, "手动授权"), createBaseVNode("a", {
+    class: "setting-context",
+    href: "javascript:;",
+    onClick: _cache[19] || (_cache[19] = function ($event) {
+      return $options.show_login_help();
+    })
+  }, "这是什么？")]), createBaseVNode("div", _hoisted_82, [_hoisted_83, createBaseVNode("button", {
+    class: "setting-button",
+    onClick: _cache[20] || (_cache[20] = function ($event) {
+      return $options.save_config();
+    })
+  }, "确定")])])]);
+}
+;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=template&id=15d0b82e&scoped=true
+
+;// CONCATENATED MODULE: ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[8].use[0]!./src/template/config.vue?vue&type=script&lang=js
+
+
+
+
+
+
+
+
+
+var _require = __webpack_require__(/*! @/js/config.js */ "./src/js/config.js"),
+    configvue_type_script_lang_js_config = _require.config,
+    hostMap = _require.hostMap;
+
+var default_config = Object.assign({}, configvue_type_script_lang_js_config); // 浅拷贝
+
+/* harmony default export */ var configvue_type_script_lang_js = ({
+  data: function data() {
+    var options = [];
+
+    for (var k in hostMap) {
+      options.push({
+        text: hostMap[k],
+        value: k
+      });
+    }
+
+    return {
+      config: configvue_type_script_lang_js_config,
+      host_key_options: options,
+      help_clicked: false
+    };
+  },
+  methods: {
+    save_config: function save_config() {
+      var old_config = JSON.parse(store.get("config_str"));
+      store.set("config_str", JSON.stringify(configvue_type_script_lang_js_config)); // hide
+
+      $("#bp_config").hide();
+      $("#bp_config").css("opacity", 0);
+      scroll_scroll.show(); // 判断是否需要重新请求
+
+      for (var _i = 0, _arr = ["base_api", "format", "auth"]; _i < _arr.length; _i++) {
+        var key = _arr[_i];
+
+        if (configvue_type_script_lang_js_config[key] !== old_config[key]) {
+          $("#video_download").hide();
+          $("#video_download_2").hide();
+          break;
+        }
+      }
+
+      if (configvue_type_script_lang_js_config.host_key !== old_config.host_key) {
+        check.refresh();
+        $("#video_url").attr("href", "#");
+        $("#video_url_2").attr("href", "#");
+      } // 判断RPC配置情况
+
+
+      if (configvue_type_script_lang_js_config.rpc_domain !== old_config.rpc_domain) {
+        if (!(configvue_type_script_lang_js_config.rpc_domain.match("https://") || configvue_type_script_lang_js_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
+          MessageBox.alert("检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；" + "请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；" + "配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！", function () {
+            Download.open_ariang({
+              domain: configvue_type_script_lang_js_config.rpc_domain,
+              port: configvue_type_script_lang_js_config.rpc_port,
+              token: configvue_type_script_lang_js_config.rpc_token
+            });
+          });
+        }
+      } // 更新弹幕设置
+
+
+      for (var _i2 = 0, _arr2 = ["danmaku_speed", "danmaku_fontsize"]; _i2 < _arr2.length; _i2++) {
+        var _key = _arr2[_i2];
+
+        if (configvue_type_script_lang_js_config[_key] !== old_config[_key]) {
+          player.danmaku.config();
+          break;
+        }
+      } // ...
+
+    },
+    reset_config: function reset_config() {
+      for (var key in default_config) {
+        if (key === "auth") {
+          continue;
+        }
+
+        this.config[key] = default_config[key];
+      }
+    },
+    show_help: function show_help() {
+      var _this = this;
+
+      if (this.help_clicked) {
+        Message.miaow();
+        return;
+      }
+
+      this.help_clicked = true;
+      ajax({
+        url: "".concat(configvue_type_script_lang_js_config.base_api, "/auth/v2/?act=help"),
+        dataType: "text"
+      }).then(function (res) {
+        if (res) {
+          MessageBox.alert(res);
+        } else {
+          Message.warning("获取失败");
+        }
+      }).finally(function () {
+        return _this.help_clicked = false;
+      });
+    },
+    show_login: function show_login(auto) {
+      auth.login(auto);
+    },
+    show_logout: function show_logout() {
+      auth.logout();
+    },
+    show_login_help: function show_login_help() {
+      MessageBox.confirm("进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？", function () {
+        auth.login();
+      });
+    }
+  },
+  created: function created() {
+    var config_str = store.get("config_str") || localStorage.getItem("my_config_str");
+
+    if (!config_str) {
+      store.set("config_str", JSON.stringify(configvue_type_script_lang_js_config));
+      localStorage.setItem("my_config_str", ""); // deleted
+    } else {
+      // set config from cache
+      var old_config = JSON.parse(config_str);
+
+      for (var key in old_config) {
+        if (Object.hasOwnProperty.call(configvue_type_script_lang_js_config, key)) {
+          configvue_type_script_lang_js_config[key] = old_config[key];
+        }
+      }
+    }
+
+    window.onbeforeunload = function () {
+      // todo
+      var bp_aria2_window = window.bp_aria2_window;
+
+      if (bp_aria2_window && !bp_aria2_window.closed) {
+        bp_aria2_window.close();
+      }
+    };
+  }
+});
+;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=script&lang=js
+ 
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
+var injectStylesIntoStyleTag = __webpack_require__("./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+var injectStylesIntoStyleTag_default = /*#__PURE__*/__webpack_require__.n(injectStylesIntoStyleTag);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleDomAPI.js
+var styleDomAPI = __webpack_require__("./node_modules/style-loader/dist/runtime/styleDomAPI.js");
+var styleDomAPI_default = /*#__PURE__*/__webpack_require__.n(styleDomAPI);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertBySelector.js
+var insertBySelector = __webpack_require__("./node_modules/style-loader/dist/runtime/insertBySelector.js");
+var insertBySelector_default = /*#__PURE__*/__webpack_require__.n(insertBySelector);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js
+var setAttributesWithoutAttributes = __webpack_require__("./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+var setAttributesWithoutAttributes_default = /*#__PURE__*/__webpack_require__.n(setAttributesWithoutAttributes);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertStyleElement.js
+var insertStyleElement = __webpack_require__("./node_modules/style-loader/dist/runtime/insertStyleElement.js");
+var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleElement);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
+var styleTagTransform = __webpack_require__("./node_modules/style-loader/dist/runtime/styleTagTransform.js");
+var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[8].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css
+var configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css = __webpack_require__("./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[8].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css");
+;// CONCATENATED MODULE: ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[1].rules[8].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (styleTagTransform_default());
+options.setAttributes = (setAttributesWithoutAttributes_default());
+
+      options.insert = insertBySelector_default().bind(null, "head");
+    
+options.domAPI = (styleDomAPI_default());
+options.insertStyleElement = (insertStyleElement_default());
+
+var update = injectStylesIntoStyleTag_default()(configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css["default"], options);
+
+
+
+
+       /* harmony default export */ var template_configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css = (configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css["default"] && configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css["default"].locals ? configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css["default"].locals : undefined);
+
+;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css
+
+// EXTERNAL MODULE: ./node_modules/vue-loader/dist/exportHelper.js
+var exportHelper = __webpack_require__("./node_modules/vue-loader/dist/exportHelper.js");
+;// CONCATENATED MODULE: ./src/template/config.vue
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,exportHelper["default"])(configvue_type_script_lang_js, [['render',configvue_type_template_id_15d0b82e_scoped_true_render],['__scopeId',"data-v-15d0b82e"],['__file',"src/template/config.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ var template_config = (__exports__);
+;// CONCATENATED MODULE: ./src/js/main.js
+function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function main_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function main_createClass(Constructor, protoProps, staticProps) { if (protoProps) main_defineProperties(Constructor.prototype, protoProps); if (staticProps) main_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var Main = /*#__PURE__*/function () {
+  function Main() {
+    var _this = this;
+
+    main_classCallCheck(this, Main);
+
+    this.has_toolbar = false;
+    setTimeout(function () {
+      _this.run_before();
+    }, 1000);
+  }
+
+  main_createClass(Main, [{
+    key: "run_before",
+    value: function run_before() {
+      this.has_toolbar = this.set_toolbar();
+
+      if (this.has_toolbar) {
+        this.run();
+      }
+    }
+  }, {
+    key: "set_toolbar",
+    value: function set_toolbar() {
+      if (this.has_toolbar) return;
+      var bp_toolbar;
+
+      if (!!$('#arc_toolbar_report')[0]) {
+        bp_toolbar = arc_toolbar;
+        $('#arc_toolbar_report').after(bp_toolbar);
+      } else if (!!$('#toolbar_module')[0]) {
+        bp_toolbar = toolbar;
+        $('#toolbar_module').after(bp_toolbar);
+      } else if (!!$('div.video-toolbar')[0]) {
+        bp_toolbar = video_toolbar;
+        $('div.video-toolbar').after(bp_toolbar);
+      }
+
+      this.has_toolbar = !!bp_toolbar;
+    }
+  }, {
+    key: "run",
+    value: function run() {
+      var root_div = document.createElement('div');
+      root_div.id = 'bp_root';
+      document.body.append(root_div);
+      var root = document.getElementById(root_div.id);
+      var app, div; // initConfig
+
+      div = document.createElement('div');
+      div.id = 'root_config';
+      root.append(div);
+      app = createApp(template_config);
+      app.mount("#".concat(div.id));
+      initMessage();
+      user.lazyInit();
+      auth.initAuth();
+      auth.checkLoginStatus();
+      check.refresh(); // for dom changed
+
+      $("#".concat(root_div.id)).append('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js" crossorigin="true"></script>');
+      $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
+      $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
+      $('body').on('click', '#setting_btn', function () {
+        user.lazyInit(true); // init
+        // set form by config
+
+        for (var key in config.config) {
+          $("#".concat(key)).val(config.config[key]);
+        } //show setting
+
+
+        $("#bp_config").show();
+        $("#bp_config").animate({
+          'opacity': '1'
+        }, 300);
+        scroll_scroll.hide();
+      });
+      $('body').on('click', '#download_danmaku', function () {
+        var vb = video.base();
+        Download.download_danmaku_ass(vb.cid(), vb.filename());
+      });
+      $('body').on('click', '#download_subtitle', function () {
+        Download.download_subtitle_vtt(0, video.base().filename());
+      });
+      $('body').on('click', '#video_download_all', function () {
+        user.lazyInit(true); // init
+
+        if (store.get('auth_id') && store.get('auth_sec')) {
+          if (config.config.download_type === 'rpc') {
+            Download.download_all();
+          } else {
+            MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
+              Download.download_all();
+            });
+          }
+        } else {
+          MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
+            auth.login();
+          });
+        }
+      });
+      $('body').on('click', '#video_download', function () {
+        var type = config.config.download_type;
+
+        if (type === 'web') {
+          $('#video_url')[0].click();
+        } else if (type === 'a') {
+          var _ref = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
+              video_url = _ref[0],
+              video_url_2 = _ref[1];
+          var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config.config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
+          MessageBox.alert(msg);
+        } else if (type === 'aria') {
+          var _ref2 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
+              _video_url = _ref2[0],
+              _video_url_ = _ref2[1];
+          var video_title = video.base().filename();
+          var file_name, file_name_2;
+          file_name = video_title + Download.url_format(_video_url);
+          file_name_2 = video_title + '_audio.mp4';
+          var aria2_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
+          var code = "aria2c \"".concat(_video_url, "\" --out \"").concat(file_name, "\" ").concat(aria2_header),
+              code_2 = "aria2c \"".concat(_video_url_, "\" --out \"").concat(file_name_2, "\" ").concat(aria2_header);
+
+          var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config.config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
+
+          !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
+            $("#".concat(id)).select();
+
+            if (document.execCommand('copy')) {
+              Message.success('复制成功');
+            } else {
+              Message.warning('复制失败');
+            }
+          });
+          MessageBox.alert(_msg);
+        } else {
+          var url = $('#video_url').attr('href');
+          var filename = video.base().filename();
+          Download.download(url, filename, type);
+        }
+      });
+      $('body').on('click', '#video_download_2', function () {
+        var type = config.config.download_type;
+
+        if (type === 'web') {
+          $('#video_url_2')[0].click();
+        } else if (type === 'a') {
+          $('#video_download').click();
+        } else if (type === 'aria') {
+          $('#video_download').click();
+        } else {
+          var url = $('#video_url_2').attr('href');
+          var filename = video.base().filename();
+          Download.download(url, filename, type);
+        }
+      });
+      var api_url, api_url_temp;
+      $('body').on('click', '#bilibili_parse', function () {
+        user.lazyInit(true); // init
+
+        var vb = video.base();
+        var _ref3 = [vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid()],
+            type = _ref3[0],
+            aid = _ref3[1],
+            p = _ref3[2],
+            cid = _ref3[3],
+            epid = _ref3[4];
+
+        var _video$get_quality = video.get_quality(),
+            q = _video$get_quality.q;
+
+        api_url = "".concat(config.config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config.config.format, "&otype=json&_host=").concat(config.config.host_key, "&_req=").concat(config.config.request_type);
+        var _ref4 = [store.get('auth_id'), store.get('auth_sec')],
+            auth_id = _ref4[0],
+            auth_sec = _ref4[1];
+
+        if (config.config.auth === '1' && auth_id && auth_sec) {
+          api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
+        }
+
+        if (api_url === api_url_temp && config.config.request_type !== 'local') {
+          Message.miaow();
+          var url = $('#video_url').attr('href');
+          var url_2 = $('#video_url_2').attr('href');
+
+          if (url && url !== '#') {
+            $('#video_download').show();
+            config.config.format === 'dash' && $('#video_download_2').show();
+
+            if (user.needReplace() || vb.is_limited() || config.config.replace_force === '1') {
+              !$('#bp_dplayer')[0] && player.replace_player(url, url_2);
+            }
+
+            if (config.config.auto_download === '1') {
+              $('#video_download').click();
+            }
+          }
+
+          return;
+        }
+
+        $('#video_url').attr('href', '#');
+        $('#video_url_2').attr('href', '#');
+        api_url_temp = api_url;
+        Message.info('开始请求');
+        api.get_url(function (res) {
+          if (res && !res.code) {
+            Message.success('请求成功');
+            res.times && Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
+
+            var _url = config.config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://');
+
+            var _url_ = config.config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#';
+
+            $('#video_url').attr('href', _url);
+            $('#video_download').show();
+
+            if (config.config.format === 'dash') {
+              $('#video_url_2').attr('href', _url_);
+              $('#video_download_2').show();
+            }
+
+            if (user.needReplace() || vb.is_limited() || config.config.replace_force === '1') {
+              player.replace_player(_url, _url_);
+            }
+
+            if (config.config.auto_download === '1') {
+              $('#video_download').click();
+            }
+          }
+        });
+      }); // part of check
+
+      $('body').on('click', 'a.router-link-active', function () {
+        if (this !== $('li[class="on"]').find('a')[0]) {
+          check.refresh();
+        }
+      });
+      $('body').on('click', 'li.ep-item', function () {
+        check.refresh();
+      });
+      $('body').on('click', 'button.bilibili-player-iconfont-next', function () {
+        check.refresh();
+      });
+      var bili_video_tag = player.bili_video_tag();
+      !!$(bili_video_tag)[0] && ($(bili_video_tag)[0].onended = function () {
+        check.refresh();
+      }); // 监听q
+
+      $('body').on('click', 'li.bui-select-item', function () {
+        check.refresh();
+      });
+      setInterval(function () {
+        if (check.q !== video.get_quality().q) {
+          check.refresh();
+        } else if (video.type() === 'cheese') {
+          // epid for cheese
+          if (check.epid !== video.base().epid()) {
+            check.refresh();
+          }
+        }
+      }, 1000); // 监听aid
+
+      $('body').on('click', '.rec-list', function () {
+        check.refresh();
+      });
+      $('body').on('click', '.bilibili-player-ending-panel-box-videos', function () {
+        check.refresh();
+      }); // 定时检查 aid 和 cid
+
+      setInterval(function () {
+        var vb = video.base();
+
+        if (check.aid !== vb.aid() || check.cid !== vb.cid()) {
+          check.refresh();
+        }
+      }, 3000);
+    }
+  }]);
+
+  return Main;
+}();
+
+/* harmony default export */ var main = (Main);
+;// CONCATENATED MODULE: ./src/js/index.js
 
 
 (function () {
@@ -2844,8 +15160,8 @@ __webpack_require__.r(__webpack_exports__);
 
   setTimeout(function () {
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.0.2", " ").concat("3b247de", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
-    new _main__WEBPACK_IMPORTED_MODULE_0__["default"]().run();
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.0", " ").concat("68ebf69", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    new main().run();
   }, 2000);
 })();
 }();

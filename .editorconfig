@@ -11,7 +11,7 @@ insert_final_newline = true
 [*.js]
 quote_type = single
 
-[*.{html,less,css,json}]
+[*.{html,vue,less,css,json}]
 indent_size = 2
 quote_type = double
 

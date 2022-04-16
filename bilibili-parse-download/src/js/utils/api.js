@@ -10,7 +10,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
     let _success, _error
     if ('function' === typeof success) {
         _success = e => {
-            Message.success('请求成功')
+            // todo
             success(e)
         }
     } else {
@@ -139,7 +139,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
 }
 
-function get_subtitle_url(p, callback) {
+function _get_subtitle(p, callback, to_blob_url = true) {
     const video_base = video.base()
     const [aid, cid, epid] = [
         video_base.aid(p),
@@ -166,12 +166,24 @@ function get_subtitle_url(p, callback) {
                         '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0')
                     webvtt += `${a} --> ${b}\n${data.content.trim()}\n\n`
                 }
-                callback(URL.createObjectURL(new Blob([webvtt], { type: 'text/vtt' })))
+                if (to_blob_url) {
+                    callback(URL.createObjectURL(new Blob([webvtt], { type: 'text/vtt' })))
+                } else {
+                    callback(webvtt)
+                }
             }).catch(callback)
         } else {
             callback()
         }
     }).catch(callback)
+}
+
+function get_subtitle_data(p, callback) {
+    _get_subtitle(p, callback, false)
+}
+
+function get_subtitle_url(p, callback) {
+    _get_subtitle(p, callback, true)
 }
 
 function get_season(epid) {
@@ -189,15 +201,16 @@ function get_season(epid) {
 }
 
 export const api = {
-    get_url: (quality = 0, success, error) => {
+    get_url: (success, error) => {
         const request_type = config.request_type
         const format = config.format
-        get_url_base(0, quality, format, success, error, request_type)
+        get_url_base(0, 0, format, success, error, request_type)
     },
-    get_urls: (page = 0, quality = 0, format, success, error) => {
+    get_urls: (page, quality, format, success, error) => {
         const request_type = config.request_type
         get_url_base(page, quality, format, success, error, request_type)
     },
     get_subtitle_url,
+    get_subtitle_data,
     get_season
 }

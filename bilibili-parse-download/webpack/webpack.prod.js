@@ -3,8 +3,9 @@ const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin')
 const gitRevisionPlugin = new GitRevisionPlugin();
+const { VueLoaderPlugin } = require('vue-loader')
 
-const { getBanner } = require('./webpack.config');
+const { getBanner } = require('./webpack.common');
 const meta = require('../src/client/bilibili-parse-download.meta.json');
 
 module.exports = {
@@ -19,6 +20,12 @@ module.exports = {
 
     performance: {
         hints: false,
+    },
+
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, '..', 'src/'),
+        },
     },
 
     optimization: {
@@ -50,7 +57,21 @@ module.exports = {
             },
             {
                 test: /\.html$/i,
-                loader: "html-loader",
+                enforce: 'post',
+                loader: 'html-loader',
+            },
+            {
+                test: /\.vue$/,
+                use: [
+                    'vue-loader'
+                ],
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
             },
         ]
     },
@@ -63,6 +84,7 @@ module.exports = {
             banner: getBanner(meta),
             entryOnly: true,
             raw: true
-        })
+        }),
+        new VueLoaderPlugin()
     ]
 }

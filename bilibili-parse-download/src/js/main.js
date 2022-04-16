@@ -5,7 +5,7 @@ import { video } from './utils/video'
 import { Download } from './utils/download'
 import { scroll } from './ui/scroll'
 import { initMessage, Message, MessageBox } from './ui/message'
-import { initConfig, config } from './config'
+import { config } from './config'
 import { user } from './user'
 import { auth } from './auth'
 import { check } from './check'
@@ -13,6 +13,9 @@ import { store } from './store'
 import arc_toolbar_html from '../html/arc_toolbar.html'
 import video_toolbar_html from '../html/video_toolbar.html'
 import toolbar_html from '../html/toolbar.html'
+
+import { createApp } from 'vue'
+import configVue from '../template/config.vue'
 
 class Main {
     constructor() {
@@ -47,18 +50,31 @@ class Main {
 
     run() {
 
-        initConfig()
+        const root_div = document.createElement('div')
+        root_div.id = 'bp_root'
+        document.body.append(root_div)
+        const root = document.getElementById(root_div.id)
+
+        let app, div
+        // initConfig
+        div = document.createElement('div')
+        div.id = 'root_config'
+        root.append(div)
+        app = createApp(configVue)
+        app.mount(`#${div.id}`)
+
         initMessage()
+
         user.lazyInit()
         auth.initAuth()
         auth.checkLoginStatus()
         check.refresh()
 
         // for dom changed
-        $('body').append('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js" crossorigin="true"></script>')
+        $(`#${root_div.id}`).append('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js" crossorigin="true"></script>')
 
-        $('body').append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
-        $('body').append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
+        $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
+        $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
 
         $('body').on('click', '#setting_btn', () => {
             user.lazyInit(true) // init
@@ -96,7 +112,7 @@ class Main {
                 }
             } else {
                 MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', () => {
-                    window.bp_show_login()
+                    auth.login()
                 })
             }
         })
@@ -204,8 +220,9 @@ class Main {
             api_url_temp = api_url
 
             Message.info('开始请求')
-            api.get_url(0, res => {
+            api.get_url(res => {
                 if (res && !res.code) {
+                    Message.success('请求成功')
                     res.times && Message.info(`剩余请求次数：${res.times}`)
                     let url = config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://')
                     let url_2 = config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#'
