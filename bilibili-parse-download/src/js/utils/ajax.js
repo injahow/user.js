@@ -14,7 +14,7 @@ export function ajax(obj) {
             resolve(res)
         }
         obj.error = err => {
-            Message.danger('网络异常')
+            Message.error('网络异常')
             reject(err)
         }
         $.ajax(obj)

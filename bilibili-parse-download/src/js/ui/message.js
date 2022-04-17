@@ -71,7 +71,7 @@ function messageDeQueue(id, time = 3) {
 const Message = {
     success: html => message(html, 'success'),
     warning: html => message(html, 'warning'),
-    danger: html => message(html, 'danger'),
+    error: html => message(html, 'error'),
     info: html => message(html, 'info'),
     miaow: _ => message('(^・ω・^)~喵喵喵~', 'info')
 }

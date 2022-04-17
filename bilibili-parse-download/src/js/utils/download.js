@@ -1,9 +1,9 @@
-import JSZip from 'jszip'
 import { config } from '../config'
 import { Message, MessageBox } from '../ui/message'
 import { ajax } from './ajax'
 import { api } from './api'
 import { video } from './video'
+import { JSZip } from './runtime-lib'
 
 function rpc_type() {
     if (config.rpc_domain.match('https://') || config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
@@ -135,12 +135,11 @@ function download_all() {
             // 下载字幕vtt.zip
             download_subtitle_vtt_zip([...videos], new JSZip())
         }
-
         if (dl_danmaku === '1') {
             // 下载弹幕ass.zip
             download_danmaku_ass_zip([...videos], new JSZip())
         }
-
+        // 下载视频
         download_videos(videos, 0, [])
     })
     // 初始化参数，去除8k及以上
@@ -245,7 +244,7 @@ function download_all() {
                 Message.warning('请检查RPC参数')
             }
         }).catch(_ => {
-            Message.danger('请检查RPC服务配置')
+            Message.error('请检查RPC服务配置')
         })
     }
 }
@@ -311,7 +310,7 @@ function download_rpc(url, filename, type = 'post') {
                 Message.warning('请检查RPC参数')
             }
         }).catch(_ => {
-            Message.danger('请检查RPC服务配置')
+            Message.error('请检查RPC服务配置')
         }).finally(_ => download_rpc_clicked = false)
 
     } else if (type === 'ariang') {

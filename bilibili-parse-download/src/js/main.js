@@ -70,8 +70,7 @@ class Main {
         auth.checkLoginStatus()
         check.refresh()
 
-        // for dom changed
-        $(`#${root_div.id}`).append('<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js" crossorigin="true"></script>')
+        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"></script>') // for dom changed
 
         $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
         $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')

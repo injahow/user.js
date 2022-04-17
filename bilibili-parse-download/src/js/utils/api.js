@@ -19,7 +19,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
     if ('function' === typeof error) {
         _error = e => {
-            Message.danger('请求失败')
+            Message.error('请求失败')
             error(e)
         }
     } else {
@@ -56,19 +56,21 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
     if (request_type === 'auto' || request_type === 'local') {
         let fnver, fnval
-        if (type !== 'cheese') {
-            base_api = 'https://api.bilibili.com/x/player/playurl'
-            if (format === 'dash') {
-                fnver = 0, fnval = 80
-            } else {
-                fnver = 0, fnval = 0
-            }
-        } else {
+        if (type === 'cheese') {
             base_api = 'https://api.bilibili.com/pugv/player/web/playurl'
             if (format === 'dash') {
                 fnver = 0, fnval = 80
             } else {
                 fnver = 1, fnval = 80
+            }
+        } else {
+            base_api = type === 'video'
+                ? 'https://api.bilibili.com/x/player/playurl'
+                : 'https://api.bilibili.com/pgc/player/web/playurl'
+            if (format === 'dash') {
+                fnver = 0, fnval = 4048
+            } else {
+                fnver = 0, fnval = 0
             }
         }
         base_api += `?avid=${aid}&cid=${cid}&qn=${q}&fnver=${fnver}&fnval=${fnval}&fourk=1&ep_id=${epid}&type=${format}&otype=json`
