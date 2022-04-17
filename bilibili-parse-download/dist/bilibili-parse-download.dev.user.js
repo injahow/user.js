@@ -404,7 +404,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#bp_config[data-v-15d0b82e] {\r\n  opacity: 0;\r\n  display: none;\r\n  position: fixed;\r\n  inset: 0px;\r\n  top: 0px;\r\n  left: 0px;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 10000;\n}\n.bp_config_bg[data-v-15d0b82e] {\r\n  position: absolute;\r\n  background: rgb(255, 255, 255);\r\n  border-radius: 10px;\r\n  padding: 20px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n  width: 600px;\r\n  box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n}\n.setting-button[data-v-15d0b82e] {\r\n  width: 120px;\r\n  height: 40px;\r\n  border-width: 0px;\r\n  border-radius: 3px;\r\n  background: #1e90ff;\r\n  cursor: pointer;\r\n  outline: none;\r\n  color: white;\r\n  font-size: 17px;\n}\n.setting-button[data-v-15d0b82e]:hover {\r\n  background: #5599ff;\n}\n.setting-context[data-v-15d0b82e] {\r\n  margin: 0 1%;\r\n  color: blue;\n}\n.setting-context[data-v-15d0b82e]:hover {\r\n  color: red;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n#bp_config[data-v-15d0b82e] {\n  opacity: 0;\n  display: none;\n  position: fixed;\n  inset: 0px;\n  top: 0px;\n  left: 0px;\n  width: 100%;\n  height: 100%;\n  z-index: 10000;\n}\n.bp_config_bg[data-v-15d0b82e] {\n  position: absolute;\n  background: rgb(255, 255, 255);\n  border-radius: 10px;\n  padding: 20px;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 600px;\n  box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n}\n.setting-button[data-v-15d0b82e] {\n  width: 120px;\n  height: 40px;\n  border-width: 0px;\n  border-radius: 3px;\n  background: #1e90ff;\n  cursor: pointer;\n  outline: none;\n  color: white;\n  font-size: 17px;\n}\n.setting-button[data-v-15d0b82e]:hover {\n  background: #5599ff;\n}\n.setting-context[data-v-15d0b82e] {\n  margin: 0 1%;\n  color: blue;\n}\n.setting-context[data-v-15d0b82e]:hover {\n  color: red;\n}\n", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -14530,18 +14530,17 @@ var _hoisted_81 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_82 = {
-  style: {
-    "text-align": "right"
-  }
-};
-
-var _hoisted_83 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_82 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("br", null, null, -1
   /* HOISTED */
   );
 });
 
+var _hoisted_83 = {
+  style: {
+    "text-align": "right"
+  }
+};
 function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [createBaseVNode("div", _hoisted_2, [createBaseVNode("span", _hoisted_3, [_hoisted_4, createBaseVNode("b", null, [createBaseVNode("a", {
     href: "javascript:;",
@@ -14689,7 +14688,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     })
   }, _hoisted_76, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_73), _hoisted_77, _hoisted_78]), createBaseVNode("div", _hoisted_79, [_hoisted_80, createCommentVNode("-id=\"auth\"-"), _hoisted_81, createBaseVNode("a", {
+  , _hoisted_73), _hoisted_77, _hoisted_78]), createBaseVNode("div", _hoisted_79, [_hoisted_80, _hoisted_81, createBaseVNode("a", {
     class: "setting-context",
     href: "javascript:;",
     onClick: _cache[16] || (_cache[16] = function ($event) {
@@ -14713,7 +14712,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     onClick: _cache[19] || (_cache[19] = function ($event) {
       return $options.show_login_help();
     })
-  }, "这是什么？")]), createBaseVNode("div", _hoisted_82, [_hoisted_83, createBaseVNode("button", {
+  }, "这是什么？")]), _hoisted_82, createBaseVNode("div", _hoisted_83, [createBaseVNode("button", {
     class: "setting-button",
     onClick: _cache[20] || (_cache[20] = function ($event) {
       return $options.save_config();
@@ -15276,7 +15275,7 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.2", " ").concat("0331855", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.2", " ").concat("3f37da5", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     new main().run();
   }, 2000);
 })();
