@@ -221,6 +221,7 @@ class Main {
             Message.info('开始请求')
             api.get_url(res => {
                 if (res && !res.code) {
+                    Message.success('请求成功')
                     res.times && Message.info(`剩余请求次数：${res.times}`)
                     let url = config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://')
                     let url_2 = config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#'
