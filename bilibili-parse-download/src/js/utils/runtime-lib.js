@@ -32,8 +32,9 @@ class RuntimeLib {
     }
 }
 
-export const JSZipAsync = new RuntimeLib({
+const JSZipAsync = new RuntimeLib({
     url: 'https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js',
     getModule: window => window.JSZip,
-}).getModuleAsync() // eval -> window.xxx
-export const JSZip = window.JSZip // 伪同步
+}).getModuleAsync()
+export let JSZip // 伪同步
+JSZipAsync.then(module => JSZip = module)
