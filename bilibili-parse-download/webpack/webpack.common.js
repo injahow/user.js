@@ -1,4 +1,9 @@
-
+const path = require('path')
+const webpack = require('webpack')
+const TerserPlugin = require('terser-webpack-plugin')
+const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
+const gitRevisionPlugin = new GitRevisionPlugin()
+const { VueLoaderPlugin } = require('vue-loader')
 const { version } = require('../package.json')
 
 const getBanner = meta => {
@@ -18,6 +23,88 @@ const getBanner = meta => {
     }).join('\n')}\n${meta.last.join('\n')}`
 }
 
+const getDefaultConfig = () => {
+    return {
+        mode: 'development',
+
+        resolve: {
+            extensions: ['.js', '.vue', '.json'],
+            alias: {
+                '@': path.resolve(__dirname, '..', 'src/'),
+            }
+        },
+
+        performance: {
+            hints: false,
+        },
+
+        optimization: {
+            minimizer: [
+                new TerserPlugin({
+                    terserOptions: {
+                        output: {
+                            comments: /==\/?UserScript==|^[ ]?@| eslint-disable |spell-checker/i,
+                        },
+                    },
+                    extractComments: false,
+                })
+            ]
+        },
+
+        module: {
+            strictExportPresence: true,
+            rules: [
+                {
+                    test: /\.js$/,
+                    exclude: /(node_modules|bower_components)/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                '@babel/preset-env'
+                            ]
+                        }
+                    }
+                },
+                {
+                    test: /\.html$/i,
+                    enforce: 'post',
+                    loader: 'html-loader',
+                },
+                {
+                    test: /\.vue$/,
+                    use: [
+                        {
+                            loader: 'vue-loader',
+                            options: {
+                                optimizeSSR: false,
+                                hotReload: false,
+                            }
+                        }
+                    ]
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        'style-loader',
+                        'css-loader'
+                    ]
+                }
+            ]
+        },
+
+        plugins: [
+            new webpack.DefinePlugin({
+                JS_VERSION: `"${require('../package.json').version}"`,
+                GIT_HASH: JSON.stringify(gitRevisionPlugin.version()),
+            }),
+            new VueLoaderPlugin()
+        ]
+
+    }
+}
+
 module.exports = {
-    getBanner
+    getBanner,
+    getDefaultConfig
 }
