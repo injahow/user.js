@@ -296,8 +296,7 @@ function ajax(obj) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "JSZip": function() { return /* binding */ JSZip; },
-/* harmony export */   "JSZipAsync": function() { return /* binding */ JSZipAsync; }
+/* harmony export */   "JSZip": function() { return /* binding */ JSZip; }
 /* harmony export */ });
 /* harmony import */ var _ajax__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ajax */ "./src/js/utils/ajax.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -380,9 +379,12 @@ var JSZipAsync = new RuntimeLib({
   getModule: function getModule(window) {
     return window.JSZip;
   }
-}).getModuleAsync(); // eval -> window.xxx
+}).getModuleAsync();
+var JSZip; // 伪同步
 
-var JSZip = window.JSZip; // 伪同步
+JSZipAsync.then(function (module) {
+  return JSZip = module;
+});
 
 /***/ }),
 
@@ -2854,12 +2856,12 @@ var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"
 /* harmony default export */ var arc_toolbar = (code);
 ;// CONCATENATED MODULE: ./src/html/video_toolbar.html
 // Module
-var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\r\n  scrollshow=\"true\">\r\n  <div class=\"ops\">\r\n    <span id=\"setting_btn\">\r\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\r\n    </span>\r\n    <span id=\"bilibili_parse\">\r\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\r\n    </span>\r\n    <span id=\"video_download\" style=\"display:none;\">\r\n      <i class=\"van-icon-download\"></i>下载视频\r\n    </span>\r\n    <span id=\"video_download_2\" style=\"display:none;\">\r\n      <i class=\"van-icon-download\"></i>下载音频\r\n    </span>\r\n    <span id=\"video_download_all\">\r\n      <i class=\"van-icon-download\"></i>批量下载\r\n    </span>\r\n  </div>\r\n  <div class=\"more\">\r\n    <i class=\"van-icon-general_moreactions\"></i>\r\n    <div class=\"more-ops-list\">\r\n      <ul class=\"more-ops-list-box\">\r\n        <li class=\"more-ops-list-box-li\">\r\n          <span id=\"download_danmaku\">下载弹幕</span>\r\n        </li>\r\n        <li class=\"more-ops-list-box-li\">\r\n          <span id=\"download_subtitle\">下载字幕</span>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n</div>\r\n";
+var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
 // Exports
 /* harmony default export */ var video_toolbar = (video_toolbar_code);
 ;// CONCATENATED MODULE: ./src/html/toolbar.html
 // Module
-var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\r\n  scrollshow=\"true\">\r\n  <div id=\"setting_btn\" class=\"like-info\">\r\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\r\n  </div>\r\n  <div id=\"bilibili_parse\" class=\"like-info\">\r\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\r\n  </div>\r\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\r\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\r\n  </div>\r\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\r\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\r\n  </div>\r\n  <div id=\"video_download_all\" class=\"like-info\">\r\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\r\n  </div>\r\n  <div class=\"more\">更多<div class=\"more-ops-list\">\r\n      <ul>\r\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\r\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  <style>\r\n    .tool-bar .more {\r\n      float: right;\r\n      cursor: pointer;\r\n      color: #757575;\r\n      font-size: 16px;\r\n      transition: all .3s;\r\n      position: relative;\r\n      text-align: center\r\n    }\r\n\r\n    .tool-bar .more:hover .more-ops-list {\r\n      display: block\r\n    }\r\n\r\n    .tool-bar:after {\r\n      display: block;\r\n      content: \"\";\r\n      clear: both\r\n    }\r\n\r\n    .more-ops-list {\r\n      display: none;\r\n      position: absolute;\r\n      width: 80px;\r\n      left: -65px;\r\n      z-index: 30;\r\n      text-align: center;\r\n      padding: 10px 0;\r\n      background: #fff;\r\n      border: 1px solid #e5e9ef;\r\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\r\n      border-radius: 2px;\r\n      font-size: 14px;\r\n      color: #222\r\n    }\r\n\r\n    .more-ops-list li {\r\n      position: relative;\r\n      height: 34px;\r\n      line-height: 34px;\r\n      cursor: pointer;\r\n      transition: all .3s\r\n    }\r\n\r\n    .more-ops-list li:hover {\r\n      color: #00a1d6;\r\n      background: #e7e7e7\r\n    }\r\n  </style>\r\n</div>\r\n";
+var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\n  scrollshow=\"true\">\n  <div id=\"setting_btn\" class=\"like-info\">\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\n  </div>\n  <div id=\"bilibili_parse\" class=\"like-info\">\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\n  </div>\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\n  </div>\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\n  </div>\n  <div id=\"video_download_all\" class=\"like-info\">\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\n  </div>\n  <div class=\"more\">更多<div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n  <style>\n    .tool-bar .more {\n      float: right;\n      cursor: pointer;\n      color: #757575;\n      font-size: 16px;\n      transition: all .3s;\n      position: relative;\n      text-align: center\n    }\n\n    .tool-bar .more:hover .more-ops-list {\n      display: block\n    }\n\n    .tool-bar:after {\n      display: block;\n      content: \"\";\n      clear: both\n    }\n\n    .more-ops-list {\n      display: none;\n      position: absolute;\n      width: 80px;\n      left: -65px;\n      z-index: 30;\n      text-align: center;\n      padding: 10px 0;\n      background: #fff;\n      border: 1px solid #e5e9ef;\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n      border-radius: 2px;\n      font-size: 14px;\n      color: #222\n    }\n\n    .more-ops-list li {\n      position: relative;\n      height: 34px;\n      line-height: 34px;\n      cursor: pointer;\n      transition: all .3s\n    }\n\n    .more-ops-list li:hover {\n      color: #00a1d6;\n      background: #e7e7e7\n    }\n  </style>\n</div>\n";
 // Exports
 /* harmony default export */ var toolbar = (toolbar_code);
 ;// CONCATENATED MODULE: ./node_modules/@vue/shared/dist/shared.esm-bundler.js
@@ -15274,7 +15276,7 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.1", " ").concat("77f59d6", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.2", " ").concat("0331855", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     new main().run();
   }, 2000);
 })();
