@@ -316,12 +316,12 @@ var RuntimeLib = /*#__PURE__*/function () {
     _classCallCheck(this, RuntimeLib);
 
     this.config = config;
-    this.modulePromise;
+    this.moduleAsync;
   }
 
   _createClass(RuntimeLib, [{
-    key: "getModuleAsync",
-    value: function getModuleAsync() {
+    key: "getModulePromise",
+    value: function getModulePromise() {
       var _this = this;
 
       return new Promise(function (resolve, reject) {
@@ -330,8 +330,8 @@ var RuntimeLib = /*#__PURE__*/function () {
               url = _this$config.url,
               getModule = _this$config.getModule;
 
-          if (!_this.modulePromise) {
-            _this.modulePromise = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+          if (!_this.moduleAsync) {
+            _this.moduleAsync = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
               var code;
               return regeneratorRuntime.wrap(function _callee$(_context) {
                 while (1) {
@@ -361,8 +361,8 @@ var RuntimeLib = /*#__PURE__*/function () {
             }))(); // = window.xxx
           }
 
-          var library = _this.modulePromise;
-          return resolve(library);
+          var library = _this.moduleAsync;
+          resolve(library);
         } catch (error) {
           reject(error);
           throw error;
@@ -374,15 +374,14 @@ var RuntimeLib = /*#__PURE__*/function () {
   return RuntimeLib;
 }();
 
-var JSZipAsync = new RuntimeLib({
+var JSZip; // 伪同步
+
+new RuntimeLib({
   url: 'https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js',
   getModule: function getModule(window) {
     return window.JSZip;
   }
-}).getModuleAsync();
-var JSZip; // 伪同步
-
-JSZipAsync.then(function (module) {
+}).getModulePromise().then(function (module) {
   return JSZip = module;
 });
 
@@ -986,8 +985,6 @@ var Store = /*#__PURE__*/function () {
 var store = new Store();
 // EXTERNAL MODULE: ./src/js/ui/message.js + 1 modules
 var message = __webpack_require__("./src/js/ui/message.js");
-// EXTERNAL MODULE: ./src/js/utils/ajax.js
-var ajax = __webpack_require__("./src/js/utils/ajax.js");
 ;// CONCATENATED MODULE: ./src/js/utils/video.js
 
 
@@ -1315,12 +1312,73 @@ var video = {
   get_quality: get_quality,
   get_quality_support: get_quality_support
 };
+;// CONCATENATED MODULE: ./src/js/user.js
+function user_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function user_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function user_createClass(Constructor, protoProps, staticProps) { if (protoProps) user_defineProperties(Constructor.prototype, protoProps); if (staticProps) user_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+var User = /*#__PURE__*/function () {
+  function User() {
+    user_classCallCheck(this, User);
+
+    this.is_login = false;
+    this.vip_status = 0;
+    this.mid = '';
+    this.uname = '';
+    this.has_init = false;
+    this.lazyInit();
+  }
+
+  user_createClass(User, [{
+    key: "needReplace",
+    value: function needReplace() {
+      return !this.is_login || !this.vip_status && video.base().need_vip();
+    }
+  }, {
+    key: "lazyInit",
+    value: function lazyInit(last_init) {
+      if (!this.has_init) {
+        if (window.__BILI_USER_INFO__) {
+          this.is_login = window.__BILI_USER_INFO__.isLogin;
+          this.vip_status = window.__BILI_USER_INFO__.vipStatus;
+          this.mid = window.__BILI_USER_INFO__.mid || '';
+          this.uname = window.__BILI_USER_INFO__.uname || '';
+        } else if (window.__BiliUser__) {
+          this.is_login = window.__BiliUser__.isLogin;
+
+          if (window.__BiliUser__.cache) {
+            this.vip_status = window.__BiliUser__.cache.data.vipStatus;
+            this.mid = window.__BiliUser__.cache.data.mid || '';
+            this.uname = window.__BiliUser__.cache.data.uname || '';
+          } else {
+            this.vip_status = 0;
+            this.mid = '';
+            this.uname = '';
+          }
+        }
+
+        this.has_init = last_init;
+      }
+    }
+  }]);
+
+  return User;
+}();
+
+var user = new User();
+// EXTERNAL MODULE: ./src/js/utils/ajax.js
+var ajax = __webpack_require__("./src/js/utils/ajax.js");
 ;// CONCATENATED MODULE: ./src/js/utils/api.js
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 
@@ -1359,9 +1417,11 @@ function get_url_base(page, quality, video_format, success, error, request_type)
       cid = _ref[1],
       epid = _ref[2],
       q = _ref[3],
-      type = _ref[4];
+      type = _ref[4]; // 参数预处理
+
   var format = video_format || config.config.format;
   if (format === 'mp4' && type !== 'video') format = 'flv';
+  if (request_type === 'auto' && user.needReplace()) request_type = 'online';
 
   var url_replace_cdn = function url_replace_cdn(url) {
     if (config.config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
@@ -2511,64 +2571,6 @@ var Download = {
 };
 // EXTERNAL MODULE: ./src/js/ui/scroll.js
 var ui_scroll = __webpack_require__("./src/js/ui/scroll.js");
-;// CONCATENATED MODULE: ./src/js/user.js
-function user_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function user_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function user_createClass(Constructor, protoProps, staticProps) { if (protoProps) user_defineProperties(Constructor.prototype, protoProps); if (staticProps) user_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
-
-var User = /*#__PURE__*/function () {
-  function User() {
-    user_classCallCheck(this, User);
-
-    this.is_login = false;
-    this.vip_status = 0;
-    this.mid = '';
-    this.uname = '';
-    this.has_init = false;
-    this.lazyInit();
-  }
-
-  user_createClass(User, [{
-    key: "needReplace",
-    value: function needReplace() {
-      return !this.is_login || !this.vip_status && video.base().need_vip();
-    }
-  }, {
-    key: "lazyInit",
-    value: function lazyInit(last_init) {
-      if (!this.has_init) {
-        if (window.__BILI_USER_INFO__) {
-          this.is_login = window.__BILI_USER_INFO__.isLogin;
-          this.vip_status = window.__BILI_USER_INFO__.vipStatus;
-          this.mid = window.__BILI_USER_INFO__.mid || '';
-          this.uname = window.__BILI_USER_INFO__.uname || '';
-        } else if (window.__BiliUser__) {
-          this.is_login = window.__BiliUser__.isLogin;
-
-          if (window.__BiliUser__.cache) {
-            this.vip_status = window.__BiliUser__.cache.data.vipStatus;
-            this.mid = window.__BiliUser__.cache.data.mid || '';
-            this.uname = window.__BiliUser__.cache.data.uname || '';
-          } else {
-            this.vip_status = 0;
-            this.mid = '';
-            this.uname = '';
-          }
-        }
-
-        this.has_init = last_init;
-      }
-    }
-  }]);
-
-  return User;
-}();
-
-var user = new User();
 ;// CONCATENATED MODULE: ./src/js/auth.js
 function auth_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -15275,7 +15277,7 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.2", " ").concat("9f1ed6b", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.3", " ").concat("a9609f9", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     new main().run();
   }, 2000);
 })();

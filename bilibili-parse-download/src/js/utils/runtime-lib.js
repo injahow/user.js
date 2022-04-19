@@ -4,15 +4,15 @@ class RuntimeLib {
 
     constructor(config) {
         this.config = config
-        this.modulePromise
+        this.moduleAsync
     }
 
-    getModuleAsync() {
+    getModulePromise() {
         return new Promise((resolve, reject) => {
             try {
                 const { url, getModule } = this.config
-                if (!this.modulePromise) {
-                    this.modulePromise = (async () => {
+                if (!this.moduleAsync) {
+                    this.moduleAsync = (async () => {
                         console.log(`[Runtime Library] Start download from ${url}`)
                         const code = await ajax({ url, dataType: 'text' })
                         console.log(`[Runtime Library] Downloaded from ${url} , length = ${code.length}`);
@@ -22,8 +22,8 @@ class RuntimeLib {
                         return getModule(window)
                     })() // = window.xxx
                 }
-                const library = this.modulePromise
-                return resolve(library)
+                const library = this.moduleAsync
+                resolve(library)
             } catch (error) {
                 reject(error)
                 throw error
@@ -32,9 +32,8 @@ class RuntimeLib {
     }
 }
 
-const JSZipAsync = new RuntimeLib({
-    url: 'https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js',
-    getModule: window => window.JSZip,
-}).getModuleAsync()
 export let JSZip // 伪同步
-JSZipAsync.then(module => JSZip = module)
+new RuntimeLib({
+    url: 'https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js',
+    getModule: window => window.JSZip
+}).getModulePromise().then(module => JSZip = module)
