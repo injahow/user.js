@@ -2,6 +2,7 @@
 import { config, hostMap } from '../config'
 import { store } from '../store'
 import { Message } from '../ui/message'
+import { user } from '../user'
 import { ajax } from './ajax'
 import { video } from './video'
 
@@ -35,8 +36,10 @@ function get_url_base(page, quality, video_format, success, error, request_type)
         vb.type
     ]
 
+    // 参数预处理
     let format = video_format || config.format
     if (format === 'mp4' && type !== 'video') format = 'flv'
+    if (request_type === 'auto' && user.needReplace()) request_type = 'online'
 
     const url_replace_cdn = url => {
         if (config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
