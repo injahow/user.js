@@ -4,12 +4,12 @@ class Store {
         this.prefix = 'bp_'
     }
 
-    get(key) {
-        return localStorage.getItem(this.prefix + (key || '')) || ''
+    get(key = '') {
+        return localStorage.getItem(this.prefix + key) || ''
     }
 
-    set(key, value) {
-        return localStorage.setItem(this.prefix + (key || ''), value)
+    set(key = '', value) {
+        localStorage.setItem(this.prefix + key, value)
     }
 }
 
