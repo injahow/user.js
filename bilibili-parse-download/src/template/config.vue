@@ -1,6 +1,7 @@
 <template>
   <div id="bp_config">
-    <div class="bp_config_bg">
+    <div class="config-mark"></div>
+    <div class="config-bg">
       <span style="font-size: 20px">
         <b>bilibili视频下载 参数设置</b>
         <b>
@@ -304,12 +305,8 @@ export default {
     },
   },
   created() {
-    const config_str =
-      store.get("config_str") || localStorage.getItem("my_config_str");
-    if (!config_str) {
-      store.set("config_str", JSON.stringify(config));
-      localStorage.setItem("my_config_str", ""); // deleted
-    } else {
+    const config_str = store.get("config_str");
+    if (config_str) {
       // set config from cache
       const old_config = JSON.parse(config_str);
       for (const key in old_config) {
@@ -318,6 +315,8 @@ export default {
         }
       }
     }
+    config.auth = store.get("auth_id") ? "1" : "0";
+    store.set("config_str", JSON.stringify(config));
 
     window.onbeforeunload = () => {
       // todo
@@ -341,7 +340,7 @@ export default {
   height: 100%;
   z-index: 10000;
 }
-.bp_config_bg {
+.config-bg {
   position: absolute;
   background: rgb(255, 255, 255);
   border-radius: 10px;
@@ -350,7 +349,17 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 600px;
-  box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;
+  z-index: 10001;
+}
+
+.config-mark {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
 }
 
 .setting-button {

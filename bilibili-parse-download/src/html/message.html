@@ -1,9 +1,10 @@
 <div class="message-bg"></div>
 <div id="message_box">
-  <div class="message_box_bg">
+  <div class="message-box-mark"></div>
+  <div class="message-box-bg">
     <span style="font-size:20px"><b>提示：</b></span>
     <div id="message_box_context" style="margin:2% 0;">...</div><br /><br />
-    <div class="message_box_btn">
+    <div class="message-box-btn">
       <button name="affirm">确定</button>
       <button name="cancel">取消</button>
     </div>
@@ -69,7 +70,7 @@
     z-index: 20000;
   }
 
-  .message_box_bg {
+  .message-box-bg {
     position: absolute;
     background: rgb(255, 255, 255);
     border-radius: 10px;
@@ -77,15 +78,25 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 400px;
-    box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;
+    width: 420px;
+    z-index: 20001;
   }
 
-  .message_box_btn {
+  .message-box-mark {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 20000;
+  }
+
+  .message-box-btn {
     text-align: right;
   }
 
-  .message_box_btn button {
+  .message-box-btn button {
     margin: 0 5px;
     width: 120px;
     height: 40px;
@@ -98,7 +109,7 @@
     font-size: 17px;
   }
 
-  .message_box_btn button:hover {
+  .message-box-btn button:hover {
     background: #5599ff;
   }
 </style>

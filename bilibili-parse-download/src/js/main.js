@@ -18,22 +18,11 @@ import { createApp } from 'vue'
 import configVue from '../template/config.vue'
 
 class Main {
-    constructor() {
-        this.has_toolbar = false
-        setTimeout(() => {
-            this.run_before()
-        }, 1000)
-    }
 
-    run_before() {
-        this.has_toolbar = this.set_toolbar()
-        if (this.has_toolbar) {
-            this.run()
-        }
+    constructor() {
     }
 
     set_toolbar() {
-        if (this.has_toolbar) return
         let bp_toolbar
         if (!!$('#arc_toolbar_report')[0]) {
             bp_toolbar = arc_toolbar_html
@@ -45,10 +34,11 @@ class Main {
             bp_toolbar = video_toolbar_html
             $('div.video-toolbar').after(bp_toolbar)
         }
-        this.has_toolbar = !!bp_toolbar
     }
 
     run() {
+
+        this.set_toolbar()
 
         const root_div = document.createElement('div')
         root_div.id = 'bp_root'

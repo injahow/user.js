@@ -21,7 +21,7 @@ function download_all() {
         vb.total()
     ]
 
-    $('body').on('click', 'input[name="dl_video"]', function () {
+    $('body').on('click', 'input[name="option_video"]', function () {
         if ($(this).is(':checked')) {
             $(this).parent().css('color', 'rgba(0,0,0,1)')
         } else {
@@ -32,7 +32,7 @@ function download_all() {
     for (let i = 0; i < total; i++) {
         video_html += '' +
             `<label for="option_${i}"><div style="color:rgba(0,0,0,0.5);">
-                <input type="checkbox" id="option_${i}" name="dl_video" value="${i}">
+                <input type="checkbox" id="option_${i}" name="option_video" value="${i}">
                 P${i + 1} ${vb.title(i + 1)}
             </div></label>`
     }
@@ -41,12 +41,12 @@ function download_all() {
     $('body').on('click', 'button#checkbox_btn', () => {
         if (all_checked) {
             all_checked = false
-            $('input[name="dl_video"]').prop('checked', all_checked)
-            $('input[name="dl_video"]').parent().css('color', 'rgba(0,0,0,0.5)')
+            $('input[name="option_video"]').prop('checked', all_checked)
+            $('input[name="option_video"]').parent().css('color', 'rgba(0,0,0,0.5)')
         } else {
             all_checked = true
-            $('input[name="dl_video"]').prop('checked', all_checked)
-            $('input[name="dl_video"]').parent().css('color', 'rgb(0,0,0)')
+            $('input[name="option_video"]').prop('checked', all_checked)
+            $('input[name="option_video"]').parent().css('color', 'rgb(0,0,0)')
         }
     })
 
@@ -68,7 +68,7 @@ function download_all() {
     }
     const msg = '' +
         `<div style="margin:2% 0;">
-            <label>视频格式：</label>
+            <label>视频格式:</label>
             <select id="dl_format">
                 <option value="flv" selected>FLV</option>
                 <option value="mp4">MP4</option>
@@ -76,23 +76,19 @@ function download_all() {
             &nbsp;&nbsp;仅video类型支持mp4
         </div>
         <div style="margin:2% 0;">
-            <label>视频质量：</label>
+            <label>视频质量:</label>
             <select id="dl_quality">
                 ${option_support_html}
             </select>
         </div>
         <div style="margin:2% 0;">
-            <label>下载字幕：</label>
-            <select id="dl_subtitle">
-                <option value="0" selected>关闭</option>
-                <option value="1">VTT</option>
-            </select>
-            &nbsp;&nbsp
-            <label>下载弹幕：</label>
-            <select id="dl_danmaku">
-                <option value="0" selected>关闭</option>
-                <option value="1">ASS</option>
-            </select>
+            <label>下载选择:</label>
+            <input type="checkbox" id="dl_video" value="1" checked="checked">
+            <label for="dl_video">视频</label>
+            <input type="checkbox" id="dl_subtitle" value="1">
+            <label for="dl_subtitle">字幕</label>
+            <input type="checkbox" id="dl_danmaku" value="1">
+            <label for="dl_danmaku">弹幕</label>
         </div>
         <b>
             <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>
@@ -108,9 +104,11 @@ function download_all() {
     MessageBox.confirm(msg, () => {
         // 获取参数
         let dl_quality = $('#dl_quality').val() || q
-        let dl_subtitle = $('#dl_subtitle').val()
-        let dl_danmaku = $('#dl_danmaku').val()
-
+        const [dl_video, dl_subtitle, dl_danmaku] = [
+            $('#dl_video').is(':checked'),
+            $('#dl_subtitle').is(':checked'),
+            $('#dl_danmaku').is(':checked')
+        ]
         const videos = []
         for (let i = 0; i < total; i++) {
             if (!$(`input#option_${i}`).is(':checked')) {
@@ -131,16 +129,28 @@ function download_all() {
             })
         }
 
-        if (dl_subtitle === '1') {
-            // 下载字幕vtt.zip
-            download_subtitle_vtt_zip([...videos], new JSZip())
+        if (dl_video) {
+            // 下载视频
+            download_videos(videos, 0, [])
         }
-        if (dl_danmaku === '1') {
-            // 下载弹幕ass.zip
-            download_danmaku_ass_zip([...videos], new JSZip())
+
+        if (dl_subtitle) {
+            // 下载字幕
+            if (videos.length === 1) {
+                download_subtitle_vtt(videos[0].p, videos[0].filename)
+            } else {
+                download_subtitle_vtt_zip([...videos], new JSZip())
+            }
         }
-        // 下载视频
-        download_videos(videos, 0, [])
+        if (dl_danmaku) {
+            // 下载弹幕
+            if (videos.length === 1) {
+                download_danmaku_ass(videos[0].cid, videos[0].filename)
+            } else {
+                download_danmaku_ass_zip([...videos], new JSZip())
+            }
+        }
+
     })
     // 初始化参数，去除8k及以上
     $('#dl_quality').val(q > 120 ? 80 : q)
@@ -343,9 +353,7 @@ function open_ariang(rpc) {
     const a = document.createElement('a')
     a.setAttribute('target', '_blank')
     a.setAttribute('onclick', `window.bp_aria2_window=window.open('${url}');`)
-    document.body.appendChild(a)
     a.click()
-    a.remove()
 }
 
 let download_blob_clicked = false, need_show_progress = true
@@ -385,9 +393,7 @@ function download_blob(url, filename) {
             a.style.display = 'none'
             a.href = blob_url
             a.download = filename
-            document.body.appendChild(a)
             a.click()
-            a.remove()
             URL.revokeObjectURL(blob_url)
         }
     }
@@ -415,6 +421,10 @@ function _download_danmaku_ass(cid, title, return_type = null, callback = null) 
     }).then(result => {
         const result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''))
         if (!result_dom || !result_dom.find('d')[0]) {
+            if (return_type === 'callback' && callback) {
+                callback()
+                return
+            }
             Message.warning('未发现弹幕')
             return
         } else {
@@ -473,11 +483,11 @@ function _download_danmaku_ass(cid, title, return_type = null, callback = null) 
                 ]
                 return 'Dialogue: ' + fields.join(',')
             }
-            // 3.for of
+            // todo 3. make
             const content = [
                 '[Script Info]',
-                '; Script generated by bilibili-parse',
-                '; https://github.com/injahow/bilibili-parse',
+                '; Script generated by injahow/user.js',
+                '; https://github.com/injahow/user.js',
                 `Title: ${title}`,
                 'ScriptType: v4.00+',
                 `PlayResX: ${1920}`,
@@ -514,16 +524,16 @@ function _download_danmaku_ass(cid, title, return_type = null, callback = null) 
                 a.style.display = 'none'
                 a.href = blob_url
                 a.download = title + '.ass'
-                document.body.appendChild(a)
                 a.click()
-                a.remove()
                 URL.revokeObjectURL(blob_url)
             } else if (return_type === 'callback' && callback) {
                 callback(data)
             }
         }
     }).catch(_ => {
-        Message.warning('未发现字幕')
+        if (return_type === 'callback' && callback) {
+            callback()
+        }
     })
 }
 
@@ -532,7 +542,7 @@ function download_danmaku_ass(cid, title) {
 }
 
 function download_subtitle_vtt(p = 0, file_name) {
-    const download_subtitle = (blob_url = '') => {
+    const download_subtitle = blob_url => {
         if (!blob_url) {
             Message.warning('未发现字幕')
             return
@@ -541,9 +551,7 @@ function download_subtitle_vtt(p = 0, file_name) {
         a.setAttribute('target', '_blank')
         a.setAttribute('href', blob_url)
         a.setAttribute('download', file_name + '.vtt')
-        document.body.appendChild(a)
         a.click()
-        a.remove()
         URL.revokeObjectURL(blob_url)
     }
     api.get_subtitle_url(p, download_subtitle)
@@ -556,15 +564,23 @@ function download_blob_zip(blob_data, filename) {
     a.setAttribute('target', '_blank')
     a.setAttribute('href', blob_url)
     a.setAttribute('download', filename + '.zip')
-    document.body.appendChild(a);
     a.click()
-    a.remove()
     URL.revokeObjectURL(blob_url)
 }
 
+/**
+ * 批量下载弹幕
+ * @param {Array} videos
+ * @param {JSZip} zip
+ * @returns
+ */
 function download_danmaku_ass_zip(videos, zip) { // 异步递归
     if (!videos) return
     if (videos.length === 0) {
+        if (Object.keys(zip.files).length === 0) {
+            Message.warning('未发现弹幕')
+            return
+        }
         zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().name + '_ass'))
         return
     }
@@ -577,9 +593,19 @@ function download_danmaku_ass_zip(videos, zip) { // 异步递归
     })
 }
 
+/**
+ * 批量下载字幕
+ * @param {Array} videos
+ * @param {JSZip} zip
+ * @returns
+ */
 function download_subtitle_vtt_zip(videos, zip) { // 异步递归
     if (!videos) return
     if (videos.length === 0) {
+        if (Object.keys(zip.files).length === 0) {
+            Message.warning('未发现字幕')
+            return
+        }
         zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().name + '_vtt'))
         return
     }
@@ -607,8 +633,27 @@ function format(url) {
 export const Download = {
     url_format: format,
     download: (url, name, type) => {
-        const filename = name.replace(/[\/\\:*?"<>|]+/g, '') + format(url)
-
+        /*
+        name = name.replace(/[\/\\*|]+/g, '-').replace(/[:?"<>]/g, match => {
+            let res
+            switch (match) { // \/:*?"<>|
+                case ':': res = '：'; break
+                case '?': res = '？'; break
+                case '"': res = '\''; break
+                case '<': res = '《'; break
+                case '>': res = '》'; break
+                default: res = '-'
+            }
+            return res
+        })
+        */
+        name = name.replace(/[\/\\*|]+/g, '-')
+            .replace(/:/g, '：')
+            .replace(/\?/g, '？')
+            .replace(/"/g, '\'')
+            .replace(/</g, '《')
+            .replace(/>/g, '》')
+        const filename = name + format(url)
         if (type === 'blob') {
             download_blob(url, filename)
         } else if (type === 'rpc') {

@@ -107,7 +107,7 @@ __webpack_require__.d(__webpack_exports__, {
 var ui_scroll = __webpack_require__("./src/js/ui/scroll.js");
 ;// CONCATENATED MODULE: ./src/html/message.html
 // Module
-var code = "<div class=\"message-bg\"></div>\n<div id=\"message_box\">\n  <div class=\"message_box_bg\">\n    <span style=\"font-size:20px\"><b>提示：</b></span>\n    <div id=\"message_box_context\" style=\"margin:2% 0;\">...</div><br /><br />\n    <div class=\"message_box_btn\">\n      <button name=\"affirm\">确定</button>\n      <button name=\"cancel\">取消</button>\n    </div>\n  </div>\n</div>\n<style>\n  .message-bg {\n    position: fixed;\n    float: right;\n    right: 0;\n    top: 2%;\n    z-index: 30000;\n  }\n\n  .message {\n    margin-bottom: 15px;\n    padding: 2% 2%;\n    width: 300px;\n    display: flex;\n    margin-top: -70px;\n    opacity: 0;\n  }\n\n  .message-success {\n    background-color: #ddffdd;\n    border-left: 6px solid #4caf50;\n  }\n\n  .message-error {\n    background-color: #ffdddd;\n    border-left: 6px solid #f44336;\n  }\n\n  .message-info {\n    background-color: #e7f3fe;\n    border-left: 6px solid #0c86de;\n  }\n\n  .message-warning {\n    background-color: #ffffcc;\n    border-left: 6px solid #ffeb3b;\n  }\n\n  .message-context {\n    font-size: 21px;\n    word-wrap: break-word;\n    word-break: break-all;\n  }\n\n  .message-context p {\n    margin: 0;\n  }\n\n  #message_box {\n    opacity: 0;\n    display: none;\n    position: fixed;\n    inset: 0px;\n    top: 0px;\n    left: 0px;\n    width: 100%;\n    height: 100%;\n    z-index: 20000;\n  }\n\n  .message_box_bg {\n    position: absolute;\n    background: rgb(255, 255, 255);\n    border-radius: 10px;\n    padding: 20px;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 400px;\n    box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n  }\n\n  .message_box_btn {\n    text-align: right;\n  }\n\n  .message_box_btn button {\n    margin: 0 5px;\n    width: 120px;\n    height: 40px;\n    border-width: 0px;\n    border-radius: 3px;\n    background: #1e90ff;\n    cursor: pointer;\n    outline: none;\n    color: white;\n    font-size: 17px;\n  }\n\n  .message_box_btn button:hover {\n    background: #5599ff;\n  }\n</style>\n";
+var code = "<div class=\"message-bg\"></div>\n<div id=\"message_box\">\n  <div class=\"message-box-mark\"></div>\n  <div class=\"message-box-bg\">\n    <span style=\"font-size:20px\"><b>提示：</b></span>\n    <div id=\"message_box_context\" style=\"margin:2% 0;\">...</div><br /><br />\n    <div class=\"message-box-btn\">\n      <button name=\"affirm\">确定</button>\n      <button name=\"cancel\">取消</button>\n    </div>\n  </div>\n</div>\n<style>\n  .message-bg {\n    position: fixed;\n    float: right;\n    right: 0;\n    top: 2%;\n    z-index: 30000;\n  }\n\n  .message {\n    margin-bottom: 15px;\n    padding: 2% 2%;\n    width: 300px;\n    display: flex;\n    margin-top: -70px;\n    opacity: 0;\n  }\n\n  .message-success {\n    background-color: #ddffdd;\n    border-left: 6px solid #4caf50;\n  }\n\n  .message-error {\n    background-color: #ffdddd;\n    border-left: 6px solid #f44336;\n  }\n\n  .message-info {\n    background-color: #e7f3fe;\n    border-left: 6px solid #0c86de;\n  }\n\n  .message-warning {\n    background-color: #ffffcc;\n    border-left: 6px solid #ffeb3b;\n  }\n\n  .message-context {\n    font-size: 21px;\n    word-wrap: break-word;\n    word-break: break-all;\n  }\n\n  .message-context p {\n    margin: 0;\n  }\n\n  #message_box {\n    opacity: 0;\n    display: none;\n    position: fixed;\n    inset: 0px;\n    top: 0px;\n    left: 0px;\n    width: 100%;\n    height: 100%;\n    z-index: 20000;\n  }\n\n  .message-box-bg {\n    position: absolute;\n    background: rgb(255, 255, 255);\n    border-radius: 10px;\n    padding: 20px;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 420px;\n    z-index: 20001;\n  }\n\n  .message-box-mark {\n    width: 100%;\n    height: 100%;\n    position: fixed;\n    top: 0;\n    left: 0;\n    background: rgba(0, 0, 0, 0.5);\n    z-index: 20000;\n  }\n\n  .message-box-btn {\n    text-align: right;\n  }\n\n  .message-box-btn button {\n    margin: 0 5px;\n    width: 120px;\n    height: 40px;\n    border-width: 0px;\n    border-radius: 3px;\n    background: #1e90ff;\n    cursor: pointer;\n    outline: none;\n    color: white;\n    font-size: 17px;\n  }\n\n  .message-box-btn button:hover {\n    background: #5599ff;\n  }\n</style>\n";
 // Exports
 /* harmony default export */ var message = (code);
 ;// CONCATENATED MODULE: ./src/js/ui/message.js
@@ -120,9 +120,9 @@ function initMessage() {
 
 function messageBox(ctx, type) {
   if (type === 'confirm') {
-    $('div.message_box_btn button[name="cancel"]').show();
+    $('div.message-box-btn button[name="cancel"]').show();
   } else if (type === 'alert') {
-    $('div.message_box_btn button[name="cancel"]').hide();
+    $('div.message-box-btn button[name="cancel"]').hide();
   }
 
   if (ctx.html) {
@@ -137,7 +137,7 @@ function messageBox(ctx, type) {
     'opacity': '1'
   }, 300);
 
-  $('div.message_box_btn button[name="affirm"]')[0].onclick = function () {
+  $('div.message-box-btn button[name="affirm"]')[0].onclick = function () {
     $('div#message_box').hide();
     $('div#message_box').css('opacity', 0);
     ui_scroll.scroll.show();
@@ -147,7 +147,7 @@ function messageBox(ctx, type) {
     }
   };
 
-  $('div.message_box_btn button[name="cancel"]')[0].onclick = function () {
+  $('div.message-box-btn button[name="cancel"]')[0].onclick = function () {
     $('div#message_box').hide();
     $('div#message_box').css('opacity', 0);
     ui_scroll.scroll.show();
@@ -162,13 +162,13 @@ var id = 0;
 
 function message_message(html, type) {
   id += 1;
-  messageEnQueue("<div id=\"message-".concat(id, "\" class=\"message message-").concat(type, "\"><div class=\"message-context\"><p><strong>").concat(type, "\uFF1A</strong></p><p>").concat(html, "</p></div></div>"), id);
+  messageEnQueue("<div id=\"message_".concat(id, "\" class=\"message message-").concat(type, "\"><div class=\"message-context\"><p><strong>").concat(type, "\uFF1A</strong></p><p>").concat(html, "</p></div></div>"), id);
   messageDeQueue(id, 3);
 }
 
 function messageEnQueue(message, id) {
   $('div.message-bg').append(message);
-  $("div#message-".concat(id)).animate({
+  $("div#message_".concat(id)).animate({
     'margin-top': '+=70px',
     'opacity': '1'
   }, 300);
@@ -177,7 +177,7 @@ function messageEnQueue(message, id) {
 function messageDeQueue(id) {
   var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
   setTimeout(function () {
-    var e = "div#message-".concat(id);
+    var e = "div#message_".concat(id);
     $(e).animate({
       'margin-top': '-=70px',
       'opacity': '0'
@@ -403,7 +403,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#bp_config[data-v-15d0b82e] {\n  opacity: 0;\n  display: none;\n  position: fixed;\n  inset: 0px;\n  top: 0px;\n  left: 0px;\n  width: 100%;\n  height: 100%;\n  z-index: 10000;\n}\n.bp_config_bg[data-v-15d0b82e] {\n  position: absolute;\n  background: rgb(255, 255, 255);\n  border-radius: 10px;\n  padding: 20px;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 600px;\n  box-shadow: rgb(0 0 0 / 70%) 0px 0px 0px 1000px;\n}\n.setting-button[data-v-15d0b82e] {\n  width: 120px;\n  height: 40px;\n  border-width: 0px;\n  border-radius: 3px;\n  background: #1e90ff;\n  cursor: pointer;\n  outline: none;\n  color: white;\n  font-size: 17px;\n}\n.setting-button[data-v-15d0b82e]:hover {\n  background: #5599ff;\n}\n.setting-context[data-v-15d0b82e] {\n  margin: 0 1%;\n  color: blue;\n}\n.setting-context[data-v-15d0b82e]:hover {\n  color: red;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n#bp_config[data-v-15d0b82e] {\n  opacity: 0;\n  display: none;\n  position: fixed;\n  inset: 0px;\n  top: 0px;\n  left: 0px;\n  width: 100%;\n  height: 100%;\n  z-index: 10000;\n}\n.config-bg[data-v-15d0b82e] {\n  position: absolute;\n  background: rgb(255, 255, 255);\n  border-radius: 10px;\n  padding: 20px;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 600px;\n  z-index: 10001;\n}\n.config-mark[data-v-15d0b82e] {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  top: 0;\n  left: 0;\n  background: rgba(0, 0, 0, 0.5);\n  z-index: 10000;\n}\n.setting-button[data-v-15d0b82e] {\n  width: 120px;\n  height: 40px;\n  border-width: 0px;\n  border-radius: 3px;\n  background: #1e90ff;\n  cursor: pointer;\n  outline: none;\n  color: white;\n  font-size: 17px;\n}\n.setting-button[data-v-15d0b82e]:hover {\n  background: #5599ff;\n}\n.setting-context[data-v-15d0b82e] {\n  margin: 0 1%;\n  color: blue;\n}\n.setting-context[data-v-15d0b82e]:hover {\n  color: red;\n}\n", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -969,13 +969,16 @@ var Store = /*#__PURE__*/function () {
 
   _createClass(Store, [{
     key: "get",
-    value: function get(key) {
-      return localStorage.getItem(this.prefix + (key || '')) || '';
+    value: function get() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      return localStorage.getItem(this.prefix + key) || '';
     }
   }, {
     key: "set",
-    value: function set(key, value) {
-      return localStorage.setItem(this.prefix + (key || ''), value);
+    value: function set() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var value = arguments.length > 1 ? arguments[1] : undefined;
+      localStorage.setItem(this.prefix + key, value);
     }
   }]);
 
@@ -1914,7 +1917,7 @@ function download_all() {
   var _ref = [video.get_quality().q, vb.total()],
       q = _ref[0],
       total = _ref[1];
-  $('body').on('click', 'input[name="dl_video"]', function () {
+  $('body').on('click', 'input[name="option_video"]', function () {
     if ($(this).is(':checked')) {
       $(this).parent().css('color', 'rgba(0,0,0,1)');
     } else {
@@ -1924,19 +1927,19 @@ function download_all() {
   var video_html = '';
 
   for (var i = 0; i < total; i++) {
-    video_html += '' + "<label for=\"option_".concat(i, "\"><div style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"option_").concat(i, "\" name=\"dl_video\" value=\"").concat(i, "\">\n                P").concat(i + 1, " ").concat(vb.title(i + 1), "\n            </div></label>");
+    video_html += '' + "<label for=\"option_".concat(i, "\"><div style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"option_").concat(i, "\" name=\"option_video\" value=\"").concat(i, "\">\n                P").concat(i + 1, " ").concat(vb.title(i + 1), "\n            </div></label>");
   }
 
   var all_checked = false;
   $('body').on('click', 'button#checkbox_btn', function () {
     if (all_checked) {
       all_checked = false;
-      $('input[name="dl_video"]').prop('checked', all_checked);
-      $('input[name="dl_video"]').parent().css('color', 'rgba(0,0,0,0.5)');
+      $('input[name="option_video"]').prop('checked', all_checked);
+      $('input[name="option_video"]').parent().css('color', 'rgba(0,0,0,0.5)');
     } else {
       all_checked = true;
-      $('input[name="dl_video"]').prop('checked', all_checked);
-      $('input[name="dl_video"]').parent().css('color', 'rgb(0,0,0)');
+      $('input[name="option_video"]').prop('checked', all_checked);
+      $('input[name="option_video"]').parent().css('color', 'rgb(0,0,0)');
     }
   });
   var q_map = {
@@ -1967,12 +1970,14 @@ function download_all() {
     _iterator.f();
   }
 
-  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F\uFF1A</label>\n            <select id=\"dl_format\">\n                <option value=\"flv\" selected>FLV</option>\n                <option value=\"mp4\">MP4</option>\n            </select>\n            &nbsp;&nbsp;\u4EC5video\u7C7B\u578B\u652F\u6301mp4\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF\uFF1A</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u5B57\u5E55\uFF1A</label>\n            <select id=\"dl_subtitle\">\n                <option value=\"0\" selected>\u5173\u95ED</option>\n                <option value=\"1\">VTT</option>\n            </select>\n            &nbsp;&nbsp\n            <label>\u4E0B\u8F7D\u5F39\u5E55\uFF1A</label>\n            <select id=\"dl_danmaku\">\n                <option value=\"0\" selected>\u5173\u95ED</option>\n                <option value=\"1\">ASS</option>\n            </select>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div>").concat(video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : '', "</div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
+  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"flv\" selected>FLV</option>\n                <option value=\"mp4\">MP4</option>\n            </select>\n            &nbsp;&nbsp;\u4EC5video\u7C7B\u578B\u652F\u6301mp4\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <input type=\"checkbox\" id=\"dl_video\" value=\"1\" checked=\"checked\">\n            <label for=\"dl_video\">\u89C6\u9891</label>\n            <input type=\"checkbox\" id=\"dl_subtitle\" value=\"1\">\n            <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            <input type=\"checkbox\" id=\"dl_danmaku\" value=\"1\">\n            <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div>").concat(video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : '', "</div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
   message.MessageBox.confirm(msg, function () {
     // 获取参数
     var dl_quality = $('#dl_quality').val() || q;
-    var dl_subtitle = $('#dl_subtitle').val();
-    var dl_danmaku = $('#dl_danmaku').val();
+    var _ref2 = [$('#dl_video').is(':checked'), $('#dl_subtitle').is(':checked'), $('#dl_danmaku').is(':checked')],
+        dl_video = _ref2[0],
+        dl_subtitle = _ref2[1],
+        dl_danmaku = _ref2[2];
     var videos = [];
 
     for (var _i = 0; _i < total; _i++) {
@@ -1981,9 +1986,9 @@ function download_all() {
       }
 
       var p = _i + 1;
-      var _ref2 = [vb.cid(p), vb.filename(p)],
-          cid = _ref2[0],
-          filename = _ref2[1];
+      var _ref3 = [vb.cid(p), vb.filename(p)],
+          cid = _ref3[0],
+          filename = _ref3[1];
 
       var _format = $('#dl_format').val();
 
@@ -1996,18 +2001,28 @@ function download_all() {
       });
     }
 
-    if (dl_subtitle === '1') {
-      // 下载字幕vtt.zip
-      download_subtitle_vtt_zip([].concat(videos), new runtime_lib.JSZip());
+    if (dl_video) {
+      // 下载视频
+      download_videos(videos, 0, []);
     }
 
-    if (dl_danmaku === '1') {
-      // 下载弹幕ass.zip
-      download_danmaku_ass_zip([].concat(videos), new runtime_lib.JSZip());
-    } // 下载视频
+    if (dl_subtitle) {
+      // 下载字幕
+      if (videos.length === 1) {
+        download_subtitle_vtt(videos[0].p, videos[0].filename);
+      } else {
+        download_subtitle_vtt_zip([].concat(videos), new runtime_lib.JSZip());
+      }
+    }
 
-
-    download_videos(videos, 0, []);
+    if (dl_danmaku) {
+      // 下载弹幕
+      if (videos.length === 1) {
+        download_danmaku_ass(videos[0].cid, videos[0].filename);
+      } else {
+        download_danmaku_ass_zip([].concat(videos), new runtime_lib.JSZip());
+      }
+    }
   }); // 初始化参数，去除8k及以上
 
   $('#dl_quality').val(q > 120 ? 80 : q);
@@ -2026,10 +2041,10 @@ function download_all() {
             if (!res.code) {
               message.Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
               message.MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
-              var _ref3 = [res.url, format(res.url), rpc_type()],
-                  url = _ref3[0],
-                  video_format = _ref3[1],
-                  type = _ref3[2];
+              var _ref4 = [res.url, format(res.url), rpc_type()],
+                  url = _ref4[0],
+                  video_format = _ref4[1],
+                  type = _ref4[2];
 
               if (type === 'post') {
                 video_urls.push({
@@ -2225,18 +2240,16 @@ function open_ariang(rpc) {
   var a = document.createElement('a');
   a.setAttribute('target', '_blank');
   a.setAttribute('onclick', "window.bp_aria2_window=window.open('".concat(url, "');"));
-  document.body.appendChild(a);
   a.click();
-  a.remove();
 }
 
 var download_blob_clicked = false,
     need_show_progress = true;
 
-function show_progress(_ref4) {
-  var total = _ref4.total,
-      loaded = _ref4.loaded,
-      percent = _ref4.percent;
+function show_progress(_ref5) {
+  var total = _ref5.total,
+      loaded = _ref5.loaded,
+      percent = _ref5.percent;
 
   if (need_show_progress) {
     message.MessageBox.alert("\u6587\u4EF6\u5927\u5C0F\uFF1A".concat(Math.floor(total / (1024 * 1024)), "MB(").concat(total, "Byte)<br/>") + "\u5DF2\u7ECF\u4E0B\u8F7D\uFF1A".concat(Math.floor(loaded / (1024 * 1024)), "MB(").concat(loaded, "Byte)<br/>") + "\u5F53\u524D\u8FDB\u5EA6\uFF1A".concat(percent, "%<br/>\u4E0B\u8F7D\u4E2D\u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF01"), function () {
@@ -2274,9 +2287,7 @@ function download_blob(url, filename) {
       a.style.display = 'none';
       a.href = blob_url;
       a.download = filename;
-      document.body.appendChild(a);
       a.click();
-      a.remove();
       URL.revokeObjectURL(blob_url);
     }
   };
@@ -2312,6 +2323,11 @@ function _download_danmaku_ass(cid, title) {
     var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''));
 
     if (!result_dom || !result_dom.find('d')[0]) {
+      if (return_type === 'callback' && callback) {
+        callback();
+        return;
+      }
+
       message.Message.warning('未发现弹幕');
       return;
     } else {
@@ -2400,10 +2416,10 @@ function _download_danmaku_ass(cid, title) {
         '{' + commands.join('') + '}' + encode(text) // Text
         ];
         return 'Dialogue: ' + fields.join(',');
-      }; // 3.for of
+      }; // todo 3. make
 
 
-      var content = ['[Script Info]', '; Script generated by bilibili-parse', '; https://github.com/injahow/bilibili-parse', "Title: ".concat(title), 'ScriptType: v4.00+', "PlayResX: ".concat(1920), "PlayResY: ".concat(1080), 'Timer: 10.0000', 'WrapStyle: 2', 'ScaledBorderAndShadow: no', '', '[V4+ Styles]', 'Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding', 'Style: Small,微软雅黑,36,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Medium,微软雅黑,52,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Large,微软雅黑,64,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Larger,微软雅黑,72,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: ExtraLarge,微软雅黑,90,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', '', '[Events]', 'Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text'];
+      var content = ['[Script Info]', '; Script generated by injahow/user.js', '; https://github.com/injahow/user.js', "Title: ".concat(title), 'ScriptType: v4.00+', "PlayResX: ".concat(1920), "PlayResY: ".concat(1080), 'Timer: 10.0000', 'WrapStyle: 2', 'ScaledBorderAndShadow: no', '', '[V4+ Styles]', 'Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding', 'Style: Small,微软雅黑,36,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Medium,微软雅黑,52,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Large,微软雅黑,64,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: Larger,微软雅黑,72,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', 'Style: ExtraLarge,微软雅黑,90,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0', '', '[Events]', 'Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text'];
       var scroll_id = 0,
           fix_id = 0;
 
@@ -2439,16 +2455,16 @@ function _download_danmaku_ass(cid, title) {
         a.style.display = 'none';
         a.href = blob_url;
         a.download = title + '.ass';
-        document.body.appendChild(a);
         a.click();
-        a.remove();
         URL.revokeObjectURL(blob_url);
       } else if (return_type === 'callback' && callback) {
         callback(data);
       }
     }
   }).catch(function (_) {
-    message.Message.warning('未发现字幕');
+    if (return_type === 'callback' && callback) {
+      callback();
+    }
   });
 }
 
@@ -2460,9 +2476,7 @@ function download_subtitle_vtt() {
   var p = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   var file_name = arguments.length > 1 ? arguments[1] : undefined;
 
-  var download_subtitle = function download_subtitle() {
-    var blob_url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
+  var download_subtitle = function download_subtitle(blob_url) {
     if (!blob_url) {
       message.Message.warning('未发现字幕');
       return;
@@ -2472,9 +2486,7 @@ function download_subtitle_vtt() {
     a.setAttribute('target', '_blank');
     a.setAttribute('href', blob_url);
     a.setAttribute('download', file_name + '.vtt');
-    document.body.appendChild(a);
     a.click();
-    a.remove();
     URL.revokeObjectURL(blob_url);
   };
 
@@ -2488,17 +2500,27 @@ function download_blob_zip(blob_data, filename) {
   a.setAttribute('target', '_blank');
   a.setAttribute('href', blob_url);
   a.setAttribute('download', filename + '.zip');
-  document.body.appendChild(a);
   a.click();
-  a.remove();
   URL.revokeObjectURL(blob_url);
 }
+/**
+ * 批量下载弹幕
+ * @param {Array} videos
+ * @param {JSZip} zip
+ * @returns
+ */
+
 
 function download_danmaku_ass_zip(videos, zip) {
   // 异步递归
   if (!videos) return;
 
   if (videos.length === 0) {
+    if (Object.keys(zip.files).length === 0) {
+      message.Message.warning('未发现弹幕');
+      return;
+    }
+
     zip.generateAsync({
       type: 'blob'
     }).then(function (data) {
@@ -2517,12 +2539,24 @@ function download_danmaku_ass_zip(videos, zip) {
     download_danmaku_ass_zip(videos, zip);
   });
 }
+/**
+ * 批量下载字幕
+ * @param {Array} videos
+ * @param {JSZip} zip
+ * @returns
+ */
+
 
 function download_subtitle_vtt_zip(videos, zip) {
   // 异步递归
   if (!videos) return;
 
   if (videos.length === 0) {
+    if (Object.keys(zip.files).length === 0) {
+      message.Message.warning('未发现字幕');
+      return;
+    }
+
     zip.generateAsync({
       type: 'blob'
     }).then(function (data) {
@@ -2556,7 +2590,22 @@ function format(url) {
 var Download = {
   url_format: format,
   download: function download(url, name, type) {
-    var filename = name.replace(/[\/\\:*?"<>|]+/g, '') + format(url);
+    /*
+    name = name.replace(/[\/\\*|]+/g, '-').replace(/[:?"<>]/g, match => {
+        let res
+        switch (match) { // \/:*?"<>|
+            case ':': res = '：'; break
+            case '?': res = '？'; break
+            case '"': res = '\''; break
+            case '<': res = '《'; break
+            case '>': res = '》'; break
+            default: res = '-'
+        }
+        return res
+    })
+    */
+    name = name.replace(/[\/\\*|]+/g, '-').replace(/:/g, '：').replace(/\?/g, '？').replace(/"/g, '\'').replace(/</g, '《').replace(/>/g, '》');
+    var filename = name + format(url);
 
     if (type === 'blob') {
       download_blob(url, filename);
@@ -14172,46 +14221,55 @@ var _withScopeId = function _withScopeId(n) {
 var _hoisted_1 = {
   id: "bp_config"
 };
-var _hoisted_2 = {
-  class: "bp_config_bg"
-};
+
+var _hoisted_2 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("div", {
+    class: "config-mark"
+  }, null, -1
+  /* HOISTED */
+  );
+});
+
 var _hoisted_3 = {
+  class: "config-bg"
+};
+var _hoisted_4 = {
   style: {
     "font-size": "20px"
   }
 };
 
-var _hoisted_4 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_5 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("b", null, "bilibili视频下载 参数设置", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_5 = {
+var _hoisted_6 = {
   style: {
     "margin": "2% 0"
   }
 };
 
-var _hoisted_6 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_7 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "请求地址：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_7 = ["value"];
+var _hoisted_8 = ["value"];
 
-var _hoisted_8 = /*#__PURE__*/createTextVNode("     ");
+var _hoisted_9 = /*#__PURE__*/createTextVNode("     ");
 
-var _hoisted_9 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_10 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "请求方式：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_10 = ["value"];
+var _hoisted_11 = ["value"];
 
-var _hoisted_11 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_12 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "auto"
   }, "自动判断", -1
@@ -14219,7 +14277,7 @@ var _hoisted_11 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_12 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_13 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "local"
   }, "本地请求", -1
@@ -14227,7 +14285,7 @@ var _hoisted_12 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_13 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_14 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "online"
   }, "远程请求", -1
@@ -14235,35 +14293,35 @@ var _hoisted_13 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_14 = [_hoisted_11, _hoisted_12, _hoisted_13];
+var _hoisted_15 = [_hoisted_12, _hoisted_13, _hoisted_14];
 
-var _hoisted_15 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_16 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("br", null, null, -1
   /* HOISTED */
   );
 });
 
-var _hoisted_16 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_17 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("small", null, "注意：普通使用请勿修改；默认使用混合请求", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_17 = {
+var _hoisted_18 = {
   style: {
     "margin": "2% 0"
   }
 };
 
-var _hoisted_18 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_19 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "视频格式：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_19 = ["value"];
+var _hoisted_20 = ["value"];
 
-var _hoisted_20 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_21 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "flv"
   }, "FLV", -1
@@ -14271,7 +14329,7 @@ var _hoisted_20 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_21 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_22 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "dash"
   }, "DASH", -1
@@ -14279,7 +14337,7 @@ var _hoisted_21 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_22 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_23 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "mp4"
   }, "MP4", -1
@@ -14287,130 +14345,130 @@ var _hoisted_22 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_23 = [_hoisted_20, _hoisted_21, _hoisted_22];
+var _hoisted_24 = [_hoisted_21, _hoisted_22, _hoisted_23];
 
-var _hoisted_24 = /*#__PURE__*/createTextVNode("     ");
+var _hoisted_25 = /*#__PURE__*/createTextVNode("     ");
 
-var _hoisted_25 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_26 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "切换CDN：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_26 = ["value"];
 var _hoisted_27 = ["value"];
+var _hoisted_28 = ["value"];
 
-var _hoisted_28 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_29 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("br", null, null, -1
   /* HOISTED */
   );
 });
 
-var _hoisted_29 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_30 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("small", null, "注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_30 = {
+var _hoisted_31 = {
   style: {
     "margin": "2% 0"
   }
 };
 
-var _hoisted_31 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_32 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "下载方式：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_32 = ["value"];
+var _hoisted_33 = ["value"];
 
-var _hoisted_33 = /*#__PURE__*/createStaticVNode("<option value=\"a\" data-v-15d0b82e>URL链接</option><option value=\"web\" data-v-15d0b82e>Web浏览器</option><option value=\"blob\" data-v-15d0b82e>Blob请求</option><option value=\"rpc\" data-v-15d0b82e>RPC接口</option><option value=\"aria\" data-v-15d0b82e>Aria命令</option>", 5);
+var _hoisted_34 = /*#__PURE__*/createStaticVNode("<option value=\"a\" data-v-15d0b82e>URL链接</option><option value=\"web\" data-v-15d0b82e>Web浏览器</option><option value=\"blob\" data-v-15d0b82e>Blob请求</option><option value=\"rpc\" data-v-15d0b82e>RPC接口</option><option value=\"aria\" data-v-15d0b82e>Aria命令</option>", 5);
 
-var _hoisted_38 = [_hoisted_33];
+var _hoisted_39 = [_hoisted_34];
 
-var _hoisted_39 = /*#__PURE__*/createTextVNode("     ");
+var _hoisted_40 = /*#__PURE__*/createTextVNode("     ");
 
-var _hoisted_40 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_41 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "AriaNg地址：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_41 = ["value"];
+var _hoisted_42 = ["value"];
 
-var _hoisted_42 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_43 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("br", null, null, -1
   /* HOISTED */
   );
 });
 
-var _hoisted_43 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_44 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("small", null, "提示：url和web方式不会设置文件名", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_44 = {
+var _hoisted_45 = {
   style: {
     "margin": "2% 0"
   }
 };
 
-var _hoisted_45 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_46 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_46 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_47 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("br", null, null, -1
   /* HOISTED */
   );
 });
 
-var _hoisted_47 = ["value"];
+var _hoisted_48 = ["value"];
 
-var _hoisted_48 = /*#__PURE__*/createTextVNode(" : ");
+var _hoisted_49 = /*#__PURE__*/createTextVNode(" : ");
 
-var _hoisted_49 = ["value"];
+var _hoisted_50 = ["value"];
 
-var _hoisted_50 = /*#__PURE__*/createTextVNode(" | ");
+var _hoisted_51 = /*#__PURE__*/createTextVNode(" | ");
 
-var _hoisted_51 = ["value"];
+var _hoisted_52 = ["value"];
 
-var _hoisted_52 = /*#__PURE__*/createTextVNode(" | ");
+var _hoisted_53 = /*#__PURE__*/createTextVNode(" | ");
 
-var _hoisted_53 = ["value"];
-
-var _hoisted_54 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/createBaseVNode("br", null, null, -1
-  /* HOISTED */
-  );
-});
+var _hoisted_54 = ["value"];
 
 var _hoisted_55 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/createBaseVNode("br", null, null, -1
+  /* HOISTED */
+  );
+});
+
+var _hoisted_56 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("small", null, "注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_56 = {
+var _hoisted_57 = {
   style: {
     "margin": "2% 0"
   }
 };
 
-var _hoisted_57 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_58 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "强制换源：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_58 = ["value"];
+var _hoisted_59 = ["value"];
 
-var _hoisted_59 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_60 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "0"
   }, "关闭", -1
@@ -14418,7 +14476,7 @@ var _hoisted_59 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_60 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_61 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "1"
   }, "开启", -1
@@ -14426,57 +14484,57 @@ var _hoisted_60 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_61 = [_hoisted_59, _hoisted_60];
+var _hoisted_62 = [_hoisted_60, _hoisted_61];
 
-var _hoisted_62 = /*#__PURE__*/createTextVNode("     ");
+var _hoisted_63 = /*#__PURE__*/createTextVNode("     ");
 
-var _hoisted_63 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_64 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "弹幕速度：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_64 = ["value"];
+var _hoisted_65 = ["value"];
 
-var _hoisted_65 = /*#__PURE__*/createTextVNode(" s     ");
+var _hoisted_66 = /*#__PURE__*/createTextVNode(" s     ");
 
-var _hoisted_66 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_67 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "弹幕字号：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_67 = ["value"];
+var _hoisted_68 = ["value"];
 
-var _hoisted_68 = /*#__PURE__*/createTextVNode(" px ");
+var _hoisted_69 = /*#__PURE__*/createTextVNode(" px ");
 
-var _hoisted_69 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_70 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("br", null, null, -1
   /* HOISTED */
   );
 });
 
-var _hoisted_70 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_71 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("small", null, "说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_71 = {
+var _hoisted_72 = {
   style: {
     "margin": "2% 0"
   }
 };
 
-var _hoisted_72 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_73 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "自动下载：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_73 = ["value"];
+var _hoisted_74 = ["value"];
 
-var _hoisted_74 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_75 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "0"
   }, "关闭", -1
@@ -14484,7 +14542,7 @@ var _hoisted_74 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_75 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_76 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("option", {
     value: "1"
   }, "开启", -1
@@ -14492,33 +14550,33 @@ var _hoisted_75 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_76 = [_hoisted_74, _hoisted_75];
+var _hoisted_77 = [_hoisted_75, _hoisted_76];
 
-var _hoisted_77 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_78 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("br", null, null, -1
   /* HOISTED */
   );
 });
 
-var _hoisted_78 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_79 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("small", null, "说明：请求地址成功后将自动点击下载视频按钮", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_79 = {
+var _hoisted_80 = {
   style: {
     "margin": "2% 0"
   }
 };
 
-var _hoisted_80 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_81 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("label", null, "授权状态：", -1
   /* HOISTED */
   );
 });
 
-var _hoisted_81 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_82 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("select", {
     id: "auth",
     value: "{{config.auth}}",
@@ -14532,19 +14590,19 @@ var _hoisted_81 = /*#__PURE__*/_withScopeId(function () {
   );
 });
 
-var _hoisted_82 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_83 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/createBaseVNode("br", null, null, -1
   /* HOISTED */
   );
 });
 
-var _hoisted_83 = {
+var _hoisted_84 = {
   style: {
     "text-align": "right"
   }
 };
 function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1, [createBaseVNode("div", _hoisted_2, [createBaseVNode("span", _hoisted_3, [_hoisted_4, createBaseVNode("b", null, [createBaseVNode("a", {
+  return openBlock(), createElementBlock("div", _hoisted_1, [_hoisted_2, createBaseVNode("div", _hoisted_3, [createBaseVNode("span", _hoisted_4, [_hoisted_5, createBaseVNode("b", null, [createBaseVNode("a", {
     href: "javascript:;",
     onClick: _cache[0] || (_cache[0] = function ($event) {
       return $options.reset_config();
@@ -14557,7 +14615,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     onClick: _cache[1] || (_cache[1] = function ($event) {
       return $options.show_help();
     })
-  }, "<通知/帮助>")])]), createBaseVNode("div", _hoisted_5, [_hoisted_6, createBaseVNode("input", {
+  }, "<通知/帮助>")])]), createBaseVNode("div", _hoisted_6, [_hoisted_7, createBaseVNode("input", {
     value: $data.config.base_api,
     onInput: _cache[2] || (_cache[2] = function ($event) {
       return $data.config.base_api = $event.target.value;
@@ -14567,21 +14625,21 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     }
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_7), _hoisted_8, _hoisted_9, createBaseVNode("select", {
+  , _hoisted_8), _hoisted_9, _hoisted_10, createBaseVNode("select", {
     value: $data.config.request_type,
     onInput: _cache[3] || (_cache[3] = function ($event) {
       return $data.config.request_type = $event.target.value;
     })
-  }, _hoisted_14, 40
+  }, _hoisted_15, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_10), _hoisted_15, _hoisted_16]), createBaseVNode("div", _hoisted_17, [_hoisted_18, createBaseVNode("select", {
+  , _hoisted_11), _hoisted_16, _hoisted_17]), createBaseVNode("div", _hoisted_18, [_hoisted_19, createBaseVNode("select", {
     value: $data.config.format,
     onInput: _cache[4] || (_cache[4] = function ($event) {
       return $data.config.format = $event.target.value;
     })
-  }, _hoisted_23, 40
+  }, _hoisted_24, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_19), _hoisted_24, _hoisted_25, createBaseVNode("select", {
+  , _hoisted_20), _hoisted_25, _hoisted_26, createBaseVNode("select", {
     value: $data.config.host_key,
     onInput: _cache[5] || (_cache[5] = function ($event) {
       return $data.config.host_key = $event.target.value;
@@ -14592,19 +14650,19 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
       key: e.text
     }, toDisplayString(e.text), 9
     /* TEXT, PROPS */
-    , _hoisted_27);
+    , _hoisted_28);
   }), 128
   /* KEYED_FRAGMENT */
   ))], 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_26), _hoisted_28, _hoisted_29]), createBaseVNode("div", _hoisted_30, [_hoisted_31, createBaseVNode("select", {
+  , _hoisted_27), _hoisted_29, _hoisted_30]), createBaseVNode("div", _hoisted_31, [_hoisted_32, createBaseVNode("select", {
     value: $data.config.download_type,
     onInput: _cache[6] || (_cache[6] = function ($event) {
       return $data.config.download_type = $event.target.value;
     })
-  }, _hoisted_38, 40
+  }, _hoisted_39, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_32), _hoisted_39, _hoisted_40, createBaseVNode("input", {
+  , _hoisted_33), _hoisted_40, _hoisted_41, createBaseVNode("input", {
     value: $data.config.ariang_host,
     onInput: _cache[7] || (_cache[7] = function ($event) {
       return $data.config.ariang_host = $event.target.value;
@@ -14614,7 +14672,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     }
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_41), _hoisted_42, _hoisted_43]), createBaseVNode("div", _hoisted_44, [_hoisted_45, _hoisted_46, createBaseVNode("input", {
+  , _hoisted_42), _hoisted_43, _hoisted_44]), createBaseVNode("div", _hoisted_45, [_hoisted_46, _hoisted_47, createBaseVNode("input", {
     value: $data.config.rpc_domain,
     onInput: _cache[8] || (_cache[8] = function ($event) {
       return $data.config.rpc_domain = $event.target.value;
@@ -14624,7 +14682,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     }
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_47), _hoisted_48, createBaseVNode("input", {
+  , _hoisted_48), _hoisted_49, createBaseVNode("input", {
     value: $data.config.rpc_port,
     onInput: _cache[9] || (_cache[9] = function ($event) {
       return $data.config.rpc_port = $event.target.value;
@@ -14634,7 +14692,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     }
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_49), _hoisted_50, createBaseVNode("input", {
+  , _hoisted_50), _hoisted_51, createBaseVNode("input", {
     value: $data.config.rpc_token,
     onInput: _cache[10] || (_cache[10] = function ($event) {
       return $data.config.rpc_token = $event.target.value;
@@ -14645,7 +14703,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     }
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_51), _hoisted_52, createBaseVNode("input", {
+  , _hoisted_52), _hoisted_53, createBaseVNode("input", {
     value: $data.config.rpc_dir,
     onInput: _cache[11] || (_cache[11] = function ($event) {
       return $data.config.rpc_dir = $event.target.value;
@@ -14656,14 +14714,14 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     }
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_53), _hoisted_54, _hoisted_55]), createBaseVNode("div", _hoisted_56, [_hoisted_57, createBaseVNode("select", {
+  , _hoisted_54), _hoisted_55, _hoisted_56]), createBaseVNode("div", _hoisted_57, [_hoisted_58, createBaseVNode("select", {
     value: $data.config.replace_force,
     onInput: _cache[12] || (_cache[12] = function ($event) {
       return $data.config.replace_force = $event.target.value;
     })
-  }, _hoisted_61, 40
+  }, _hoisted_62, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_58), _hoisted_62, _hoisted_63, createBaseVNode("input", {
+  , _hoisted_59), _hoisted_63, _hoisted_64, createBaseVNode("input", {
     value: $data.config.danmaku_speed,
     onInput: _cache[13] || (_cache[13] = function ($event) {
       return $data.config.danmaku_speed = $event.target.value;
@@ -14673,7 +14731,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     }
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_64), _hoisted_65, _hoisted_66, createBaseVNode("input", {
+  , _hoisted_65), _hoisted_66, _hoisted_67, createBaseVNode("input", {
     value: $data.config.danmaku_fontsize,
     onInput: _cache[14] || (_cache[14] = function ($event) {
       return $data.config.danmaku_fontsize = $event.target.value;
@@ -14683,14 +14741,14 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     }
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_67), _hoisted_68, _hoisted_69, _hoisted_70]), createBaseVNode("div", _hoisted_71, [_hoisted_72, createBaseVNode("select", {
+  , _hoisted_68), _hoisted_69, _hoisted_70, _hoisted_71]), createBaseVNode("div", _hoisted_72, [_hoisted_73, createBaseVNode("select", {
     value: $data.config.auto_download,
     onInput: _cache[15] || (_cache[15] = function ($event) {
       return $data.config.auto_download = $event.target.value;
     })
-  }, _hoisted_76, 40
+  }, _hoisted_77, 40
   /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_73), _hoisted_77, _hoisted_78]), createBaseVNode("div", _hoisted_79, [_hoisted_80, _hoisted_81, createBaseVNode("a", {
+  , _hoisted_74), _hoisted_78, _hoisted_79]), createBaseVNode("div", _hoisted_80, [_hoisted_81, _hoisted_82, createBaseVNode("a", {
     class: "setting-context",
     href: "javascript:;",
     onClick: _cache[16] || (_cache[16] = function ($event) {
@@ -14714,7 +14772,7 @@ function configvue_type_template_id_15d0b82e_scoped_true_render(_ctx, _cache, $p
     onClick: _cache[19] || (_cache[19] = function ($event) {
       return $options.show_login_help();
     })
-  }, "这是什么？")]), _hoisted_82, createBaseVNode("div", _hoisted_83, [createBaseVNode("button", {
+  }, "这是什么？")]), _hoisted_83, createBaseVNode("div", _hoisted_84, [createBaseVNode("button", {
     class: "setting-button",
     onClick: _cache[20] || (_cache[20] = function ($event) {
       return $options.save_config();
@@ -14849,12 +14907,9 @@ var default_config = Object.assign({}, configvue_type_script_lang_js_config); //
     }
   },
   created: function created() {
-    var config_str = store.get("config_str") || localStorage.getItem("my_config_str");
+    var config_str = store.get("config_str");
 
-    if (!config_str) {
-      store.set("config_str", JSON.stringify(configvue_type_script_lang_js_config));
-      localStorage.setItem("my_config_str", ""); // deleted
-    } else {
+    if (config_str) {
       // set config from cache
       var old_config = JSON.parse(config_str);
 
@@ -14864,6 +14919,9 @@ var default_config = Object.assign({}, configvue_type_script_lang_js_config); //
         }
       }
     }
+
+    configvue_type_script_lang_js_config.auth = store.get("auth_id") ? "1" : "0";
+    store.set("config_str", JSON.stringify(configvue_type_script_lang_js_config));
 
     window.onbeforeunload = function () {
       // todo
@@ -14967,29 +15025,12 @@ function main_createClass(Constructor, protoProps, staticProps) { if (protoProps
 
 var Main = /*#__PURE__*/function () {
   function Main() {
-    var _this = this;
-
     main_classCallCheck(this, Main);
-
-    this.has_toolbar = false;
-    setTimeout(function () {
-      _this.run_before();
-    }, 1000);
   }
 
   main_createClass(Main, [{
-    key: "run_before",
-    value: function run_before() {
-      this.has_toolbar = this.set_toolbar();
-
-      if (this.has_toolbar) {
-        this.run();
-      }
-    }
-  }, {
     key: "set_toolbar",
     value: function set_toolbar() {
-      if (this.has_toolbar) return;
       var bp_toolbar;
 
       if (!!$('#arc_toolbar_report')[0]) {
@@ -15002,12 +15043,11 @@ var Main = /*#__PURE__*/function () {
         bp_toolbar = video_toolbar;
         $('div.video-toolbar').after(bp_toolbar);
       }
-
-      this.has_toolbar = !!bp_toolbar;
     }
   }, {
     key: "run",
     value: function run() {
+      this.set_toolbar();
       var root_div = document.createElement('div');
       root_div.id = 'bp_root';
       document.body.append(root_div);
@@ -15277,9 +15317,9 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.3", " ").concat("a9609f9", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.4", " ").concat("fa131dd", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     new main().run();
-  }, 2000);
+  }, 3000);
 })();
 }();
 /******/ })()

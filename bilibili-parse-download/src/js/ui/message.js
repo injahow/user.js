@@ -8,9 +8,9 @@ function initMessage() {
 
 function messageBox(ctx, type) {
     if (type === 'confirm') {
-        $('div.message_box_btn button[name="cancel"]').show()
+        $('div.message-box-btn button[name="cancel"]').show()
     } else if (type === 'alert') {
-        $('div.message_box_btn button[name="cancel"]').hide()
+        $('div.message-box-btn button[name="cancel"]').hide()
     }
     if (ctx.html) {
         $('div#message_box_context').html(`<div style="font-size:18px">${ctx.html}</div>`)
@@ -22,7 +22,7 @@ function messageBox(ctx, type) {
     $('div#message_box').animate({
         'opacity': '1'
     }, 300)
-    $('div.message_box_btn button[name="affirm"]')[0].onclick = () => {
+    $('div.message-box-btn button[name="affirm"]')[0].onclick = () => {
         $('div#message_box').hide()
         $('div#message_box').css('opacity', 0)
         scroll.show()
@@ -30,7 +30,7 @@ function messageBox(ctx, type) {
             ctx.callback.affirm()
         }
     }
-    $('div.message_box_btn button[name="cancel"]')[0].onclick = () => {
+    $('div.message-box-btn button[name="cancel"]')[0].onclick = () => {
         $('div#message_box').hide()
         $('div#message_box').css('opacity', 0)
         scroll.show()
@@ -44,13 +44,13 @@ let id = 0
 
 function message(html, type) {
     id += 1
-    messageEnQueue(`<div id="message-${id}" class="message message-${type}"><div class="message-context"><p><strong>${type}：</strong></p><p>${html}</p></div></div>`, id)
+    messageEnQueue(`<div id="message_${id}" class="message message-${type}"><div class="message-context"><p><strong>${type}：</strong></p><p>${html}</p></div></div>`, id)
     messageDeQueue(id, 3)
 }
 
 function messageEnQueue(message, id) {
     $('div.message-bg').append(message)
-    $(`div#message-${id}`).animate({
+    $(`div#message_${id}`).animate({
         'margin-top': '+=70px',
         'opacity': '1'
     }, 300)
@@ -58,7 +58,7 @@ function messageEnQueue(message, id) {
 
 function messageDeQueue(id, time = 3) {
     setTimeout(() => {
-        const e = `div#message-${id}`
+        const e = `div#message_${id}`
         $(e).animate({
             'margin-top': '-=70px',
             'opacity': '0'
