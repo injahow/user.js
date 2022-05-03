@@ -83,12 +83,18 @@ function download_all() {
         </div>
         <div style="margin:2% 0;">
             <label>下载选择:</label>
-            <input type="checkbox" id="dl_video" value="1" checked="checked">
-            <label for="dl_video">视频</label>
-            <input type="checkbox" id="dl_subtitle" value="1">
-            <label for="dl_subtitle">字幕</label>
-            <input type="checkbox" id="dl_danmaku" value="1">
-            <label for="dl_danmaku">弹幕</label>
+            <label style="color:rgba(0,0,0,1);">
+                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">
+                <label for="dl_video" >视频</label>
+            </label>
+            <label style="color:rgba(0,0,0,0.5);">
+                <input type="checkbox" id="dl_subtitle" name="dl_option">
+                <label for="dl_subtitle">字幕</label>
+            </label>
+            <label style="color:rgba(0,0,0,0.5);">
+                <input type="checkbox" id="dl_danmaku" name="dl_option">
+                <label for="dl_danmaku">弹幕</label>
+            </label>
         </div>
         <b>
             <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>
@@ -152,6 +158,16 @@ function download_all() {
         }
 
     })
+
+    // 处理被隐藏的input
+    $('body').on('click', 'input[name="dl_option"]', function () {
+        if ($(this).is(':checked')) {
+            $(this).parent().css('color', 'rgba(0,0,0,1)')
+        } else {
+            $(this).parent().css('color', 'rgba(0,0,0,0.5)')
+        }
+    })
+
     // 初始化参数，去除8k及以上
     $('#dl_quality').val(q > 120 ? 80 : q)
 
@@ -633,20 +649,6 @@ function format(url) {
 export const Download = {
     url_format: format,
     download: (url, name, type) => {
-        /*
-        name = name.replace(/[\/\\*|]+/g, '-').replace(/[:?"<>]/g, match => {
-            let res
-            switch (match) { // \/:*?"<>|
-                case ':': res = '：'; break
-                case '?': res = '？'; break
-                case '"': res = '\''; break
-                case '<': res = '《'; break
-                case '>': res = '》'; break
-                default: res = '-'
-            }
-            return res
-        })
-        */
         name = name.replace(/[\/\\*|]+/g, '-')
             .replace(/:/g, '：')
             .replace(/\?/g, '？')

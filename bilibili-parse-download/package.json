@@ -1,6 +1,6 @@
 {
   "name": "bilibili-parse-download",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "a script to download bilibli video",
   "main": "dist/bilibili-parse-download.user.js",
   "scripts": {
