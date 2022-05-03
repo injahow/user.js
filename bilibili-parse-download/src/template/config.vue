@@ -308,11 +308,15 @@ export default {
     const config_str = store.get("config_str");
     if (config_str) {
       // set config from cache
-      const old_config = JSON.parse(config_str);
-      for (const key in old_config) {
-        if (Object.hasOwnProperty.call(config, key)) {
-          config[key] = old_config[key];
+      try {
+        const old_config = JSON.parse(config_str);
+        for (const key in old_config) {
+          if (Object.hasOwnProperty.call(config, key)) {
+            config[key] = old_config[key];
+          }
         }
+      } catch {
+        console.log("初始化脚本配置");
       }
     }
     config.auth = store.get("auth_id") ? "1" : "0";

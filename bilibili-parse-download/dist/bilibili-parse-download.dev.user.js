@@ -1970,7 +1970,7 @@ function download_all() {
     _iterator.f();
   }
 
-  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"flv\" selected>FLV</option>\n                <option value=\"mp4\">MP4</option>\n            </select>\n            &nbsp;&nbsp;\u4EC5video\u7C7B\u578B\u652F\u6301mp4\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <input type=\"checkbox\" id=\"dl_video\" value=\"1\" checked=\"checked\">\n            <label for=\"dl_video\">\u89C6\u9891</label>\n            <input type=\"checkbox\" id=\"dl_subtitle\" value=\"1\">\n            <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            <input type=\"checkbox\" id=\"dl_danmaku\" value=\"1\">\n            <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div>").concat(video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : '', "</div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
+  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"flv\" selected>FLV</option>\n                <option value=\"mp4\">MP4</option>\n            </select>\n            &nbsp;&nbsp;\u4EC5video\u7C7B\u578B\u652F\u6301mp4\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <label style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_video\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_video\" >\u89C6\u9891</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_subtitle\" name=\"dl_option\">\n                <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_danmaku\" name=\"dl_option\">\n                <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n            </label>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div>").concat(video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : '', "</div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
   message.MessageBox.confirm(msg, function () {
     // 获取参数
     var dl_quality = $('#dl_quality').val() || q;
@@ -2022,6 +2022,14 @@ function download_all() {
       } else {
         download_danmaku_ass_zip([].concat(videos), new runtime_lib.JSZip());
       }
+    }
+  }); // 处理被隐藏的input
+
+  $('body').on('click', 'input[name="dl_option"]', function () {
+    if ($(this).is(':checked')) {
+      $(this).parent().css('color', 'rgba(0,0,0,1)');
+    } else {
+      $(this).parent().css('color', 'rgba(0,0,0,0.5)');
     }
   }); // 初始化参数，去除8k及以上
 
@@ -2590,20 +2598,6 @@ function format(url) {
 var Download = {
   url_format: format,
   download: function download(url, name, type) {
-    /*
-    name = name.replace(/[\/\\*|]+/g, '-').replace(/[:?"<>]/g, match => {
-        let res
-        switch (match) { // \/:*?"<>|
-            case ':': res = '：'; break
-            case '?': res = '？'; break
-            case '"': res = '\''; break
-            case '<': res = '《'; break
-            case '>': res = '》'; break
-            default: res = '-'
-        }
-        return res
-    })
-    */
     name = name.replace(/[\/\\*|]+/g, '-').replace(/:/g, '：').replace(/\?/g, '？').replace(/"/g, '\'').replace(/</g, '《').replace(/>/g, '》');
     var filename = name + format(url);
 
@@ -14911,12 +14905,16 @@ var default_config = Object.assign({}, configvue_type_script_lang_js_config); //
 
     if (config_str) {
       // set config from cache
-      var old_config = JSON.parse(config_str);
+      try {
+        var old_config = JSON.parse(config_str);
 
-      for (var key in old_config) {
-        if (Object.hasOwnProperty.call(configvue_type_script_lang_js_config, key)) {
-          configvue_type_script_lang_js_config[key] = old_config[key];
+        for (var key in old_config) {
+          if (Object.hasOwnProperty.call(configvue_type_script_lang_js_config, key)) {
+            configvue_type_script_lang_js_config[key] = old_config[key];
+          }
         }
+      } catch (_unused) {
+        console.log("初始化脚本配置");
       }
     }
 
@@ -15317,7 +15315,7 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.4", " ").concat("fa131dd", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.5", " ").concat("7ae4872", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     new main().run();
   }, 3000);
 })();
