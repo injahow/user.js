@@ -2635,15 +2635,6 @@ var Auth = /*#__PURE__*/function () {
   }
 
   auth_createClass(Auth, [{
-    key: "reLogin",
-    value: function reLogin() {
-      store.set('auth_id', '');
-      store.set('auth_sec', '');
-      store.set('access_key', '');
-      store.set('auth_time', '0');
-      this.login();
-    }
-  }, {
     key: "checkLoginStatus",
     value: function checkLoginStatus() {
       var _this = this;
@@ -2663,18 +2654,22 @@ var Auth = /*#__PURE__*/function () {
           dataType: 'json'
         }).then(function (res) {
           if (res.code) {
-            message.MessageBox.alert('授权已过期，准备重新授权', _this.reLogin);
+            message.MessageBox.alert('授权已过期，准备重新授权', function () {
+              _this.reLogin();
+            });
           } else {
             store.set('auth_time', Date.now());
-            return (0,ajax.ajax)({
+            (0,ajax.ajax)({
               url: "".concat(config.config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
               type: 'GET',
               dataType: 'json'
+            }).then(function (res) {
+              if (res.code) {
+                message.MessageBox.alert('检查失败，准备重新授权', function () {
+                  _this.reLogin();
+                });
+              }
             });
-          }
-        }).then(function (res) {
-          if (res.code) {
-            message.MessageBox.alert('授权检查失败，准备重新授权', _this.reLogin);
           }
         });
       }
@@ -2716,6 +2711,15 @@ var Auth = /*#__PURE__*/function () {
       }
 
       do_login();
+    }
+  }, {
+    key: "reLogin",
+    value: function reLogin() {
+      store.set('auth_id', '');
+      store.set('auth_sec', '');
+      store.set('access_key', '');
+      store.set('auth_time', '0');
+      this.loginAuto();
     }
   }, {
     key: "loginAuto",
@@ -15315,7 +15319,7 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.5", " ").concat("7ae4872", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.6", " ").concat("2c50712", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     new main().run();
   }, 3000);
 })();
