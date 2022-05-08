@@ -1,6 +1,5 @@
 const path = require('path')
 const webpack = require('webpack')
-const TerserPlugin = require('terser-webpack-plugin')
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
 const gitRevisionPlugin = new GitRevisionPlugin()
 const { VueLoaderPlugin } = require('vue-loader')
@@ -36,19 +35,6 @@ const getDefaultConfig = () => {
 
         performance: {
             hints: false,
-        },
-
-        optimization: {
-            minimizer: [
-                new TerserPlugin({
-                    terserOptions: {
-                        output: {
-                            comments: /==\/?UserScript==|^[ ]?@| eslint-disable |spell-checker/i,
-                        },
-                    },
-                    extractComments: false,
-                })
-            ]
         },
 
         module: {
@@ -91,6 +77,10 @@ const getDefaultConfig = () => {
                     ]
                 }
             ]
+        },
+
+        externals: {
+            'vue': 'Vue'
         },
 
         plugins: [

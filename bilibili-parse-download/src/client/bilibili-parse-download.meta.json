@@ -25,6 +25,7 @@
       ],
       "require": [
         "https://static.hdslb.com/js/jquery.min.js",
+        "https://cdn.jsdelivr.net/npm/vue@3.2.33/dist/vue.global.prod.js",
         "https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js",
         "https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js"
       ],
@@ -34,8 +35,5 @@
     },
     "==/UserScript=="
   ],
-  "last": [
-    "/* eslint-disable */ /* spell-checker: disable */",
-    "// @[ You can find all source codes in GitHub repo ]"
-  ]
+  "last": ["// @[ You can find all source codes in GitHub repo ]"]
 }

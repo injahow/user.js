@@ -77,7 +77,9 @@
           v-on:input="config.ariang_host = $event.target.value"
           style="width: 30%"
         /><br />
-        <small>提示：url和web方式不会设置文件名</small>
+        <small
+          >提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small
+        >
       </div>
       <div style="margin: 2% 0">
         <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />
