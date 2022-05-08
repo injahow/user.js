@@ -1,6 +1,6 @@
 {
   "name": "bilibili-parse-download",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "description": "a script to download bilibli video",
   "main": "dist/bilibili-parse-download.user.js",
   "scripts": {
@@ -9,10 +9,10 @@
   },
   "private": true,
   "keywords": [
-    "userscript",
     "bilibili",
+    "download",
     "video",
-    "download"
+    "userscript"
   ],
   "author": "injahow",
   "license": "MIT",

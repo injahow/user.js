@@ -24,9 +24,9 @@ class RuntimeLib {
                 }
                 const library = this.moduleAsync
                 resolve(library)
-            } catch (error) {
-                reject(error)
-                throw error
+            } catch (err) {
+                console.error(err)
+                reject(err)
             }
         })
     }
