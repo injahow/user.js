@@ -35,5 +35,8 @@
     },
     "==/UserScript=="
   ],
-  "last": ["// @[ You can find all source codes in GitHub repo ]"]
+  "last": [
+    "/* globals $, DPlayer waitForKeyElements */",
+    "// @[ You can find all source codes in GitHub repo ]"
+  ]
 }

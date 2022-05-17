@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.1.7
+// @version       2.1.8
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -27,6 +27,7 @@
 // @compatible    firefox
 // @grant         none
 // ==/UserScript==
+/* globals $, DPlayer waitForKeyElements */
 // @[ You can find all source codes in GitHub repo ]
 (function() {
     "use strict";
@@ -289,7 +290,7 @@
                 } ]), RuntimeLib;
             }(), JSZip;
             new RuntimeLib({
-                url: "https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js",
+                url: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.9.1/jszip.min.js",
                 getModule: function getModule(window) {
                     return window.JSZip;
                 }
@@ -2193,7 +2194,7 @@
             } ]), Main;
         }(), main = Main;
         window.bp_fun_locked || (window.bp_fun_locked = !0, null == location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) ? $(".error-text")[0] || setTimeout((function() {
-            console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.1.7", " ").concat("d2f1fd7", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;"), 
+            console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.1.8", " ").concat("ee00eb7", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;"), 
             (new main).run();
         }), 3e3) : location.href.match("access_key") && window !== window.parent && (window.stop(), 
         window.parent.postMessage("bilibili-parse-login-credentials: " + location.href, "*")));

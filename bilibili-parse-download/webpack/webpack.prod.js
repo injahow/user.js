@@ -23,7 +23,7 @@ const prodConfig = Object.assign(getDefaultConfig(), {
                     toplevel: true,
                     output: {
                         beautify: true,
-                        comments: /==\/?UserScript==|^[ ]?@/i,
+                        comments: /==\/?UserScript==|globals|^[ ]?@/i,
                     },
                 }
             })

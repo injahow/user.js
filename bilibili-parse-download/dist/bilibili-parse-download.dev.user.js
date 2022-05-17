@@ -377,7 +377,7 @@ var RuntimeLib = /*#__PURE__*/function () {
 var JSZip; // 伪同步
 
 new RuntimeLib({
-  url: 'https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js',
+  url: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.9.1/jszip.min.js',
   getModule: function getModule(window) {
     return window.JSZip;
   }
@@ -4013,7 +4013,7 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.7", " ").concat("d2f1fd7", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.8", " ").concat("ee00eb7", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     new main().run();
   }, 3000);
 })();

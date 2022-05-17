@@ -28,4 +28,3 @@ import Main from './main'
     }, 3000)
 
 })()
-
