@@ -19,9 +19,9 @@
 // @match         *://www.bilibili.com/cheese/play/ss*
 // @match         https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
 // @require       https://static.hdslb.com/js/jquery.min.js
-// @require       https://cdn.jsdelivr.net/npm/vue@3.2.33/dist/vue.global.min.js
-// @require       https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js
-// @require       https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js
+// @require       https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.33/vue.global.prod.min.js
+// @require       https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js
+// @require       https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js
 // @icon          https://static.hdslb.com/images/favicon.ico
 // @grant         none
 // ==/UserScript==
@@ -3722,22 +3722,20 @@ function main_createClass(Constructor, protoProps, staticProps) { if (protoProps
 var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
+
+    /* global JS_VERSION GIT_HASH */
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.8", " ").concat("d2b7aeb", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
     key: "set_toolbar",
     value: function set_toolbar() {
-      var bp_toolbar;
-
       if (!!$('#arc_toolbar_report')[0]) {
-        bp_toolbar = arc_toolbar;
-        $('#arc_toolbar_report').after(bp_toolbar);
+        $('#arc_toolbar_report').after(arc_toolbar);
       } else if (!!$('#toolbar_module')[0]) {
-        bp_toolbar = toolbar;
-        $('#toolbar_module').after(bp_toolbar);
+        $('#toolbar_module').after(toolbar);
       } else if (!!$('div.video-toolbar')[0]) {
-        bp_toolbar = video_toolbar;
-        $('div.video-toolbar').after(bp_toolbar);
+        $('div.video-toolbar').after(video_toolbar);
       }
     }
   }, {
@@ -3760,7 +3758,7 @@ var Main = /*#__PURE__*/function () {
       auth.initAuth();
       auth.checkLoginStatus();
       check.refresh();
-      $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"></script>'); // for dom changed
+      $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.25.0/DPlayer.min.css"></script>'); // for dom changed
 
       $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
       $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
@@ -4012,8 +4010,6 @@ var Main = /*#__PURE__*/function () {
   }
 
   setTimeout(function () {
-    /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.8", " ").concat("ee00eb7", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     new main().run();
   }, 3000);
 })();
