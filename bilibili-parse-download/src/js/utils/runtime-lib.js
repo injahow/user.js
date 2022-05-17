@@ -34,6 +34,6 @@ class RuntimeLib {
 
 export let JSZip // 伪同步
 new RuntimeLib({
-    url: 'https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js',
+    url: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.9.1/jszip.min.js',
     getModule: window => window.JSZip
 }).getModulePromise().then(module => JSZip = module)

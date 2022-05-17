@@ -20,19 +20,17 @@ import configVue from '../template/config.vue'
 class Main {
 
     constructor() {
+        /* global JS_VERSION GIT_HASH */
+        console.log(`${'\n'} %c bilibili-parse-download.user.js v${JS_VERSION} ${GIT_HASH} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
     }
 
     set_toolbar() {
-        let bp_toolbar
         if (!!$('#arc_toolbar_report')[0]) {
-            bp_toolbar = arc_toolbar_html
-            $('#arc_toolbar_report').after(bp_toolbar)
+            $('#arc_toolbar_report').after(arc_toolbar_html)
         } else if (!!$('#toolbar_module')[0]) {
-            bp_toolbar = toolbar_html
-            $('#toolbar_module').after(bp_toolbar)
+            $('#toolbar_module').after(toolbar_html)
         } else if (!!$('div.video-toolbar')[0]) {
-            bp_toolbar = video_toolbar_html
-            $('div.video-toolbar').after(bp_toolbar)
+            $('div.video-toolbar').after(video_toolbar_html)
         }
     }
 
@@ -60,7 +58,7 @@ class Main {
         auth.checkLoginStatus()
         check.refresh()
 
-        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"></script>') // for dom changed
+        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.25.0/DPlayer.min.css"></script>') // for dom changed
 
         $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
         $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')

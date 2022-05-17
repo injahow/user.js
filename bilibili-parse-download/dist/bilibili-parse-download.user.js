@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.1.7
+// @version       2.1.8
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -19,14 +19,15 @@
 // @match         *://www.bilibili.com/cheese/play/ss*
 // @match         https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
 // @require       https://static.hdslb.com/js/jquery.min.js
-// @require       https://cdn.jsdelivr.net/npm/vue@3.2.33/dist/vue.global.prod.js
-// @require       https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js
-// @require       https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js
+// @require       https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.33/vue.global.prod.min.js
+// @require       https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js
+// @require       https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js
 // @icon          https://static.hdslb.com/images/favicon.ico
 // @compatible    chrome
 // @compatible    firefox
 // @grant         none
 // ==/UserScript==
+/* globals $, DPlayer waitForKeyElements */
 // @[ You can find all source codes in GitHub repo ]
 (function() {
     "use strict";
@@ -289,7 +290,7 @@
                 } ]), RuntimeLib;
             }(), JSZip;
             new RuntimeLib({
-                url: "https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js",
+                url: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.9.1/jszip.min.js",
                 getModule: function getModule(window) {
                     return window.JSZip;
                 }
@@ -2077,7 +2078,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main);
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.1.8", " ").concat("d2b7aeb", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2087,11 +2088,7 @@
             }(Main, [ {
                 key: "set_toolbar",
                 value: function set_toolbar() {
-                    var bp_toolbar;
-                    $("#arc_toolbar_report")[0] ? (bp_toolbar = '<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true"> <div class="ops"> <span id="setting_btn"> <i class="van-icon-general_addto_s"></i>脚本设置 </span> <span id="bilibili_parse"> <i class="van-icon-floatwindow_custome"></i>请求地址 </span> <span id="video_download" style="display:none"> <i class="van-icon-download"></i>下载视频 </span> <span id="video_download_2" style="display:none"> <i class="van-icon-download"></i>下载音频 </span> <span id="video_download_all"> <i class="van-icon-download"></i>批量下载 </span> </div> <div class="more"> <i class="van-icon-general_moreactions"></i> <div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> </div> ', 
-                    $("#arc_toolbar_report").after(bp_toolbar)) : $("#toolbar_module")[0] ? (bp_toolbar = '<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true"> <div id="setting_btn" class="like-info"> <i class="iconfont icon-add"></i><span>脚本设置</span> </div> <div id="bilibili_parse" class="like-info"> <i class="iconfont icon-customer-serv"></i><span>请求地址</span> </div> <div id="video_download" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载视频</span> </div> <div id="video_download_2" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载音频</span> </div> <div id="video_download_all" class="like-info"> <i class="iconfont icon-download"></i><span>批量下载</span> </div> <div class="more">更多<div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:"";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ', 
-                    $("#toolbar_module").after(bp_toolbar)) : $("div.video-toolbar")[0] && (bp_toolbar = '<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true"> <div class="ops"> <span id="setting_btn"> <i class="van-icon-general_addto_s"></i>脚本设置 </span> <span id="bilibili_parse"> <i class="van-icon-floatwindow_custome"></i>请求地址 </span> <span id="video_download" style="display:none"> <i class="van-icon-download"></i>下载视频 </span> <span id="video_download_2" style="display:none"> <i class="van-icon-download"></i>下载音频 </span> <span id="video_download_all"> <i class="van-icon-download"></i>批量下载 </span> </div> <div class="more"> <i class="van-icon-general_moreactions"></i> <div class="more-ops-list"> <ul class="more-ops-list-box"> <li class="more-ops-list-box-li"> <span id="download_danmaku">下载弹幕</span> </li> <li class="more-ops-list-box-li"> <span id="download_subtitle">下载字幕</span> </li> </ul> </div> </div> </div> ', 
-                    $("div.video-toolbar").after(bp_toolbar));
+                    $("#arc_toolbar_report")[0] ? $("#arc_toolbar_report").after('<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true"> <div class="ops"> <span id="setting_btn"> <i class="van-icon-general_addto_s"></i>脚本设置 </span> <span id="bilibili_parse"> <i class="van-icon-floatwindow_custome"></i>请求地址 </span> <span id="video_download" style="display:none"> <i class="van-icon-download"></i>下载视频 </span> <span id="video_download_2" style="display:none"> <i class="van-icon-download"></i>下载音频 </span> <span id="video_download_all"> <i class="van-icon-download"></i>批量下载 </span> </div> <div class="more"> <i class="van-icon-general_moreactions"></i> <div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> </div> ') : $("#toolbar_module")[0] ? $("#toolbar_module").after('<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true"> <div id="setting_btn" class="like-info"> <i class="iconfont icon-add"></i><span>脚本设置</span> </div> <div id="bilibili_parse" class="like-info"> <i class="iconfont icon-customer-serv"></i><span>请求地址</span> </div> <div id="video_download" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载视频</span> </div> <div id="video_download_2" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载音频</span> </div> <div id="video_download_all" class="like-info"> <i class="iconfont icon-download"></i><span>批量下载</span> </div> <div class="more">更多<div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:"";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ') : $("div.video-toolbar")[0] && $("div.video-toolbar").after('<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true"> <div class="ops"> <span id="setting_btn"> <i class="van-icon-general_addto_s"></i>脚本设置 </span> <span id="bilibili_parse"> <i class="van-icon-floatwindow_custome"></i>请求地址 </span> <span id="video_download" style="display:none"> <i class="van-icon-download"></i>下载视频 </span> <span id="video_download_2" style="display:none"> <i class="van-icon-download"></i>下载音频 </span> <span id="video_download_all"> <i class="van-icon-download"></i>批量下载 </span> </div> <div class="more"> <i class="van-icon-general_moreactions"></i> <div class="more-ops-list"> <ul class="more-ops-list-box"> <li class="more-ops-list-box-li"> <span id="download_danmaku">下载弹幕</span> </li> <li class="more-ops-list-box-li"> <span id="download_subtitle">下载字幕</span> </li> </ul> </div> </div> </div> ');
                 }
             }, {
                 key: "run",
@@ -2103,7 +2100,7 @@
                     (div = document.createElement("div")).id = "root_config", root.append(div), (0, 
                     external_Vue_namespaceObject.createApp)(template_config).mount("#".concat(div.id)), 
                     (0, message.N5)(), user.lazyInit(), auth.initAuth(), auth.checkLoginStatus(), check.refresh(), 
-                    $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"><\/script>'), 
+                    $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.25.0/DPlayer.min.css"><\/script>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("body").on("click", "#setting_btn", (function() {
@@ -2193,7 +2190,6 @@
             } ]), Main;
         }(), main = Main;
         window.bp_fun_locked || (window.bp_fun_locked = !0, null == location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) ? $(".error-text")[0] || setTimeout((function() {
-            console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.1.7", " ").concat("d2f1fd7", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;"), 
             (new main).run();
         }), 3e3) : location.href.match("access_key") && window !== window.parent && (window.stop(), 
         window.parent.postMessage("bilibili-parse-login-credentials: " + location.href, "*")));
