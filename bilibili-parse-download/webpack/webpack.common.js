@@ -2,7 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
 const gitRevisionPlugin = new GitRevisionPlugin()
-const { VueLoaderPlugin } = require('vue-loader')
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const { version } = require('../package.json')
 
 const getBanner = meta => {
@@ -80,7 +80,7 @@ const getDefaultConfig = () => {
         },
 
         externals: {
-            'vue': 'Vue'
+            vue: 'Vue'
         },
 
         plugins: [

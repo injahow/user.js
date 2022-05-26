@@ -19,9 +19,9 @@
 // @match         *://www.bilibili.com/cheese/play/ss*
 // @match         https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
 // @require       https://static.hdslb.com/js/jquery.min.js
-// @require       https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.33/vue.global.prod.min.js
-// @require       https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js
-// @require       https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js
+// @require       https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js
+// @require       https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js
+// @require       https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js
 // @icon          https://static.hdslb.com/images/favicon.ico
 // @grant         none
 // ==/UserScript==
@@ -114,7 +114,12 @@ var code = "<div class=\"message-bg\"></div>\n<div id=\"message_box\">\n  <div c
 
 
 
-function initMessage() {
+function initMessage(el) {
+  if (el && !!$(el)[0]) {
+    $(el).append(message);
+    return;
+  }
+
   $('body').append(message);
 }
 
@@ -299,6 +304,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "JSZip": function() { return /* binding */ JSZip; }
 /* harmony export */ });
 /* harmony import */ var _ajax__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ajax */ "./src/js/utils/ajax.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -331,9 +340,9 @@ var RuntimeLib = /*#__PURE__*/function () {
               getModule = _this$config.getModule;
 
           if (!_this.moduleAsync) {
-            _this.moduleAsync = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+            _this.moduleAsync = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
               var code;
-              return regeneratorRuntime.wrap(function _callee$(_context) {
+              return _regeneratorRuntime().wrap(function _callee$(_context) {
                 while (1) {
                   switch (_context.prev = _context.next) {
                     case 0:
@@ -341,6 +350,7 @@ var RuntimeLib = /*#__PURE__*/function () {
                       _context.next = 3;
                       return (0,_ajax__WEBPACK_IMPORTED_MODULE_0__.ajax)({
                         url: url,
+                        type: 'GET',
                         dataType: 'text'
                       });
 
@@ -377,7 +387,7 @@ var RuntimeLib = /*#__PURE__*/function () {
 var JSZip; // 伪同步
 
 new RuntimeLib({
-  url: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.9.1/jszip.min.js',
+  url: 'https://cdn.jsdelivr.net/npm/jszip@3.9.1/dist/jszip.min.js',
   getModule: function getModule(window) {
     return window.JSZip;
   }
@@ -387,10 +397,10 @@ new RuntimeLib({
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css":
-/*!********************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css ***!
-  \********************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&":
+/*!****************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css& ***!
+  \****************************************************************************************************************************************************************************************************************************************************/
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
@@ -839,27 +849,6 @@ function styleTagTransform(css, styleElement) {
 
 module.exports = styleTagTransform;
 
-/***/ }),
-
-/***/ "./node_modules/vue-loader/dist/exportHelper.js":
-/*!******************************************************!*\
-  !*** ./node_modules/vue-loader/dist/exportHelper.js ***!
-  \******************************************************/
-/***/ (function(__unused_webpack_module, exports) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-// runtime helper for setting properties on components
-// in a tree-shakable way
-exports["default"] = (sfc, props) => {
-    const target = sfc.__vccOpts || sfc;
-    for (const [key, val] of props) {
-        target[key] = val;
-    }
-    return target;
-};
-
-
 /***/ })
 
 /******/ 	});
@@ -929,12 +918,17 @@ exports["default"] = (sfc, props) => {
 /******/ 		};
 /******/ 	}();
 /******/ 	
+/******/ 	/* webpack/runtime/nonce */
+/******/ 	!function() {
+/******/ 		__webpack_require__.nc = undefined;
+/******/ 	}();
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 !function() {
 /*!**************************************!*\
-  !*** ./src/js/index.js + 20 modules ***!
+  !*** ./src/js/index.js + 21 modules ***!
   \**************************************/
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
@@ -2903,577 +2897,595 @@ var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix repor
 /* harmony default export */ var toolbar = (toolbar_code);
 ;// CONCATENATED MODULE: external "Vue"
 var external_Vue_namespaceObject = Vue;
-;// CONCATENATED MODULE: ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/template/config.vue?vue&type=template&id=15d0b82e&scoped=true
-
-
-var _withScopeId = function _withScopeId(n) {
-  return (0,external_Vue_namespaceObject.pushScopeId)("data-v-15d0b82e"), n = n(), (0,external_Vue_namespaceObject.popScopeId)(), n;
-};
-
-var _hoisted_1 = {
-  id: "bp_config"
-};
-
-var _hoisted_2 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("div", {
-    class: "config-mark"
-  }, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_3 = {
-  class: "config-bg"
-};
-var _hoisted_4 = {
-  style: {
-    "font-size": "20px"
-  }
-};
-
-var _hoisted_5 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("b", null, "bilibili视频下载 参数设置", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_6 = {
-  style: {
-    "margin": "2% 0"
-  }
-};
-
-var _hoisted_7 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "请求地址：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_8 = ["value"];
-
-var _hoisted_9 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)("     ");
-
-var _hoisted_10 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "请求方式：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_11 = ["value"];
-
-var _hoisted_12 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "auto"
-  }, "自动判断", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_13 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "local"
-  }, "本地请求", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_14 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "online"
-  }, "远程请求", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_15 = [_hoisted_12, _hoisted_13, _hoisted_14];
-
-var _hoisted_16 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("br", null, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_17 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("small", null, "注意：普通使用请勿修改；默认使用混合请求", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_18 = {
-  style: {
-    "margin": "2% 0"
-  }
-};
-
-var _hoisted_19 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "视频格式：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_20 = ["value"];
-
-var _hoisted_21 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "flv"
-  }, "FLV", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_22 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "dash"
-  }, "DASH", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_23 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "mp4"
-  }, "MP4", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_24 = [_hoisted_21, _hoisted_22, _hoisted_23];
-
-var _hoisted_25 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)("     ");
-
-var _hoisted_26 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "切换CDN：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_27 = ["value"];
-var _hoisted_28 = ["value"];
-
-var _hoisted_29 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("br", null, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_30 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("small", null, "注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_31 = {
-  style: {
-    "margin": "2% 0"
-  }
-};
-
-var _hoisted_32 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "下载方式：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_33 = ["value"];
-
-var _hoisted_34 = /*#__PURE__*/(0,external_Vue_namespaceObject.createStaticVNode)("<option value=\"a\" data-v-15d0b82e>URL链接</option><option value=\"web\" data-v-15d0b82e>Web浏览器</option><option value=\"blob\" data-v-15d0b82e>Blob请求</option><option value=\"rpc\" data-v-15d0b82e>RPC接口</option><option value=\"aria\" data-v-15d0b82e>Aria命令</option>", 5);
-
-var _hoisted_39 = [_hoisted_34];
-
-var _hoisted_40 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)("     ");
-
-var _hoisted_41 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "AriaNg地址：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_42 = ["value"];
-
-var _hoisted_43 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("br", null, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_44 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("small", null, "提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_45 = {
-  style: {
-    "margin": "2% 0"
-  }
-};
-
-var _hoisted_46 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_47 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("br", null, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_48 = ["value"];
-
-var _hoisted_49 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)(" : ");
-
-var _hoisted_50 = ["value"];
-
-var _hoisted_51 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)(" | ");
-
-var _hoisted_52 = ["value"];
-
-var _hoisted_53 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)(" | ");
-
-var _hoisted_54 = ["value"];
-
-var _hoisted_55 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("br", null, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_56 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("small", null, "注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_57 = {
-  style: {
-    "margin": "2% 0"
-  }
-};
-
-var _hoisted_58 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "强制换源：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_59 = ["value"];
-
-var _hoisted_60 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "0"
-  }, "关闭", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_61 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "1"
-  }, "开启", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_62 = [_hoisted_60, _hoisted_61];
-
-var _hoisted_63 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)("     ");
-
-var _hoisted_64 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "弹幕速度：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_65 = ["value"];
-
-var _hoisted_66 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)(" s     ");
-
-var _hoisted_67 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "弹幕字号：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_68 = ["value"];
-
-var _hoisted_69 = /*#__PURE__*/(0,external_Vue_namespaceObject.createTextVNode)(" px ");
-
-var _hoisted_70 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("br", null, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_71 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("small", null, "说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_72 = {
-  style: {
-    "margin": "2% 0"
-  }
-};
-
-var _hoisted_73 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "自动下载：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_74 = ["value"];
-
-var _hoisted_75 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "0"
-  }, "关闭", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_76 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "1"
-  }, "开启", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_77 = [_hoisted_75, _hoisted_76];
-
-var _hoisted_78 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("br", null, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_79 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("small", null, "说明：请求地址成功后将自动点击下载视频按钮", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_80 = {
-  style: {
-    "margin": "2% 0"
-  }
-};
-
-var _hoisted_81 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("label", null, "授权状态：", -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_82 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("select", {
-    id: "auth",
-    value: "{{config.auth}}",
-    disabled: ""
-  }, [/*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "0"
-  }, "未授权"), /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("option", {
-    value: "1"
-  }, "已授权")], -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_83 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,external_Vue_namespaceObject.createElementVNode)("br", null, null, -1
-  /* HOISTED */
-  );
-});
-
-var _hoisted_84 = {
-  style: {
-    "text-align": "right"
-  }
-};
-function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,external_Vue_namespaceObject.openBlock)(), (0,external_Vue_namespaceObject.createElementBlock)("div", _hoisted_1, [_hoisted_2, (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_3, [(0,external_Vue_namespaceObject.createElementVNode)("span", _hoisted_4, [_hoisted_5, (0,external_Vue_namespaceObject.createElementVNode)("b", null, [(0,external_Vue_namespaceObject.createElementVNode)("a", {
-    href: "javascript:;",
-    onClick: _cache[0] || (_cache[0] = function ($event) {
-      return $options.reset_config();
-    })
-  }, " [重置] "), (0,external_Vue_namespaceObject.createElementVNode)("a", {
-    style: {
-      "text-decoration": "underline"
-    },
-    href: "javascript:;",
-    onClick: _cache[1] || (_cache[1] = function ($event) {
-      return $options.show_help();
-    })
-  }, "<通知/帮助>")])]), (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_6, [_hoisted_7, (0,external_Vue_namespaceObject.createElementVNode)("input", {
-    value: $data.config.base_api,
-    onInput: _cache[2] || (_cache[2] = function ($event) {
-      return $data.config.base_api = $event.target.value;
-    }),
-    style: {
-      "width": "30%"
-    }
-  }, null, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_8), _hoisted_9, _hoisted_10, (0,external_Vue_namespaceObject.createElementVNode)("select", {
-    value: $data.config.request_type,
-    onInput: _cache[3] || (_cache[3] = function ($event) {
-      return $data.config.request_type = $event.target.value;
-    })
-  }, _hoisted_15, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_11), _hoisted_16, _hoisted_17]), (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_18, [_hoisted_19, (0,external_Vue_namespaceObject.createElementVNode)("select", {
-    value: $data.config.format,
-    onInput: _cache[4] || (_cache[4] = function ($event) {
-      return $data.config.format = $event.target.value;
-    })
-  }, _hoisted_24, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_20), _hoisted_25, _hoisted_26, (0,external_Vue_namespaceObject.createElementVNode)("select", {
-    value: $data.config.host_key,
-    onInput: _cache[5] || (_cache[5] = function ($event) {
-      return $data.config.host_key = $event.target.value;
-    })
-  }, [((0,external_Vue_namespaceObject.openBlock)(true), (0,external_Vue_namespaceObject.createElementBlock)(external_Vue_namespaceObject.Fragment, null, (0,external_Vue_namespaceObject.renderList)($data.host_key_options, function (e) {
-    return (0,external_Vue_namespaceObject.openBlock)(), (0,external_Vue_namespaceObject.createElementBlock)("option", {
-      value: e.value,
-      key: e.text
-    }, (0,external_Vue_namespaceObject.toDisplayString)(e.text), 9
-    /* TEXT, PROPS */
-    , _hoisted_28);
-  }), 128
-  /* KEYED_FRAGMENT */
-  ))], 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_27), _hoisted_29, _hoisted_30]), (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_31, [_hoisted_32, (0,external_Vue_namespaceObject.createElementVNode)("select", {
-    value: $data.config.download_type,
-    onInput: _cache[6] || (_cache[6] = function ($event) {
-      return $data.config.download_type = $event.target.value;
-    })
-  }, _hoisted_39, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_33), _hoisted_40, _hoisted_41, (0,external_Vue_namespaceObject.createElementVNode)("input", {
-    value: $data.config.ariang_host,
-    onInput: _cache[7] || (_cache[7] = function ($event) {
-      return $data.config.ariang_host = $event.target.value;
-    }),
-    style: {
-      "width": "30%"
-    }
-  }, null, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_42), _hoisted_43, _hoisted_44]), (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_45, [_hoisted_46, _hoisted_47, (0,external_Vue_namespaceObject.createElementVNode)("input", {
-    value: $data.config.rpc_domain,
-    onInput: _cache[8] || (_cache[8] = function ($event) {
-      return $data.config.rpc_domain = $event.target.value;
-    }),
-    style: {
-      "width": "25%"
-    }
-  }, null, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_48), _hoisted_49, (0,external_Vue_namespaceObject.createElementVNode)("input", {
-    value: $data.config.rpc_port,
-    onInput: _cache[9] || (_cache[9] = function ($event) {
-      return $data.config.rpc_port = $event.target.value;
-    }),
-    style: {
-      "width": "10%"
-    }
-  }, null, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_50), _hoisted_51, (0,external_Vue_namespaceObject.createElementVNode)("input", {
-    value: $data.config.rpc_token,
-    onInput: _cache[10] || (_cache[10] = function ($event) {
-      return $data.config.rpc_token = $event.target.value;
-    }),
-    placeholder: "没有密钥不用填",
-    style: {
-      "width": "15%"
-    }
-  }, null, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_52), _hoisted_53, (0,external_Vue_namespaceObject.createElementVNode)("input", {
-    value: $data.config.rpc_dir,
-    onInput: _cache[11] || (_cache[11] = function ($event) {
-      return $data.config.rpc_dir = $event.target.value;
-    }),
-    placeholder: "留空使用默认目录",
-    style: {
-      "width": "20%"
-    }
-  }, null, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_54), _hoisted_55, _hoisted_56]), (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_57, [_hoisted_58, (0,external_Vue_namespaceObject.createElementVNode)("select", {
-    value: $data.config.replace_force,
-    onInput: _cache[12] || (_cache[12] = function ($event) {
-      return $data.config.replace_force = $event.target.value;
-    })
-  }, _hoisted_62, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_59), _hoisted_63, _hoisted_64, (0,external_Vue_namespaceObject.createElementVNode)("input", {
-    value: $data.config.danmaku_speed,
-    onInput: _cache[13] || (_cache[13] = function ($event) {
-      return $data.config.danmaku_speed = $event.target.value;
-    }),
-    style: {
-      "width": "5%"
-    }
-  }, null, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_65), _hoisted_66, _hoisted_67, (0,external_Vue_namespaceObject.createElementVNode)("input", {
-    value: $data.config.danmaku_fontsize,
-    onInput: _cache[14] || (_cache[14] = function ($event) {
-      return $data.config.danmaku_fontsize = $event.target.value;
-    }),
-    style: {
-      "width": "5%"
-    }
-  }, null, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_68), _hoisted_69, _hoisted_70, _hoisted_71]), (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_72, [_hoisted_73, (0,external_Vue_namespaceObject.createElementVNode)("select", {
-    value: $data.config.auto_download,
-    onInput: _cache[15] || (_cache[15] = function ($event) {
-      return $data.config.auto_download = $event.target.value;
-    })
-  }, _hoisted_77, 40
-  /* PROPS, HYDRATE_EVENTS */
-  , _hoisted_74), _hoisted_78, _hoisted_79]), (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_80, [_hoisted_81, _hoisted_82, (0,external_Vue_namespaceObject.createElementVNode)("a", {
-    class: "setting-context",
-    href: "javascript:;",
-    onClick: _cache[16] || (_cache[16] = function ($event) {
-      return $options.show_login();
-    })
-  }, "账号授权"), (0,external_Vue_namespaceObject.createElementVNode)("a", {
-    class: "setting-context",
-    href: "javascript:;",
-    onClick: _cache[17] || (_cache[17] = function ($event) {
-      return $options.show_logout();
-    })
-  }, "取消授权"), (0,external_Vue_namespaceObject.createElementVNode)("a", {
-    class: "setting-context",
-    href: "javascript:;",
-    onClick: _cache[18] || (_cache[18] = function ($event) {
-      return $options.show_login('0');
-    })
-  }, "手动授权"), (0,external_Vue_namespaceObject.createElementVNode)("a", {
-    class: "setting-context",
-    href: "javascript:;",
-    onClick: _cache[19] || (_cache[19] = function ($event) {
-      return $options.show_login_help();
-    })
-  }, "这是什么？")]), _hoisted_83, (0,external_Vue_namespaceObject.createElementVNode)("div", _hoisted_84, [(0,external_Vue_namespaceObject.createElementVNode)("button", {
-    class: "setting-button",
-    onClick: _cache[20] || (_cache[20] = function ($event) {
-      return $options.save_config();
-    })
-  }, "确定")])])]);
+var external_Vue_default = /*#__PURE__*/__webpack_require__.n(external_Vue_namespaceObject);
+;// CONCATENATED MODULE: ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=template&id=15d0b82e&scoped=true&
+var render = function () {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { attrs: { id: "bp_config" } }, [
+    _c("div", { staticClass: "config-mark" }),
+    _vm._v(" "),
+    _c("div", { staticClass: "config-bg" }, [
+      _c("span", { staticStyle: { "font-size": "20px" } }, [
+        _c("b", [_vm._v("bilibili视频下载 参数设置")]),
+        _vm._v(" "),
+        _c("b", [
+          _c(
+            "a",
+            {
+              attrs: { href: "javascript:;" },
+              on: {
+                click: function ($event) {
+                  return _vm.reset_config()
+                },
+              },
+            },
+            [_vm._v(" [重置] ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticStyle: { "text-decoration": "underline" },
+              attrs: { href: "javascript:;" },
+              on: {
+                click: function ($event) {
+                  return _vm.show_help()
+                },
+              },
+            },
+            [_vm._v("<通知/帮助>")]
+          ),
+        ]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { margin: "2% 0" } }, [
+        _c("label", [_vm._v("请求地址：")]),
+        _vm._v(" "),
+        _c("input", {
+          staticStyle: { width: "30%" },
+          domProps: { value: _vm.config.base_api },
+          on: {
+            input: function ($event) {
+              _vm.config.base_api = $event.target.value
+            },
+          },
+        }),
+        _vm._v("    \n      "),
+        _c("label", [_vm._v("请求方式：")]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            domProps: { value: _vm.config.request_type },
+            on: {
+              input: function ($event) {
+                _vm.config.request_type = $event.target.value
+              },
+            },
+          },
+          [
+            _c("option", { attrs: { value: "auto" } }, [_vm._v("自动判断")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "local" } }, [_vm._v("本地请求")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "online" } }, [_vm._v("远程请求")]),
+          ]
+        ),
+        _c("br"),
+        _vm._v(" "),
+        _c("small", [_vm._v("注意：普通使用请勿修改；默认使用混合请求")]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { margin: "2% 0" } }, [
+        _c("label", [_vm._v("视频格式：")]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            domProps: { value: _vm.config.format },
+            on: {
+              input: function ($event) {
+                _vm.config.format = $event.target.value
+              },
+            },
+          },
+          [
+            _c("option", { attrs: { value: "flv" } }, [_vm._v("FLV")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "dash" } }, [_vm._v("DASH")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "mp4" } }, [_vm._v("MP4")]),
+          ]
+        ),
+        _vm._v("    \n      "),
+        _c("label", [_vm._v("切换CDN：")]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            domProps: { value: _vm.config.host_key },
+            on: {
+              input: function ($event) {
+                _vm.config.host_key = $event.target.value
+              },
+            },
+          },
+          _vm._l(_vm.host_key_options, function (e) {
+            return _c("option", { key: e.text, domProps: { value: e.value } }, [
+              _vm._v("\n          " + _vm._s(e.text) + "\n        "),
+            ])
+          }),
+          0
+        ),
+        _c("br"),
+        _vm._v(" "),
+        _c("small", [
+          _vm._v(
+            "注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）"
+          ),
+        ]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { margin: "2% 0" } }, [
+        _c("label", [_vm._v("下载方式：")]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            domProps: { value: _vm.config.download_type },
+            on: {
+              input: function ($event) {
+                _vm.config.download_type = $event.target.value
+              },
+            },
+          },
+          [
+            _c("option", { attrs: { value: "a" } }, [_vm._v("URL链接")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "web" } }, [_vm._v("Web浏览器")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "blob" } }, [_vm._v("Blob请求")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "rpc" } }, [_vm._v("RPC接口")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "aria" } }, [_vm._v("Aria命令")]),
+          ]
+        ),
+        _vm._v("    \n      "),
+        _c("label", [_vm._v("AriaNg地址：")]),
+        _vm._v(" "),
+        _c("input", {
+          staticStyle: { width: "30%" },
+          domProps: { value: _vm.config.ariang_host },
+          on: {
+            input: function ($event) {
+              _vm.config.ariang_host = $event.target.value
+            },
+          },
+        }),
+        _c("br"),
+        _vm._v(" "),
+        _c("small", [
+          _vm._v(
+            "提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载"
+          ),
+        ]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { margin: "2% 0" } }, [
+        _c("label", [_vm._v("RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]")]),
+        _c("br"),
+        _vm._v(" "),
+        _c("input", {
+          staticStyle: { width: "25%" },
+          domProps: { value: _vm.config.rpc_domain },
+          on: {
+            input: function ($event) {
+              _vm.config.rpc_domain = $event.target.value
+            },
+          },
+        }),
+        _vm._v("\n      :\n      "),
+        _c("input", {
+          staticStyle: { width: "10%" },
+          domProps: { value: _vm.config.rpc_port },
+          on: {
+            input: function ($event) {
+              _vm.config.rpc_port = $event.target.value
+            },
+          },
+        }),
+        _vm._v("\n      |\n      "),
+        _c("input", {
+          staticStyle: { width: "15%" },
+          attrs: { placeholder: "没有密钥不用填" },
+          domProps: { value: _vm.config.rpc_token },
+          on: {
+            input: function ($event) {
+              _vm.config.rpc_token = $event.target.value
+            },
+          },
+        }),
+        _vm._v("\n      |\n      "),
+        _c("input", {
+          staticStyle: { width: "20%" },
+          attrs: { placeholder: "留空使用默认目录" },
+          domProps: { value: _vm.config.rpc_dir },
+          on: {
+            input: function ($event) {
+              _vm.config.rpc_dir = $event.target.value
+            },
+          },
+        }),
+        _c("br"),
+        _vm._v(" "),
+        _c("small", [
+          _vm._v(
+            "注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数"
+          ),
+        ]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { margin: "2% 0" } }, [
+        _c("label", [_vm._v("强制换源：")]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            domProps: { value: _vm.config.replace_force },
+            on: {
+              input: function ($event) {
+                _vm.config.replace_force = $event.target.value
+              },
+            },
+          },
+          [
+            _c("option", { attrs: { value: "0" } }, [_vm._v("关闭")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "1" } }, [_vm._v("开启")]),
+          ]
+        ),
+        _vm._v("\n          "),
+        _c("label", [_vm._v("弹幕速度：")]),
+        _vm._v(" "),
+        _c("input", {
+          staticStyle: { width: "5%" },
+          domProps: { value: _vm.config.danmaku_speed },
+          on: {
+            input: function ($event) {
+              _vm.config.danmaku_speed = $event.target.value
+            },
+          },
+        }),
+        _vm._v("\n      s     "),
+        _c("label", [_vm._v("弹幕字号：")]),
+        _vm._v(" "),
+        _c("input", {
+          staticStyle: { width: "5%" },
+          domProps: { value: _vm.config.danmaku_fontsize },
+          on: {
+            input: function ($event) {
+              _vm.config.danmaku_fontsize = $event.target.value
+            },
+          },
+        }),
+        _vm._v("\n      px\n      "),
+        _c("br"),
+        _vm._v(" "),
+        _c("small", [
+          _vm._v(
+            "说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间"
+          ),
+        ]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { margin: "2% 0" } }, [
+        _c("label", [_vm._v("自动下载：")]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            domProps: { value: _vm.config.auto_download },
+            on: {
+              input: function ($event) {
+                _vm.config.auto_download = $event.target.value
+              },
+            },
+          },
+          [
+            _c("option", { attrs: { value: "0" } }, [_vm._v("关闭")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "1" } }, [_vm._v("开启")]),
+          ]
+        ),
+        _c("br"),
+        _vm._v(" "),
+        _c("small", [_vm._v("说明：请求地址成功后将自动点击下载视频按钮")]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticStyle: { margin: "2% 0" } }, [
+        _c("label", [_vm._v("授权状态：")]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            attrs: { id: "auth", disabled: "" },
+            domProps: { value: _vm.config.auth },
+          },
+          [
+            _c("option", { attrs: { value: "0" } }, [_vm._v("未授权")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "1" } }, [_vm._v("已授权")]),
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "a",
+          {
+            staticClass: "setting-context",
+            attrs: { href: "javascript:;" },
+            on: {
+              click: function ($event) {
+                return _vm.show_login()
+              },
+            },
+          },
+          [_vm._v("账号授权")]
+        ),
+        _vm._v(" "),
+        _c(
+          "a",
+          {
+            staticClass: "setting-context",
+            attrs: { href: "javascript:;" },
+            on: {
+              click: function ($event) {
+                return _vm.show_logout()
+              },
+            },
+          },
+          [_vm._v("取消授权")]
+        ),
+        _vm._v(" "),
+        _c(
+          "a",
+          {
+            staticClass: "setting-context",
+            attrs: { href: "javascript:;" },
+            on: {
+              click: function ($event) {
+                return _vm.show_login("0")
+              },
+            },
+          },
+          [_vm._v("手动授权")]
+        ),
+        _vm._v(" "),
+        _c(
+          "a",
+          {
+            staticClass: "setting-context",
+            attrs: { href: "javascript:;" },
+            on: {
+              click: function ($event) {
+                return _vm.show_login_help()
+              },
+            },
+          },
+          [_vm._v("这是什么？")]
+        ),
+      ]),
+      _vm._v(" "),
+      _c("br"),
+      _vm._v(" "),
+      _c("div", { staticStyle: { "text-align": "right" } }, [
+        _c(
+          "button",
+          {
+            staticClass: "setting-button",
+            on: {
+              click: function ($event) {
+                return _vm.save_config()
+              },
+            },
+          },
+          [_vm._v("确定")]
+        ),
+      ]),
+    ]),
+  ])
 }
-;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=template&id=15d0b82e&scoped=true
+var staticRenderFns = []
+render._withStripped = true
 
-;// CONCATENATED MODULE: ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/template/config.vue?vue&type=script&lang=js
+
+;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=template&id=15d0b82e&scoped=true&
+
+;// CONCATENATED MODULE: ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1[0].rules[0].use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=script&lang=js&
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3489,7 +3501,7 @@ var _require = __webpack_require__(/*! @/js/config.js */ "./src/js/config.js"),
 
 var default_config = Object.assign({}, configvue_type_script_lang_js_config); // 浅拷贝
 
-/* harmony default export */ var configvue_type_script_lang_js = ({
+/* harmony default export */ var configvue_type_script_lang_js_ = ({
   data: function data() {
     var options = [];
 
@@ -3629,8 +3641,8 @@ var default_config = Object.assign({}, configvue_type_script_lang_js_config); //
     };
   }
 });
-;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=script&lang=js
- 
+;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=script&lang=js&
+ /* harmony default export */ var template_configvue_type_script_lang_js_ = (configvue_type_script_lang_js_); 
 // EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
 var injectStylesIntoStyleTag = __webpack_require__("./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
 var injectStylesIntoStyleTag_default = /*#__PURE__*/__webpack_require__.n(injectStylesIntoStyleTag);
@@ -3649,9 +3661,9 @@ var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleE
 // EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
 var styleTagTransform = __webpack_require__("./node_modules/style-loader/dist/runtime/styleTagTransform.js");
 var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css
-var configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css = __webpack_require__("./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css");
-;// CONCATENATED MODULE: ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&
+var configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_ = __webpack_require__("./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&");
+;// CONCATENATED MODULE: ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&
 
       
       
@@ -3673,28 +3685,137 @@ options.setAttributes = (setAttributesWithoutAttributes_default());
 options.domAPI = (styleDomAPI_default());
 options.insertStyleElement = (insertStyleElement_default());
 
-var update = injectStylesIntoStyleTag_default()(configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css["default"], options);
+var update = injectStylesIntoStyleTag_default()(configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_["default"], options);
 
 
 
 
-       /* harmony default export */ var template_configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css = (configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css["default"] && configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css["default"].locals ? configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css["default"].locals : undefined);
+       /* harmony default export */ var template_configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_ = (configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_["default"] && configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_["default"].locals ? configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_["default"].locals : undefined);
 
-;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css
+;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&
 
-// EXTERNAL MODULE: ./node_modules/vue-loader/dist/exportHelper.js
-var exportHelper = __webpack_require__("./node_modules/vue-loader/dist/exportHelper.js");
+;// CONCATENATED MODULE: ./node_modules/vue-loader/lib/runtime/componentNormalizer.js
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file (except for modules).
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+function normalizeComponent (
+  scriptExports,
+  render,
+  staticRenderFns,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier, /* server only */
+  shadowMode /* vue-cli only */
+) {
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (render) {
+    options.render = render
+    options.staticRenderFns = staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = 'data-v-' + scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = shadowMode
+      ? function () {
+        injectStyles.call(
+          this,
+          (options.functional ? this.parent : this).$root.$options.shadowRoot
+        )
+      }
+      : injectStyles
+  }
+
+  if (hook) {
+    if (options.functional) {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functional component in vue file
+      var originalRender = options.render
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return originalRender(h, context)
+      }
+    } else {
+      // inject component registration as beforeCreate hook
+      var existing = options.beforeCreate
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    }
+  }
+
+  return {
+    exports: scriptExports,
+    options: options
+  }
+}
+
 ;// CONCATENATED MODULE: ./src/template/config.vue
-
 
 
 
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,exportHelper["default"])(configvue_type_script_lang_js, [['render',render],['__scopeId',"data-v-15d0b82e"],['__file',"src/template/config.vue"]])
+/* normalize component */
 
-/* harmony default export */ var template_config = (__exports__);
+var component = normalizeComponent(
+  template_configvue_type_script_lang_js_,
+  render,
+  staticRenderFns,
+  false,
+  null,
+  "15d0b82e",
+  null
+  
+)
+
+component.options.__file = "src/template/config.vue"
+/* harmony default export */ var template_config = (component.exports);
 ;// CONCATENATED MODULE: ./src/js/main.js
 function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3724,7 +3845,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.1.8", " ").concat("d2b7aeb", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.2.1", " ").concat("77ee7b1", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3745,20 +3866,22 @@ var Main = /*#__PURE__*/function () {
       var root_div = document.createElement('div');
       root_div.id = 'bp_root';
       document.body.append(root_div);
-      var root = document.getElementById(root_div.id);
-      var app, div; // initConfig
+      var root = document.getElementById(root_div.id); // initConfig
 
-      div = document.createElement('div');
-      div.id = 'root_config';
-      root.append(div);
-      app = (0,external_Vue_namespaceObject.createApp)(template_config);
-      app.mount("#".concat(div.id));
-      (0,message.initMessage)();
+      var root_config = document.createElement('div');
+      root_config.id = 'root_config';
+      root.append(root_config);
+      new (external_Vue_default())({
+        render: function render(h) {
+          return h(template_config);
+        }
+      }).$mount("#".concat(root_config.id));
+      (0,message.initMessage)("#".concat(root_div.id));
       user.lazyInit();
       auth.initAuth();
       auth.checkLoginStatus();
       check.refresh();
-      $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.25.0/DPlayer.min.css"></script>'); // for dom changed
+      $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"></script>'); // for dom changed
 
       $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
       $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');

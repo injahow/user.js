@@ -152,7 +152,7 @@
       </div>
       <div style="margin: 2% 0">
         <label>授权状态：</label>
-        <select id="auth" value="{{config.auth}}" disabled>
+        <select id="auth" :value="config.auth" disabled>
           <option value="0">未授权</option>
           <option value="1">已授权</option>
         </select>
