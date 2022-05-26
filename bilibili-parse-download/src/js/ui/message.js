@@ -2,7 +2,11 @@
 import { scroll } from './scroll'
 import message_html from '../../html/message.html';
 
-function initMessage() {
+function initMessage(el) {
+    if (el && !!$(el)[0]) {
+        $(el).append(message_html)
+        return
+    }
     $('body').append(message_html)
 }
 

@@ -14,8 +14,8 @@ import arc_toolbar_html from '../html/arc_toolbar.html'
 import video_toolbar_html from '../html/video_toolbar.html'
 import toolbar_html from '../html/toolbar.html'
 
-import { createApp } from 'vue'
-import configVue from '../template/config.vue'
+import Vue from 'vue'
+import ConfigVue from '../template/config.vue'
 
 class Main {
 
@@ -43,15 +43,13 @@ class Main {
         document.body.append(root_div)
         const root = document.getElementById(root_div.id)
 
-        let app, div
         // initConfig
-        div = document.createElement('div')
-        div.id = 'root_config'
-        root.append(div)
-        app = createApp(configVue)
-        app.mount(`#${div.id}`)
+        const root_config = document.createElement('div')
+        root_config.id = 'root_config'
+        root.append(root_config)
+        new Vue({ render: h => h(ConfigVue) }).$mount(`#${root_config.id}`)
 
-        initMessage()
+        initMessage(`#${root_div.id}`)
 
         user.lazyInit()
         auth.initAuth()
