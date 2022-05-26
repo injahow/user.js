@@ -25,9 +25,9 @@
       ],
       "require": [
         "https://static.hdslb.com/js/jquery.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.33/vue.global.prod.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js"
+        "https://cdn.jsdelivr.net/npm/vue@3.2.33/dist/vue.global.prod.js",
+        "https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js",
+        "https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js"
       ],
       "icon": "https://static.hdslb.com/images/favicon.ico",
       "compatible": ["chrome", "firefox"],

@@ -58,7 +58,7 @@ class Main {
         auth.checkLoginStatus()
         check.refresh()
 
-        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.25.0/DPlayer.min.css"></script>') // for dom changed
+        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"></script>') // for dom changed
 
         $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
         $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')

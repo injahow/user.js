@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.1.8
+// @version       2.1.9
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -19,9 +19,9 @@
 // @match         *://www.bilibili.com/cheese/play/ss*
 // @match         https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
 // @require       https://static.hdslb.com/js/jquery.min.js
-// @require       https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.33/vue.global.prod.min.js
-// @require       https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js
-// @require       https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js
+// @require       https://cdn.jsdelivr.net/npm/vue@3.2.33/dist/vue.global.prod.js
+// @require       https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js
+// @require       https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js
 // @icon          https://static.hdslb.com/images/favicon.ico
 // @compatible    chrome
 // @compatible    firefox
@@ -290,7 +290,7 @@
                 } ]), RuntimeLib;
             }(), JSZip;
             new RuntimeLib({
-                url: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.9.1/jszip.min.js",
+                url: "https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js",
                 getModule: function getModule(window) {
                     return window.JSZip;
                 }
@@ -2078,7 +2078,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.1.8", " ").concat("d2b7aeb", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.1.9", " ").concat("ecb6dd4", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2100,7 +2100,7 @@
                     (div = document.createElement("div")).id = "root_config", root.append(div), (0, 
                     external_Vue_namespaceObject.createApp)(template_config).mount("#".concat(div.id)), 
                     (0, message.N5)(), user.lazyInit(), auth.initAuth(), auth.checkLoginStatus(), check.refresh(), 
-                    $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.25.0/DPlayer.min.css"><\/script>'), 
+                    $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"><\/script>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("body").on("click", "#setting_btn", (function() {
