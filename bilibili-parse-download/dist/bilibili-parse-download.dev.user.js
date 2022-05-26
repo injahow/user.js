@@ -350,6 +350,7 @@ var RuntimeLib = /*#__PURE__*/function () {
                       _context.next = 3;
                       return (0,_ajax__WEBPACK_IMPORTED_MODULE_0__.ajax)({
                         url: url,
+                        type: 'GET',
                         dataType: 'text'
                       });
 
@@ -3844,7 +3845,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.2.0", " ").concat("0a3b6e6", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.2.1", " ").concat("77ee7b1", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

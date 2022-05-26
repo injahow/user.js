@@ -14,7 +14,7 @@ class RuntimeLib {
                 if (!this.moduleAsync) {
                     this.moduleAsync = (async () => {
                         console.log(`[Runtime Library] Start download from ${url}`)
-                        const code = await ajax({ url, dataType: 'text' })
+                        const code = await ajax({ url, type: 'GET', dataType: 'text' })
                         console.log(`[Runtime Library] Downloaded from ${url} , length = ${code.length}`);
                         (function runEval() {
                             return eval(code)
