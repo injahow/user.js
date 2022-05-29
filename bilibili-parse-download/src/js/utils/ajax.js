@@ -6,17 +6,32 @@ export function ajax(obj) {
         // set obj.success & obj.success
         obj.success = res => {
 
-            if (res.code) {
+            if (res && res.code) {
                 Message.warning(`${res.message || `CODE:${res.code}`}`)
                 // todo
             }
 
             resolve(res)
         }
+
         obj.error = err => {
             Message.error('网络异常')
             reject(err)
         }
+
+        $.ajax(obj)
+    })
+}
+
+export function _ajax(obj) {
+    return new Promise((resolve, reject) => {
+        // set obj.success & obj.success
+        obj.success || (obj.success = res => {
+            resolve(res)
+        })
+        obj.error || (obj.error = err => {
+            reject(err)
+        })
         $.ajax(obj)
     })
 }

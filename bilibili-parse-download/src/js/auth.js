@@ -1,4 +1,4 @@
-import { config } from './config'
+import { config } from './ui/config'
 import { store } from './store'
 import { Message, MessageBox } from './ui/message'
 import { user } from './user'

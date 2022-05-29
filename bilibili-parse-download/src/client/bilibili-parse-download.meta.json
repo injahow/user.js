@@ -24,10 +24,7 @@
         "https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*"
       ],
       "require": [
-        "https://static.hdslb.com/js/jquery.min.js",
-        "https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js",
-        "https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js",
-        "https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js"
+        "https://static.hdslb.com/js/jquery.min.js"
       ],
       "icon": "https://static.hdslb.com/images/favicon.ico",
       "compatible": ["chrome", "firefox"],

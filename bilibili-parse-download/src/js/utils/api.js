@@ -1,5 +1,5 @@
 
-import { config, hostMap } from '../config'
+import { config, hostMap } from '../ui/config'
 import { store } from '../store'
 import { Message } from '../ui/message'
 import { user } from '../user'
