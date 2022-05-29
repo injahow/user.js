@@ -19,9 +19,6 @@
 // @match         *://www.bilibili.com/cheese/play/ss*
 // @match         https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
 // @require       https://static.hdslb.com/js/jquery.min.js
-// @require       https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js
-// @require       https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js
-// @require       https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js
 // @icon          https://static.hdslb.com/images/favicon.ico
 // @grant         none
 // ==/UserScript==
@@ -29,63 +26,6 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
-
-/***/ "./src/js/config.js":
-/*!**************************!*\
-  !*** ./src/js/config.js ***!
-  \**************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "config": function() { return /* binding */ config; },
-/* harmony export */   "hostMap": function() { return /* binding */ hostMap; }
-/* harmony export */ });
-var config = {
-  base_api: 'https://api.injahow.cn/bparse/',
-  request_type: 'auto',
-  format: 'flv',
-  host_key: '0',
-  replace_force: '0',
-  auth: '0',
-  download_type: 'web',
-  rpc_domain: 'http://localhost',
-  rpc_port: '16800',
-  rpc_token: '',
-  rpc_dir: 'D:/',
-  ariang_host: 'http://ariang.injahow.com/',
-  auto_download: '0',
-  danmaku_speed: '15',
-  danmaku_fontsize: '22'
-};
-var hostMap = {
-  '0': '关闭',
-  ks3: 'upos-sz-mirrorks3.bilivideo.com',
-  ks3b: 'upos-sz-mirrorks3b.bilivideo.com',
-  ks3c: 'upos-sz-mirrorks3c.bilivideo.com',
-  ks32: 'upos-sz-mirrorks32.bilivideo.com',
-  kodo: 'upos-sz-mirrorkodo.bilivideo.com',
-  kodob: 'upos-sz-mirrorkodob.bilivideo.com',
-  cos: 'upos-sz-mirrorcos.bilivideo.com',
-  cosb: 'upos-sz-mirrorcosb.bilivideo.com',
-  bos: 'upos-sz-mirrorbos.bilivideo.com',
-  wcs: 'upos-sz-mirrorwcs.bilivideo.com',
-  wcsb: 'upos-sz-mirrorwcsb.bilivideo.com',
-
-  /* 不限CROS, 限制UA */
-  hw: 'upos-sz-mirrorhw.bilivideo.com',
-  hwb: 'upos-sz-mirrorhwb.bilivideo.com',
-  upbda2: 'upos-sz-upcdnbda2.bilivideo.com',
-  upws: 'upos-sz-upcdnws.bilivideo.com',
-  uptx: 'upos-sz-upcdntx.bilivideo.com',
-  uphw: 'upos-sz-upcdnhw.bilivideo.com',
-  js: 'upos-tf-all-js.bilivideo.com',
-  hk: 'cn-hk-eq-bcache-01.bilivideo.com',
-  akamai: 'upos-hz-mirrorakam.akamaized.net'
-};
-
-
-/***/ }),
 
 /***/ "./src/js/ui/message.js":
 /*!******************************************!*\
@@ -267,6 +207,7 @@ var scroll = {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "_ajax": function() { return /* binding */ _ajax; },
 /* harmony export */   "ajax": function() { return /* binding */ ajax; }
 /* harmony export */ });
 /* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ui/message */ "./src/js/ui/message.js");
@@ -275,7 +216,7 @@ function ajax(obj) {
   return new Promise(function (resolve, reject) {
     // set obj.success & obj.success
     obj.success = function (res) {
-      if (res.code) {
+      if (res && res.code) {
         _ui_message__WEBPACK_IMPORTED_MODULE_0__.Message.warning("".concat(res.message || "CODE:".concat(res.code))); // todo
       }
 
@@ -290,6 +231,18 @@ function ajax(obj) {
     $.ajax(obj);
   });
 }
+function _ajax(obj) {
+  return new Promise(function (resolve, reject) {
+    // set obj.success & obj.success
+    obj.success || (obj.success = function (res) {
+      resolve(res);
+    });
+    obj.error || (obj.error = function (err) {
+      reject(err);
+    });
+    $.ajax(obj);
+  });
+}
 
 /***/ }),
 
@@ -301,7 +254,9 @@ function ajax(obj) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "JSZip": function() { return /* binding */ JSZip; }
+/* harmony export */   "DPlayer": function() { return /* binding */ DPlayer; },
+/* harmony export */   "JSZip": function() { return /* binding */ JSZip; },
+/* harmony export */   "flvjs": function() { return /* binding */ flvjs; }
 /* harmony export */ });
 /* harmony import */ var _ajax__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ajax */ "./src/js/utils/ajax.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -326,6 +281,7 @@ var RuntimeLib = /*#__PURE__*/function () {
 
     this.config = config;
     this.moduleAsync;
+    this.anyResolved = false;
   }
 
   _createClass(RuntimeLib, [{
@@ -333,50 +289,92 @@ var RuntimeLib = /*#__PURE__*/function () {
     value: function getModulePromise() {
       var _this = this;
 
+      var _this$config = this.config,
+          urls = _this$config.urls,
+          getModule = _this$config.getModule;
+      var errs = [];
+      var promises = urls.map(function (url) {
+        return {
+          url: url,
+          promise: (0,_ajax__WEBPACK_IMPORTED_MODULE_0__._ajax)({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            cache: true,
+            error: function error() {
+              return null;
+            }
+          })
+        };
+      });
+      var len = promises.length;
       return new Promise(function (resolve, reject) {
-        try {
-          var _this$config = _this.config,
-              url = _this$config.url,
-              getModule = _this$config.getModule;
-
-          if (!_this.moduleAsync) {
-            _this.moduleAsync = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-              var code;
-              return _regeneratorRuntime().wrap(function _callee$(_context) {
-                while (1) {
-                  switch (_context.prev = _context.next) {
-                    case 0:
-                      console.log("[Runtime Library] Start download from ".concat(url));
-                      _context.next = 3;
-                      return (0,_ajax__WEBPACK_IMPORTED_MODULE_0__.ajax)({
-                        url: url,
-                        type: 'GET',
-                        dataType: 'text'
-                      });
-
-                    case 3:
-                      code = _context.sent;
-                      console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length));
-                      (function runEval() {
-                        return eval(code);
-                      }).bind(window)();
-                      return _context.abrupt("return", getModule(window));
-
-                    case 7:
-                    case "end":
-                      return _context.stop();
-                  }
-                }
-              }, _callee);
-            }))(); // = window.xxx
-          }
-
-          var library = _this.moduleAsync;
-          resolve(library);
-        } catch (err) {
-          console.error(err);
-          reject(err);
+        if (_this.moduleAsync) {
+          resolve(getModule(window));
         }
+
+        var i = 0;
+        promises.forEach(function (_ref) {
+          var url = _ref.url,
+              promise = _ref.promise;
+
+          // 延时并发
+          try {
+            setTimeout(function () {
+              _this.moduleAsync = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+                var code;
+                return _regeneratorRuntime().wrap(function _callee$(_context) {
+                  while (1) {
+                    switch (_context.prev = _context.next) {
+                      case 0:
+                        if (!_this.anyResolved) {
+                          _context.next = 2;
+                          break;
+                        }
+
+                        return _context.abrupt("return");
+
+                      case 2:
+                        console.log("[Runtime Library] Start download from ".concat(url));
+                        _context.next = 5;
+                        return promise;
+
+                      case 5:
+                        code = _context.sent;
+
+                        if (!(!code || _this.anyResolved)) {
+                          _context.next = 8;
+                          break;
+                        }
+
+                        return _context.abrupt("return");
+
+                      case 8:
+                        _this.anyResolved = true;
+                        console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length));
+                        (function runEval() {
+                          return eval(code);
+                        }).bind(window)();
+                        resolve(getModule(window));
+
+                      case 12:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }
+                }, _callee);
+              }))(); // = window.xxx
+            }, i++ * 1000);
+          } catch (err) {
+            if (_this.anyResolved) return;
+            errs.push(err);
+
+            if (--len === 0) {
+              console.error(errs);
+              reject(errs);
+            }
+          }
+        });
       });
     }
   }]);
@@ -387,467 +385,31 @@ var RuntimeLib = /*#__PURE__*/function () {
 var JSZip; // 伪同步
 
 new RuntimeLib({
-  url: 'https://cdn.jsdelivr.net/npm/jszip@3.9.1/dist/jszip.min.js',
+  urls: ['https://cdn.jsdelivr.net/npm/jszip@3.10.0/dist/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js', 'https://cdn.bootcdn.net/ajax/libs/jszip/3.10.0/jszip.min.js', 'https://cdn.staticfile.org/jszip/3.10.0/jszip.min.js'],
   getModule: function getModule(window) {
     return window.JSZip;
   }
 }).getModulePromise().then(function (module) {
   return JSZip = module;
 });
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&":
-/*!****************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css& ***!
-  \****************************************************************************************************************************************************************************************************************************************************/
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/noSourceMaps.js */ "./node_modules/css-loader/dist/runtime/noSourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#bp_config[data-v-15d0b82e] {\n  opacity: 0;\n  display: none;\n  position: fixed;\n  inset: 0px;\n  top: 0px;\n  left: 0px;\n  width: 100%;\n  height: 100%;\n  z-index: 10000;\n}\n.config-bg[data-v-15d0b82e] {\n  position: absolute;\n  background: rgb(255, 255, 255);\n  border-radius: 10px;\n  padding: 20px;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 600px;\n  z-index: 10001;\n}\n.config-mark[data-v-15d0b82e] {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  top: 0;\n  left: 0;\n  background: rgba(0, 0, 0, 0.5);\n  z-index: 10000;\n}\n.setting-button[data-v-15d0b82e] {\n  width: 120px;\n  height: 40px;\n  border-width: 0px;\n  border-radius: 3px;\n  background: #1e90ff;\n  cursor: pointer;\n  outline: none;\n  color: white;\n  font-size: 17px;\n}\n.setting-button[data-v-15d0b82e]:hover {\n  background: #5599ff;\n}\n.setting-context[data-v-15d0b82e] {\n  margin: 0 1%;\n  color: blue;\n}\n.setting-context[data-v-15d0b82e]:hover {\n  color: red;\n}\n", ""]);
-// Exports
-/* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/runtime/api.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/css-loader/dist/runtime/api.js ***!
-  \*****************************************************/
-/***/ (function(module) {
-
-
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-*/
-module.exports = function (cssWithMappingToString) {
-  var list = []; // return the list of modules as css string
-
-  list.toString = function toString() {
-    return this.map(function (item) {
-      var content = "";
-      var needLayer = typeof item[5] !== "undefined";
-
-      if (item[4]) {
-        content += "@supports (".concat(item[4], ") {");
-      }
-
-      if (item[2]) {
-        content += "@media ".concat(item[2], " {");
-      }
-
-      if (needLayer) {
-        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
-      }
-
-      content += cssWithMappingToString(item);
-
-      if (needLayer) {
-        content += "}";
-      }
-
-      if (item[2]) {
-        content += "}";
-      }
-
-      if (item[4]) {
-        content += "}";
-      }
-
-      return content;
-    }).join("");
-  }; // import a list of modules into the list
-
-
-  list.i = function i(modules, media, dedupe, supports, layer) {
-    if (typeof modules === "string") {
-      modules = [[null, modules, undefined]];
-    }
-
-    var alreadyImportedModules = {};
-
-    if (dedupe) {
-      for (var k = 0; k < this.length; k++) {
-        var id = this[k][0];
-
-        if (id != null) {
-          alreadyImportedModules[id] = true;
-        }
-      }
-    }
-
-    for (var _k = 0; _k < modules.length; _k++) {
-      var item = [].concat(modules[_k]);
-
-      if (dedupe && alreadyImportedModules[item[0]]) {
-        continue;
-      }
-
-      if (typeof layer !== "undefined") {
-        if (typeof item[5] === "undefined") {
-          item[5] = layer;
-        } else {
-          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
-          item[5] = layer;
-        }
-      }
-
-      if (media) {
-        if (!item[2]) {
-          item[2] = media;
-        } else {
-          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
-          item[2] = media;
-        }
-      }
-
-      if (supports) {
-        if (!item[4]) {
-          item[4] = "".concat(supports);
-        } else {
-          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
-          item[4] = supports;
-        }
-      }
-
-      list.push(item);
-    }
-  };
-
-  return list;
-};
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/runtime/noSourceMaps.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/css-loader/dist/runtime/noSourceMaps.js ***!
-  \**************************************************************/
-/***/ (function(module) {
-
-
-
-module.exports = function (i) {
-  return i[1];
-};
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
-/*!****************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
-  \****************************************************************************/
-/***/ (function(module) {
-
-
-
-var stylesInDOM = [];
-
-function getIndexByIdentifier(identifier) {
-  var result = -1;
-
-  for (var i = 0; i < stylesInDOM.length; i++) {
-    if (stylesInDOM[i].identifier === identifier) {
-      result = i;
-      break;
-    }
+var flvjs;
+new RuntimeLib({
+  urls: ['https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js', 'https://cdn.bootcdn.net/ajax/libs/flv.js/1.6.2/flv.min.js', 'https://cdn.staticfile.org/flv.js/1.6.2/flv.min.js'],
+  getModule: function getModule(window) {
+    return window.flvjs;
   }
-
-  return result;
-}
-
-function modulesToDom(list, options) {
-  var idCountMap = {};
-  var identifiers = [];
-
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i];
-    var id = options.base ? item[0] + options.base : item[0];
-    var count = idCountMap[id] || 0;
-    var identifier = "".concat(id, " ").concat(count);
-    idCountMap[id] = count + 1;
-    var indexByIdentifier = getIndexByIdentifier(identifier);
-    var obj = {
-      css: item[1],
-      media: item[2],
-      sourceMap: item[3],
-      supports: item[4],
-      layer: item[5]
-    };
-
-    if (indexByIdentifier !== -1) {
-      stylesInDOM[indexByIdentifier].references++;
-      stylesInDOM[indexByIdentifier].updater(obj);
-    } else {
-      var updater = addElementStyle(obj, options);
-      options.byIndex = i;
-      stylesInDOM.splice(i, 0, {
-        identifier: identifier,
-        updater: updater,
-        references: 1
-      });
-    }
-
-    identifiers.push(identifier);
+}).getModulePromise().then(function (module) {
+  return flvjs = module;
+});
+var DPlayer;
+new RuntimeLib({
+  urls: ['https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js', 'https://cdn.bootcdn.net/ajax/libs/dplayer/1.26.0/DPlayer.min.js', 'https://cdn.staticfile.org/dplayer/1.26.0/DPlayer.min.js'],
+  getModule: function getModule(window) {
+    return window.DPlayer;
   }
-
-  return identifiers;
-}
-
-function addElementStyle(obj, options) {
-  var api = options.domAPI(options);
-  api.update(obj);
-
-  var updater = function updater(newObj) {
-    if (newObj) {
-      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {
-        return;
-      }
-
-      api.update(obj = newObj);
-    } else {
-      api.remove();
-    }
-  };
-
-  return updater;
-}
-
-module.exports = function (list, options) {
-  options = options || {};
-  list = list || [];
-  var lastIdentifiers = modulesToDom(list, options);
-  return function update(newList) {
-    newList = newList || [];
-
-    for (var i = 0; i < lastIdentifiers.length; i++) {
-      var identifier = lastIdentifiers[i];
-      var index = getIndexByIdentifier(identifier);
-      stylesInDOM[index].references--;
-    }
-
-    var newLastIdentifiers = modulesToDom(newList, options);
-
-    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
-      var _identifier = lastIdentifiers[_i];
-
-      var _index = getIndexByIdentifier(_identifier);
-
-      if (stylesInDOM[_index].references === 0) {
-        stylesInDOM[_index].updater();
-
-        stylesInDOM.splice(_index, 1);
-      }
-    }
-
-    lastIdentifiers = newLastIdentifiers;
-  };
-};
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/insertBySelector.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/insertBySelector.js ***!
-  \********************************************************************/
-/***/ (function(module) {
-
-
-
-var memo = {};
-/* istanbul ignore next  */
-
-function getTarget(target) {
-  if (typeof memo[target] === "undefined") {
-    var styleTarget = document.querySelector(target); // Special case to return head of iframe instead of iframe itself
-
-    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
-      try {
-        // This will throw an exception if access to iframe is blocked
-        // due to cross-origin restrictions
-        styleTarget = styleTarget.contentDocument.head;
-      } catch (e) {
-        // istanbul ignore next
-        styleTarget = null;
-      }
-    }
-
-    memo[target] = styleTarget;
-  }
-
-  return memo[target];
-}
-/* istanbul ignore next  */
-
-
-function insertBySelector(insert, style) {
-  var target = getTarget(insert);
-
-  if (!target) {
-    throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
-  }
-
-  target.appendChild(style);
-}
-
-module.exports = insertBySelector;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/insertStyleElement.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/insertStyleElement.js ***!
-  \**********************************************************************/
-/***/ (function(module) {
-
-
-
-/* istanbul ignore next  */
-function insertStyleElement(options) {
-  var element = document.createElement("style");
-  options.setAttributes(element, options.attributes);
-  options.insert(element, options.options);
-  return element;
-}
-
-module.exports = insertStyleElement;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js":
-/*!**********************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js ***!
-  \**********************************************************************************/
-/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
-
-
-
-/* istanbul ignore next  */
-function setAttributesWithoutAttributes(styleElement) {
-  var nonce =  true ? __webpack_require__.nc : 0;
-
-  if (nonce) {
-    styleElement.setAttribute("nonce", nonce);
-  }
-}
-
-module.exports = setAttributesWithoutAttributes;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/styleDomAPI.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/styleDomAPI.js ***!
-  \***************************************************************/
-/***/ (function(module) {
-
-
-
-/* istanbul ignore next  */
-function apply(styleElement, options, obj) {
-  var css = "";
-
-  if (obj.supports) {
-    css += "@supports (".concat(obj.supports, ") {");
-  }
-
-  if (obj.media) {
-    css += "@media ".concat(obj.media, " {");
-  }
-
-  var needLayer = typeof obj.layer !== "undefined";
-
-  if (needLayer) {
-    css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {");
-  }
-
-  css += obj.css;
-
-  if (needLayer) {
-    css += "}";
-  }
-
-  if (obj.media) {
-    css += "}";
-  }
-
-  if (obj.supports) {
-    css += "}";
-  }
-
-  var sourceMap = obj.sourceMap;
-
-  if (sourceMap && typeof btoa !== "undefined") {
-    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
-  } // For old IE
-
-  /* istanbul ignore if  */
-
-
-  options.styleTagTransform(css, styleElement, options.options);
-}
-
-function removeStyleElement(styleElement) {
-  // istanbul ignore if
-  if (styleElement.parentNode === null) {
-    return false;
-  }
-
-  styleElement.parentNode.removeChild(styleElement);
-}
-/* istanbul ignore next  */
-
-
-function domAPI(options) {
-  var styleElement = options.insertStyleElement(options);
-  return {
-    update: function update(obj) {
-      apply(styleElement, options, obj);
-    },
-    remove: function remove() {
-      removeStyleElement(styleElement);
-    }
-  };
-}
-
-module.exports = domAPI;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/styleTagTransform.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/styleTagTransform.js ***!
-  \*********************************************************************/
-/***/ (function(module) {
-
-
-
-/* istanbul ignore next  */
-function styleTagTransform(css, styleElement) {
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css;
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild);
-    }
-
-    styleElement.appendChild(document.createTextNode(css));
-  }
-}
-
-module.exports = styleTagTransform;
+}).getModulePromise().then(function (module) {
+  return DPlayer = module;
+});
 
 /***/ })
 
@@ -865,7 +427,7 @@ module.exports = styleTagTransform;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
+/******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
@@ -878,18 +440,6 @@ module.exports = styleTagTransform;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	!function() {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = function(module) {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				function() { return module['default']; } :
-/******/ 				function() { return module; };
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	}();
-/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	!function() {
 /******/ 		// define getter functions for harmony exports
@@ -918,23 +468,16 @@ module.exports = styleTagTransform;
 /******/ 		};
 /******/ 	}();
 /******/ 	
-/******/ 	/* webpack/runtime/nonce */
-/******/ 	!function() {
-/******/ 		__webpack_require__.nc = undefined;
-/******/ 	}();
-/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 !function() {
 /*!**************************************!*\
-  !*** ./src/js/index.js + 21 modules ***!
+  !*** ./src/js/index.js + 14 modules ***!
   \**************************************/
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: ./src/js/config.js
-var config = __webpack_require__("./src/js/config.js");
 ;// CONCATENATED MODULE: ./src/js/store.js
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -968,8 +511,6 @@ var Store = /*#__PURE__*/function () {
 }();
 
 var store = new Store();
-// EXTERNAL MODULE: ./src/js/ui/message.js + 1 modules
-var message = __webpack_require__("./src/js/ui/message.js");
 ;// CONCATENATED MODULE: ./src/js/utils/video.js
 
 
@@ -1297,328 +838,12 @@ var video = {
   get_quality: get_quality,
   get_quality_support: get_quality_support
 };
-;// CONCATENATED MODULE: ./src/js/user.js
-function user_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function user_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function user_createClass(Constructor, protoProps, staticProps) { if (protoProps) user_defineProperties(Constructor.prototype, protoProps); if (staticProps) user_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
-
-var User = /*#__PURE__*/function () {
-  function User() {
-    user_classCallCheck(this, User);
-
-    this.is_login = false;
-    this.vip_status = 0;
-    this.mid = '';
-    this.uname = '';
-    this.has_init = false;
-    this.lazyInit();
-  }
-
-  user_createClass(User, [{
-    key: "needReplace",
-    value: function needReplace() {
-      return !this.is_login || !this.vip_status && video.base().need_vip();
-    }
-  }, {
-    key: "lazyInit",
-    value: function lazyInit(last_init) {
-      if (!this.has_init) {
-        if (window.__BILI_USER_INFO__) {
-          this.is_login = window.__BILI_USER_INFO__.isLogin;
-          this.vip_status = window.__BILI_USER_INFO__.vipStatus;
-          this.mid = window.__BILI_USER_INFO__.mid || '';
-          this.uname = window.__BILI_USER_INFO__.uname || '';
-        } else if (window.__BiliUser__) {
-          this.is_login = window.__BiliUser__.isLogin;
-
-          if (window.__BiliUser__.cache) {
-            this.vip_status = window.__BiliUser__.cache.data.vipStatus;
-            this.mid = window.__BiliUser__.cache.data.mid || '';
-            this.uname = window.__BiliUser__.cache.data.uname || '';
-          } else {
-            this.vip_status = 0;
-            this.mid = '';
-            this.uname = '';
-          }
-        }
-
-        this.has_init = last_init;
-      }
-    }
-  }]);
-
-  return User;
-}();
-
-var user = new User();
 // EXTERNAL MODULE: ./src/js/utils/ajax.js
 var ajax = __webpack_require__("./src/js/utils/ajax.js");
-;// CONCATENATED MODULE: ./src/js/utils/api.js
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-
-
-
-
-
-
-
-function get_url_base(page, quality, video_format, success, error, request_type) {
-  var _success, _error;
-
-  if ('function' === typeof success) {
-    _success = function _success(e) {
-      // todo
-      success(e);
-    };
-  } else {
-    _success = function _success(res) {
-      return console.log(res);
-    };
-  }
-
-  if ('function' === typeof error) {
-    _error = function _error(e) {
-      message.Message.error('请求失败');
-      error(e);
-    };
-  } else {
-    _error = function _error(err) {
-      return console.error(err);
-    };
-  }
-
-  var vb = video.base();
-  var _ref = [vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type],
-      aid = _ref[0],
-      cid = _ref[1],
-      epid = _ref[2],
-      q = _ref[3],
-      type = _ref[4]; // 参数预处理
-
-  var format = video_format || config.config.format;
-  if (format === 'mp4' && type !== 'video') format = 'flv';
-  if (request_type === 'auto' && user.needReplace()) request_type = 'online';
-
-  var url_replace_cdn = function url_replace_cdn(url) {
-    if (config.config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
-      // 切换CDN
-      var url_tmp = url.split('/');
-      url_tmp[2] = config.hostMap[config.config.host_key];
-      url = url_tmp.join('/');
-    }
-
-    return url;
-  };
-
-  var base_api;
-  var ajax_obj = {
-    type: 'GET',
-    dataType: 'json'
-  };
-
-  if (request_type === 'auto' || request_type === 'local') {
-    var fnver, fnval;
-
-    if (type === 'cheese') {
-      base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
-
-      if (format === 'dash') {
-        fnver = 0, fnval = 80;
-      } else {
-        fnver = 1, fnval = 80;
-      }
-    } else {
-      base_api = type === 'video' ? 'https://api.bilibili.com/x/player/playurl' : 'https://api.bilibili.com/pgc/player/web/playurl';
-
-      if (format === 'dash') {
-        fnver = 0, fnval = 4048;
-      } else {
-        fnver = 0, fnval = 0;
-      }
-    }
-
-    base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
-    base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
-    ajax_obj.xhrFields = {
-      withCredentials: true
-    };
-  } else {
-    base_api = config.config.base_api;
-    base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
-    var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
-        auth_id = _ref2[0],
-        auth_sec = _ref2[1];
-
-    if (config.config.auth === '1' && auth_id && auth_sec) {
-      base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
-      !!page && (base_api += '&s');
-    }
-  }
-
-  ajax_obj.url = base_api;
-  (0,ajax.ajax)(ajax_obj).then(function (res) {
-    var data;
-
-    if (!res.code) {
-      data = res.result || res.data;
-    }
-
-    if (!data) {
-      if (request_type === 'auto') {
-        get_url_base(page, quality, video_format, success, error, 'online');
-        return;
-      } // online
-
-
-      res.url && (res.url = url_replace_cdn(res.url));
-      res.video && (res.video = url_replace_cdn(res.video));
-      res.audio && (res.audio = url_replace_cdn(res.audio));
-
-      _success(res);
-
-      return;
-    }
-
-    if (data.dash) {
-      var result = {
-        'code': 0,
-        'quality': data.quality,
-        'accept_quality': data.accept_quality,
-        'video': '',
-        'audio': ''
-      };
-      var videos = data.dash.video;
-
-      for (var i = 0; i < videos.length; i++) {
-        var _video = videos[i];
-
-        if (_video.id <= q) {
-          result.video = url_replace_cdn(_video.base_url);
-          result.audio = url_replace_cdn(data.dash.audio[0].base_url);
-          break;
-        }
-      }
-
-      _success(result);
-
-      return;
-    }
-
-    _success({
-      'code': 0,
-      'quality': data.quality,
-      'accept_quality': data.accept_quality,
-      'url': url_replace_cdn(data.durl[0].url)
-    });
-  }).catch(function (err) {
-    return _error(err);
-  });
-}
-
-function _get_subtitle(p, callback) {
-  var to_blob_url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  var video_base = video.base();
-  var _ref3 = [video_base.aid(p), video_base.cid(p), video_base.epid(p)],
-      aid = _ref3[0],
-      cid = _ref3[1],
-      epid = _ref3[2];
-  (0,ajax.ajax)({
-    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
-    dataType: 'json'
-  }).then(function (res) {
-    // todo
-    if (!res.code && res.data.subtitle.subtitles[0]) {
-      (0,ajax.ajax)({
-        url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
-        dataType: 'json'
-      }).then(function (res) {
-        // json -> webvtt -> blob_url
-        var datas = res.body || [{
-          from: 0,
-          to: 0,
-          content: ''
-        }];
-        var webvtt = 'WEBVTT\n\n';
-
-        var _iterator = _createForOfIteratorHelper(datas),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var data = _step.value;
-            var a = new Date((parseInt(data.from) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.from.toString().split('.')[1] || '000').padEnd(3, '0');
-            var b = new Date((parseInt(data.to) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0');
-            webvtt += "".concat(a, " --> ").concat(b, "\n").concat(data.content.trim(), "\n\n");
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-
-        if (to_blob_url) {
-          callback(URL.createObjectURL(new Blob([webvtt], {
-            type: 'text/vtt'
-          })));
-        } else {
-          callback(webvtt);
-        }
-      }).catch(callback);
-    } else {
-      callback();
-    }
-  }).catch(callback);
-}
-
-function get_subtitle_data(p, callback) {
-  _get_subtitle(p, callback, false);
-}
-
-function get_subtitle_url(p, callback) {
-  _get_subtitle(p, callback, true);
-}
-
-function get_season(epid) {
-  (0,ajax.ajax)({
-    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
-    xhrFields: {
-      withCredentials: true
-    },
-    dataType: 'json'
-  }).then(function (res) {
-    if (res.code) {
-      message.Message.warning('获取剧集信息失败');
-      return;
-    }
-
-    window.bp_episodes = res.data.episodes || null;
-  });
-}
-
-var api = {
-  get_url: function get_url(success, error) {
-    var request_type = config.config.request_type;
-    var format = config.config.format;
-    get_url_base(0, 0, format, success, error, request_type);
-  },
-  get_urls: function get_urls(page, quality, format, success, error) {
-    var request_type = config.config.request_type;
-    get_url_base(page, quality, format, success, error, request_type);
-  },
-  get_subtitle_url: get_subtitle_url,
-  get_subtitle_data: get_subtitle_data,
-  get_season: get_season
-};
+// EXTERNAL MODULE: ./src/js/utils/runtime-lib.js
+var runtime_lib = __webpack_require__("./src/js/utils/runtime-lib.js");
 ;// CONCATENATED MODULE: ./src/js/utils/player.js
+
 
 
 
@@ -1725,7 +950,7 @@ function replace_player(url, url_2) {
 
   var dplayer_init = function dplayer_init() {
     var subtitle_url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    window.bp_dplayer = new DPlayer({
+    window.bp_dplayer = new runtime_lib.DPlayer({
       container: $('#bp_dplayer')[0],
       mutex: false,
       volume: 1,
@@ -1760,9 +985,9 @@ function replace_player(url, url_2) {
       }]
     }); // subtitle_blob save
 
-    if (config.config.format === 'dash' && url_2 && url_2 !== '#') {
+    if (config_config.format === 'dash' && url_2 && url_2 !== '#') {
       $('body').append('<div id="bp_dplayer_2" style="display:none;"></div>');
-      window.bp_dplayer_2 = new DPlayer({
+      window.bp_dplayer_2 = new runtime_lib.DPlayer({
         container: $('#bp_dplayer_2')[0],
         mutex: false,
         volume: 1,
@@ -1853,7 +1078,7 @@ function recover_player() {
 
 
 function danmaku_config() {
-  var style = '' + "<style id=\"dplayer_danmaku_style\">\n        .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {\n            animation-duration: ".concat(parseFloat(config.config.danmaku_speed), "s;\n            font-size: ").concat(parseInt(config.config.danmaku_fontsize), "px;\n        }\n        </style>");
+  var style = '' + "<style id=\"dplayer_danmaku_style\">\n        .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {\n            animation-duration: ".concat(parseFloat(config_config.danmaku_speed), "s;\n            font-size: ").concat(parseInt(config_config.danmaku_fontsize), "px;\n        }\n        </style>");
 
   if (!!$('#dplayer_danmaku_style')[0]) {
     $('#dplayer_danmaku_style').remove();
@@ -1870,14 +1095,57 @@ var player = {
     config: danmaku_config
   }
 };
-// EXTERNAL MODULE: ./src/js/utils/runtime-lib.js
-var runtime_lib = __webpack_require__("./src/js/utils/runtime-lib.js");
+;// CONCATENATED MODULE: ./src/js/check.js
+function check_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function check_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function check_createClass(Constructor, protoProps, staticProps) { if (protoProps) check_defineProperties(Constructor.prototype, protoProps); if (staticProps) check_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+
+var Check = /*#__PURE__*/function () {
+  function Check() {
+    check_classCallCheck(this, Check);
+
+    this.aid = '';
+    this.cid = '';
+    this.q = '';
+    this.epid = '';
+  }
+
+  check_createClass(Check, [{
+    key: "refresh",
+    value: function refresh() {
+      console.log('refresh...');
+      $('#video_download').hide();
+      $('#video_download_2').hide();
+      player.recover_player(); // 更新check
+
+      var vb = video.base();
+      this.aid = vb.aid();
+      this.cid = vb.cid();
+      this.epid = vb.epid();
+      this.q = video.get_quality().q;
+      window.bp_episodes = null; // todo
+    }
+  }]);
+
+  return Check;
+}();
+
+var check = new Check();
+// EXTERNAL MODULE: ./src/js/ui/message.js + 1 modules
+var message = __webpack_require__("./src/js/ui/message.js");
+// EXTERNAL MODULE: ./src/js/ui/scroll.js
+var ui_scroll = __webpack_require__("./src/js/ui/scroll.js");
 ;// CONCATENATED MODULE: ./src/js/utils/download.js
-function download_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = download_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function download_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return download_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return download_arrayLikeToArray(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function download_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 
 
@@ -1887,7 +1155,7 @@ function download_arrayLikeToArray(arr, len) { if (len == null || len > arr.leng
 
 
 function rpc_type() {
-  if (config.config.rpc_domain.match('https://') || config.config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
+  if (config_config.rpc_domain.match('https://') || config_config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
     return 'post';
   } else {
     return 'ariang';
@@ -1938,7 +1206,7 @@ function download_all() {
   var quality_support = video.get_quality_support();
   var option_support_html = '';
 
-  var _iterator = download_createForOfIteratorHelper(quality_support),
+  var _iterator = _createForOfIteratorHelper(quality_support),
       _step;
 
   try {
@@ -2081,14 +1349,14 @@ function download_all() {
 
   function download_rpc_all(video_urls) {
     var rpc = {
-      domain: config.config.rpc_domain,
-      port: config.config.rpc_port,
-      token: config.config.rpc_token,
-      dir: config.config.rpc_dir
+      domain: config_config.rpc_domain,
+      port: config_config.rpc_port,
+      token: config_config.rpc_token,
+      dir: config_config.rpc_dir
     };
     var json_rpc = [];
 
-    var _iterator2 = download_createForOfIteratorHelper(video_urls),
+    var _iterator2 = _createForOfIteratorHelper(video_urls),
         _step2;
 
     try {
@@ -2144,7 +1412,7 @@ function download_rpc_ariang_one(video) {
 
     if (bp_aria2_window && !bp_aria2_window.closed) {
       var task_hash = "#!/new/task?url=".concat(window.btoa(video.url), "&out=").concat(encodeURIComponent(video.filename), "&").concat(aria2_header);
-      bp_aria2_window.location.href = config.config.ariang_host + task_hash;
+      bp_aria2_window.location.href = config_config.ariang_host + task_hash;
       message.Message.success('RPC请求成功');
     } else {
       message.Message.warning('请检查RPC参数');
@@ -2164,10 +1432,10 @@ function download_rpc(url, filename) {
 
   download_rpc_clicked = true;
   var rpc = {
-    domain: config.config.rpc_domain,
-    port: config.config.rpc_port,
-    token: config.config.rpc_token,
-    dir: config.config.rpc_dir
+    domain: config_config.rpc_domain,
+    port: config_config.rpc_port,
+    token: config_config.rpc_token,
+    dir: config_config.rpc_dir
   };
   var json_rpc = {
     id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
@@ -2213,7 +1481,7 @@ function download_rpc(url, filename) {
       var task_hash = "#!/new/task?url=".concat(window.btoa(url), "&out=").concat(encodeURIComponent(filename), "&").concat(aria2_header);
 
       if (bp_aria2_window && !bp_aria2_window.closed) {
-        bp_aria2_window.location.href = config.config.ariang_host + task_hash;
+        bp_aria2_window.location.href = config_config.ariang_host + task_hash;
         message.Message.success('RPC请求发送成功');
       } else {
         message.Message.warning('AriaNG页面未打开');
@@ -2226,7 +1494,7 @@ function download_rpc(url, filename) {
 
 function open_ariang(rpc) {
   var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace('://', '/'), "/").concat(rpc.port, "/jsonrpc/").concat(window.btoa(rpc.token)) : '';
-  var url = config.config.ariang_host + hash_tag;
+  var url = config_config.ariang_host + hash_tag;
   var a = document.createElement('a');
   a.setAttribute('target', '_blank');
   a.setAttribute('onclick', "window.bp_aria2_window=window.open('".concat(url, "');"));
@@ -2413,7 +1681,7 @@ function _download_danmaku_ass(cid, title) {
       var scroll_id = 0,
           fix_id = 0;
 
-      var _iterator3 = download_createForOfIteratorHelper(danmaku_data),
+      var _iterator3 = _createForOfIteratorHelper(danmaku_data),
           _step3;
 
       try {
@@ -2594,8 +1862,64 @@ var Download = {
   download_subtitle_vtt: download_subtitle_vtt,
   open_ariang: open_ariang
 };
-// EXTERNAL MODULE: ./src/js/ui/scroll.js
-var ui_scroll = __webpack_require__("./src/js/ui/scroll.js");
+;// CONCATENATED MODULE: ./src/js/user.js
+function user_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function user_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function user_createClass(Constructor, protoProps, staticProps) { if (protoProps) user_defineProperties(Constructor.prototype, protoProps); if (staticProps) user_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+var User = /*#__PURE__*/function () {
+  function User() {
+    user_classCallCheck(this, User);
+
+    this.is_login = false;
+    this.vip_status = 0;
+    this.mid = '';
+    this.uname = '';
+    this.has_init = false;
+    this.lazyInit();
+  }
+
+  user_createClass(User, [{
+    key: "needReplace",
+    value: function needReplace() {
+      return !this.is_login || !this.vip_status && video.base().need_vip();
+    }
+  }, {
+    key: "lazyInit",
+    value: function lazyInit(last_init) {
+      if (!this.has_init) {
+        if (window.__BILI_USER_INFO__) {
+          this.is_login = window.__BILI_USER_INFO__.isLogin;
+          this.vip_status = window.__BILI_USER_INFO__.vipStatus;
+          this.mid = window.__BILI_USER_INFO__.mid || '';
+          this.uname = window.__BILI_USER_INFO__.uname || '';
+        } else if (window.__BiliUser__) {
+          this.is_login = window.__BiliUser__.isLogin;
+
+          if (window.__BiliUser__.cache) {
+            this.vip_status = window.__BiliUser__.cache.data.vipStatus;
+            this.mid = window.__BiliUser__.cache.data.mid || '';
+            this.uname = window.__BiliUser__.cache.data.uname || '';
+          } else {
+            this.vip_status = 0;
+            this.mid = '';
+            this.uname = '';
+          }
+        }
+
+        this.has_init = last_init;
+      }
+    }
+  }]);
+
+  return User;
+}();
+
+var user = new User();
 ;// CONCATENATED MODULE: ./src/js/auth.js
 function auth_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2628,7 +1952,7 @@ var Auth = /*#__PURE__*/function () {
           auth_time = _ref[3];
       if (!access_key) return;
 
-      if (user.is_login && (config.config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
+      if (user.is_login && (config_config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
         // check key
         (0,ajax.ajax)({
           url: "https://api.bilibili.com/x/space/myinfo?access_key=".concat(access_key),
@@ -2642,7 +1966,7 @@ var Auth = /*#__PURE__*/function () {
           } else {
             store.set('auth_time', Date.now());
             (0,ajax.ajax)({
-              url: "".concat(config.config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+              url: "".concat(config_config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
               type: 'GET',
               dataType: 'json'
             }).then(function (res) {
@@ -2656,7 +1980,7 @@ var Auth = /*#__PURE__*/function () {
         });
       }
 
-      store.set('pre_base_api', config.config.base_api);
+      store.set('pre_base_api', config_config.base_api);
     }
   }, {
     key: "_login",
@@ -2727,7 +2051,7 @@ var Auth = /*#__PURE__*/function () {
             var auth_id = store.get('auth_id') || '',
                 auth_sec = store.get('auth_sec') || '';
             (0,ajax.ajax)({
-              url: auth_url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config.config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
+              url: auth_url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
               type: 'GET',
               dataType: 'json'
             }).then(function (res) {
@@ -2742,7 +2066,7 @@ var Auth = /*#__PURE__*/function () {
                 store.set('access_key', new URL(auth_url).searchParams.get('access_key'));
                 store.set('auth_time', Date.now());
                 $('#auth').val('1');
-                config.config.auth = '1';
+                config_config.auth = '1';
               } else {
                 message.Message.warning('授权失败');
               }
@@ -2774,7 +2098,7 @@ var Auth = /*#__PURE__*/function () {
           auth_id = _ref2[0],
           auth_sec = _ref2[1];
       (0,ajax.ajax)({
-        url: "".concat(config.config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
+        url: "".concat(config_config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
         type: 'GET',
         dataType: 'json'
       }).then(function (res) {
@@ -2785,7 +2109,7 @@ var Auth = /*#__PURE__*/function () {
           store.set('auth_time', '0');
           store.set('access_key', '');
           $('#auth').val('0');
-          config.config.auth = '0';
+          config_config.auth = '0';
         } else {
           message.Message.warning('取消失败');
         }
@@ -2808,7 +2132,7 @@ var Auth = /*#__PURE__*/function () {
               auth_id = _ref3[0],
               auth_sec = _ref3[1];
           (0,ajax.ajax)({
-            url: url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config.config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
+            url: url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
             type: 'GET',
             dataType: 'json'
           }).then(function (res) {
@@ -2823,7 +2147,7 @@ var Auth = /*#__PURE__*/function () {
               store.set('access_key', new URL(url).searchParams.get('access_key'));
               store.set('auth_time', Date.now());
               $('#auth').val('1');
-              config.config.auth = '1';
+              config_config.auth = '1';
             } else {
               message.Message.warning('授权失败');
             }
@@ -2839,52 +2163,509 @@ var Auth = /*#__PURE__*/function () {
 }();
 
 var auth = new Auth();
-;// CONCATENATED MODULE: ./src/js/check.js
-function check_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function check_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function check_createClass(Constructor, protoProps, staticProps) { if (protoProps) check_defineProperties(Constructor.prototype, protoProps); if (staticProps) check_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+;// CONCATENATED MODULE: ./src/html/config.html
+// Module
+var code = "<div id=\"bp_config\">\n  <div class=\"config-mark\"></div>\n  <div class=\"config-bg\">\n    <span style=\"font-size: 20px\">\n      <b>bilibili视频下载 参数设置</b>\n      <b>\n        <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a>\n        <a style=\"text-decoration: underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a>\n      </b>\n    </span>\n    <div style=\"margin: 2% 0\">\n      <label>请求地址：</label>\n      <input id=\"base_api\" style=\"width: 30%\" />&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>请求方式：</label>\n      <select id=\"request_type\">\n        <option value=\"auto\">自动判断</option>\n        <option value=\"local\">本地请求</option>\n        <option value=\"online\">远程请求</option>\n      </select><br />\n      <small>注意：普通使用请勿修改；默认使用混合请求</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>视频格式：</label>\n      <select id=\"format\">\n        <option value=\"flv\">FLV</option>\n        <option value=\"dash\">DASH</option>\n        <option value=\"mp4\">MP4</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>切换CDN：</label>\n      <select id=\"host_key\">\n        {{host_key_options}}\n      </select><br />\n      <small>注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>下载方式：</label>\n      <select id=\"download_type\">\n        <option value=\"a\">URL链接</option>\n        <option value=\"web\">Web浏览器</option>\n        <option value=\"blob\">Blob请求</option>\n        <option value=\"rpc\">RPC接口</option>\n        <option value=\"aria\">Aria命令</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>AriaNg地址：</label>\n      <input id=\"ariang_host\" style=\"width: 30%\" /><br />\n      <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />\n      <input id=\"rpc_domain\" style=\"width: 25%\" /> :\n      <input id=\"rpc_port\" style=\"width: 10%\" /> |\n      <input id=\"rpc_token\" placeholder=\"没有密钥不用填\" style=\"width: 15%\" /> |\n      <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width: 20%\" /><br />\n      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>强制换源：</label>\n      <select id=\"replace_force\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕速度：</label>\n      <input id=\"danmaku_speed\" style=\"width: 5%\" />s\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕字号：</label>\n      <input id=\"danmaku_fontsize\" style=\"width: 5%\" />px<br />\n      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>自动下载：</label>\n      <select id=\"auto_download\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select><br />\n      <small>说明：请求地址成功后将自动点击下载视频按钮</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>授权状态：</label>\n      <select id=\"auth\" disabled>\n        <option value=\"0\">未授权</option>\n        <option value=\"1\">已授权</option>\n      </select>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a>\n    </div>\n    <br />\n    <div style=\"text-align: right\">\n      <button class=\"setting-button\" id=\"save_config\">确定</button>\n    </div>\n  </div>\n\n  <style>\n    #bp_config {\n      opacity: 0;\n      display: none;\n      position: fixed;\n      inset: 0px;\n      top: 0px;\n      left: 0px;\n      width: 100%;\n      height: 100%;\n      z-index: 10000;\n    }\n\n    #bp_config .config-bg {\n      position: absolute;\n      background: rgb(255, 255, 255);\n      border-radius: 10px;\n      padding: 20px;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      width: 600px;\n      z-index: 10001;\n    }\n\n    #bp_config .config-mark {\n      width: 100%;\n      height: 100%;\n      position: fixed;\n      top: 0;\n      left: 0;\n      background: rgba(0, 0, 0, 0.5);\n      z-index: 10000;\n    }\n\n    #bp_config .setting-button {\n      width: 120px;\n      height: 40px;\n      border-width: 0px;\n      border-radius: 3px;\n      background: #1e90ff;\n      cursor: pointer;\n      outline: none;\n      color: white;\n      font-size: 17px;\n    }\n\n    #bp_config .setting-button:hover {\n      background: #5599ff;\n    }\n\n    #bp_config .setting-context {\n      margin: 0 1%;\n      color: blue;\n    }\n\n    #bp_config .setting-context:hover {\n      color: red;\n    }\n  </style>\n</div>\n";
+// Exports
+/* harmony default export */ var config = (code);
+;// CONCATENATED MODULE: ./src/js/ui/config.js
 
 
-var Check = /*#__PURE__*/function () {
-  function Check() {
-    check_classCallCheck(this, Check);
 
-    this.aid = '';
-    this.cid = '';
-    this.q = '';
-    this.epid = '';
+
+
+
+
+
+
+var config_config = {
+  base_api: 'https://api.injahow.cn/bparse/',
+  request_type: 'auto',
+  format: 'flv',
+  host_key: '0',
+  replace_force: '0',
+  auth: '0',
+  download_type: 'web',
+  rpc_domain: 'http://localhost',
+  rpc_port: '16800',
+  rpc_token: '',
+  rpc_dir: 'D:/',
+  ariang_host: 'http://ariang.injahow.com/',
+  auto_download: '0',
+  danmaku_speed: '15',
+  danmaku_fontsize: '22'
+};
+var default_config = Object.assign({}, config_config); // 浅拷贝
+
+var hostMap = {
+  '0': '关闭',
+  ks3: 'upos-sz-mirrorks3.bilivideo.com',
+  ks3b: 'upos-sz-mirrorks3b.bilivideo.com',
+  ks3c: 'upos-sz-mirrorks3c.bilivideo.com',
+  ks32: 'upos-sz-mirrorks32.bilivideo.com',
+  kodo: 'upos-sz-mirrorkodo.bilivideo.com',
+  kodob: 'upos-sz-mirrorkodob.bilivideo.com',
+  cos: 'upos-sz-mirrorcos.bilivideo.com',
+  cosb: 'upos-sz-mirrorcosb.bilivideo.com',
+  bos: 'upos-sz-mirrorbos.bilivideo.com',
+  wcs: 'upos-sz-mirrorwcs.bilivideo.com',
+  wcsb: 'upos-sz-mirrorwcsb.bilivideo.com',
+
+  /* 不限CROS, 限制UA */
+  hw: 'upos-sz-mirrorhw.bilivideo.com',
+  hwb: 'upos-sz-mirrorhwb.bilivideo.com',
+  upbda2: 'upos-sz-upcdnbda2.bilivideo.com',
+  upws: 'upos-sz-upcdnws.bilivideo.com',
+  uptx: 'upos-sz-upcdntx.bilivideo.com',
+  uphw: 'upos-sz-upcdnhw.bilivideo.com',
+  js: 'upos-tf-all-js.bilivideo.com',
+  hk: 'cn-hk-eq-bcache-01.bilivideo.com',
+  akamai: 'upos-hz-mirrorakam.akamaized.net'
+};
+var help_clicked = false;
+var config_functions = {
+  save_config: function save_config() {
+    var old_config;
+
+    try {
+      old_config = JSON.parse(store.get('config_str'));
+      store.set('config_str', JSON.stringify(config_config));
+    } catch (err) {
+      old_config = Object.assign({}, config_config);
+    } // hide
+
+
+    $('#bp_config').hide();
+    $('#bp_config').css('opacity', 0);
+    ui_scroll.scroll.show(); // 判断是否需要重新请求
+
+    for (var _i = 0, _arr = ['base_api', 'format', 'auth']; _i < _arr.length; _i++) {
+      var key = _arr[_i];
+
+      if (config_config[key] !== old_config[key]) {
+        $('#video_download').hide();
+        $('#video_download_2').hide();
+        break;
+      }
+    }
+
+    if (config_config.host_key !== old_config.host_key) {
+      check.refresh();
+      $('#video_url').attr('href', '#');
+      $('#video_url_2').attr('href', '#');
+    } // 判断RPC配置情况
+
+
+    if (config_config.rpc_domain !== old_config.rpc_domain) {
+      if (!(config_config.rpc_domain.match('https://') || config_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
+        message.MessageBox.alert('检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；' + '请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；' + '配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！', function () {
+          Download.open_ariang({
+            domain: config_config.rpc_domain,
+            port: config_config.rpc_port,
+            token: config_config.rpc_token
+          });
+        });
+      }
+    } // 更新弹幕设置
+
+
+    for (var _i2 = 0, _arr2 = ['danmaku_speed', 'danmaku_fontsize']; _i2 < _arr2.length; _i2++) {
+      var _key = _arr2[_i2];
+
+      if (config_config[_key] !== old_config[_key]) {
+        player.danmaku.config();
+        break;
+      }
+    } // ...
+
+  },
+  reset_config: function reset_config() {
+    for (var key in default_config) {
+      if (key === 'auth') {
+        continue;
+      }
+
+      config_config[key] = default_config[key];
+      $("#".concat(key)).val(default_config[key]);
+    }
+  },
+  show_help: function show_help() {
+    if (help_clicked) {
+      message.Message.miaow();
+      return;
+    }
+
+    help_clicked = true;
+    (0,ajax.ajax)({
+      url: "".concat(config_config.base_api, "/auth/v2/?act=help"),
+      dataType: 'text'
+    }).then(function (res) {
+      if (res) {
+        message.MessageBox.alert(res);
+      } else {
+        message.Message.warning('获取失败');
+      }
+    }).finally(function () {
+      return help_clicked = false;
+    });
+  },
+  show_login: function show_login() {
+    auth.login('1');
+  },
+  show_login_2: function show_login_2() {
+    auth.login('0');
+  },
+  show_logout: function show_logout() {
+    auth.logout();
+  },
+  show_login_help: function show_login_help() {
+    message.MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', function () {
+      auth.login();
+    });
+  }
+};
+
+function initConfig(el) {
+  var options = '';
+
+  for (var k in hostMap) {
+    options += "<option value=\"".concat(k, "\">").concat(hostMap[k], "</option>");
+  } // 注入页面
+
+
+  config = config.replace('{{host_key_options}}', options);
+
+  if (el && !!$(el)[0]) {
+    $(el).append(config);
+  } else {
+    $('body').append(config);
+  } // 同步数据
+
+
+  var config_str = store.get('config_str');
+
+  if (config_str) {
+    // set config from cache
+    try {
+      var old_config = JSON.parse(config_str);
+
+      for (var key in old_config) {
+        if (Object.hasOwnProperty.call(config_config, key)) {
+          config_config[key] = old_config[key];
+        }
+      }
+    } catch (_unused) {
+      console.log('初始化脚本配置');
+    }
   }
 
-  check_createClass(Check, [{
-    key: "refresh",
-    value: function refresh() {
-      console.log('refresh...');
-      $('#video_download').hide();
-      $('#video_download_2').hide();
-      player.recover_player(); // 更新check
+  config_config.auth = store.get('auth_id') ? '1' : '0';
+  store.set('config_str', JSON.stringify(config_config)); // 函数绑定
 
-      var vb = video.base();
-      this.aid = vb.aid();
-      this.cid = vb.cid();
-      this.epid = vb.epid();
-      this.q = video.get_quality().q;
-      window.bp_episodes = null; // todo
+  var _loop = function _loop(_key2) {
+    if (_key2 === 'auth') {
+      return "continue";
     }
-  }]);
 
-  return Check;
-}();
+    $("#".concat(_key2)).on('input', function (e) {
+      config_config[_key2] = e.delegateTarget.value;
+    });
+  };
 
-var check = new Check();
+  for (var _key2 in config_config) {
+    var _ret = _loop(_key2);
+
+    if (_ret === "continue") continue;
+  }
+
+  for (var _k in config_functions) {
+    var e = $("#".concat(_k))[0]; // a && button
+
+    !!e && (e.onclick = config_functions[_k]);
+  } // 渲染数据
+
+
+  for (var _key3 in config_config) {
+    $("#".concat(_key3)).val(config_config[_key3]);
+  }
+
+  window.onbeforeunload = function () {
+    // todo
+    var bp_aria2_window = window.bp_aria2_window;
+
+    if (bp_aria2_window && !bp_aria2_window.closed) {
+      bp_aria2_window.close();
+    }
+  };
+}
+
+
+;// CONCATENATED MODULE: ./src/js/utils/api.js
+function api_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = api_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function api_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return api_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return api_arrayLikeToArray(o, minLen); }
+
+function api_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+
+
+
+
+
+
+function get_url_base(page, quality, video_format, success, error, request_type) {
+  var _success, _error;
+
+  if ('function' === typeof success) {
+    _success = function _success(e) {
+      // todo
+      success(e);
+    };
+  } else {
+    _success = function _success(res) {
+      return console.log(res);
+    };
+  }
+
+  if ('function' === typeof error) {
+    _error = function _error(e) {
+      message.Message.error('请求失败');
+      error(e);
+    };
+  } else {
+    _error = function _error(err) {
+      return console.error(err);
+    };
+  }
+
+  var vb = video.base();
+  var _ref = [vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type],
+      aid = _ref[0],
+      cid = _ref[1],
+      epid = _ref[2],
+      q = _ref[3],
+      type = _ref[4]; // 参数预处理
+
+  var format = video_format || config_config.format;
+  if (format === 'mp4' && type !== 'video') format = 'flv';
+  if (request_type === 'auto' && user.needReplace()) request_type = 'online';
+
+  var url_replace_cdn = function url_replace_cdn(url) {
+    if (config_config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
+      // 切换CDN
+      var url_tmp = url.split('/');
+      url_tmp[2] = hostMap[config_config.host_key];
+      url = url_tmp.join('/');
+    }
+
+    return url;
+  };
+
+  var base_api;
+  var ajax_obj = {
+    type: 'GET',
+    dataType: 'json'
+  };
+
+  if (request_type === 'auto' || request_type === 'local') {
+    var fnver, fnval;
+
+    if (type === 'cheese') {
+      base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
+
+      if (format === 'dash') {
+        fnver = 0, fnval = 80;
+      } else {
+        fnver = 1, fnval = 80;
+      }
+    } else {
+      base_api = type === 'video' ? 'https://api.bilibili.com/x/player/playurl' : 'https://api.bilibili.com/pgc/player/web/playurl';
+
+      if (format === 'dash') {
+        fnver = 0, fnval = 4048;
+      } else {
+        fnver = 0, fnval = 0;
+      }
+    }
+
+    base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
+    base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
+    ajax_obj.xhrFields = {
+      withCredentials: true
+    };
+  } else {
+    base_api = config_config.base_api;
+    base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
+    var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+        auth_id = _ref2[0],
+        auth_sec = _ref2[1];
+
+    if (config_config.auth === '1' && auth_id && auth_sec) {
+      base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
+      !!page && (base_api += '&s');
+    }
+  }
+
+  ajax_obj.url = base_api;
+  (0,ajax.ajax)(ajax_obj).then(function (res) {
+    var data;
+
+    if (!res.code) {
+      data = res.result || res.data;
+    }
+
+    if (!data) {
+      if (request_type === 'auto') {
+        get_url_base(page, quality, video_format, success, error, 'online');
+        return;
+      } // online
+
+
+      res.url && (res.url = url_replace_cdn(res.url));
+      res.video && (res.video = url_replace_cdn(res.video));
+      res.audio && (res.audio = url_replace_cdn(res.audio));
+
+      _success(res);
+
+      return;
+    }
+
+    if (data.dash) {
+      var result = {
+        'code': 0,
+        'quality': data.quality,
+        'accept_quality': data.accept_quality,
+        'video': '',
+        'audio': ''
+      };
+      var videos = data.dash.video;
+
+      for (var i = 0; i < videos.length; i++) {
+        var _video = videos[i];
+
+        if (_video.id <= q) {
+          result.video = url_replace_cdn(_video.base_url);
+          result.audio = url_replace_cdn(data.dash.audio[0].base_url);
+          break;
+        }
+      }
+
+      _success(result);
+
+      return;
+    }
+
+    _success({
+      'code': 0,
+      'quality': data.quality,
+      'accept_quality': data.accept_quality,
+      'url': url_replace_cdn(data.durl[0].url)
+    });
+  }).catch(function (err) {
+    return _error(err);
+  });
+}
+
+function _get_subtitle(p, callback) {
+  var to_blob_url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  var video_base = video.base();
+  var _ref3 = [video_base.aid(p), video_base.cid(p), video_base.epid(p)],
+      aid = _ref3[0],
+      cid = _ref3[1],
+      epid = _ref3[2];
+  (0,ajax.ajax)({
+    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
+    dataType: 'json'
+  }).then(function (res) {
+    // todo
+    if (!res.code && res.data.subtitle.subtitles[0]) {
+      (0,ajax.ajax)({
+        url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
+        dataType: 'json'
+      }).then(function (res) {
+        // json -> webvtt -> blob_url
+        var datas = res.body || [{
+          from: 0,
+          to: 0,
+          content: ''
+        }];
+        var webvtt = 'WEBVTT\n\n';
+
+        var _iterator = api_createForOfIteratorHelper(datas),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var data = _step.value;
+            var a = new Date((parseInt(data.from) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.from.toString().split('.')[1] || '000').padEnd(3, '0');
+            var b = new Date((parseInt(data.to) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0');
+            webvtt += "".concat(a, " --> ").concat(b, "\n").concat(data.content.trim(), "\n\n");
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+
+        if (to_blob_url) {
+          callback(URL.createObjectURL(new Blob([webvtt], {
+            type: 'text/vtt'
+          })));
+        } else {
+          callback(webvtt);
+        }
+      }).catch(callback);
+    } else {
+      callback();
+    }
+  }).catch(callback);
+}
+
+function get_subtitle_data(p, callback) {
+  _get_subtitle(p, callback, false);
+}
+
+function get_subtitle_url(p, callback) {
+  _get_subtitle(p, callback, true);
+}
+
+function get_season(epid) {
+  (0,ajax.ajax)({
+    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
+    xhrFields: {
+      withCredentials: true
+    },
+    dataType: 'json'
+  }).then(function (res) {
+    if (res.code) {
+      message.Message.warning('获取剧集信息失败');
+      return;
+    }
+
+    window.bp_episodes = res.data.episodes || null;
+  });
+}
+
+var api = {
+  get_url: function get_url(success, error) {
+    var request_type = config_config.request_type;
+    var format = config_config.format;
+    get_url_base(0, 0, format, success, error, request_type);
+  },
+  get_urls: function get_urls(page, quality, format, success, error) {
+    var request_type = config_config.request_type;
+    get_url_base(page, quality, format, success, error, request_type);
+  },
+  get_subtitle_url: get_subtitle_url,
+  get_subtitle_data: get_subtitle_data,
+  get_season: get_season
+};
 ;// CONCATENATED MODULE: ./src/html/arc_toolbar.html
 // Module
-var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
+var arc_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
 // Exports
-/* harmony default export */ var arc_toolbar = (code);
+/* harmony default export */ var arc_toolbar = (arc_toolbar_code);
 ;// CONCATENATED MODULE: ./src/html/video_toolbar.html
 // Module
 var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
@@ -2895,927 +2676,6 @@ var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16
 var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\n  scrollshow=\"true\">\n  <div id=\"setting_btn\" class=\"like-info\">\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\n  </div>\n  <div id=\"bilibili_parse\" class=\"like-info\">\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\n  </div>\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\n  </div>\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\n  </div>\n  <div id=\"video_download_all\" class=\"like-info\">\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\n  </div>\n  <div class=\"more\">更多<div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n  <style>\n    .tool-bar .more {\n      float: right;\n      cursor: pointer;\n      color: #757575;\n      font-size: 16px;\n      transition: all .3s;\n      position: relative;\n      text-align: center\n    }\n\n    .tool-bar .more:hover .more-ops-list {\n      display: block\n    }\n\n    .tool-bar:after {\n      display: block;\n      content: \"\";\n      clear: both\n    }\n\n    .more-ops-list {\n      display: none;\n      position: absolute;\n      width: 80px;\n      left: -65px;\n      z-index: 30;\n      text-align: center;\n      padding: 10px 0;\n      background: #fff;\n      border: 1px solid #e5e9ef;\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n      border-radius: 2px;\n      font-size: 14px;\n      color: #222\n    }\n\n    .more-ops-list li {\n      position: relative;\n      height: 34px;\n      line-height: 34px;\n      cursor: pointer;\n      transition: all .3s\n    }\n\n    .more-ops-list li:hover {\n      color: #00a1d6;\n      background: #e7e7e7\n    }\n  </style>\n</div>\n";
 // Exports
 /* harmony default export */ var toolbar = (toolbar_code);
-;// CONCATENATED MODULE: external "Vue"
-var external_Vue_namespaceObject = Vue;
-var external_Vue_default = /*#__PURE__*/__webpack_require__.n(external_Vue_namespaceObject);
-;// CONCATENATED MODULE: ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=template&id=15d0b82e&scoped=true&
-var render = function () {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "bp_config" } }, [
-    _c("div", { staticClass: "config-mark" }),
-    _vm._v(" "),
-    _c("div", { staticClass: "config-bg" }, [
-      _c("span", { staticStyle: { "font-size": "20px" } }, [
-        _c("b", [_vm._v("bilibili视频下载 参数设置")]),
-        _vm._v(" "),
-        _c("b", [
-          _c(
-            "a",
-            {
-              attrs: { href: "javascript:;" },
-              on: {
-                click: function ($event) {
-                  return _vm.reset_config()
-                },
-              },
-            },
-            [_vm._v(" [重置] ")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticStyle: { "text-decoration": "underline" },
-              attrs: { href: "javascript:;" },
-              on: {
-                click: function ($event) {
-                  return _vm.show_help()
-                },
-              },
-            },
-            [_vm._v("<通知/帮助>")]
-          ),
-        ]),
-      ]),
-      _vm._v(" "),
-      _c("div", { staticStyle: { margin: "2% 0" } }, [
-        _c("label", [_vm._v("请求地址：")]),
-        _vm._v(" "),
-        _c("input", {
-          staticStyle: { width: "30%" },
-          domProps: { value: _vm.config.base_api },
-          on: {
-            input: function ($event) {
-              _vm.config.base_api = $event.target.value
-            },
-          },
-        }),
-        _vm._v("    \n      "),
-        _c("label", [_vm._v("请求方式：")]),
-        _vm._v(" "),
-        _c(
-          "select",
-          {
-            domProps: { value: _vm.config.request_type },
-            on: {
-              input: function ($event) {
-                _vm.config.request_type = $event.target.value
-              },
-            },
-          },
-          [
-            _c("option", { attrs: { value: "auto" } }, [_vm._v("自动判断")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "local" } }, [_vm._v("本地请求")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "online" } }, [_vm._v("远程请求")]),
-          ]
-        ),
-        _c("br"),
-        _vm._v(" "),
-        _c("small", [_vm._v("注意：普通使用请勿修改；默认使用混合请求")]),
-      ]),
-      _vm._v(" "),
-      _c("div", { staticStyle: { margin: "2% 0" } }, [
-        _c("label", [_vm._v("视频格式：")]),
-        _vm._v(" "),
-        _c(
-          "select",
-          {
-            domProps: { value: _vm.config.format },
-            on: {
-              input: function ($event) {
-                _vm.config.format = $event.target.value
-              },
-            },
-          },
-          [
-            _c("option", { attrs: { value: "flv" } }, [_vm._v("FLV")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "dash" } }, [_vm._v("DASH")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "mp4" } }, [_vm._v("MP4")]),
-          ]
-        ),
-        _vm._v("    \n      "),
-        _c("label", [_vm._v("切换CDN：")]),
-        _vm._v(" "),
-        _c(
-          "select",
-          {
-            domProps: { value: _vm.config.host_key },
-            on: {
-              input: function ($event) {
-                _vm.config.host_key = $event.target.value
-              },
-            },
-          },
-          _vm._l(_vm.host_key_options, function (e) {
-            return _c("option", { key: e.text, domProps: { value: e.value } }, [
-              _vm._v("\n          " + _vm._s(e.text) + "\n        "),
-            ])
-          }),
-          0
-        ),
-        _c("br"),
-        _vm._v(" "),
-        _c("small", [
-          _vm._v(
-            "注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）"
-          ),
-        ]),
-      ]),
-      _vm._v(" "),
-      _c("div", { staticStyle: { margin: "2% 0" } }, [
-        _c("label", [_vm._v("下载方式：")]),
-        _vm._v(" "),
-        _c(
-          "select",
-          {
-            domProps: { value: _vm.config.download_type },
-            on: {
-              input: function ($event) {
-                _vm.config.download_type = $event.target.value
-              },
-            },
-          },
-          [
-            _c("option", { attrs: { value: "a" } }, [_vm._v("URL链接")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "web" } }, [_vm._v("Web浏览器")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "blob" } }, [_vm._v("Blob请求")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "rpc" } }, [_vm._v("RPC接口")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "aria" } }, [_vm._v("Aria命令")]),
-          ]
-        ),
-        _vm._v("    \n      "),
-        _c("label", [_vm._v("AriaNg地址：")]),
-        _vm._v(" "),
-        _c("input", {
-          staticStyle: { width: "30%" },
-          domProps: { value: _vm.config.ariang_host },
-          on: {
-            input: function ($event) {
-              _vm.config.ariang_host = $event.target.value
-            },
-          },
-        }),
-        _c("br"),
-        _vm._v(" "),
-        _c("small", [
-          _vm._v(
-            "提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载"
-          ),
-        ]),
-      ]),
-      _vm._v(" "),
-      _c("div", { staticStyle: { margin: "2% 0" } }, [
-        _c("label", [_vm._v("RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]")]),
-        _c("br"),
-        _vm._v(" "),
-        _c("input", {
-          staticStyle: { width: "25%" },
-          domProps: { value: _vm.config.rpc_domain },
-          on: {
-            input: function ($event) {
-              _vm.config.rpc_domain = $event.target.value
-            },
-          },
-        }),
-        _vm._v("\n      :\n      "),
-        _c("input", {
-          staticStyle: { width: "10%" },
-          domProps: { value: _vm.config.rpc_port },
-          on: {
-            input: function ($event) {
-              _vm.config.rpc_port = $event.target.value
-            },
-          },
-        }),
-        _vm._v("\n      |\n      "),
-        _c("input", {
-          staticStyle: { width: "15%" },
-          attrs: { placeholder: "没有密钥不用填" },
-          domProps: { value: _vm.config.rpc_token },
-          on: {
-            input: function ($event) {
-              _vm.config.rpc_token = $event.target.value
-            },
-          },
-        }),
-        _vm._v("\n      |\n      "),
-        _c("input", {
-          staticStyle: { width: "20%" },
-          attrs: { placeholder: "留空使用默认目录" },
-          domProps: { value: _vm.config.rpc_dir },
-          on: {
-            input: function ($event) {
-              _vm.config.rpc_dir = $event.target.value
-            },
-          },
-        }),
-        _c("br"),
-        _vm._v(" "),
-        _c("small", [
-          _vm._v(
-            "注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数"
-          ),
-        ]),
-      ]),
-      _vm._v(" "),
-      _c("div", { staticStyle: { margin: "2% 0" } }, [
-        _c("label", [_vm._v("强制换源：")]),
-        _vm._v(" "),
-        _c(
-          "select",
-          {
-            domProps: { value: _vm.config.replace_force },
-            on: {
-              input: function ($event) {
-                _vm.config.replace_force = $event.target.value
-              },
-            },
-          },
-          [
-            _c("option", { attrs: { value: "0" } }, [_vm._v("关闭")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "1" } }, [_vm._v("开启")]),
-          ]
-        ),
-        _vm._v("\n          "),
-        _c("label", [_vm._v("弹幕速度：")]),
-        _vm._v(" "),
-        _c("input", {
-          staticStyle: { width: "5%" },
-          domProps: { value: _vm.config.danmaku_speed },
-          on: {
-            input: function ($event) {
-              _vm.config.danmaku_speed = $event.target.value
-            },
-          },
-        }),
-        _vm._v("\n      s     "),
-        _c("label", [_vm._v("弹幕字号：")]),
-        _vm._v(" "),
-        _c("input", {
-          staticStyle: { width: "5%" },
-          domProps: { value: _vm.config.danmaku_fontsize },
-          on: {
-            input: function ($event) {
-              _vm.config.danmaku_fontsize = $event.target.value
-            },
-          },
-        }),
-        _vm._v("\n      px\n      "),
-        _c("br"),
-        _vm._v(" "),
-        _c("small", [
-          _vm._v(
-            "说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间"
-          ),
-        ]),
-      ]),
-      _vm._v(" "),
-      _c("div", { staticStyle: { margin: "2% 0" } }, [
-        _c("label", [_vm._v("自动下载：")]),
-        _vm._v(" "),
-        _c(
-          "select",
-          {
-            domProps: { value: _vm.config.auto_download },
-            on: {
-              input: function ($event) {
-                _vm.config.auto_download = $event.target.value
-              },
-            },
-          },
-          [
-            _c("option", { attrs: { value: "0" } }, [_vm._v("关闭")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "1" } }, [_vm._v("开启")]),
-          ]
-        ),
-        _c("br"),
-        _vm._v(" "),
-        _c("small", [_vm._v("说明：请求地址成功后将自动点击下载视频按钮")]),
-      ]),
-      _vm._v(" "),
-      _c("div", { staticStyle: { margin: "2% 0" } }, [
-        _c("label", [_vm._v("授权状态：")]),
-        _vm._v(" "),
-        _c(
-          "select",
-          {
-            attrs: { id: "auth", disabled: "" },
-            domProps: { value: _vm.config.auth },
-          },
-          [
-            _c("option", { attrs: { value: "0" } }, [_vm._v("未授权")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "1" } }, [_vm._v("已授权")]),
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "a",
-          {
-            staticClass: "setting-context",
-            attrs: { href: "javascript:;" },
-            on: {
-              click: function ($event) {
-                return _vm.show_login()
-              },
-            },
-          },
-          [_vm._v("账号授权")]
-        ),
-        _vm._v(" "),
-        _c(
-          "a",
-          {
-            staticClass: "setting-context",
-            attrs: { href: "javascript:;" },
-            on: {
-              click: function ($event) {
-                return _vm.show_logout()
-              },
-            },
-          },
-          [_vm._v("取消授权")]
-        ),
-        _vm._v(" "),
-        _c(
-          "a",
-          {
-            staticClass: "setting-context",
-            attrs: { href: "javascript:;" },
-            on: {
-              click: function ($event) {
-                return _vm.show_login("0")
-              },
-            },
-          },
-          [_vm._v("手动授权")]
-        ),
-        _vm._v(" "),
-        _c(
-          "a",
-          {
-            staticClass: "setting-context",
-            attrs: { href: "javascript:;" },
-            on: {
-              click: function ($event) {
-                return _vm.show_login_help()
-              },
-            },
-          },
-          [_vm._v("这是什么？")]
-        ),
-      ]),
-      _vm._v(" "),
-      _c("br"),
-      _vm._v(" "),
-      _c("div", { staticStyle: { "text-align": "right" } }, [
-        _c(
-          "button",
-          {
-            staticClass: "setting-button",
-            on: {
-              click: function ($event) {
-                return _vm.save_config()
-              },
-            },
-          },
-          [_vm._v("确定")]
-        ),
-      ]),
-    ]),
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=template&id=15d0b82e&scoped=true&
-
-;// CONCATENATED MODULE: ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1[0].rules[0].use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=script&lang=js&
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-
-
-
-
-
-
-var _require = __webpack_require__(/*! @/js/config.js */ "./src/js/config.js"),
-    configvue_type_script_lang_js_config = _require.config,
-    hostMap = _require.hostMap;
-
-var default_config = Object.assign({}, configvue_type_script_lang_js_config); // 浅拷贝
-
-/* harmony default export */ var configvue_type_script_lang_js_ = ({
-  data: function data() {
-    var options = [];
-
-    for (var k in hostMap) {
-      options.push({
-        text: hostMap[k],
-        value: k
-      });
-    }
-
-    return {
-      config: configvue_type_script_lang_js_config,
-      host_key_options: options,
-      help_clicked: false
-    };
-  },
-  methods: {
-    save_config: function save_config() {
-      var old_config = JSON.parse(store.get("config_str"));
-      store.set("config_str", JSON.stringify(configvue_type_script_lang_js_config)); // hide
-
-      $("#bp_config").hide();
-      $("#bp_config").css("opacity", 0);
-      ui_scroll.scroll.show(); // 判断是否需要重新请求
-
-      for (var _i = 0, _arr = ["base_api", "format", "auth"]; _i < _arr.length; _i++) {
-        var key = _arr[_i];
-
-        if (configvue_type_script_lang_js_config[key] !== old_config[key]) {
-          $("#video_download").hide();
-          $("#video_download_2").hide();
-          break;
-        }
-      }
-
-      if (configvue_type_script_lang_js_config.host_key !== old_config.host_key) {
-        check.refresh();
-        $("#video_url").attr("href", "#");
-        $("#video_url_2").attr("href", "#");
-      } // 判断RPC配置情况
-
-
-      if (configvue_type_script_lang_js_config.rpc_domain !== old_config.rpc_domain) {
-        if (!(configvue_type_script_lang_js_config.rpc_domain.match("https://") || configvue_type_script_lang_js_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
-          message.MessageBox.alert("检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；" + "请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；" + "配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！", function () {
-            Download.open_ariang({
-              domain: configvue_type_script_lang_js_config.rpc_domain,
-              port: configvue_type_script_lang_js_config.rpc_port,
-              token: configvue_type_script_lang_js_config.rpc_token
-            });
-          });
-        }
-      } // 更新弹幕设置
-
-
-      for (var _i2 = 0, _arr2 = ["danmaku_speed", "danmaku_fontsize"]; _i2 < _arr2.length; _i2++) {
-        var _key = _arr2[_i2];
-
-        if (configvue_type_script_lang_js_config[_key] !== old_config[_key]) {
-          player.danmaku.config();
-          break;
-        }
-      } // ...
-
-    },
-    reset_config: function reset_config() {
-      for (var key in default_config) {
-        if (key === "auth") {
-          continue;
-        }
-
-        this.config[key] = default_config[key];
-      }
-    },
-    show_help: function show_help() {
-      var _this = this;
-
-      if (this.help_clicked) {
-        message.Message.miaow();
-        return;
-      }
-
-      this.help_clicked = true;
-      (0,ajax.ajax)({
-        url: "".concat(configvue_type_script_lang_js_config.base_api, "/auth/v2/?act=help"),
-        dataType: "text"
-      }).then(function (res) {
-        if (res) {
-          message.MessageBox.alert(res);
-        } else {
-          message.Message.warning("获取失败");
-        }
-      }).finally(function () {
-        return _this.help_clicked = false;
-      });
-    },
-    show_login: function show_login(auto) {
-      auth.login(auto);
-    },
-    show_logout: function show_logout() {
-      auth.logout();
-    },
-    show_login_help: function show_login_help() {
-      message.MessageBox.confirm("进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？", function () {
-        auth.login();
-      });
-    }
-  },
-  created: function created() {
-    var config_str = store.get("config_str");
-
-    if (config_str) {
-      // set config from cache
-      try {
-        var old_config = JSON.parse(config_str);
-
-        for (var key in old_config) {
-          if (Object.hasOwnProperty.call(configvue_type_script_lang_js_config, key)) {
-            configvue_type_script_lang_js_config[key] = old_config[key];
-          }
-        }
-      } catch (_unused) {
-        console.log("初始化脚本配置");
-      }
-    }
-
-    configvue_type_script_lang_js_config.auth = store.get("auth_id") ? "1" : "0";
-    store.set("config_str", JSON.stringify(configvue_type_script_lang_js_config));
-
-    window.onbeforeunload = function () {
-      // todo
-      var bp_aria2_window = window.bp_aria2_window;
-
-      if (bp_aria2_window && !bp_aria2_window.closed) {
-        bp_aria2_window.close();
-      }
-    };
-  }
-});
-;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=script&lang=js&
- /* harmony default export */ var template_configvue_type_script_lang_js_ = (configvue_type_script_lang_js_); 
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
-var injectStylesIntoStyleTag = __webpack_require__("./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-var injectStylesIntoStyleTag_default = /*#__PURE__*/__webpack_require__.n(injectStylesIntoStyleTag);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleDomAPI.js
-var styleDomAPI = __webpack_require__("./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-var styleDomAPI_default = /*#__PURE__*/__webpack_require__.n(styleDomAPI);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertBySelector.js
-var insertBySelector = __webpack_require__("./node_modules/style-loader/dist/runtime/insertBySelector.js");
-var insertBySelector_default = /*#__PURE__*/__webpack_require__.n(insertBySelector);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js
-var setAttributesWithoutAttributes = __webpack_require__("./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-var setAttributesWithoutAttributes_default = /*#__PURE__*/__webpack_require__.n(setAttributesWithoutAttributes);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertStyleElement.js
-var insertStyleElement = __webpack_require__("./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleElement);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
-var styleTagTransform = __webpack_require__("./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&
-var configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_ = __webpack_require__("./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&");
-;// CONCATENATED MODULE: ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (styleTagTransform_default());
-options.setAttributes = (setAttributesWithoutAttributes_default());
-
-      options.insert = insertBySelector_default().bind(null, "head");
-    
-options.domAPI = (styleDomAPI_default());
-options.insertStyleElement = (insertStyleElement_default());
-
-var update = injectStylesIntoStyleTag_default()(configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_["default"], options);
-
-
-
-
-       /* harmony default export */ var template_configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_ = (configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_["default"] && configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_["default"].locals ? configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_["default"].locals : undefined);
-
-;// CONCATENATED MODULE: ./src/template/config.vue?vue&type=style&index=0&id=15d0b82e&scoped=true&lang=css&
-
-;// CONCATENATED MODULE: ./node_modules/vue-loader/lib/runtime/componentNormalizer.js
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file (except for modules).
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-function normalizeComponent (
-  scriptExports,
-  render,
-  staticRenderFns,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier, /* server only */
-  shadowMode /* vue-cli only */
-) {
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (render) {
-    options.render = render
-    options.staticRenderFns = staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = 'data-v-' + scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = shadowMode
-      ? function () {
-        injectStyles.call(
-          this,
-          (options.functional ? this.parent : this).$root.$options.shadowRoot
-        )
-      }
-      : injectStyles
-  }
-
-  if (hook) {
-    if (options.functional) {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functional component in vue file
-      var originalRender = options.render
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return originalRender(h, context)
-      }
-    } else {
-      // inject component registration as beforeCreate hook
-      var existing = options.beforeCreate
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    }
-  }
-
-  return {
-    exports: scriptExports,
-    options: options
-  }
-}
-
-;// CONCATENATED MODULE: ./src/template/config.vue
-
-
-
-;
-
-
-/* normalize component */
-
-var component = normalizeComponent(
-  template_configvue_type_script_lang_js_,
-  render,
-  staticRenderFns,
-  false,
-  null,
-  "15d0b82e",
-  null
-  
-)
-
-component.options.__file = "src/template/config.vue"
-/* harmony default export */ var template_config = (component.exports);
 ;// CONCATENATED MODULE: ./src/js/main.js
 function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3839,13 +2699,12 @@ function main_createClass(Constructor, protoProps, staticProps) { if (protoProps
 
 
 
-
 var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.2.1", " ").concat("77ee7b1", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.0", " ").concat("2f2f3d2", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3865,17 +2724,9 @@ var Main = /*#__PURE__*/function () {
       this.set_toolbar();
       var root_div = document.createElement('div');
       root_div.id = 'bp_root';
-      document.body.append(root_div);
-      var root = document.getElementById(root_div.id); // initConfig
+      document.body.append(root_div); // initConfig
 
-      var root_config = document.createElement('div');
-      root_config.id = 'root_config';
-      root.append(root_config);
-      new (external_Vue_default())({
-        render: function render(h) {
-          return h(template_config);
-        }
-      }).$mount("#".concat(root_config.id));
+      initConfig("#".concat(root_div.id));
       (0,message.initMessage)("#".concat(root_div.id));
       user.lazyInit();
       auth.initAuth();
@@ -3889,8 +2740,8 @@ var Main = /*#__PURE__*/function () {
         user.lazyInit(true); // init
         // set form by config
 
-        for (var key in config.config) {
-          $("#".concat(key)).val(config.config[key]);
+        for (var key in config_config) {
+          $("#".concat(key)).val(config_config[key]);
         } //show setting
 
 
@@ -3911,7 +2762,7 @@ var Main = /*#__PURE__*/function () {
         user.lazyInit(true); // init
 
         if (store.get('auth_id') && store.get('auth_sec')) {
-          if (config.config.download_type === 'rpc') {
+          if (config_config.download_type === 'rpc') {
             Download.download_all();
           } else {
             message.MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
@@ -3925,7 +2776,7 @@ var Main = /*#__PURE__*/function () {
         }
       });
       $('body').on('click', '#video_download', function () {
-        var type = config.config.download_type;
+        var type = config_config.download_type;
 
         if (type === 'web') {
           $('#video_url')[0].click();
@@ -3933,7 +2784,7 @@ var Main = /*#__PURE__*/function () {
           var _ref = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
               video_url = _ref[0],
               video_url_2 = _ref[1];
-          var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config.config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
+          var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
           message.MessageBox.alert(msg);
         } else if (type === 'aria') {
           var _ref2 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
@@ -3947,7 +2798,7 @@ var Main = /*#__PURE__*/function () {
           var code = "aria2c \"".concat(_video_url, "\" --out \"").concat(file_name, "\" ").concat(aria2_header),
               code_2 = "aria2c \"".concat(_video_url_, "\" --out \"").concat(file_name_2, "\" ").concat(aria2_header);
 
-          var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config.config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
+          var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config_config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
 
           !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
             $("#".concat(id)).select();
@@ -3966,7 +2817,7 @@ var Main = /*#__PURE__*/function () {
         }
       });
       $('body').on('click', '#video_download_2', function () {
-        var type = config.config.download_type;
+        var type = config_config.download_type;
 
         if (type === 'web') {
           $('#video_url_2')[0].click();
@@ -3995,29 +2846,29 @@ var Main = /*#__PURE__*/function () {
         var _video$get_quality = video.get_quality(),
             q = _video$get_quality.q;
 
-        api_url = "".concat(config.config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config.config.format, "&otype=json&_host=").concat(config.config.host_key, "&_req=").concat(config.config.request_type);
+        api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type);
         var _ref4 = [store.get('auth_id'), store.get('auth_sec')],
             auth_id = _ref4[0],
             auth_sec = _ref4[1];
 
-        if (config.config.auth === '1' && auth_id && auth_sec) {
+        if (config_config.auth === '1' && auth_id && auth_sec) {
           api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
         }
 
-        if (api_url === api_url_temp && config.config.request_type !== 'local') {
+        if (api_url === api_url_temp && config_config.request_type !== 'local') {
           message.Message.miaow();
           var url = $('#video_url').attr('href');
           var url_2 = $('#video_url_2').attr('href');
 
           if (url && url !== '#') {
             $('#video_download').show();
-            config.config.format === 'dash' && $('#video_download_2').show();
+            config_config.format === 'dash' && $('#video_download_2').show();
 
-            if (user.needReplace() || vb.is_limited() || config.config.replace_force === '1') {
+            if (user.needReplace() || vb.is_limited() || config_config.replace_force === '1') {
               !$('#bp_dplayer')[0] && player.replace_player(url, url_2);
             }
 
-            if (config.config.auto_download === '1') {
+            if (config_config.auto_download === '1') {
               $('#video_download').click();
             }
           }
@@ -4034,23 +2885,23 @@ var Main = /*#__PURE__*/function () {
             message.Message.success('请求成功');
             res.times && message.Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
 
-            var _url = config.config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://');
+            var _url = config_config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://');
 
-            var _url_ = config.config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#';
+            var _url_ = config_config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#';
 
             $('#video_url').attr('href', _url);
             $('#video_download').show();
 
-            if (config.config.format === 'dash') {
+            if (config_config.format === 'dash') {
               $('#video_url_2').attr('href', _url_);
               $('#video_download_2').show();
             }
 
-            if (user.needReplace() || vb.is_limited() || config.config.replace_force === '1') {
+            if (user.needReplace() || vb.is_limited() || config_config.replace_force === '1') {
               player.replace_player(_url, _url_);
             }
 
-            if (config.config.auto_download === '1') {
+            if (config_config.auto_download === '1') {
               $('#video_download').click();
             }
           }

@@ -1,7 +1,8 @@
-import { config } from '../config'
+import { config } from '../ui/config'
 import { ajax } from './ajax'
 import { api } from './api'
 import { video } from './video'
+import { DPlayer } from '../utils/runtime-lib'
 
 function get_bili_player_id() {
     if (!!$('#bilibiliPlayer')[0]) {

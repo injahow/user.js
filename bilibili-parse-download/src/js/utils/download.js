@@ -1,4 +1,4 @@
-import { config } from '../config'
+import { config } from '../ui/config'
 import { Message, MessageBox } from '../ui/message'
 import { ajax } from './ajax'
 import { api } from './api'

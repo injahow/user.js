@@ -4,8 +4,9 @@ import { player } from './utils/player'
 import { video } from './utils/video'
 import { Download } from './utils/download'
 import { scroll } from './ui/scroll'
+import { initConfig } from './ui/config'
 import { initMessage, Message, MessageBox } from './ui/message'
-import { config } from './config'
+import { config } from './ui/config'
 import { user } from './user'
 import { auth } from './auth'
 import { check } from './check'
@@ -14,8 +15,6 @@ import arc_toolbar_html from '../html/arc_toolbar.html'
 import video_toolbar_html from '../html/video_toolbar.html'
 import toolbar_html from '../html/toolbar.html'
 
-import Vue from 'vue'
-import ConfigVue from '../template/config.vue'
 
 class Main {
 
@@ -41,14 +40,8 @@ class Main {
         const root_div = document.createElement('div')
         root_div.id = 'bp_root'
         document.body.append(root_div)
-        const root = document.getElementById(root_div.id)
-
         // initConfig
-        const root_config = document.createElement('div')
-        root_config.id = 'root_config'
-        root.append(root_config)
-        new Vue({ render: h => h(ConfigVue) }).$mount(`#${root_config.id}`)
-
+        initConfig(`#${root_div.id}`)
         initMessage(`#${root_div.id}`)
 
         user.lazyInit()

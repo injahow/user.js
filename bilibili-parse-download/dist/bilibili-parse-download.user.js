@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.2.1
+// @version       2.3.0
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -19,9 +19,6 @@
 // @match         *://www.bilibili.com/cheese/play/ss*
 // @match         https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
 // @require       https://static.hdslb.com/js/jquery.min.js
-// @require       https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js
-// @require       https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js
-// @require       https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js
 // @icon          https://static.hdslb.com/images/favicon.ico
 // @compatible    chrome
 // @compatible    firefox
@@ -32,56 +29,7 @@
 (function() {
     "use strict";
     var __webpack_modules__ = {
-        834: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-            __webpack_require__.r(__webpack_exports__), __webpack_require__.d(__webpack_exports__, {
-                config: function() {
-                    return config;
-                },
-                hostMap: function() {
-                    return hostMap;
-                }
-            });
-            var config = {
-                base_api: "https://api.injahow.cn/bparse/",
-                request_type: "auto",
-                format: "flv",
-                host_key: "0",
-                replace_force: "0",
-                auth: "0",
-                download_type: "web",
-                rpc_domain: "http://localhost",
-                rpc_port: "16800",
-                rpc_token: "",
-                rpc_dir: "D:/",
-                ariang_host: "http://ariang.injahow.com/",
-                auto_download: "0",
-                danmaku_speed: "15",
-                danmaku_fontsize: "22"
-            }, hostMap = {
-                0: "关闭",
-                ks3: "upos-sz-mirrorks3.bilivideo.com",
-                ks3b: "upos-sz-mirrorks3b.bilivideo.com",
-                ks3c: "upos-sz-mirrorks3c.bilivideo.com",
-                ks32: "upos-sz-mirrorks32.bilivideo.com",
-                kodo: "upos-sz-mirrorkodo.bilivideo.com",
-                kodob: "upos-sz-mirrorkodob.bilivideo.com",
-                cos: "upos-sz-mirrorcos.bilivideo.com",
-                cosb: "upos-sz-mirrorcosb.bilivideo.com",
-                bos: "upos-sz-mirrorbos.bilivideo.com",
-                wcs: "upos-sz-mirrorwcs.bilivideo.com",
-                wcsb: "upos-sz-mirrorwcsb.bilivideo.com",
-                hw: "upos-sz-mirrorhw.bilivideo.com",
-                hwb: "upos-sz-mirrorhwb.bilivideo.com",
-                upbda2: "upos-sz-upcdnbda2.bilivideo.com",
-                upws: "upos-sz-upcdnws.bilivideo.com",
-                uptx: "upos-sz-upcdntx.bilivideo.com",
-                uphw: "upos-sz-upcdnhw.bilivideo.com",
-                js: "upos-tf-all-js.bilivideo.com",
-                hk: "cn-hk-eq-bcache-01.bilivideo.com",
-                akamai: "upos-hz-mirrorakam.akamaized.net"
-            };
-        },
-        151: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+        99: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
             __webpack_require__.d(__webpack_exports__, {
                 v0: function() {
                     return Message;
@@ -93,7 +41,7 @@
                     return initMessage;
                 }
             });
-            var ui_scroll = __webpack_require__(543), message = '<div class="message-bg"></div> <div id="message_box"> <div class="message-box-mark"></div> <div class="message-box-bg"> <span style="font-size:20px"><b>提示：</b></span> <div id="message_box_context" style="margin:2% 0">...</div><br/><br/> <div class="message-box-btn"> <button name="affirm">确定</button> <button name="cancel">取消</button> </div> </div> </div> <style>.message-bg{position:fixed;float:right;right:0;top:2%;z-index:30000}.message{margin-bottom:15px;padding:2% 2%;width:300px;display:flex;margin-top:-70px;opacity:0}.message-success{background-color:#dfd;border-left:6px solid #4caf50}.message-error{background-color:#fdd;border-left:6px solid #f44336}.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de}.message-warning{background-color:#ffc;border-left:6px solid #ffeb3b}.message-context{font-size:21px;word-wrap:break-word;word-break:break-all}.message-context p{margin:0}#message_box{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:20000}.message-box-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;z-index:20001}.message-box-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:20000}.message-box-btn{text-align:right}.message-box-btn button{margin:0 5px;width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}.message-box-btn button:hover{background:#59f}</style> ';
+            var ui_scroll = __webpack_require__(537), message = '<div class="message-bg"></div> <div id="message_box"> <div class="message-box-mark"></div> <div class="message-box-bg"> <span style="font-size:20px"><b>提示：</b></span> <div id="message_box_context" style="margin:2% 0">...</div><br/><br/> <div class="message-box-btn"> <button name="affirm">确定</button> <button name="cancel">取消</button> </div> </div> </div> <style>.message-bg{position:fixed;float:right;right:0;top:2%;z-index:30000}.message{margin-bottom:15px;padding:2% 2%;width:300px;display:flex;margin-top:-70px;opacity:0}.message-success{background-color:#dfd;border-left:6px solid #4caf50}.message-error{background-color:#fdd;border-left:6px solid #f44336}.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de}.message-warning{background-color:#ffc;border-left:6px solid #ffeb3b}.message-context{font-size:21px;word-wrap:break-word;word-break:break-all}.message-context p{margin:0}#message_box{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:20000}.message-box-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;z-index:20001}.message-box-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:20000}.message-box-btn{text-align:right}.message-box-btn button{margin:0 5px;width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}.message-box-btn button:hover{background:#59f}</style> ';
             function initMessage(el) {
                 el && $(el)[0] ? $(el).append(message) : $("body").append(message);
             }
@@ -167,7 +115,7 @@
                 }
             };
         },
-        543: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+        537: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
             __webpack_require__.d(__webpack_exports__, {
                 A: function() {
                     return scroll;
@@ -182,31 +130,46 @@
                 }
             };
         },
-        907: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+        866: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
             __webpack_require__.d(__webpack_exports__, {
                 h: function() {
                     return ajax;
+                },
+                j: function() {
+                    return _ajax;
                 }
             });
-            var _ui_message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(151);
+            var _ui_message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(99);
             function ajax(obj) {
                 return new Promise((function(resolve, reject) {
                     obj.success = function(res) {
-                        res.code && _ui_message__WEBPACK_IMPORTED_MODULE_0__.v0.warning("".concat(res.message || "CODE:".concat(res.code))), 
+                        res && res.code && _ui_message__WEBPACK_IMPORTED_MODULE_0__.v0.warning("".concat(res.message || "CODE:".concat(res.code))), 
                         resolve(res);
                     }, obj.error = function(err) {
                         _ui_message__WEBPACK_IMPORTED_MODULE_0__.v0.error("网络异常"), reject(err);
                     }, $.ajax(obj);
                 }));
             }
+            function _ajax(obj) {
+                return new Promise((function(resolve, reject) {
+                    obj.success || (obj.success = function(res) {
+                        resolve(res);
+                    }), obj.error || (obj.error = function(err) {
+                        reject(err);
+                    }), $.ajax(obj);
+                }));
+            }
         },
-        870: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+        711: function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
             __webpack_require__.d(__webpack_exports__, {
-                $: function() {
+                $c: function() {
                     return JSZip;
+                },
+                bc: function() {
+                    return DPlayer;
                 }
             });
-            var _ajax__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(907);
+            var _ajax__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(866);
             function _typeof(obj) {
                 return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
                     return typeof obj;
@@ -551,255 +514,119 @@
             }
             var RuntimeLib = function() {
                 function RuntimeLib(config) {
-                    _classCallCheck(this, RuntimeLib), this.config = config, this.moduleAsync;
+                    _classCallCheck(this, RuntimeLib), this.config = config, this.moduleAsync, this.anyResolved = !1;
                 }
                 return _createClass(RuntimeLib, [ {
                     key: "getModulePromise",
                     value: function getModulePromise() {
-                        var _this = this;
+                        var _this = this, _this$config = this.config, urls = _this$config.urls, getModule = _this$config.getModule, errs = [], promises = urls.map((function(url) {
+                            return {
+                                url: url,
+                                promise: (0, _ajax__WEBPACK_IMPORTED_MODULE_0__.j)({
+                                    url: url,
+                                    type: "GET",
+                                    dataType: "text",
+                                    cache: !0,
+                                    error: function error() {
+                                        return null;
+                                    }
+                                })
+                            };
+                        })), len = promises.length;
                         return new Promise((function(resolve, reject) {
-                            try {
-                                var _this$config = _this.config, url = _this$config.url, getModule = _this$config.getModule;
-                                _this.moduleAsync || (_this.moduleAsync = _asyncToGenerator(_regeneratorRuntime().mark((function _callee() {
-                                    var code;
-                                    return _regeneratorRuntime().wrap((function _callee$(_context) {
-                                        for (;;) switch (_context.prev = _context.next) {
-                                          case 0:
-                                            return console.log("[Runtime Library] Start download from ".concat(url)), _context.next = 3, 
-                                            (0, _ajax__WEBPACK_IMPORTED_MODULE_0__.h)({
-                                                url: url,
-                                                type: "GET",
-                                                dataType: "text"
-                                            });
+                            _this.moduleAsync && resolve(getModule(window));
+                            var i = 0;
+                            promises.forEach((function(_ref) {
+                                var url = _ref.url, promise = _ref.promise;
+                                try {
+                                    setTimeout((function() {
+                                        _this.moduleAsync = _asyncToGenerator(_regeneratorRuntime().mark((function _callee() {
+                                            var code;
+                                            return _regeneratorRuntime().wrap((function _callee$(_context) {
+                                                for (;;) switch (_context.prev = _context.next) {
+                                                  case 0:
+                                                    if (!_this.anyResolved) {
+                                                        _context.next = 2;
+                                                        break;
+                                                    }
+                                                    return _context.abrupt("return");
 
-                                          case 3:
-                                            return code = _context.sent, console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length)), 
-                                            function runEval() {
-                                                return eval(code);
-                                            }.bind(window)(), _context.abrupt("return", getModule(window));
+                                                  case 2:
+                                                    return console.log("[Runtime Library] Start download from ".concat(url)), _context.next = 5, 
+                                                    promise;
 
-                                          case 7:
-                                          case "end":
-                                            return _context.stop();
-                                        }
-                                    }), _callee);
-                                })))());
-                                var library = _this.moduleAsync;
-                                resolve(library);
-                            } catch (err) {
-                                console.error(err), reject(err);
-                            }
+                                                  case 5:
+                                                    if (code = _context.sent, code && !_this.anyResolved) {
+                                                        _context.next = 8;
+                                                        break;
+                                                    }
+                                                    return _context.abrupt("return");
+
+                                                  case 8:
+                                                    _this.anyResolved = !0, console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length)), 
+                                                    function runEval() {
+                                                        return eval(code);
+                                                    }.bind(window)(), resolve(getModule(window));
+
+                                                  case 12:
+                                                  case "end":
+                                                    return _context.stop();
+                                                }
+                                            }), _callee);
+                                        })))();
+                                    }), 1e3 * i++);
+                                } catch (err) {
+                                    if (_this.anyResolved) return;
+                                    errs.push(err), 0 == --len && (console.error(errs), reject(errs));
+                                }
+                            }));
                         }));
                     }
                 } ]), RuntimeLib;
-            }(), JSZip;
+            }(), JSZip, flvjs, DPlayer;
             new RuntimeLib({
-                url: "https://cdn.jsdelivr.net/npm/jszip@3.9.1/dist/jszip.min.js",
+                urls: [ "https://cdn.jsdelivr.net/npm/jszip@3.10.0/dist/jszip.min.js", "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js", "https://cdn.bootcdn.net/ajax/libs/jszip/3.10.0/jszip.min.js", "https://cdn.staticfile.org/jszip/3.10.0/jszip.min.js" ],
                 getModule: function getModule(window) {
                     return window.JSZip;
                 }
             }).getModulePromise().then((function(module) {
                 return JSZip = module;
+            })), new RuntimeLib({
+                urls: [ "https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js", "https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js", "https://cdn.bootcdn.net/ajax/libs/flv.js/1.6.2/flv.min.js", "https://cdn.staticfile.org/flv.js/1.6.2/flv.min.js" ],
+                getModule: function getModule(window) {
+                    return window.flvjs;
+                }
+            }).getModulePromise().then((function(module) {
+                return flvjs = module;
+            })), new RuntimeLib({
+                urls: [ "https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js", "https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js", "https://cdn.bootcdn.net/ajax/libs/dplayer/1.26.0/DPlayer.min.js", "https://cdn.staticfile.org/dplayer/1.26.0/DPlayer.min.js" ],
+                getModule: function getModule(window) {
+                    return window.DPlayer;
+                }
+            }).getModulePromise().then((function(module) {
+                return DPlayer = module;
             }));
-        },
-        499: function(module, __webpack_exports__, __webpack_require__) {
-            var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(81), _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = __webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__), _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645), ___CSS_LOADER_EXPORT___ = __webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__)()(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default());
-            ___CSS_LOADER_EXPORT___.push([ module.id, "\n#bp_config[data-v-15d0b82e] {\n  opacity: 0;\n  display: none;\n  position: fixed;\n  inset: 0px;\n  top: 0px;\n  left: 0px;\n  width: 100%;\n  height: 100%;\n  z-index: 10000;\n}\n.config-bg[data-v-15d0b82e] {\n  position: absolute;\n  background: rgb(255, 255, 255);\n  border-radius: 10px;\n  padding: 20px;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  width: 600px;\n  z-index: 10001;\n}\n.config-mark[data-v-15d0b82e] {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  top: 0;\n  left: 0;\n  background: rgba(0, 0, 0, 0.5);\n  z-index: 10000;\n}\n.setting-button[data-v-15d0b82e] {\n  width: 120px;\n  height: 40px;\n  border-width: 0px;\n  border-radius: 3px;\n  background: #1e90ff;\n  cursor: pointer;\n  outline: none;\n  color: white;\n  font-size: 17px;\n}\n.setting-button[data-v-15d0b82e]:hover {\n  background: #5599ff;\n}\n.setting-context[data-v-15d0b82e] {\n  margin: 0 1%;\n  color: blue;\n}\n.setting-context[data-v-15d0b82e]:hover {\n  color: red;\n}\n", "" ]), 
-            __webpack_exports__.Z = ___CSS_LOADER_EXPORT___;
-        },
-        645: function(module) {
-            module.exports = function(cssWithMappingToString) {
-                var list = [];
-                return list.toString = function toString() {
-                    return this.map((function(item) {
-                        var content = "", needLayer = void 0 !== item[5];
-                        return item[4] && (content += "@supports (".concat(item[4], ") {")), item[2] && (content += "@media ".concat(item[2], " {")), 
-                        needLayer && (content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {")), 
-                        content += cssWithMappingToString(item), needLayer && (content += "}"), item[2] && (content += "}"), 
-                        item[4] && (content += "}"), content;
-                    })).join("");
-                }, list.i = function i(modules, media, dedupe, supports, layer) {
-                    "string" == typeof modules && (modules = [ [ null, modules, void 0 ] ]);
-                    var alreadyImportedModules = {};
-                    if (dedupe) for (var k = 0; k < this.length; k++) {
-                        var id = this[k][0];
-                        null != id && (alreadyImportedModules[id] = !0);
-                    }
-                    for (var _k = 0; _k < modules.length; _k++) {
-                        var item = [].concat(modules[_k]);
-                        dedupe && alreadyImportedModules[item[0]] || (void 0 !== layer && (void 0 === item[5] || (item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}")), 
-                        item[5] = layer), media && (item[2] ? (item[1] = "@media ".concat(item[2], " {").concat(item[1], "}"), 
-                        item[2] = media) : item[2] = media), supports && (item[4] ? (item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}"), 
-                        item[4] = supports) : item[4] = "".concat(supports)), list.push(item));
-                    }
-                }, list;
-            };
-        },
-        81: function(module) {
-            module.exports = function(i) {
-                return i[1];
-            };
-        },
-        379: function(module) {
-            var stylesInDOM = [];
-            function getIndexByIdentifier(identifier) {
-                for (var result = -1, i = 0; i < stylesInDOM.length; i++) if (stylesInDOM[i].identifier === identifier) {
-                    result = i;
-                    break;
-                }
-                return result;
-            }
-            function modulesToDom(list, options) {
-                for (var idCountMap = {}, identifiers = [], i = 0; i < list.length; i++) {
-                    var item = list[i], id = options.base ? item[0] + options.base : item[0], count = idCountMap[id] || 0, identifier = "".concat(id, " ").concat(count);
-                    idCountMap[id] = count + 1;
-                    var indexByIdentifier = getIndexByIdentifier(identifier), obj = {
-                        css: item[1],
-                        media: item[2],
-                        sourceMap: item[3],
-                        supports: item[4],
-                        layer: item[5]
-                    };
-                    if (-1 !== indexByIdentifier) stylesInDOM[indexByIdentifier].references++, stylesInDOM[indexByIdentifier].updater(obj); else {
-                        var updater = addElementStyle(obj, options);
-                        options.byIndex = i, stylesInDOM.splice(i, 0, {
-                            identifier: identifier,
-                            updater: updater,
-                            references: 1
-                        });
-                    }
-                    identifiers.push(identifier);
-                }
-                return identifiers;
-            }
-            function addElementStyle(obj, options) {
-                var api = options.domAPI(options);
-                api.update(obj);
-                return function updater(newObj) {
-                    if (newObj) {
-                        if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) return;
-                        api.update(obj = newObj);
-                    } else api.remove();
-                };
-            }
-            module.exports = function(list, options) {
-                var lastIdentifiers = modulesToDom(list = list || [], options = options || {});
-                return function update(newList) {
-                    newList = newList || [];
-                    for (var i = 0; i < lastIdentifiers.length; i++) {
-                        var index = getIndexByIdentifier(lastIdentifiers[i]);
-                        stylesInDOM[index].references--;
-                    }
-                    for (var newLastIdentifiers = modulesToDom(newList, options), _i = 0; _i < lastIdentifiers.length; _i++) {
-                        var _index = getIndexByIdentifier(lastIdentifiers[_i]);
-                        0 === stylesInDOM[_index].references && (stylesInDOM[_index].updater(), stylesInDOM.splice(_index, 1));
-                    }
-                    lastIdentifiers = newLastIdentifiers;
-                };
-            };
-        },
-        569: function(module) {
-            var memo = {};
-            module.exports = function insertBySelector(insert, style) {
-                var target = function getTarget(target) {
-                    if (void 0 === memo[target]) {
-                        var styleTarget = document.querySelector(target);
-                        if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) try {
-                            styleTarget = styleTarget.contentDocument.head;
-                        } catch (e) {
-                            styleTarget = null;
-                        }
-                        memo[target] = styleTarget;
-                    }
-                    return memo[target];
-                }(insert);
-                if (!target) throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
-                target.appendChild(style);
-            };
-        },
-        216: function(module) {
-            module.exports = function insertStyleElement(options) {
-                var element = document.createElement("style");
-                return options.setAttributes(element, options.attributes), options.insert(element, options.options), 
-                element;
-            };
-        },
-        565: function(module, __unused_webpack_exports, __webpack_require__) {
-            module.exports = function setAttributesWithoutAttributes(styleElement) {
-                var nonce = __webpack_require__.nc;
-                nonce && styleElement.setAttribute("nonce", nonce);
-            };
-        },
-        795: function(module) {
-            module.exports = function domAPI(options) {
-                var styleElement = options.insertStyleElement(options);
-                return {
-                    update: function update(obj) {
-                        !function apply(styleElement, options, obj) {
-                            var css = "";
-                            obj.supports && (css += "@supports (".concat(obj.supports, ") {")), obj.media && (css += "@media ".concat(obj.media, " {"));
-                            var needLayer = void 0 !== obj.layer;
-                            needLayer && (css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {")), 
-                            css += obj.css, needLayer && (css += "}"), obj.media && (css += "}"), obj.supports && (css += "}");
-                            var sourceMap = obj.sourceMap;
-                            sourceMap && "undefined" != typeof btoa && (css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */")), 
-                            options.styleTagTransform(css, styleElement, options.options);
-                        }(styleElement, options, obj);
-                    },
-                    remove: function remove() {
-                        !function removeStyleElement(styleElement) {
-                            if (null === styleElement.parentNode) return !1;
-                            styleElement.parentNode.removeChild(styleElement);
-                        }(styleElement);
-                    }
-                };
-            };
-        },
-        589: function(module) {
-            module.exports = function styleTagTransform(css, styleElement) {
-                if (styleElement.styleSheet) styleElement.styleSheet.cssText = css; else {
-                    for (;styleElement.firstChild; ) styleElement.removeChild(styleElement.firstChild);
-                    styleElement.appendChild(document.createTextNode(css));
-                }
-            };
         }
     }, __webpack_module_cache__ = {};
     function __webpack_require__(moduleId) {
         var cachedModule = __webpack_module_cache__[moduleId];
         if (void 0 !== cachedModule) return cachedModule.exports;
         var module = __webpack_module_cache__[moduleId] = {
-            id: moduleId,
             exports: {}
         };
         return __webpack_modules__[moduleId](module, module.exports, __webpack_require__), 
         module.exports;
     }
-    __webpack_require__.n = function(module) {
-        var getter = module && module.__esModule ? function() {
-            return module.default;
-        } : function() {
-            return module;
-        };
-        return __webpack_require__.d(getter, {
-            a: getter
-        }), getter;
-    }, __webpack_require__.d = function(exports, definition) {
+    __webpack_require__.d = function(exports, definition) {
         for (var key in definition) __webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key) && Object.defineProperty(exports, key, {
             enumerable: !0,
             get: definition[key]
         });
     }, __webpack_require__.o = function(obj, prop) {
         return Object.prototype.hasOwnProperty.call(obj, prop);
-    }, __webpack_require__.r = function(exports) {
-        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(exports, Symbol.toStringTag, {
-            value: "Module"
-        }), Object.defineProperty(exports, "__esModule", {
-            value: !0
-        });
-    }, __webpack_require__.nc = void 0;
+    };
     var __webpack_exports__ = {};
     !function() {
-        var config = __webpack_require__(834);
         function _defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
@@ -831,7 +658,7 @@
                     localStorage.setItem(this.prefix + key, value);
                 }
             } ]), Store;
-        }(), store = new Store, message = __webpack_require__(151);
+        }(), store = new Store;
         function type() {
             return location.pathname.match("/cheese/play/") ? "cheese" : location.pathname.match("/medialist/play/") ? "medialist" : window.__INITIAL_STATE__ ? window.__INITIAL_STATE__.epInfo ? "bangumi" : window.__INITIAL_STATE__.videoData ? "video" : void 0 : "?";
         }
@@ -1066,43 +893,167 @@
                     quality_list.push(q);
                 })), quality_list) : [ "80", "64", "32", "16" ]);
             }
+        }, ajax = __webpack_require__(866), runtime_lib = __webpack_require__(711);
+        function request_danmaku(options, _cid) {
+            _cid ? (0, ajax.h)({
+                url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(_cid),
+                dataType: "text"
+            }).then((function(result) {
+                var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ""));
+                if (result_dom) if (result_dom.find("d")[0]) {
+                    var danmaku_data = result_dom.find("d").map((function(i, el) {
+                        var item = $(el), p = item.attr("p").split(","), type = 0;
+                        return "4" === p[1] ? type = 2 : "5" === p[1] && (type = 1), [ {
+                            author: "",
+                            time: parseFloat(p[0]),
+                            type: type,
+                            color: parseInt(p[3]),
+                            id: "",
+                            text: item.text()
+                        } ];
+                    })).get();
+                    options.success(danmaku_data), setTimeout((function() {
+                        danmaku_config();
+                    }), 100);
+                } else options.error("未发现弹幕"); else options.error("弹幕获取失败");
+            })).catch((function(_) {
+                options.error("弹幕请求异常");
+            })) : options.error("cid未知，无法获取弹幕");
+        }
+        function bili_video_tag() {
+            return $("bwp-video")[0] ? "bwp-video" : $('video[class!="dplayer-video dplayer-video-current"]')[0] ? 'video[class!="dplayer-video dplayer-video-current"]' : void 0;
+        }
+        function bili_video_stop() {
+            var bili_video = $(bili_video_tag())[0];
+            bili_video && (bili_video.pause(), bili_video.currentTime = 0);
+        }
+        function recover_player() {
+            if (window.bp_dplayer) {
+                var bili_video = $(bili_video_tag())[0];
+                bili_video && bili_video.removeEventListener("play", bili_video_stop, !1), window.bp_dplayer.destroy(), 
+                window.bp_dplayer = null, $("#bp_dplayer").remove(), window.bp_dplayer_2 && (window.bp_dplayer_2.destroy(), 
+                window.bp_dplayer_2 = null, $("#bp_dplayer_2").remove()), $(function get_bili_player_id() {
+                    return $("#bilibiliPlayer")[0] ? "#bilibiliPlayer" : $("#bilibili-player")[0] ? "#bilibili-player" : "cheese" === video.type() ? $('div.bpx-player[data-injector="nano"]')[0] ? 'div.bpx-player[data-injector="nano"]' : "#pay-mask" : void 0;
+                }()).show();
+            }
+        }
+        function danmaku_config() {
+            var style = "" + '<style id="dplayer_danmaku_style">\n        .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {\n            animation-duration: '.concat(parseFloat(config_config.danmaku_speed), "s;\n            font-size: ").concat(parseInt(config_config.danmaku_fontsize), "px;\n        }\n        </style>");
+            $("#dplayer_danmaku_style")[0] && $("#dplayer_danmaku_style").remove(), $("body").append(style);
+        }
+        var player = {
+            bili_video_tag: bili_video_tag,
+            recover_player: recover_player,
+            replace_player: function replace_player(url, url_2) {
+                recover_player();
+                var bili_player_id, bili_video = $(bili_video_tag())[0];
+                bili_video_stop(), bili_video && bili_video.addEventListener("play", bili_video_stop, !1), 
+                $("#bilibiliPlayer")[0] ? (bili_player_id = "#bilibiliPlayer", $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">'), 
+                $(bili_player_id).hide()) : $("#bilibili-player")[0] ? (bili_player_id = "#bilibili-player", 
+                $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>'), 
+                $(bili_player_id).hide()) : "cheese" === video.type() && ($('div.bpx-player[data-injector="nano"]')[0] ? ($("#pay-mask").hide(), 
+                $("#bofqi").show(), bili_player_id = 'div.bpx-player[data-injector="nano"]', $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>'), 
+                $(bili_player_id).hide()) : (bili_player_id = "#pay-mask", $(bili_player_id).html('<div id="bp_dplayer" style="width:100%;height:100%;"></div>'))), 
+                $("#player_mask_module").hide(), api.get_subtitle_url(0, (function dplayer_init() {
+                    var subtitle_url = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
+                    if (window.bp_dplayer = new runtime_lib.bc({
+                        container: $("#bp_dplayer")[0],
+                        mutex: !1,
+                        volume: 1,
+                        autoplay: !0,
+                        video: {
+                            url: url,
+                            type: "auto"
+                        },
+                        subtitle: {
+                            url: subtitle_url,
+                            type: "webvtt",
+                            fontSize: "35px",
+                            bottom: "5%",
+                            color: "#fff"
+                        },
+                        danmaku: !0,
+                        apiBackend: {
+                            read: function read(options) {
+                                request_danmaku(options, video.base().cid());
+                            },
+                            send: function send(options) {
+                                options.error("此脚本无法将弹幕同步到云端");
+                            }
+                        },
+                        contextmenu: [ {
+                            text: "脚本信息",
+                            link: "https://github.com/injahow/user.js"
+                        }, {
+                            text: "脚本作者",
+                            link: "https://injahow.com"
+                        } ]
+                    }), "dash" === config_config.format && url_2 && "#" !== url_2) {
+                        $("body").append('<div id="bp_dplayer_2" style="display:none;"></div>'), window.bp_dplayer_2 = new runtime_lib.bc({
+                            container: $("#bp_dplayer_2")[0],
+                            mutex: !1,
+                            volume: 1,
+                            autoplay: !0,
+                            video: {
+                                url: url_2,
+                                type: "auto"
+                            }
+                        });
+                        var _ref = [ window.bp_dplayer, window.bp_dplayer_2 ], bp_dplayer = _ref[0], bp_dplayer_2 = _ref[1];
+                        bp_dplayer.on("play", (function() {
+                            !bp_dplayer.paused && bp_dplayer_2.play();
+                        })), bp_dplayer.on("playing", (function() {
+                            !bp_dplayer.paused && bp_dplayer_2.play();
+                        })), bp_dplayer.on("timeupdate", (function() {
+                            Math.abs(bp_dplayer.video.currentTime - bp_dplayer_2.video.currentTime) > 1 && (bp_dplayer_2.pause(), 
+                            bp_dplayer_2.seek(bp_dplayer.video.currentTime)), !bp_dplayer.paused && bp_dplayer_2.play();
+                        })), bp_dplayer.on("seeking", (function() {
+                            bp_dplayer_2.pause(), bp_dplayer_2.seek(bp_dplayer.video.currentTime);
+                        })), bp_dplayer.on("waiting", (function() {
+                            bp_dplayer_2.pause(), bp_dplayer_2.seek(bp_dplayer.video.currentTime);
+                        })), bp_dplayer.on("pause", (function() {
+                            bp_dplayer_2.pause(), bp_dplayer_2.seek(bp_dplayer.video.currentTime);
+                        })), bp_dplayer.on("suspend", (function() {
+                            bp_dplayer_2.speed(bp_dplayer.video.playbackRate);
+                        })), bp_dplayer.on("volumechange", (function() {
+                            bp_dplayer_2.volume(bp_dplayer.video.volume), bp_dplayer_2.video.muted = bp_dplayer.video.muted;
+                        }));
+                    }
+                }));
+            },
+            danmaku: {
+                config: danmaku_config
+            }
         };
-        function user_defineProperties(target, props) {
+        function check_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
                 descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
                 "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
             }
         }
-        var user = new (function() {
-            function User() {
-                !function user_classCallCheck(instance, Constructor) {
+        var check = new (function() {
+            function Check() {
+                !function check_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, User), this.is_login = !1, this.vip_status = 0, this.mid = "", this.uname = "", 
-                this.has_init = !1, this.lazyInit();
+                }(this, Check), this.aid = "", this.cid = "", this.q = "", this.epid = "";
             }
-            return function user_createClass(Constructor, protoProps, staticProps) {
-                return protoProps && user_defineProperties(Constructor.prototype, protoProps), staticProps && user_defineProperties(Constructor, staticProps), 
-                Object.defineProperty(Constructor, "prototype", {
+            return function check_createClass(Constructor, protoProps, staticProps) {
+                return protoProps && check_defineProperties(Constructor.prototype, protoProps), 
+                staticProps && check_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
                     writable: !1
                 }), Constructor;
-            }(User, [ {
-                key: "needReplace",
-                value: function needReplace() {
-                    return !this.is_login || !this.vip_status && video.base().need_vip();
+            }(Check, [ {
+                key: "refresh",
+                value: function refresh() {
+                    console.log("refresh..."), $("#video_download").hide(), $("#video_download_2").hide(), 
+                    player.recover_player();
+                    var vb = video.base();
+                    this.aid = vb.aid(), this.cid = vb.cid(), this.epid = vb.epid(), this.q = video.get_quality().q, 
+                    window.bp_episodes = null;
                 }
-            }, {
-                key: "lazyInit",
-                value: function lazyInit(last_init) {
-                    this.has_init || (window.__BILI_USER_INFO__ ? (this.is_login = window.__BILI_USER_INFO__.isLogin, 
-                    this.vip_status = window.__BILI_USER_INFO__.vipStatus, this.mid = window.__BILI_USER_INFO__.mid || "", 
-                    this.uname = window.__BILI_USER_INFO__.uname || "") : window.__BiliUser__ && (this.is_login = window.__BiliUser__.isLogin, 
-                    window.__BiliUser__.cache ? (this.vip_status = window.__BiliUser__.cache.data.vipStatus, 
-                    this.mid = window.__BiliUser__.cache.data.mid || "", this.uname = window.__BiliUser__.cache.data.uname || "") : (this.vip_status = 0, 
-                    this.mid = "", this.uname = "")), this.has_init = last_init);
-                }
-            } ]), User;
-        }()), ajax = __webpack_require__(907);
+            } ]), Check;
+        }()), message = __webpack_require__(99), ui_scroll = __webpack_require__(537);
         function _createForOfIteratorHelper(o, allowArrayLike) {
             var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
             if (!it) {
@@ -1160,324 +1111,12 @@
             for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
             return arr2;
         }
-        function get_url_base(page, quality, video_format, success, error, request_type) {
-            var _success, _error;
-            _success = "function" == typeof success ? function _success(e) {
-                success(e);
-            } : function _success(res) {
-                return console.log(res);
-            }, _error = "function" == typeof error ? function _error(e) {
-                message.v0.error("请求失败"), error(e);
-            } : function _error(err) {
-                return console.error(err);
-            };
-            var vb = video.base(), _ref = [ vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type ], aid = _ref[0], cid = _ref[1], epid = _ref[2], q = _ref[3], type = _ref[4], format = video_format || config.config.format;
-            "mp4" === format && "video" !== type && (format = "flv"), "auto" === request_type && user.needReplace() && (request_type = "online");
-            var base_api, url_replace_cdn = function url_replace_cdn(url) {
-                if ("0" !== config.config.host_key && "online" === request_type && "mp4" !== format) {
-                    var url_tmp = url.split("/");
-                    url_tmp[2] = config.hostMap[config.config.host_key], url = url_tmp.join("/");
-                }
-                return url;
-            }, ajax_obj = {
-                type: "GET",
-                dataType: "json"
-            };
-            if ("auto" === request_type || "local" === request_type) {
-                var fnver, fnval;
-                "cheese" === type ? (base_api = "https://api.bilibili.com/pugv/player/web/playurl", 
-                "dash" === format ? (fnver = 0, fnval = 80) : (fnver = 1, fnval = 80)) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl", 
-                "dash" === format ? (fnver = 0, fnval = 4048) : (fnver = 0, fnval = 0)), base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
-                base_api += "mp4" === format ? "&platform=html5&high_quality=1" : "", ajax_obj.xhrFields = {
-                    withCredentials: !0
-                };
-            } else {
-                base_api = config.config.base_api, base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
-                var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
-                "1" === config.config.auth && auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec), 
-                page && (base_api += "&s"));
-            }
-            ajax_obj.url = base_api, (0, ajax.h)(ajax_obj).then((function(res) {
-                var data;
-                if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "online") : (res.url && (res.url = url_replace_cdn(res.url)), 
-                res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)), 
-                void _success(res));
-                if (data.dash) {
-                    for (var result = {
-                        code: 0,
-                        quality: data.quality,
-                        accept_quality: data.accept_quality,
-                        video: "",
-                        audio: ""
-                    }, videos = data.dash.video, i = 0; i < videos.length; i++) {
-                        var _video = videos[i];
-                        if (_video.id <= q) {
-                            result.video = url_replace_cdn(_video.base_url), result.audio = url_replace_cdn(data.dash.audio[0].base_url);
-                            break;
-                        }
-                    }
-                    _success(result);
-                } else _success({
-                    code: 0,
-                    quality: data.quality,
-                    accept_quality: data.accept_quality,
-                    url: url_replace_cdn(data.durl[0].url)
-                });
-            })).catch((function(err) {
-                return _error(err);
-            }));
-        }
-        function _get_subtitle(p, callback) {
-            var to_blob_url = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], video_base = video.base(), _ref3 = [ video_base.aid(p), video_base.cid(p), video_base.epid(p) ], aid = _ref3[0], cid = _ref3[1], epid = _ref3[2];
-            (0, ajax.h)({
-                url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
-                dataType: "json"
-            }).then((function(res) {
-                !res.code && res.data.subtitle.subtitles[0] ? (0, ajax.h)({
-                    url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
-                    dataType: "json"
-                }).then((function(res) {
-                    var _step, webvtt = "WEBVTT\n\n", _iterator = _createForOfIteratorHelper(res.body || [ {
-                        from: 0,
-                        to: 0,
-                        content: ""
-                    } ]);
-                    try {
-                        for (_iterator.s(); !(_step = _iterator.n()).done; ) {
-                            var data = _step.value, a = new Date(1e3 * (parseInt(data.from) - 28800)).toTimeString().split(" ")[0] + "." + (data.from.toString().split(".")[1] || "000").padEnd(3, "0"), b = new Date(1e3 * (parseInt(data.to) - 28800)).toTimeString().split(" ")[0] + "." + (data.to.toString().split(".")[1] || "000").padEnd(3, "0");
-                            webvtt += "".concat(a, " --\x3e ").concat(b, "\n").concat(data.content.trim(), "\n\n");
-                        }
-                    } catch (err) {
-                        _iterator.e(err);
-                    } finally {
-                        _iterator.f();
-                    }
-                    callback(to_blob_url ? URL.createObjectURL(new Blob([ webvtt ], {
-                        type: "text/vtt"
-                    })) : webvtt);
-                })).catch(callback) : callback();
-            })).catch(callback);
-        }
-        var api = {
-            get_url: function get_url(success, error) {
-                var request_type = config.config.request_type;
-                get_url_base(0, 0, config.config.format, success, error, request_type);
-            },
-            get_urls: function get_urls(page, quality, format, success, error) {
-                get_url_base(page, quality, format, success, error, config.config.request_type);
-            },
-            get_subtitle_url: function get_subtitle_url(p, callback) {
-                _get_subtitle(p, callback, !0);
-            },
-            get_subtitle_data: function get_subtitle_data(p, callback) {
-                _get_subtitle(p, callback, !1);
-            },
-            get_season: function get_season(epid) {
-                (0, ajax.h)({
-                    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
-                    xhrFields: {
-                        withCredentials: !0
-                    },
-                    dataType: "json"
-                }).then((function(res) {
-                    res.code ? message.v0.warning("获取剧集信息失败") : window.bp_episodes = res.data.episodes || null;
-                }));
-            }
-        };
-        function request_danmaku(options, _cid) {
-            _cid ? (0, ajax.h)({
-                url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(_cid),
-                dataType: "text"
-            }).then((function(result) {
-                var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ""));
-                if (result_dom) if (result_dom.find("d")[0]) {
-                    var danmaku_data = result_dom.find("d").map((function(i, el) {
-                        var item = $(el), p = item.attr("p").split(","), type = 0;
-                        return "4" === p[1] ? type = 2 : "5" === p[1] && (type = 1), [ {
-                            author: "",
-                            time: parseFloat(p[0]),
-                            type: type,
-                            color: parseInt(p[3]),
-                            id: "",
-                            text: item.text()
-                        } ];
-                    })).get();
-                    options.success(danmaku_data), setTimeout((function() {
-                        danmaku_config();
-                    }), 100);
-                } else options.error("未发现弹幕"); else options.error("弹幕获取失败");
-            })).catch((function(_) {
-                options.error("弹幕请求异常");
-            })) : options.error("cid未知，无法获取弹幕");
-        }
-        function bili_video_tag() {
-            return $("bwp-video")[0] ? "bwp-video" : $('video[class!="dplayer-video dplayer-video-current"]')[0] ? 'video[class!="dplayer-video dplayer-video-current"]' : void 0;
-        }
-        function bili_video_stop() {
-            var bili_video = $(bili_video_tag())[0];
-            bili_video && (bili_video.pause(), bili_video.currentTime = 0);
-        }
-        function recover_player() {
-            if (window.bp_dplayer) {
-                var bili_video = $(bili_video_tag())[0];
-                bili_video && bili_video.removeEventListener("play", bili_video_stop, !1), window.bp_dplayer.destroy(), 
-                window.bp_dplayer = null, $("#bp_dplayer").remove(), window.bp_dplayer_2 && (window.bp_dplayer_2.destroy(), 
-                window.bp_dplayer_2 = null, $("#bp_dplayer_2").remove()), $(function get_bili_player_id() {
-                    return $("#bilibiliPlayer")[0] ? "#bilibiliPlayer" : $("#bilibili-player")[0] ? "#bilibili-player" : "cheese" === video.type() ? $('div.bpx-player[data-injector="nano"]')[0] ? 'div.bpx-player[data-injector="nano"]' : "#pay-mask" : void 0;
-                }()).show();
-            }
-        }
-        function danmaku_config() {
-            var style = "" + '<style id="dplayer_danmaku_style">\n        .dplayer-danmaku .dplayer-danmaku-right.dplayer-danmaku-move {\n            animation-duration: '.concat(parseFloat(config.config.danmaku_speed), "s;\n            font-size: ").concat(parseInt(config.config.danmaku_fontsize), "px;\n        }\n        </style>");
-            $("#dplayer_danmaku_style")[0] && $("#dplayer_danmaku_style").remove(), $("body").append(style);
-        }
-        var player = {
-            bili_video_tag: bili_video_tag,
-            recover_player: recover_player,
-            replace_player: function replace_player(url, url_2) {
-                recover_player();
-                var bili_player_id, bili_video = $(bili_video_tag())[0];
-                bili_video_stop(), bili_video && bili_video.addEventListener("play", bili_video_stop, !1), 
-                $("#bilibiliPlayer")[0] ? (bili_player_id = "#bilibiliPlayer", $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">'), 
-                $(bili_player_id).hide()) : $("#bilibili-player")[0] ? (bili_player_id = "#bilibili-player", 
-                $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>'), 
-                $(bili_player_id).hide()) : "cheese" === video.type() && ($('div.bpx-player[data-injector="nano"]')[0] ? ($("#pay-mask").hide(), 
-                $("#bofqi").show(), bili_player_id = 'div.bpx-player[data-injector="nano"]', $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>'), 
-                $(bili_player_id).hide()) : (bili_player_id = "#pay-mask", $(bili_player_id).html('<div id="bp_dplayer" style="width:100%;height:100%;"></div>'))), 
-                $("#player_mask_module").hide(), api.get_subtitle_url(0, (function dplayer_init() {
-                    var subtitle_url = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
-                    if (window.bp_dplayer = new DPlayer({
-                        container: $("#bp_dplayer")[0],
-                        mutex: !1,
-                        volume: 1,
-                        autoplay: !0,
-                        video: {
-                            url: url,
-                            type: "auto"
-                        },
-                        subtitle: {
-                            url: subtitle_url,
-                            type: "webvtt",
-                            fontSize: "35px",
-                            bottom: "5%",
-                            color: "#fff"
-                        },
-                        danmaku: !0,
-                        apiBackend: {
-                            read: function read(options) {
-                                request_danmaku(options, video.base().cid());
-                            },
-                            send: function send(options) {
-                                options.error("此脚本无法将弹幕同步到云端");
-                            }
-                        },
-                        contextmenu: [ {
-                            text: "脚本信息",
-                            link: "https://github.com/injahow/user.js"
-                        }, {
-                            text: "脚本作者",
-                            link: "https://injahow.com"
-                        } ]
-                    }), "dash" === config.config.format && url_2 && "#" !== url_2) {
-                        $("body").append('<div id="bp_dplayer_2" style="display:none;"></div>'), window.bp_dplayer_2 = new DPlayer({
-                            container: $("#bp_dplayer_2")[0],
-                            mutex: !1,
-                            volume: 1,
-                            autoplay: !0,
-                            video: {
-                                url: url_2,
-                                type: "auto"
-                            }
-                        });
-                        var _ref = [ window.bp_dplayer, window.bp_dplayer_2 ], bp_dplayer = _ref[0], bp_dplayer_2 = _ref[1];
-                        bp_dplayer.on("play", (function() {
-                            !bp_dplayer.paused && bp_dplayer_2.play();
-                        })), bp_dplayer.on("playing", (function() {
-                            !bp_dplayer.paused && bp_dplayer_2.play();
-                        })), bp_dplayer.on("timeupdate", (function() {
-                            Math.abs(bp_dplayer.video.currentTime - bp_dplayer_2.video.currentTime) > 1 && (bp_dplayer_2.pause(), 
-                            bp_dplayer_2.seek(bp_dplayer.video.currentTime)), !bp_dplayer.paused && bp_dplayer_2.play();
-                        })), bp_dplayer.on("seeking", (function() {
-                            bp_dplayer_2.pause(), bp_dplayer_2.seek(bp_dplayer.video.currentTime);
-                        })), bp_dplayer.on("waiting", (function() {
-                            bp_dplayer_2.pause(), bp_dplayer_2.seek(bp_dplayer.video.currentTime);
-                        })), bp_dplayer.on("pause", (function() {
-                            bp_dplayer_2.pause(), bp_dplayer_2.seek(bp_dplayer.video.currentTime);
-                        })), bp_dplayer.on("suspend", (function() {
-                            bp_dplayer_2.speed(bp_dplayer.video.playbackRate);
-                        })), bp_dplayer.on("volumechange", (function() {
-                            bp_dplayer_2.volume(bp_dplayer.video.volume), bp_dplayer_2.video.muted = bp_dplayer.video.muted;
-                        }));
-                    }
-                }));
-            },
-            danmaku: {
-                config: danmaku_config
-            }
-        }, runtime_lib = __webpack_require__(870);
-        function download_createForOfIteratorHelper(o, allowArrayLike) {
-            var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
-            if (!it) {
-                if (Array.isArray(o) || (it = function download_unsupportedIterableToArray(o, minLen) {
-                    if (!o) return;
-                    if ("string" == typeof o) return download_arrayLikeToArray(o, minLen);
-                    var n = Object.prototype.toString.call(o).slice(8, -1);
-                    "Object" === n && o.constructor && (n = o.constructor.name);
-                    if ("Map" === n || "Set" === n) return Array.from(o);
-                    if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return download_arrayLikeToArray(o, minLen);
-                }(o)) || allowArrayLike && o && "number" == typeof o.length) {
-                    it && (o = it);
-                    var i = 0, F = function F() {};
-                    return {
-                        s: F,
-                        n: function n() {
-                            return i >= o.length ? {
-                                done: !0
-                            } : {
-                                done: !1,
-                                value: o[i++]
-                            };
-                        },
-                        e: function e(_e) {
-                            throw _e;
-                        },
-                        f: F
-                    };
-                }
-                throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-            }
-            var err, normalCompletion = !0, didErr = !1;
-            return {
-                s: function s() {
-                    it = it.call(o);
-                },
-                n: function n() {
-                    var step = it.next();
-                    return normalCompletion = step.done, step;
-                },
-                e: function e(_e2) {
-                    didErr = !0, err = _e2;
-                },
-                f: function f() {
-                    try {
-                        normalCompletion || null == it.return || it.return();
-                    } finally {
-                        if (didErr) throw err;
-                    }
-                }
-            };
-        }
-        function download_arrayLikeToArray(arr, len) {
-            (null == len || len > arr.length) && (len = arr.length);
-            for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-            return arr2;
-        }
         function rpc_type() {
-            return config.config.rpc_domain.match("https://") || config.config.rpc_domain.match(/localhost|127\.0\.0\.1/) ? "post" : "ariang";
+            return config_config.rpc_domain.match("https://") || config_config.rpc_domain.match(/localhost|127\.0\.0\.1/) ? "post" : "ariang";
         }
         var download_rpc_clicked = !1;
         function open_ariang(rpc) {
-            var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port, "/jsonrpc/").concat(window.btoa(rpc.token)) : "", url = config.config.ariang_host + hash_tag, a = document.createElement("a");
+            var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port, "/jsonrpc/").concat(window.btoa(rpc.token)) : "", url = config_config.ariang_host + hash_tag, a = document.createElement("a");
             a.setAttribute("target", "_blank"), a.setAttribute("onclick", "window.bp_aria2_window=window.open('".concat(url, "');")), 
             a.click();
         }
@@ -1547,7 +1186,7 @@
                         return text.replace(/\{/g, "｛").replace(/\}/g, "｝").replace(/\r|\n/g, "");
                     }(text) ];
                     return "Dialogue: " + fields.join(",");
-                }, content = [ "[Script Info]", "; Script generated by injahow/user.js", "; https://github.com/injahow/user.js", "Title: ".concat(title), "ScriptType: v4.00+", "PlayResX: ".concat(1920), "PlayResY: ".concat(1080), "Timer: 10.0000", "WrapStyle: 2", "ScaledBorderAndShadow: no", "", "[V4+ Styles]", "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding", "Style: Small,微软雅黑,36,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "Style: Medium,微软雅黑,52,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "Style: Large,微软雅黑,64,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "Style: Larger,微软雅黑,72,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "Style: ExtraLarge,微软雅黑,90,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "", "[Events]", "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text" ], fix_id = 0, _iterator3 = download_createForOfIteratorHelper(danmaku_data);
+                }, content = [ "[Script Info]", "; Script generated by injahow/user.js", "; https://github.com/injahow/user.js", "Title: ".concat(title), "ScriptType: v4.00+", "PlayResX: ".concat(1920), "PlayResY: ".concat(1080), "Timer: 10.0000", "WrapStyle: 2", "ScaledBorderAndShadow: no", "", "[V4+ Styles]", "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding", "Style: Small,微软雅黑,36,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "Style: Medium,微软雅黑,52,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "Style: Large,微软雅黑,64,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "Style: Larger,微软雅黑,72,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "Style: ExtraLarge,微软雅黑,90,&H66FFFFFF,&H66FFFFFF,&H66000000,&H66000000,0,0,0,0,100,100,0,0,1,1.2,0,5,0,0,0,0", "", "[Events]", "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text" ], fix_id = 0, _iterator3 = _createForOfIteratorHelper(danmaku_data);
                 try {
                     for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
                         var danmaku = _step3.value;
@@ -1629,10 +1268,10 @@
                     if (download_rpc_clicked) message.v0.miaow(); else {
                         download_rpc_clicked = !0;
                         var rpc = {
-                            domain: config.config.rpc_domain,
-                            port: config.config.rpc_port,
-                            token: config.config.rpc_token,
-                            dir: config.config.rpc_dir
+                            domain: config_config.rpc_domain,
+                            port: config_config.rpc_port,
+                            token: config_config.rpc_token,
+                            dir: config_config.rpc_dir
                         }, json_rpc = {
                             id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
                             jsonrpc: "2.0",
@@ -1658,7 +1297,7 @@
                             var bp_aria2_window = window.bp_aria2_window, time = 100;
                             bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3), setTimeout((function() {
                                 var bp_aria2_window = window.bp_aria2_window, aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href), task_hash = "#!/new/task?url=".concat(window.btoa(url), "&out=").concat(encodeURIComponent(filename), "&").concat(aria2_header);
-                                bp_aria2_window && !bp_aria2_window.closed ? (bp_aria2_window.location.href = config.config.ariang_host + task_hash, 
+                                bp_aria2_window && !bp_aria2_window.closed ? (bp_aria2_window.location.href = config_config.ariang_host + task_hash, 
                                 message.v0.success("RPC请求发送成功")) : message.v0.warning("AriaNG页面未打开"), download_rpc_clicked = !1;
                             }), time);
                         }
@@ -1687,7 +1326,7 @@
                     48: "720P 高清(MP4)",
                     32: "480P 清晰",
                     16: "360P 流畅"
-                }, option_support_html = "", _iterator = download_createForOfIteratorHelper(video.get_quality_support());
+                }, option_support_html = "", _iterator = _createForOfIteratorHelper(video.get_quality_support());
                 try {
                     for (_iterator.s(); !(_step = _iterator.n()).done; ) {
                         var item = _step.value;
@@ -1718,7 +1357,7 @@
                                             var bp_aria2_window = window.bp_aria2_window, aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
                                             if (bp_aria2_window && !bp_aria2_window.closed) {
                                                 var task_hash = "#!/new/task?url=".concat(window.btoa(video.url), "&out=").concat(encodeURIComponent(video.filename), "&").concat(aria2_header);
-                                                bp_aria2_window.location.href = config.config.ariang_host + task_hash, message.v0.success("RPC请求成功");
+                                                bp_aria2_window.location.href = config_config.ariang_host + task_hash, message.v0.success("RPC请求成功");
                                             } else message.v0.warning("请检查RPC参数");
                                         }), time);
                                     }({
@@ -1738,11 +1377,11 @@
                 }
                 function download_rpc_all(video_urls) {
                     var _step2, rpc = {
-                        domain: config.config.rpc_domain,
-                        port: config.config.rpc_port,
-                        token: config.config.rpc_token,
-                        dir: config.config.rpc_dir
-                    }, json_rpc = [], _iterator2 = download_createForOfIteratorHelper(video_urls);
+                        domain: config_config.rpc_domain,
+                        port: config_config.rpc_port,
+                        token: config_config.rpc_token,
+                        dir: config_config.rpc_dir
+                    }, json_rpc = [], _iterator2 = _createForOfIteratorHelper(video_urls);
                     try {
                         for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
                             var _video2 = _step2.value;
@@ -1784,8 +1423,8 @@
                             filename: filename
                         });
                     }
-                    dl_video && download_videos(videos, 0, []), dl_subtitle && (1 === videos.length ? download_subtitle_vtt(videos[0].p, videos[0].filename) : download_subtitle_vtt_zip([].concat(videos), new runtime_lib.$)), 
-                    dl_danmaku && (1 === videos.length ? download_danmaku_ass(videos[0].cid, videos[0].filename) : download_danmaku_ass_zip([].concat(videos), new runtime_lib.$));
+                    dl_video && download_videos(videos, 0, []), dl_subtitle && (1 === videos.length ? download_subtitle_vtt(videos[0].p, videos[0].filename) : download_subtitle_vtt_zip([].concat(videos), new runtime_lib.$c)), 
+                    dl_danmaku && (1 === videos.length ? download_danmaku_ass(videos[0].cid, videos[0].filename) : download_danmaku_ass_zip([].concat(videos), new runtime_lib.$c));
                 })), $("body").on("click", 'input[name="dl_option"]', (function() {
                     $(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)");
                 })), $("#dl_quality").val(q > 120 ? 80 : q);
@@ -1793,7 +1432,43 @@
             download_danmaku_ass: download_danmaku_ass,
             download_subtitle_vtt: download_subtitle_vtt,
             open_ariang: open_ariang
-        }, ui_scroll = __webpack_require__(543);
+        };
+        function user_defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+        var user = new (function() {
+            function User() {
+                !function user_classCallCheck(instance, Constructor) {
+                    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+                }(this, User), this.is_login = !1, this.vip_status = 0, this.mid = "", this.uname = "", 
+                this.has_init = !1, this.lazyInit();
+            }
+            return function user_createClass(Constructor, protoProps, staticProps) {
+                return protoProps && user_defineProperties(Constructor.prototype, protoProps), staticProps && user_defineProperties(Constructor, staticProps), 
+                Object.defineProperty(Constructor, "prototype", {
+                    writable: !1
+                }), Constructor;
+            }(User, [ {
+                key: "needReplace",
+                value: function needReplace() {
+                    return !this.is_login || !this.vip_status && video.base().need_vip();
+                }
+            }, {
+                key: "lazyInit",
+                value: function lazyInit(last_init) {
+                    this.has_init || (window.__BILI_USER_INFO__ ? (this.is_login = window.__BILI_USER_INFO__.isLogin, 
+                    this.vip_status = window.__BILI_USER_INFO__.vipStatus, this.mid = window.__BILI_USER_INFO__.mid || "", 
+                    this.uname = window.__BILI_USER_INFO__.uname || "") : window.__BiliUser__ && (this.is_login = window.__BiliUser__.isLogin, 
+                    window.__BiliUser__.cache ? (this.vip_status = window.__BiliUser__.cache.data.vipStatus, 
+                    this.mid = window.__BiliUser__.cache.data.mid || "", this.uname = window.__BiliUser__.cache.data.uname || "") : (this.vip_status = 0, 
+                    this.mid = "", this.uname = "")), this.has_init = last_init);
+                }
+            } ]), User;
+        }());
         function auth_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
@@ -1816,7 +1491,7 @@
                 key: "checkLoginStatus",
                 value: function checkLoginStatus() {
                     var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || "0" ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
-                    access_key && (user.is_login && (config.config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5) && (0, 
+                    access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5) && (0, 
                     ajax.h)({
                         url: "https://api.bilibili.com/x/space/myinfo?access_key=".concat(access_key),
                         type: "GET",
@@ -1825,7 +1500,7 @@
                         res.code ? message._p.alert("授权已过期，准备重新授权", (function() {
                             _this.reLogin();
                         })) : (store.set("auth_time", Date.now()), (0, ajax.h)({
-                            url: "".concat(config.config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+                            url: "".concat(config_config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
                             type: "GET",
                             dataType: "json"
                         }).then((function(res) {
@@ -1833,7 +1508,7 @@
                                 _this.reLogin();
                             }));
                         })));
-                    })), store.set("pre_base_api", config.config.base_api));
+                    })), store.set("pre_base_api", config_config.base_api));
                 }
             }, {
                 key: "_login",
@@ -1880,13 +1555,13 @@
                             message._p.alert(msg, (function() {
                                 var auth_url = $("#auth_url").val(), auth_id = store.get("auth_id") || "", auth_sec = store.get("auth_sec") || "";
                                 (0, ajax.h)({
-                                    url: auth_url.replace("https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?", "".concat(config.config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
+                                    url: auth_url.replace("https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?", "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
                                     type: "GET",
                                     dataType: "json"
                                 }).then((function(res) {
                                     res.code ? message.v0.warning("授权失败") : (message.v0.success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
                                     store.set("auth_sec", res.auth_sec)), store.set("access_key", new URL(auth_url).searchParams.get("access_key")), 
-                                    store.set("auth_time", Date.now()), $("#auth").val("1"), config.config.auth = "1");
+                                    store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
                                 }));
                             }));
                         } else message._p.confirm("必须登录B站才能正常授权，是否登陆？", (function() {
@@ -1901,13 +1576,13 @@
                     if (store.get("auth_id")) if (this.auth_clicked) message.v0.miaow(); else {
                         var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
                         (0, ajax.h)({
-                            url: "".concat(config.config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
+                            url: "".concat(config_config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
                             type: "GET",
                             dataType: "json"
                         }).then((function(res) {
                             res.code ? message.v0.warning("取消失败") : (message.v0.success("取消成功"), store.set("auth_id", ""), 
                             store.set("auth_sec", ""), store.set("auth_time", "0"), store.set("access_key", ""), 
-                            $("#auth").val("0"), config.config.auth = "0");
+                            $("#auth").val("0"), config_config.auth = "0");
                         })).finally((function(_) {
                             return _this3.auth_clicked = !1;
                         }));
@@ -1922,13 +1597,13 @@
                             $("iframe#auth_iframe").remove();
                             var url = e.data.split(": ")[1], _ref3 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref3[0], auth_sec = _ref3[1];
                             (0, ajax.h)({
-                                url: url.replace("https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?", "".concat(config.config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
+                                url: url.replace("https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?", "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
                                 type: "GET",
                                 dataType: "json"
                             }).then((function(res) {
                                 res.code ? message.v0.warning("授权失败") : (message.v0.success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
                                 store.set("auth_sec", res.auth_sec)), store.set("access_key", new URL(url).searchParams.get("access_key")), 
-                                store.set("auth_time", Date.now()), $("#auth").val("1"), config.config.auth = "1");
+                                store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
                             })).finally((function(_) {
                                 return _this4.auth_clicked = !1;
                             }));
@@ -1936,506 +1611,286 @@
                     }));
                 }
             } ]), Auth;
-        }(), auth = new Auth;
-        function check_defineProperties(target, props) {
-            for (var i = 0; i < props.length; i++) {
-                var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
-                "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+        }(), auth = new Auth, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="online">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="flv">FLV</option> <option value="dash">DASH</option> <option value="mp4">MP4</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" style="width:25%"/> : <input id="rpc_port" style="width:10%"/> | <input id="rpc_token" placeholder="没有密钥不用填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/>s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/>px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">账号授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">手动授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ', config_config = {
+            base_api: "https://api.injahow.cn/bparse/",
+            request_type: "auto",
+            format: "flv",
+            host_key: "0",
+            replace_force: "0",
+            auth: "0",
+            download_type: "web",
+            rpc_domain: "http://localhost",
+            rpc_port: "16800",
+            rpc_token: "",
+            rpc_dir: "D:/",
+            ariang_host: "http://ariang.injahow.com/",
+            auto_download: "0",
+            danmaku_speed: "15",
+            danmaku_fontsize: "22"
+        }, default_config = Object.assign({}, config_config), hostMap = {
+            0: "关闭",
+            ks3: "upos-sz-mirrorks3.bilivideo.com",
+            ks3b: "upos-sz-mirrorks3b.bilivideo.com",
+            ks3c: "upos-sz-mirrorks3c.bilivideo.com",
+            ks32: "upos-sz-mirrorks32.bilivideo.com",
+            kodo: "upos-sz-mirrorkodo.bilivideo.com",
+            kodob: "upos-sz-mirrorkodob.bilivideo.com",
+            cos: "upos-sz-mirrorcos.bilivideo.com",
+            cosb: "upos-sz-mirrorcosb.bilivideo.com",
+            bos: "upos-sz-mirrorbos.bilivideo.com",
+            wcs: "upos-sz-mirrorwcs.bilivideo.com",
+            wcsb: "upos-sz-mirrorwcsb.bilivideo.com",
+            hw: "upos-sz-mirrorhw.bilivideo.com",
+            hwb: "upos-sz-mirrorhwb.bilivideo.com",
+            upbda2: "upos-sz-upcdnbda2.bilivideo.com",
+            upws: "upos-sz-upcdnws.bilivideo.com",
+            uptx: "upos-sz-upcdntx.bilivideo.com",
+            uphw: "upos-sz-upcdnhw.bilivideo.com",
+            js: "upos-tf-all-js.bilivideo.com",
+            hk: "cn-hk-eq-bcache-01.bilivideo.com",
+            akamai: "upos-hz-mirrorakam.akamaized.net"
+        }, help_clicked = !1, config_functions = {
+            save_config: function save_config() {
+                var old_config;
+                try {
+                    old_config = JSON.parse(store.get("config_str")), store.set("config_str", JSON.stringify(config_config));
+                } catch (err) {
+                    old_config = Object.assign({}, config_config);
+                }
+                $("#bp_config").hide(), $("#bp_config").css("opacity", 0), ui_scroll.A.show();
+                for (var _i = 0, _arr = [ "base_api", "format", "auth" ]; _i < _arr.length; _i++) {
+                    var key = _arr[_i];
+                    if (config_config[key] !== old_config[key]) {
+                        $("#video_download").hide(), $("#video_download_2").hide();
+                        break;
+                    }
+                }
+                config_config.host_key !== old_config.host_key && (check.refresh(), $("#video_url").attr("href", "#"), 
+                $("#video_url_2").attr("href", "#")), config_config.rpc_domain !== old_config.rpc_domain && (config_config.rpc_domain.match("https://") || config_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/) || message._p.alert("检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！", (function() {
+                    Download.open_ariang({
+                        domain: config_config.rpc_domain,
+                        port: config_config.rpc_port,
+                        token: config_config.rpc_token
+                    });
+                })));
+                for (var _i2 = 0, _arr2 = [ "danmaku_speed", "danmaku_fontsize" ]; _i2 < _arr2.length; _i2++) {
+                    var _key = _arr2[_i2];
+                    if (config_config[_key] !== old_config[_key]) {
+                        player.danmaku.config();
+                        break;
+                    }
+                }
+            },
+            reset_config: function reset_config() {
+                for (var key in default_config) "auth" !== key && (config_config[key] = default_config[key], 
+                $("#".concat(key)).val(default_config[key]));
+            },
+            show_help: function show_help() {
+                help_clicked ? message.v0.miaow() : (help_clicked = !0, (0, ajax.h)({
+                    url: "".concat(config_config.base_api, "/auth/v2/?act=help"),
+                    dataType: "text"
+                }).then((function(res) {
+                    res ? message._p.alert(res) : message.v0.warning("获取失败");
+                })).finally((function() {
+                    return help_clicked = !1;
+                })));
+            },
+            show_login: function show_login() {
+                auth.login("1");
+            },
+            show_login_2: function show_login_2() {
+                auth.login("0");
+            },
+            show_logout: function show_logout() {
+                auth.logout();
+            },
+            show_login_help: function show_login_help() {
+                message._p.confirm("进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？", (function() {
+                    auth.login();
+                }));
             }
-        }
-        var check = new (function() {
-            function Check() {
-                !function check_classCallCheck(instance, Constructor) {
-                    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Check), this.aid = "", this.cid = "", this.q = "", this.epid = "";
-            }
-            return function check_createClass(Constructor, protoProps, staticProps) {
-                return protoProps && check_defineProperties(Constructor.prototype, protoProps), 
-                staticProps && check_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
-                    writable: !1
-                }), Constructor;
-            }(Check, [ {
-                key: "refresh",
-                value: function refresh() {
-                    console.log("refresh..."), $("#video_download").hide(), $("#video_download_2").hide(), 
-                    player.recover_player();
-                    var vb = video.base();
-                    this.aid = vb.aid(), this.cid = vb.cid(), this.epid = vb.epid(), this.q = video.get_quality().q, 
-                    window.bp_episodes = null;
-                }
-            } ]), Check;
-        }()), external_Vue_namespaceObject = Vue, external_Vue_default = __webpack_require__.n(external_Vue_namespaceObject), render = function() {
-            var _vm = this, _h = _vm.$createElement, _c = _vm._self._c || _h;
-            return _c("div", {
-                attrs: {
-                    id: "bp_config"
-                }
-            }, [ _c("div", {
-                staticClass: "config-mark"
-            }), _vm._v(" "), _c("div", {
-                staticClass: "config-bg"
-            }, [ _c("span", {
-                staticStyle: {
-                    "font-size": "20px"
-                }
-            }, [ _c("b", [ _vm._v("bilibili视频下载 参数设置") ]), _vm._v(" "), _c("b", [ _c("a", {
-                attrs: {
-                    href: "javascript:;"
-                },
-                on: {
-                    click: function($event) {
-                        return _vm.reset_config();
-                    }
-                }
-            }, [ _vm._v(" [重置] ") ]), _vm._v(" "), _c("a", {
-                staticStyle: {
-                    "text-decoration": "underline"
-                },
-                attrs: {
-                    href: "javascript:;"
-                },
-                on: {
-                    click: function($event) {
-                        return _vm.show_help();
-                    }
-                }
-            }, [ _vm._v("<通知/帮助>") ]) ]) ]), _vm._v(" "), _c("div", {
-                staticStyle: {
-                    margin: "2% 0"
-                }
-            }, [ _c("label", [ _vm._v("请求地址：") ]), _vm._v(" "), _c("input", {
-                staticStyle: {
-                    width: "30%"
-                },
-                domProps: {
-                    value: _vm.config.base_api
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.base_api = $event.target.value;
-                    }
-                }
-            }), _vm._v("    \n      "), _c("label", [ _vm._v("请求方式：") ]), _vm._v(" "), _c("select", {
-                domProps: {
-                    value: _vm.config.request_type
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.request_type = $event.target.value;
-                    }
-                }
-            }, [ _c("option", {
-                attrs: {
-                    value: "auto"
-                }
-            }, [ _vm._v("自动判断") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "local"
-                }
-            }, [ _vm._v("本地请求") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "online"
-                }
-            }, [ _vm._v("远程请求") ]) ]), _c("br"), _vm._v(" "), _c("small", [ _vm._v("注意：普通使用请勿修改；默认使用混合请求") ]) ]), _vm._v(" "), _c("div", {
-                staticStyle: {
-                    margin: "2% 0"
-                }
-            }, [ _c("label", [ _vm._v("视频格式：") ]), _vm._v(" "), _c("select", {
-                domProps: {
-                    value: _vm.config.format
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.format = $event.target.value;
-                    }
-                }
-            }, [ _c("option", {
-                attrs: {
-                    value: "flv"
-                }
-            }, [ _vm._v("FLV") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "dash"
-                }
-            }, [ _vm._v("DASH") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "mp4"
-                }
-            }, [ _vm._v("MP4") ]) ]), _vm._v("    \n      "), _c("label", [ _vm._v("切换CDN：") ]), _vm._v(" "), _c("select", {
-                domProps: {
-                    value: _vm.config.host_key
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.host_key = $event.target.value;
-                    }
-                }
-            }, _vm._l(_vm.host_key_options, (function(e) {
-                return _c("option", {
-                    key: e.text,
-                    domProps: {
-                        value: e.value
-                    }
-                }, [ _vm._v("\n          " + _vm._s(e.text) + "\n        ") ]);
-            })), 0), _c("br"), _vm._v(" "), _c("small", [ _vm._v("注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）") ]) ]), _vm._v(" "), _c("div", {
-                staticStyle: {
-                    margin: "2% 0"
-                }
-            }, [ _c("label", [ _vm._v("下载方式：") ]), _vm._v(" "), _c("select", {
-                domProps: {
-                    value: _vm.config.download_type
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.download_type = $event.target.value;
-                    }
-                }
-            }, [ _c("option", {
-                attrs: {
-                    value: "a"
-                }
-            }, [ _vm._v("URL链接") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "web"
-                }
-            }, [ _vm._v("Web浏览器") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "blob"
-                }
-            }, [ _vm._v("Blob请求") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "rpc"
-                }
-            }, [ _vm._v("RPC接口") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "aria"
-                }
-            }, [ _vm._v("Aria命令") ]) ]), _vm._v("    \n      "), _c("label", [ _vm._v("AriaNg地址：") ]), _vm._v(" "), _c("input", {
-                staticStyle: {
-                    width: "30%"
-                },
-                domProps: {
-                    value: _vm.config.ariang_host
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.ariang_host = $event.target.value;
-                    }
-                }
-            }), _c("br"), _vm._v(" "), _c("small", [ _vm._v("提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载") ]) ]), _vm._v(" "), _c("div", {
-                staticStyle: {
-                    margin: "2% 0"
-                }
-            }, [ _c("label", [ _vm._v("RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]") ]), _c("br"), _vm._v(" "), _c("input", {
-                staticStyle: {
-                    width: "25%"
-                },
-                domProps: {
-                    value: _vm.config.rpc_domain
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.rpc_domain = $event.target.value;
-                    }
-                }
-            }), _vm._v("\n      :\n      "), _c("input", {
-                staticStyle: {
-                    width: "10%"
-                },
-                domProps: {
-                    value: _vm.config.rpc_port
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.rpc_port = $event.target.value;
-                    }
-                }
-            }), _vm._v("\n      |\n      "), _c("input", {
-                staticStyle: {
-                    width: "15%"
-                },
-                attrs: {
-                    placeholder: "没有密钥不用填"
-                },
-                domProps: {
-                    value: _vm.config.rpc_token
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.rpc_token = $event.target.value;
-                    }
-                }
-            }), _vm._v("\n      |\n      "), _c("input", {
-                staticStyle: {
-                    width: "20%"
-                },
-                attrs: {
-                    placeholder: "留空使用默认目录"
-                },
-                domProps: {
-                    value: _vm.config.rpc_dir
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.rpc_dir = $event.target.value;
-                    }
-                }
-            }), _c("br"), _vm._v(" "), _c("small", [ _vm._v("注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数") ]) ]), _vm._v(" "), _c("div", {
-                staticStyle: {
-                    margin: "2% 0"
-                }
-            }, [ _c("label", [ _vm._v("强制换源：") ]), _vm._v(" "), _c("select", {
-                domProps: {
-                    value: _vm.config.replace_force
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.replace_force = $event.target.value;
-                    }
-                }
-            }, [ _c("option", {
-                attrs: {
-                    value: "0"
-                }
-            }, [ _vm._v("关闭") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "1"
-                }
-            }, [ _vm._v("开启") ]) ]), _vm._v("\n          "), _c("label", [ _vm._v("弹幕速度：") ]), _vm._v(" "), _c("input", {
-                staticStyle: {
-                    width: "5%"
-                },
-                domProps: {
-                    value: _vm.config.danmaku_speed
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.danmaku_speed = $event.target.value;
-                    }
-                }
-            }), _vm._v("\n      s     "), _c("label", [ _vm._v("弹幕字号：") ]), _vm._v(" "), _c("input", {
-                staticStyle: {
-                    width: "5%"
-                },
-                domProps: {
-                    value: _vm.config.danmaku_fontsize
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.danmaku_fontsize = $event.target.value;
-                    }
-                }
-            }), _vm._v("\n      px\n      "), _c("br"), _vm._v(" "), _c("small", [ _vm._v("说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间") ]) ]), _vm._v(" "), _c("div", {
-                staticStyle: {
-                    margin: "2% 0"
-                }
-            }, [ _c("label", [ _vm._v("自动下载：") ]), _vm._v(" "), _c("select", {
-                domProps: {
-                    value: _vm.config.auto_download
-                },
-                on: {
-                    input: function($event) {
-                        _vm.config.auto_download = $event.target.value;
-                    }
-                }
-            }, [ _c("option", {
-                attrs: {
-                    value: "0"
-                }
-            }, [ _vm._v("关闭") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "1"
-                }
-            }, [ _vm._v("开启") ]) ]), _c("br"), _vm._v(" "), _c("small", [ _vm._v("说明：请求地址成功后将自动点击下载视频按钮") ]) ]), _vm._v(" "), _c("div", {
-                staticStyle: {
-                    margin: "2% 0"
-                }
-            }, [ _c("label", [ _vm._v("授权状态：") ]), _vm._v(" "), _c("select", {
-                attrs: {
-                    id: "auth",
-                    disabled: ""
-                },
-                domProps: {
-                    value: _vm.config.auth
-                }
-            }, [ _c("option", {
-                attrs: {
-                    value: "0"
-                }
-            }, [ _vm._v("未授权") ]), _vm._v(" "), _c("option", {
-                attrs: {
-                    value: "1"
-                }
-            }, [ _vm._v("已授权") ]) ]), _vm._v(" "), _c("a", {
-                staticClass: "setting-context",
-                attrs: {
-                    href: "javascript:;"
-                },
-                on: {
-                    click: function($event) {
-                        return _vm.show_login();
-                    }
-                }
-            }, [ _vm._v("账号授权") ]), _vm._v(" "), _c("a", {
-                staticClass: "setting-context",
-                attrs: {
-                    href: "javascript:;"
-                },
-                on: {
-                    click: function($event) {
-                        return _vm.show_logout();
-                    }
-                }
-            }, [ _vm._v("取消授权") ]), _vm._v(" "), _c("a", {
-                staticClass: "setting-context",
-                attrs: {
-                    href: "javascript:;"
-                },
-                on: {
-                    click: function($event) {
-                        return _vm.show_login("0");
-                    }
-                }
-            }, [ _vm._v("手动授权") ]), _vm._v(" "), _c("a", {
-                staticClass: "setting-context",
-                attrs: {
-                    href: "javascript:;"
-                },
-                on: {
-                    click: function($event) {
-                        return _vm.show_login_help();
-                    }
-                }
-            }, [ _vm._v("这是什么？") ]) ]), _vm._v(" "), _c("br"), _vm._v(" "), _c("div", {
-                staticStyle: {
-                    "text-align": "right"
-                }
-            }, [ _c("button", {
-                staticClass: "setting-button",
-                on: {
-                    click: function($event) {
-                        return _vm.save_config();
-                    }
-                }
-            }, [ _vm._v("确定") ]) ]) ]) ]);
         };
-        render._withStripped = !0;
-        var _require = __webpack_require__(834), configvue_type_script_lang_js_config = _require.config, hostMap = _require.hostMap, default_config = Object.assign({}, configvue_type_script_lang_js_config), configvue_type_script_lang_js_ = {
-            data: function data() {
-                var options = [];
-                for (var k in hostMap) options.push({
-                    text: hostMap[k],
-                    value: k
-                });
-                return {
-                    config: configvue_type_script_lang_js_config,
-                    host_key_options: options,
-                    help_clicked: !1
-                };
-            },
-            methods: {
-                save_config: function save_config() {
-                    var old_config = JSON.parse(store.get("config_str"));
-                    store.set("config_str", JSON.stringify(configvue_type_script_lang_js_config)), $("#bp_config").hide(), 
-                    $("#bp_config").css("opacity", 0), ui_scroll.A.show();
-                    for (var _i = 0, _arr = [ "base_api", "format", "auth" ]; _i < _arr.length; _i++) {
-                        var key = _arr[_i];
-                        if (configvue_type_script_lang_js_config[key] !== old_config[key]) {
-                            $("#video_download").hide(), $("#video_download_2").hide();
-                            break;
-                        }
-                    }
-                    configvue_type_script_lang_js_config.host_key !== old_config.host_key && (check.refresh(), 
-                    $("#video_url").attr("href", "#"), $("#video_url_2").attr("href", "#")), configvue_type_script_lang_js_config.rpc_domain !== old_config.rpc_domain && (configvue_type_script_lang_js_config.rpc_domain.match("https://") || configvue_type_script_lang_js_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/) || message._p.alert("检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！", (function() {
-                        Download.open_ariang({
-                            domain: configvue_type_script_lang_js_config.rpc_domain,
-                            port: configvue_type_script_lang_js_config.rpc_port,
-                            token: configvue_type_script_lang_js_config.rpc_token
-                        });
-                    })));
-                    for (var _i2 = 0, _arr2 = [ "danmaku_speed", "danmaku_fontsize" ]; _i2 < _arr2.length; _i2++) {
-                        var _key = _arr2[_i2];
-                        if (configvue_type_script_lang_js_config[_key] !== old_config[_key]) {
-                            player.danmaku.config();
-                            break;
-                        }
-                    }
-                },
-                reset_config: function reset_config() {
-                    for (var key in default_config) "auth" !== key && (this.config[key] = default_config[key]);
-                },
-                show_help: function show_help() {
-                    var _this = this;
-                    this.help_clicked ? message.v0.miaow() : (this.help_clicked = !0, (0, ajax.h)({
-                        url: "".concat(configvue_type_script_lang_js_config.base_api, "/auth/v2/?act=help"),
-                        dataType: "text"
-                    }).then((function(res) {
-                        res ? message._p.alert(res) : message.v0.warning("获取失败");
-                    })).finally((function() {
-                        return _this.help_clicked = !1;
-                    })));
-                },
-                show_login: function show_login(auto) {
-                    auth.login(auto);
-                },
-                show_logout: function show_logout() {
-                    auth.logout();
-                },
-                show_login_help: function show_login_help() {
-                    message._p.confirm("进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？", (function() {
-                        auth.login();
-                    }));
+        function api_createForOfIteratorHelper(o, allowArrayLike) {
+            var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
+            if (!it) {
+                if (Array.isArray(o) || (it = function api_unsupportedIterableToArray(o, minLen) {
+                    if (!o) return;
+                    if ("string" == typeof o) return api_arrayLikeToArray(o, minLen);
+                    var n = Object.prototype.toString.call(o).slice(8, -1);
+                    "Object" === n && o.constructor && (n = o.constructor.name);
+                    if ("Map" === n || "Set" === n) return Array.from(o);
+                    if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return api_arrayLikeToArray(o, minLen);
+                }(o)) || allowArrayLike && o && "number" == typeof o.length) {
+                    it && (o = it);
+                    var i = 0, F = function F() {};
+                    return {
+                        s: F,
+                        n: function n() {
+                            return i >= o.length ? {
+                                done: !0
+                            } : {
+                                done: !1,
+                                value: o[i++]
+                            };
+                        },
+                        e: function e(_e) {
+                            throw _e;
+                        },
+                        f: F
+                    };
                 }
-            },
-            created: function created() {
-                var config_str = store.get("config_str");
-                if (config_str) try {
-                    var old_config = JSON.parse(config_str);
-                    for (var key in old_config) Object.hasOwnProperty.call(configvue_type_script_lang_js_config, key) && (configvue_type_script_lang_js_config[key] = old_config[key]);
-                } catch (_unused) {
-                    console.log("初始化脚本配置");
-                }
-                configvue_type_script_lang_js_config.auth = store.get("auth_id") ? "1" : "0", store.set("config_str", JSON.stringify(configvue_type_script_lang_js_config)), 
-                window.onbeforeunload = function() {
-                    var bp_aria2_window = window.bp_aria2_window;
-                    bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
-                };
+                throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
             }
-        }, template_configvue_type_script_lang_js_ = configvue_type_script_lang_js_, injectStylesIntoStyleTag = __webpack_require__(379), injectStylesIntoStyleTag_default = __webpack_require__.n(injectStylesIntoStyleTag), styleDomAPI = __webpack_require__(795), styleDomAPI_default = __webpack_require__.n(styleDomAPI), insertBySelector = __webpack_require__(569), insertBySelector_default = __webpack_require__.n(insertBySelector), setAttributesWithoutAttributes = __webpack_require__(565), setAttributesWithoutAttributes_default = __webpack_require__.n(setAttributesWithoutAttributes), insertStyleElement = __webpack_require__(216), insertStyleElement_default = __webpack_require__.n(insertStyleElement), styleTagTransform = __webpack_require__(589), styleTagTransform_default = __webpack_require__.n(styleTagTransform), configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_ = __webpack_require__(499), options = {};
-        options.styleTagTransform = styleTagTransform_default(), options.setAttributes = setAttributesWithoutAttributes_default(), 
-        options.insert = insertBySelector_default().bind(null, "head"), options.domAPI = styleDomAPI_default(), 
-        options.insertStyleElement = insertStyleElement_default();
-        injectStylesIntoStyleTag_default()(configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_.Z, options), 
-        configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_.Z && configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_.Z.locals && configvue_type_style_index_0_id_15d0b82e_scoped_true_lang_css_.Z.locals;
-        var component = 
-        /* globals __VUE_SSR_CONTEXT__ */
-        function normalizeComponent(scriptExports, render, staticRenderFns, functionalTemplate, injectStyles, scopeId, moduleIdentifier, shadowMode) {
-            var hook, options = "function" == typeof scriptExports ? scriptExports.options : scriptExports;
-            if (render && (options.render = render, options.staticRenderFns = staticRenderFns, 
-            options._compiled = !0), functionalTemplate && (options.functional = !0), scopeId && (options._scopeId = "data-v-" + scopeId), 
-            moduleIdentifier ? (hook = function(context) {
-                (context = context || this.$vnode && this.$vnode.ssrContext || this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) || "undefined" == typeof __VUE_SSR_CONTEXT__ || (context = __VUE_SSR_CONTEXT__), 
-                injectStyles && injectStyles.call(this, context), context && context._registeredComponents && context._registeredComponents.add(moduleIdentifier);
-            }, options._ssrRegister = hook) : injectStyles && (hook = shadowMode ? function() {
-                injectStyles.call(this, (options.functional ? this.parent : this).$root.$options.shadowRoot);
-            } : injectStyles), hook) if (options.functional) {
-                options._injectStyles = hook;
-                var originalRender = options.render;
-                options.render = function renderWithStyleInjection(h, context) {
-                    return hook.call(context), originalRender(h, context);
+            var err, normalCompletion = !0, didErr = !1;
+            return {
+                s: function s() {
+                    it = it.call(o);
+                },
+                n: function n() {
+                    var step = it.next();
+                    return normalCompletion = step.done, step;
+                },
+                e: function e(_e2) {
+                    didErr = !0, err = _e2;
+                },
+                f: function f() {
+                    try {
+                        normalCompletion || null == it.return || it.return();
+                    } finally {
+                        if (didErr) throw err;
+                    }
+                }
+            };
+        }
+        function api_arrayLikeToArray(arr, len) {
+            (null == len || len > arr.length) && (len = arr.length);
+            for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+            return arr2;
+        }
+        function get_url_base(page, quality, video_format, success, error, request_type) {
+            var _success, _error;
+            _success = "function" == typeof success ? function _success(e) {
+                success(e);
+            } : function _success(res) {
+                return console.log(res);
+            }, _error = "function" == typeof error ? function _error(e) {
+                message.v0.error("请求失败"), error(e);
+            } : function _error(err) {
+                return console.error(err);
+            };
+            var vb = video.base(), _ref = [ vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type ], aid = _ref[0], cid = _ref[1], epid = _ref[2], q = _ref[3], type = _ref[4], format = video_format || config_config.format;
+            "mp4" === format && "video" !== type && (format = "flv"), "auto" === request_type && user.needReplace() && (request_type = "online");
+            var base_api, url_replace_cdn = function url_replace_cdn(url) {
+                if ("0" !== config_config.host_key && "online" === request_type && "mp4" !== format) {
+                    var url_tmp = url.split("/");
+                    url_tmp[2] = hostMap[config_config.host_key], url = url_tmp.join("/");
+                }
+                return url;
+            }, ajax_obj = {
+                type: "GET",
+                dataType: "json"
+            };
+            if ("auto" === request_type || "local" === request_type) {
+                var fnver, fnval;
+                "cheese" === type ? (base_api = "https://api.bilibili.com/pugv/player/web/playurl", 
+                "dash" === format ? (fnver = 0, fnval = 80) : (fnver = 1, fnval = 80)) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl", 
+                "dash" === format ? (fnver = 0, fnval = 4048) : (fnver = 0, fnval = 0)), base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
+                base_api += "mp4" === format ? "&platform=html5&high_quality=1" : "", ajax_obj.xhrFields = {
+                    withCredentials: !0
                 };
             } else {
-                var existing = options.beforeCreate;
-                options.beforeCreate = existing ? [].concat(existing, hook) : [ hook ];
+                base_api = config_config.base_api, base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
+                var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
+                "1" === config_config.auth && auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec), 
+                page && (base_api += "&s"));
             }
-            return {
-                exports: scriptExports,
-                options: options
-            };
-        }(template_configvue_type_script_lang_js_, render, [], !1, null, "15d0b82e", null);
-        component.options.__file = "src/template/config.vue";
-        var template_config = component.exports;
+            ajax_obj.url = base_api, (0, ajax.h)(ajax_obj).then((function(res) {
+                var data;
+                if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "online") : (res.url && (res.url = url_replace_cdn(res.url)), 
+                res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)), 
+                void _success(res));
+                if (data.dash) {
+                    for (var result = {
+                        code: 0,
+                        quality: data.quality,
+                        accept_quality: data.accept_quality,
+                        video: "",
+                        audio: ""
+                    }, videos = data.dash.video, i = 0; i < videos.length; i++) {
+                        var _video = videos[i];
+                        if (_video.id <= q) {
+                            result.video = url_replace_cdn(_video.base_url), result.audio = url_replace_cdn(data.dash.audio[0].base_url);
+                            break;
+                        }
+                    }
+                    _success(result);
+                } else _success({
+                    code: 0,
+                    quality: data.quality,
+                    accept_quality: data.accept_quality,
+                    url: url_replace_cdn(data.durl[0].url)
+                });
+            })).catch((function(err) {
+                return _error(err);
+            }));
+        }
+        function _get_subtitle(p, callback) {
+            var to_blob_url = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], video_base = video.base(), _ref3 = [ video_base.aid(p), video_base.cid(p), video_base.epid(p) ], aid = _ref3[0], cid = _ref3[1], epid = _ref3[2];
+            (0, ajax.h)({
+                url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
+                dataType: "json"
+            }).then((function(res) {
+                !res.code && res.data.subtitle.subtitles[0] ? (0, ajax.h)({
+                    url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
+                    dataType: "json"
+                }).then((function(res) {
+                    var _step, webvtt = "WEBVTT\n\n", _iterator = api_createForOfIteratorHelper(res.body || [ {
+                        from: 0,
+                        to: 0,
+                        content: ""
+                    } ]);
+                    try {
+                        for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+                            var data = _step.value, a = new Date(1e3 * (parseInt(data.from) - 28800)).toTimeString().split(" ")[0] + "." + (data.from.toString().split(".")[1] || "000").padEnd(3, "0"), b = new Date(1e3 * (parseInt(data.to) - 28800)).toTimeString().split(" ")[0] + "." + (data.to.toString().split(".")[1] || "000").padEnd(3, "0");
+                            webvtt += "".concat(a, " --\x3e ").concat(b, "\n").concat(data.content.trim(), "\n\n");
+                        }
+                    } catch (err) {
+                        _iterator.e(err);
+                    } finally {
+                        _iterator.f();
+                    }
+                    callback(to_blob_url ? URL.createObjectURL(new Blob([ webvtt ], {
+                        type: "text/vtt"
+                    })) : webvtt);
+                })).catch(callback) : callback();
+            })).catch(callback);
+        }
+        var api = {
+            get_url: function get_url(success, error) {
+                var request_type = config_config.request_type;
+                get_url_base(0, 0, config_config.format, success, error, request_type);
+            },
+            get_urls: function get_urls(page, quality, format, success, error) {
+                get_url_base(page, quality, format, success, error, config_config.request_type);
+            },
+            get_subtitle_url: function get_subtitle_url(p, callback) {
+                _get_subtitle(p, callback, !0);
+            },
+            get_subtitle_data: function get_subtitle_data(p, callback) {
+                _get_subtitle(p, callback, !1);
+            },
+            get_season: function get_season(epid) {
+                (0, ajax.h)({
+                    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
+                    xhrFields: {
+                        withCredentials: !0
+                    },
+                    dataType: "json"
+                }).then((function(res) {
+                    res.code ? message.v0.warning("获取剧集信息失败") : window.bp_episodes = res.data.episodes || null;
+                }));
+            }
+        };
         function main_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
@@ -2447,7 +1902,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.2.1", " ").concat("77ee7b1", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.0", " ").concat("2f2f3d2", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2463,19 +1918,41 @@
                 key: "run",
                 value: function run() {
                     this.set_toolbar();
-                    var root_div = document.createElement("div");
-                    root_div.id = "bp_root", document.body.append(root_div);
-                    var api_url, api_url_temp, root = document.getElementById(root_div.id), root_config = document.createElement("div");
-                    root_config.id = "root_config", root.append(root_config), new (external_Vue_default())({
-                        render: function render(h) {
-                            return h(template_config);
+                    var api_url, api_url_temp, root_div = document.createElement("div");
+                    root_div.id = "bp_root", document.body.append(root_div), function initConfig(el) {
+                        var options = "";
+                        for (var k in hostMap) options += '<option value="'.concat(k, '">').concat(hostMap[k], "</option>");
+                        config = config.replace("{{host_key_options}}", options), el && $(el)[0] ? $(el).append(config) : $("body").append(config);
+                        var config_str = store.get("config_str");
+                        if (config_str) try {
+                            var old_config = JSON.parse(config_str);
+                            for (var key in old_config) Object.hasOwnProperty.call(config_config, key) && (config_config[key] = old_config[key]);
+                        } catch (_unused) {
+                            console.log("初始化脚本配置");
                         }
-                    }).$mount("#".concat(root_config.id)), (0, message.N5)("#".concat(root_div.id)), 
-                    user.lazyInit(), auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"><\/script>'), 
+                        config_config.auth = store.get("auth_id") ? "1" : "0", store.set("config_str", JSON.stringify(config_config));
+                        var _loop = function _loop(_key2) {
+                            if ("auth" === _key2) return "continue";
+                            $("#".concat(_key2)).on("input", (function(e) {
+                                config_config[_key2] = e.delegateTarget.value;
+                            }));
+                        };
+                        for (var _key2 in config_config) _loop(_key2);
+                        for (var _k in config_functions) {
+                            var e = $("#".concat(_k))[0];
+                            e && (e.onclick = config_functions[_k]);
+                        }
+                        for (var _key3 in config_config) $("#".concat(_key3)).val(config_config[_key3]);
+                        window.onbeforeunload = function() {
+                            var bp_aria2_window = window.bp_aria2_window;
+                            bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
+                        };
+                    }("#".concat(root_div.id)), (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), 
+                    auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"><\/script>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("body").on("click", "#setting_btn", (function() {
-                        for (var key in user.lazyInit(!0), config.config) $("#".concat(key)).val(config.config[key]);
+                        for (var key in user.lazyInit(!0), config_config) $("#".concat(key)).val(config_config[key]);
                         $("#bp_config").show(), $("#bp_config").animate({
                             opacity: "1"
                         }, 300), ui_scroll.A.hide();
@@ -2485,20 +1962,20 @@
                     })), $("body").on("click", "#download_subtitle", (function() {
                         Download.download_subtitle_vtt(0, video.base().filename());
                     })), $("body").on("click", "#video_download_all", (function() {
-                        user.lazyInit(!0), store.get("auth_id") && store.get("auth_sec") ? "rpc" === config.config.download_type ? Download.download_all() : message._p.confirm("仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？", (function() {
+                        user.lazyInit(!0), store.get("auth_id") && store.get("auth_sec") ? "rpc" === config_config.download_type ? Download.download_all() : message._p.confirm("仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？", (function() {
                             Download.download_all();
                         })) : message._p.confirm("批量下载仅支持授权用户使用RPC接口下载，是否进行授权？", (function() {
                             auth.login();
                         }));
                     })), $("body").on("click", "#video_download", (function() {
-                        var type = config.config.download_type;
+                        var type = config_config.download_type;
                         if ("web" === type) $("#video_url")[0].click(); else if ("a" === type) {
-                            var _ref = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], video_url_2 = _ref[1], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref[0], '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config.config.format ? '<a href="'.concat(video_url_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
+                            var _ref = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], video_url_2 = _ref[1], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref[0], '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
                             message._p.alert(msg);
                         } else if ("aria" === type) {
                             var file_name, file_name_2, _ref2 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref2[0], _video_url_ = _ref2[1], video_title = video.base().filename();
                             file_name = video_title + Download.url_format(_video_url), file_name_2 = video_title + "_audio.mp4";
-                            var aria2_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), code = 'aria2c "'.concat(_video_url, '" --out "').concat(file_name, '" ').concat(aria2_header), code_2 = 'aria2c "'.concat(_video_url_, '" --out "').concat(file_name_2, '" ').concat(aria2_header), _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config.config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
+                            var aria2_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), code = 'aria2c "'.concat(_video_url, '" --out "').concat(file_name, '" ').concat(aria2_header), code_2 = 'aria2c "'.concat(_video_url_, '" --out "').concat(file_name_2, '" ').concat(aria2_header), _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
                             !window.bp_clip_btn && (window.bp_clip_btn = function(id) {
                                 $("#".concat(id)).select(), document.execCommand("copy") ? message.v0.success("复制成功") : message.v0.warning("复制失败");
                             }), message._p.alert(_msg);
@@ -2507,7 +1984,7 @@
                             Download.download(url, filename, type);
                         }
                     })), $("body").on("click", "#video_download_2", (function() {
-                        var type = config.config.download_type;
+                        var type = config_config.download_type;
                         if ("web" === type) $("#video_url_2")[0].click(); else if ("a" === type) $("#video_download").click(); else if ("aria" === type) $("#video_download").click(); else {
                             var url = $("#video_url_2").attr("href"), filename = video.base().filename();
                             Download.download(url, filename, type);
@@ -2515,25 +1992,25 @@
                     })), $("body").on("click", "#bilibili_parse", (function() {
                         user.lazyInit(!0);
                         var vb = video.base(), _ref3 = [ vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid() ], type = _ref3[0], aid = _ref3[1], p = _ref3[2], cid = _ref3[3], epid = _ref3[4], q = video.get_quality().q;
-                        api_url = "".concat(config.config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config.config.format, "&otype=json&_host=").concat(config.config.host_key, "&_req=").concat(config.config.request_type);
+                        api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type);
                         var _ref4 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref4[0], auth_sec = _ref4[1];
-                        if ("1" === config.config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
-                        api_url !== api_url_temp || "local" === config.config.request_type) $("#video_url").attr("href", "#"), 
+                        if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
+                        api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"), 
                         $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message.v0.info("开始请求"), 
                         api.get_url((function(res) {
                             if (res && !res.code) {
                                 message.v0.success("请求成功"), res.times && message.v0.info("剩余请求次数：".concat(res.times));
-                                var _url = "dash" === config.config.format ? res.video.replace("http://", "https://") : res.url.replace("http://", "https://"), _url_ = "dash" === config.config.format ? res.audio.replace("http://", "https://") : "#";
-                                $("#video_url").attr("href", _url), $("#video_download").show(), "dash" === config.config.format && ($("#video_url_2").attr("href", _url_), 
-                                $("#video_download_2").show()), (user.needReplace() || vb.is_limited() || "1" === config.config.replace_force) && player.replace_player(_url, _url_), 
-                                "1" === config.config.auto_download && $("#video_download").click();
+                                var _url = "dash" === config_config.format ? res.video.replace("http://", "https://") : res.url.replace("http://", "https://"), _url_ = "dash" === config_config.format ? res.audio.replace("http://", "https://") : "#";
+                                $("#video_url").attr("href", _url), $("#video_download").show(), "dash" === config_config.format && ($("#video_url_2").attr("href", _url_), 
+                                $("#video_download_2").show()), (user.needReplace() || vb.is_limited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_), 
+                                "1" === config_config.auto_download && $("#video_download").click();
                             }
                         })); else {
                             message.v0.miaow();
                             var url = $("#video_url").attr("href"), url_2 = $("#video_url_2").attr("href");
-                            url && "#" !== url && ($("#video_download").show(), "dash" === config.config.format && $("#video_download_2").show(), 
-                            (user.needReplace() || vb.is_limited() || "1" === config.config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2), 
-                            "1" === config.config.auto_download && $("#video_download").click());
+                            url && "#" !== url && ($("#video_download").show(), "dash" === config_config.format && $("#video_download_2").show(), 
+                            (user.needReplace() || vb.is_limited() || "1" === config_config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2), 
+                            "1" === config_config.auto_download && $("#video_download").click());
                         }
                     })), $("body").on("click", "a.router-link-active", (function() {
                         this !== $('li[class="on"]').find("a")[0] && check.refresh();
