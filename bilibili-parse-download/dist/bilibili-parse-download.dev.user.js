@@ -293,87 +293,84 @@ var RuntimeLib = /*#__PURE__*/function () {
           urls = _this$config.urls,
           getModule = _this$config.getModule;
       var errs = [];
-      var promises = urls.map(function (url) {
-        return {
-          url: url,
-          promise: (0,_ajax__WEBPACK_IMPORTED_MODULE_0__._ajax)({
-            url: url,
-            type: 'GET',
-            dataType: 'text',
-            cache: true,
-            error: function error() {
-              return null;
-            }
-          })
-        };
-      });
-      var len = promises.length;
       return new Promise(function (resolve, reject) {
-        if (_this.moduleAsync) {
-          resolve(getModule(window));
-        }
-
         var i = 0;
-        promises.forEach(function (_ref) {
-          var url = _ref.url,
-              promise = _ref.promise;
-
+        urls.forEach(function (url) {
           // 延时并发
-          try {
-            setTimeout(function () {
-              _this.moduleAsync = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-                var code;
-                return _regeneratorRuntime().wrap(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        if (!_this.anyResolved) {
-                          _context.next = 2;
-                          break;
-                        }
+          setTimeout( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+            var code;
+            return _regeneratorRuntime().wrap(function _callee$(_context) {
+              while (1) {
+                switch (_context.prev = _context.next) {
+                  case 0:
+                    _context.prev = 0;
 
-                        return _context.abrupt("return");
-
-                      case 2:
-                        console.log("[Runtime Library] Start download from ".concat(url));
-                        _context.next = 5;
-                        return promise;
-
-                      case 5:
-                        code = _context.sent;
-
-                        if (!(!code || _this.anyResolved)) {
-                          _context.next = 8;
-                          break;
-                        }
-
-                        return _context.abrupt("return");
-
-                      case 8:
-                        _this.anyResolved = true;
-                        console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length));
-                        (function runEval() {
-                          return eval(code);
-                        }).bind(window)();
-                        resolve(getModule(window));
-
-                      case 12:
-                      case "end":
-                        return _context.stop();
+                    if (!_this.anyResolved) {
+                      _context.next = 3;
+                      break;
                     }
-                  }
-                }, _callee);
-              }))(); // = window.xxx
-            }, i++ * 1000);
-          } catch (err) {
-            if (_this.anyResolved) return;
-            errs.push(err);
 
-            if (--len === 0) {
-              console.error(errs);
-              reject(errs);
-            }
-          }
+                    return _context.abrupt("return");
+
+                  case 3:
+                    console.log("[Runtime Library] Start download from ".concat(url));
+                    _context.next = 6;
+                    return (0,_ajax__WEBPACK_IMPORTED_MODULE_0__._ajax)({
+                      url: url,
+                      type: 'GET',
+                      dataType: 'text',
+                      cache: true
+                    });
+
+                  case 6:
+                    code = _context.sent;
+
+                    if (!_this.anyResolved) {
+                      _context.next = 9;
+                      break;
+                    }
+
+                    return _context.abrupt("return");
+
+                  case 9:
+                    _this.anyResolved = true;
+                    console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length));
+                    (function runEval() {
+                      return eval(code);
+                    }).bind(window)();
+                    resolve(getModule(window));
+                    _context.next = 21;
+                    break;
+
+                  case 15:
+                    _context.prev = 15;
+                    _context.t0 = _context["catch"](0);
+
+                    if (!_this.anyResolved) {
+                      _context.next = 19;
+                      break;
+                    }
+
+                    return _context.abrupt("return");
+
+                  case 19:
+                    errs.push({
+                      url: url,
+                      err: _context.t0
+                    });
+
+                    if (--i === 0) {
+                      console.error(errs);
+                      reject(errs);
+                    }
+
+                  case 21:
+                  case "end":
+                    return _context.stop();
+                }
+              }
+            }, _callee, null, [[0, 15]]);
+          })), i++ * 1000);
         });
       });
     }
@@ -382,10 +379,42 @@ var RuntimeLib = /*#__PURE__*/function () {
   return RuntimeLib;
 }();
 
-var JSZip; // 伪同步
+var cdn_map = {
+  jsdelivr: function jsdelivr(name, ver, filename) {
+    return "https://cdn.jsdelivr.net/npm/".concat(name, "@").concat(ver, "/dist/").concat(filename);
+  },
+  cloudflare: function cloudflare(name, ver, filename) {
+    return "https://cdnjs.cloudflare.com/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
+  },
+  bootcdn: function bootcdn(name, ver, filename) {
+    return "https://cdn.bootcdn.net/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
+  },
+  staticfile: function staticfile(name, ver, filename) {
+    return "https://cdn.staticfile.org/".concat(name, "/").concat(ver, "/").concat(filename);
+  }
+};
 
+var urls = function urls(_ref2) {
+  var name = _ref2.name,
+      ver = _ref2.ver,
+      filename = _ref2.filename,
+      cdn_keys = _ref2.cdn_keys;
+  cdn_keys = cdn_keys ? cdn_keys.filter(function (key) {
+    return key in cdn_map;
+  }) : Object.keys(cdn_map);
+  return cdn_keys.map(function (k) {
+    return cdn_map[k](name, ver, filename);
+  });
+}; // 伪同步
+
+
+var JSZip;
 new RuntimeLib({
-  urls: ['https://cdn.jsdelivr.net/npm/jszip@3.10.0/dist/jszip.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js', 'https://cdn.bootcdn.net/ajax/libs/jszip/3.10.0/jszip.min.js', 'https://cdn.staticfile.org/jszip/3.10.0/jszip.min.js'],
+  urls: urls({
+    name: 'jszip',
+    ver: '3.10.0',
+    filename: 'jszip.min.js'
+  }),
   getModule: function getModule(window) {
     return window.JSZip;
   }
@@ -394,7 +423,11 @@ new RuntimeLib({
 });
 var flvjs;
 new RuntimeLib({
-  urls: ['https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js', 'https://cdn.bootcdn.net/ajax/libs/flv.js/1.6.2/flv.min.js', 'https://cdn.staticfile.org/flv.js/1.6.2/flv.min.js'],
+  urls: urls({
+    name: 'flv.js',
+    ver: '1.6.2',
+    filename: 'flv.min.js'
+  }),
   getModule: function getModule(window) {
     return window.flvjs;
   }
@@ -403,7 +436,11 @@ new RuntimeLib({
 });
 var DPlayer;
 new RuntimeLib({
-  urls: ['https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js', 'https://cdn.bootcdn.net/ajax/libs/dplayer/1.26.0/DPlayer.min.js', 'https://cdn.staticfile.org/dplayer/1.26.0/DPlayer.min.js'],
+  urls: urls({
+    name: 'dplayer',
+    ver: '1.26.0',
+    filename: 'DPlayer.min.js'
+  }),
   getModule: function getModule(window) {
     return window.DPlayer;
   }
@@ -2704,7 +2741,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.0", " ").concat("2f2f3d2", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.1", " ").concat("19077e6", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -2732,7 +2769,7 @@ var Main = /*#__PURE__*/function () {
       auth.initAuth();
       auth.checkLoginStatus();
       check.refresh();
-      $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"></script>'); // for dom changed
+      $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css"></script>'); // for dom changed
 
       $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
       $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
