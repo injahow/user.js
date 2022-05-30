@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.3.0
+// @version       2.3.1
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -24,7 +24,7 @@
 // @compatible    firefox
 // @grant         none
 // ==/UserScript==
-/* globals $, DPlayer waitForKeyElements */
+/* globals $ waitForKeyElements */
 // @[ You can find all source codes in GitHub repo ]
 (function() {
     "use strict";
@@ -519,87 +519,116 @@
                 return _createClass(RuntimeLib, [ {
                     key: "getModulePromise",
                     value: function getModulePromise() {
-                        var _this = this, _this$config = this.config, urls = _this$config.urls, getModule = _this$config.getModule, errs = [], promises = urls.map((function(url) {
-                            return {
-                                url: url,
-                                promise: (0, _ajax__WEBPACK_IMPORTED_MODULE_0__.j)({
-                                    url: url,
-                                    type: "GET",
-                                    dataType: "text",
-                                    cache: !0,
-                                    error: function error() {
-                                        return null;
-                                    }
-                                })
-                            };
-                        })), len = promises.length;
+                        var _this = this, _this$config = this.config, urls = _this$config.urls, getModule = _this$config.getModule, errs = [];
                         return new Promise((function(resolve, reject) {
-                            _this.moduleAsync && resolve(getModule(window));
                             var i = 0;
-                            promises.forEach((function(_ref) {
-                                var url = _ref.url, promise = _ref.promise;
-                                try {
-                                    setTimeout((function() {
-                                        _this.moduleAsync = _asyncToGenerator(_regeneratorRuntime().mark((function _callee() {
-                                            var code;
-                                            return _regeneratorRuntime().wrap((function _callee$(_context) {
-                                                for (;;) switch (_context.prev = _context.next) {
-                                                  case 0:
-                                                    if (!_this.anyResolved) {
-                                                        _context.next = 2;
-                                                        break;
-                                                    }
-                                                    return _context.abrupt("return");
+                            urls.forEach((function(url) {
+                                setTimeout(_asyncToGenerator(_regeneratorRuntime().mark((function _callee() {
+                                    var code;
+                                    return _regeneratorRuntime().wrap((function _callee$(_context) {
+                                        for (;;) switch (_context.prev = _context.next) {
+                                          case 0:
+                                            if (_context.prev = 0, !_this.anyResolved) {
+                                                _context.next = 3;
+                                                break;
+                                            }
+                                            return _context.abrupt("return");
 
-                                                  case 2:
-                                                    return console.log("[Runtime Library] Start download from ".concat(url)), _context.next = 5, 
-                                                    promise;
+                                          case 3:
+                                            return console.log("[Runtime Library] Start download from ".concat(url)), _context.next = 6, 
+                                            (0, _ajax__WEBPACK_IMPORTED_MODULE_0__.j)({
+                                                url: url,
+                                                type: "GET",
+                                                dataType: "text",
+                                                cache: !0
+                                            });
 
-                                                  case 5:
-                                                    if (code = _context.sent, code && !_this.anyResolved) {
-                                                        _context.next = 8;
-                                                        break;
-                                                    }
-                                                    return _context.abrupt("return");
+                                          case 6:
+                                            if (code = _context.sent, !_this.anyResolved) {
+                                                _context.next = 9;
+                                                break;
+                                            }
+                                            return _context.abrupt("return");
 
-                                                  case 8:
-                                                    _this.anyResolved = !0, console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length)), 
-                                                    function runEval() {
-                                                        return eval(code);
-                                                    }.bind(window)(), resolve(getModule(window));
+                                          case 9:
+                                            _this.anyResolved = !0, console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length)), 
+                                            function runEval() {
+                                                return eval(code);
+                                            }.bind(window)(), resolve(getModule(window)), _context.next = 21;
+                                            break;
 
-                                                  case 12:
-                                                  case "end":
-                                                    return _context.stop();
-                                                }
-                                            }), _callee);
-                                        })))();
-                                    }), 1e3 * i++);
-                                } catch (err) {
-                                    if (_this.anyResolved) return;
-                                    errs.push(err), 0 == --len && (console.error(errs), reject(errs));
-                                }
+                                          case 15:
+                                            if (_context.prev = 15, _context.t0 = _context.catch(0), !_this.anyResolved) {
+                                                _context.next = 19;
+                                                break;
+                                            }
+                                            return _context.abrupt("return");
+
+                                          case 19:
+                                            errs.push({
+                                                url: url,
+                                                err: _context.t0
+                                            }), 0 == --i && (console.error(errs), reject(errs));
+
+                                          case 21:
+                                          case "end":
+                                            return _context.stop();
+                                        }
+                                    }), _callee, null, [ [ 0, 15 ] ]);
+                                }))), 1e3 * i++);
                             }));
                         }));
                     }
                 } ]), RuntimeLib;
-            }(), JSZip, flvjs, DPlayer;
+            }(), cdn_map = {
+                jsdelivr: function jsdelivr(name, ver, filename) {
+                    return "https://cdn.jsdelivr.net/npm/".concat(name, "@").concat(ver, "/dist/").concat(filename);
+                },
+                cloudflare: function cloudflare(name, ver, filename) {
+                    return "https://cdnjs.cloudflare.com/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
+                },
+                bootcdn: function bootcdn(name, ver, filename) {
+                    return "https://cdn.bootcdn.net/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
+                },
+                staticfile: function staticfile(name, ver, filename) {
+                    return "https://cdn.staticfile.org/".concat(name, "/").concat(ver, "/").concat(filename);
+                }
+            }, urls = function urls(_ref2) {
+                var name = _ref2.name, ver = _ref2.ver, filename = _ref2.filename, cdn_keys = _ref2.cdn_keys;
+                return (cdn_keys = cdn_keys ? cdn_keys.filter((function(key) {
+                    return key in cdn_map;
+                })) : Object.keys(cdn_map)).map((function(k) {
+                    return cdn_map[k](name, ver, filename);
+                }));
+            }, JSZip, flvjs, DPlayer;
             new RuntimeLib({
-                urls: [ "https://cdn.jsdelivr.net/npm/jszip@3.10.0/dist/jszip.min.js", "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js", "https://cdn.bootcdn.net/ajax/libs/jszip/3.10.0/jszip.min.js", "https://cdn.staticfile.org/jszip/3.10.0/jszip.min.js" ],
+                urls: urls({
+                    name: "jszip",
+                    ver: "3.10.0",
+                    filename: "jszip.min.js"
+                }),
                 getModule: function getModule(window) {
                     return window.JSZip;
                 }
             }).getModulePromise().then((function(module) {
                 return JSZip = module;
             })), new RuntimeLib({
-                urls: [ "https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js", "https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js", "https://cdn.bootcdn.net/ajax/libs/flv.js/1.6.2/flv.min.js", "https://cdn.staticfile.org/flv.js/1.6.2/flv.min.js" ],
+                urls: urls({
+                    name: "flv.js",
+                    ver: "1.6.2",
+                    filename: "flv.min.js"
+                }),
                 getModule: function getModule(window) {
                     return window.flvjs;
                 }
             }).getModulePromise().then((function(module) {
                 return flvjs = module;
             })), new RuntimeLib({
-                urls: [ "https://cdn.jsdelivr.net/npm/dplayer@1.26.0/dist/DPlayer.min.js", "https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js", "https://cdn.bootcdn.net/ajax/libs/dplayer/1.26.0/DPlayer.min.js", "https://cdn.staticfile.org/dplayer/1.26.0/DPlayer.min.js" ],
+                urls: urls({
+                    name: "dplayer",
+                    ver: "1.26.0",
+                    filename: "DPlayer.min.js"
+                }),
                 getModule: function getModule(window) {
                     return window.DPlayer;
                 }
@@ -1902,7 +1931,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.0", " ").concat("2f2f3d2", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.1", " ").concat("19077e6", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -1948,7 +1977,7 @@
                             bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
                         };
                     }("#".concat(root_div.id)), (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), 
-                    auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@1.25.0/dist/DPlayer.min.css"><\/script>'), 
+                    auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css"><\/script>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("body").on("click", "#setting_btn", (function() {
