@@ -71,7 +71,7 @@ class Auth {
             : this.loginManual.bind(this)
 
         if (store.get('auth_id')) {
-            MessageBox.confirm('发现授权记录，是否重新授权？', do_login);
+            MessageBox.confirm('发现授权记录，是否重新授权？', do_login)
             return
         }
         do_login()

@@ -209,7 +209,8 @@ export const api = {
     get_url: (success, error) => {
         const request_type = config.request_type
         const format = config.format
-        get_url_base(0, 0, format, success, error, request_type)
+        const quality = config.video_quality === '0' ? 0 : parseInt(config.video_quality)
+        get_url_base(0, quality, format, success, error, request_type)
     },
     get_urls: (page, quality, format, success, error) => {
         const request_type = config.request_type

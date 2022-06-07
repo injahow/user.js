@@ -124,7 +124,7 @@ function replace_player(url, url_2) {
             ]
         })
         // subtitle_blob save
-        if (config.format === 'dash' && url_2 && url_2 !== '#') {
+        if (url_2 && url_2 !== '#') {
             $('body').append('<div id="bp_dplayer_2" style="display:none;"></div>')
             window.bp_dplayer_2 = new DPlayer({
                 container: $('#bp_dplayer_2')[0],
@@ -219,11 +219,11 @@ function danmaku_config() {
             animation-duration: ${parseFloat(config.danmaku_speed)}s;
             font-size: ${parseInt(config.danmaku_fontsize)}px;
         }
-        </style>`;
+        </style>`
     if (!!$('#dplayer_danmaku_style')[0]) {
-        $('#dplayer_danmaku_style').remove();
+        $('#dplayer_danmaku_style').remove()
     }
-    $('body').append(style);
+    $('body').append(style)
 }
 
 export const player = {

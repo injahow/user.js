@@ -23,6 +23,7 @@ const config = {
     rpc_dir: 'D:/',
     ariang_host: 'http://ariang.injahow.com/',
     auto_download: '0',
+    video_quality: '0',
     danmaku_speed: '15',
     danmaku_fontsize: '22'
 }
@@ -30,7 +31,6 @@ const config = {
 const default_config = Object.assign({}, config) // 浅拷贝
 
 const hostMap = {
-    '0': '关闭',
     ks3: 'upos-sz-mirrorks3.bilivideo.com',
     ks3b: 'upos-sz-mirrorks3b.bilivideo.com',
     ks3c: 'upos-sz-mirrorks3c.bilivideo.com',
@@ -54,6 +54,18 @@ const hostMap = {
     akamai: 'upos-hz-mirrorakam.akamaized.net'
 }
 
+const videoQualityMap = {
+    '120': '4K 超清',
+    '116': '1080P 60帧',
+    '112': '1080P 高码率',
+    '80': '1080P 高清',
+    '74': '720P 60帧',
+    '64': '720P 高清',
+    '48': '720P 高清(MP4)',
+    '32': '480P 清晰',
+    '16': '360P 流畅'
+}
+
 let help_clicked = false
 
 const config_functions = {
@@ -65,12 +77,8 @@ const config_functions = {
         } catch (err) {
             old_config = Object.assign({}, config)
         }
-        // hide
-        $('#bp_config').hide()
-        $('#bp_config').css('opacity', 0)
-        scroll.show()
-        // 判断是否需要重新请求
-        for (const key of ['base_api', 'format', 'auth']) {
+        // 判断重新请求
+        for (const key of ['base_api', 'format', 'auth', 'video_quality']) {
             if (config[key] !== old_config[key]) {
                 $('#video_download').hide()
                 $('#video_download_2').hide()
@@ -111,7 +119,12 @@ const config_functions = {
                 break
             }
         }
-        // ...
+        // todo
+
+        // 关闭
+        $('#bp_config').hide()
+        $('#bp_config').css('opacity', 0)
+        scroll.show()
     },
     reset_config: function () {
         for (const key in default_config) {
@@ -159,12 +172,19 @@ const config_functions = {
 
 function initConfig(el) {
 
-    let options = ''
+    // 注入 host_key_options
+    let options = '<option value="0">关闭</option>'
     for (const k in hostMap) {
         options += `<option value="${k}">${hostMap[k]}</option>`
     }
-    // 注入页面
     config_html = config_html.replace('{{host_key_options}}', options)
+    // 注入 video_quality_options
+    options = '<option value="0">与播放器相同</option>'
+    for (const k in videoQualityMap) {
+        options += `<option value="${k}">${videoQualityMap[k]}</option>`
+    }
+    config_html = config_html.replace('{{video_quality_options}}', options)
+
     if (el && !!$(el)[0]) {
         $(el).append(config_html)
     } else {
@@ -202,7 +222,7 @@ function initConfig(el) {
     }
     // 渲染数据
     for (const key in config) {
-        $(`#${key}`).val(config[key]);
+        $(`#${key}`).val(config[key])
     }
 
     window.onbeforeunload = () => {
@@ -217,5 +237,6 @@ function initConfig(el) {
 export {
     config,
     hostMap,
+    videoQualityMap,
     initConfig
 }
