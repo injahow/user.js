@@ -16,12 +16,17 @@ class Check {
         $('#video_download_2').hide()
         player.recover_player()
         // 更新check
-        const vb = video.base()
-        this.aid = vb.aid()
-        this.cid = vb.cid()
-        this.epid = vb.epid()
-        this.q = video.get_quality().q
-        window.bp_episodes = null // todo
+        try {
+            const vb = video.base()
+            this.aid = vb.aid()
+            this.cid = vb.cid()
+            this.epid = vb.epid()
+            this.q = video.get_quality().q
+            window.bp_episodes = null // todo
+        } catch (err) {
+            console.log(err)
+        }
+
     }
 
 }

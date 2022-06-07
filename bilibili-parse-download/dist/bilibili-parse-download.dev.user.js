@@ -1225,12 +1225,16 @@ var Check = /*#__PURE__*/function () {
       $('#video_download_2').hide();
       player.recover_player(); // 更新check
 
-      var vb = video.base();
-      this.aid = vb.aid();
-      this.cid = vb.cid();
-      this.epid = vb.epid();
-      this.q = video.get_quality().q;
-      window.bp_episodes = null; // todo
+      try {
+        var vb = video.base();
+        this.aid = vb.aid();
+        this.cid = vb.cid();
+        this.epid = vb.epid();
+        this.q = video.get_quality().q;
+        window.bp_episodes = null; // todo
+      } catch (err) {
+        console.log(err);
+      }
     }
   }]);
 
@@ -2758,7 +2762,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.2", " ").concat("810d834", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.2", " ").concat("034a4a3", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

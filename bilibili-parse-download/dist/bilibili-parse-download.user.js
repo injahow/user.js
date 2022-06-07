@@ -1117,9 +1117,13 @@
                 value: function refresh() {
                     console.log("refresh..."), $("#video_download").hide(), $("#video_download_2").hide(), 
                     player.recover_player();
-                    var vb = video.base();
-                    this.aid = vb.aid(), this.cid = vb.cid(), this.epid = vb.epid(), this.q = video.get_quality().q, 
-                    window.bp_episodes = null;
+                    try {
+                        var vb = video.base();
+                        this.aid = vb.aid(), this.cid = vb.cid(), this.epid = vb.epid(), this.q = video.get_quality().q, 
+                        window.bp_episodes = null;
+                    } catch (err) {
+                        console.log(err);
+                    }
                 }
             } ]), Check;
         }()), message = __webpack_require__(99), ui_scroll = __webpack_require__(537);
@@ -1935,7 +1939,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.2", " ").concat("810d834", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.2", " ").concat("034a4a3", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
