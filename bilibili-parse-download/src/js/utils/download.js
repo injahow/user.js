@@ -1,4 +1,4 @@
-import { config } from '../ui/config'
+import { config, videoQualityMap } from '../ui/config'
 import { Message, MessageBox } from '../ui/message'
 import { ajax } from './ajax'
 import { api } from './api'
@@ -50,21 +50,10 @@ function download_all() {
         }
     })
 
-    const q_map = {
-        '120': '4K 超清',
-        '116': '1080P 60帧',
-        '112': '1080P 高码率',
-        '80': '1080P 高清',
-        '74': '720P 60帧',
-        '64': '720P 高清',
-        '48': '720P 高清(MP4)',
-        '32': '480P 清晰',
-        '16': '360P 流畅'
-    }
     const quality_support = video.get_quality_support()
     let option_support_html = ''
     for (const item of quality_support) {
-        option_support_html += `<option value="${item}">${q_map[item]}</option>`
+        option_support_html += `<option value="${item}">${videoQualityMap[item]}</option>`
     }
     const msg = '' +
         `<div style="margin:2% 0;">
@@ -73,7 +62,7 @@ function download_all() {
                 <option value="flv" selected>FLV</option>
                 <option value="mp4">MP4</option>
             </select>
-            &nbsp;&nbsp;仅video类型支持mp4
+            &nbsp;&nbsp;仅Video支持MP4
         </div>
         <div style="margin:2% 0;">
             <label>视频质量:</label>
@@ -482,7 +471,7 @@ function _download_danmaku_ass(cid, title, return_type = null, callback = null) 
                     const hour = div(integer, 60 * 60)
                     const minute = div(integer, 60) % 60
                     const second = integer % 60
-                    const minorSecond = Math.floor((seconds - integer) * 100); // 取小数部分2位
+                    const minorSecond = Math.floor((seconds - integer) * 100) // 取小数部分2位
                     return `${hour}:${pad(minute)}:${pad(second)}.${minorSecond}`
                 }
                 const fields = [
@@ -575,7 +564,7 @@ function download_subtitle_vtt(p = 0, file_name) {
 
 function download_blob_zip(blob_data, filename) {
     if (!blob_data) return
-    const blob_url = URL.createObjectURL(blob_data);
+    const blob_url = URL.createObjectURL(blob_data)
     const a = document.createElement('a')
     a.setAttribute('target', '_blank')
     a.setAttribute('href', blob_url)
@@ -628,7 +617,7 @@ function download_subtitle_vtt_zip(videos, zip) { // 异步递归
     const videos_pop = videos.pop()
     api.get_subtitle_data(videos_pop.p, data => {
         if (data) {
-            zip.file(videos_pop.filename + '.vtt', data);
+            zip.file(videos_pop.filename + '.vtt', data)
         }
         download_subtitle_vtt_zip(videos, zip)
     })

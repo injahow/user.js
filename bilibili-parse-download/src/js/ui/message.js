@@ -1,6 +1,6 @@
 
 import { scroll } from './scroll'
-import message_html from '../../html/message.html';
+import message_html from '../../html/message.html'
 
 function initMessage(el) {
     if (el && !!$(el)[0]) {

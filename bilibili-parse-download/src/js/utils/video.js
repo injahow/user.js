@@ -1,3 +1,4 @@
+import { user } from '../user'
 import { api } from './api'
 
 function type() {
@@ -235,13 +236,19 @@ function get_quality() {
     } else {
         _q = _q_max = 80
     }
+    if (!user.isVIP()) {
+        _q = _q > 80 ? 80 : _q
+    }
     return { q: _q, q_max: _q_max }
 }
 
 function get_quality_support() {
     let list, quality_list = []
-    if (type() === 'cheese') {
-        list = $('div.edu-player-quality-item span')
+    const vb = video.base()
+    if (vb.type !== 'video') {
+        list = vb.type === 'cheese'
+            ? $('div.edu-player-quality-item span')
+            : $('.squirtle-quality-text')
         list.each(function () {
             const k = $(this).text()
             if (k === '自动') {
@@ -252,21 +259,18 @@ function get_quality_support() {
         return quality_list.length
             ? quality_list
             : ['80', '64', '32', '16']
-    }
-    if (!!$('ul.squirtle-select-list')[0]) {
-        list = $('li.squirtle-select-item')
-    } else if (!!$('ul.bui-select-list')[0]) {
+    } else {
         list = $('li.bui-select-item')
-    }
-    if (list && list.length) {
-        list.each(function () {
-            const q = `${$(this).attr('data-value')}`
-            if (q === '0') {
-                return false
-            }
-            quality_list.push(q)
-        })
-        return quality_list
+        if (list && list.length) {
+            list.each(function () {
+                const q = `${$(this).attr('data-value')}`
+                if (q === '0') {
+                    return false
+                }
+                quality_list.push(q)
+            })
+            return quality_list
+        }
     }
     return ['80', '64', '32', '16']
 }

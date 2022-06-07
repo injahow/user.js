@@ -20,7 +20,7 @@ class Main {
 
     constructor() {
         /* global JS_VERSION GIT_HASH */
-        console.log(`${'\n'} %c bilibili-parse-download.user.js v${JS_VERSION} ${GIT_HASH} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+        console.log(`${'\n'} %c bilibili-parse-download.user.js v${JS_VERSION} ${GIT_HASH} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;')
     }
 
     set_toolbar() {
@@ -49,7 +49,7 @@ class Main {
         auth.checkLoginStatus()
         check.refresh()
 
-        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css"></script>') // for dom changed
+        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">') // for dom changed
 
         $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
         $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
@@ -169,7 +169,7 @@ class Main {
                 vb.epid()
             ]
             const { q } = video.get_quality()
-            api_url = `${config.base_api}?av=${aid}&p=${p}&cid=${cid}&ep=${epid}&q=${q}&type=${type}&format=${config.format}&otype=json&_host=${config.host_key}&_req=${config.request_type}`
+            api_url = `${config.base_api}?av=${aid}&p=${p}&cid=${cid}&ep=${epid}&q=${q}&type=${type}&format=${config.format}&otype=json&_host=${config.host_key}&_req=${config.request_type}&_q=${config.video_quality}`
             const [auth_id, auth_sec] = [
                 store.get('auth_id'),
                 store.get('auth_sec')
@@ -202,17 +202,29 @@ class Main {
                 if (res && !res.code) {
                     Message.success('请求成功')
                     res.times && Message.info(`剩余请求次数：${res.times}`)
-                    let url = config.format === 'dash' ? res.video.replace('http://', 'https://') : res.url.replace('http://', 'https://')
-                    let url_2 = config.format === 'dash' ? res.audio.replace('http://', 'https://') : '#'
+
+                    let url, url_2
+                    if (res.url) {
+                        url = res.url.replace('http://', 'https://')
+                        url_2 = '#'
+                    } else if (res.video && res.audio) {
+                        url = res.video.replace('http://', 'https://')
+                        url_2 = res.audio.replace('http://', 'https://')
+                    } else {
+                        Message.warning('数据错误')
+                        return
+                    }
                     $('#video_url').attr('href', url)
                     $('#video_download').show()
-                    if (config.format === 'dash') {
+                    if (url_2 !== '#') {
                         $('#video_url_2').attr('href', url_2)
                         $('#video_download_2').show()
                     }
+
                     if (user.needReplace() || vb.is_limited() || config.replace_force === '1') {
                         player.replace_player(url, url_2)
                     }
+
                     if (config.auto_download === '1') {
                         $('#video_download').click()
                     }

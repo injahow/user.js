@@ -30,7 +30,7 @@
       <select id="host_key">
         {{host_key_options}}
       </select><br />
-      <small>注意：仅video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>
+      <small>注意：仅Video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>
     </div>
     <div style="margin: 2% 0">
       <label>下载方式：</label>
@@ -61,10 +61,10 @@
       </select>
       &nbsp;&nbsp;&nbsp;&nbsp;
       <label>弹幕速度：</label>
-      <input id="danmaku_speed" style="width: 5%" />s
+      <input id="danmaku_speed" style="width: 5%" /> s
       &nbsp;&nbsp;&nbsp;&nbsp;
       <label>弹幕字号：</label>
-      <input id="danmaku_fontsize" style="width: 5%" />px<br />
+      <input id="danmaku_fontsize" style="width: 5%" /> px<br />
       <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>
     </div>
     <div style="margin: 2% 0">
@@ -72,6 +72,11 @@
       <select id="auto_download">
         <option value="0">关闭</option>
         <option value="1">开启</option>
+      </select>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <label>视频质量：</label>
+      <select id="video_quality">
+        {{video_quality_options}}
       </select><br />
       <small>说明：请求地址成功后将自动点击下载视频按钮</small>
     </div>
