@@ -1,11 +1,11 @@
-import { store } from '@/js/store'
+import { auth } from '@/js/auth'
 import { check } from '@/js/check'
+import { store } from '@/js/store'
 import { Message, MessageBox } from '@/js/ui/message'
 import { scroll } from '@/js/ui/scroll'
 import { ajax } from '@/js/utils/ajax'
 import { Download } from '@/js/utils/download'
 import { player } from '@/js/utils/player'
-import { auth } from '@/js/auth'
 
 import config_html from '@/html/config.html'
 
@@ -21,6 +21,8 @@ const config = {
     rpc_port: '16800',
     rpc_token: '',
     rpc_dir: 'D:/',
+    aria2c_max_concurrent_downloads: 1,
+    aria2c_max_connection_per_server: 5,
     ariang_host: 'http://ariang.injahow.com/',
     auto_download: '0',
     video_quality: '0',
