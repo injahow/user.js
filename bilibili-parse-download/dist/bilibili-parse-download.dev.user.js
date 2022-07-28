@@ -515,51 +515,33 @@ var __webpack_exports__ = {};
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
-;// CONCATENATED MODULE: ./src/js/store.js
+;// CONCATENATED MODULE: ./src/html/arc_toolbar.html
+// Module
+var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
+// Exports
+/* harmony default export */ var arc_toolbar = (code);
+;// CONCATENATED MODULE: ./src/html/toolbar.html
+// Module
+var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\n  scrollshow=\"true\">\n  <div id=\"setting_btn\" class=\"like-info\">\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\n  </div>\n  <div id=\"bilibili_parse\" class=\"like-info\">\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\n  </div>\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\n  </div>\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\n  </div>\n  <div id=\"video_download_all\" class=\"like-info\">\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\n  </div>\n  <div class=\"more\">更多<div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n  <style>\n    .tool-bar .more {\n      float: right;\n      cursor: pointer;\n      color: #757575;\n      font-size: 16px;\n      transition: all .3s;\n      position: relative;\n      text-align: center\n    }\n\n    .tool-bar .more:hover .more-ops-list {\n      display: block\n    }\n\n    .tool-bar:after {\n      display: block;\n      content: \"\";\n      clear: both\n    }\n\n    .more-ops-list {\n      display: none;\n      position: absolute;\n      width: 80px;\n      left: -65px;\n      z-index: 30;\n      text-align: center;\n      padding: 10px 0;\n      background: #fff;\n      border: 1px solid #e5e9ef;\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n      border-radius: 2px;\n      font-size: 14px;\n      color: #222\n    }\n\n    .more-ops-list li {\n      position: relative;\n      height: 34px;\n      line-height: 34px;\n      cursor: pointer;\n      transition: all .3s\n    }\n\n    .more-ops-list li:hover {\n      color: #00a1d6;\n      background: #e7e7e7\n    }\n  </style>\n</div>\n";
+// Exports
+/* harmony default export */ var toolbar = (toolbar_code);
+;// CONCATENATED MODULE: ./src/html/video_toolbar.html
+// Module
+var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
+// Exports
+/* harmony default export */ var video_toolbar = (video_toolbar_code);
+;// CONCATENATED MODULE: ./src/js/user.js
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-var Store = /*#__PURE__*/function () {
-  function Store() {
-    _classCallCheck(this, Store);
-
-    this.prefix = 'bp_';
-  }
-
-  _createClass(Store, [{
-    key: "get",
-    value: function get() {
-      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      return localStorage.getItem(this.prefix + key) || '';
-    }
-  }, {
-    key: "set",
-    value: function set() {
-      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      var value = arguments.length > 1 ? arguments[1] : undefined;
-      localStorage.setItem(this.prefix + key, value);
-    }
-  }]);
-
-  return Store;
-}();
-
-var store = new Store();
-;// CONCATENATED MODULE: ./src/js/user.js
-function user_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function user_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function user_createClass(Constructor, protoProps, staticProps) { if (protoProps) user_defineProperties(Constructor.prototype, protoProps); if (staticProps) user_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
 
 
 var User = /*#__PURE__*/function () {
   function User() {
-    user_classCallCheck(this, User);
+    _classCallCheck(this, User);
 
     this.is_login = false;
     this.vip_status = 0;
@@ -569,7 +551,7 @@ var User = /*#__PURE__*/function () {
     this.lazyInit();
   }
 
-  user_createClass(User, [{
+  _createClass(User, [{
     key: "needReplace",
     value: function needReplace() {
       return !this.is_login || !this.vip_status && video.base().need_vip();
@@ -611,6 +593,305 @@ var User = /*#__PURE__*/function () {
 }();
 
 var user = new User();
+;// CONCATENATED MODULE: ./src/js/store.js
+function store_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function store_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function store_createClass(Constructor, protoProps, staticProps) { if (protoProps) store_defineProperties(Constructor.prototype, protoProps); if (staticProps) store_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var Store = /*#__PURE__*/function () {
+  function Store() {
+    store_classCallCheck(this, Store);
+
+    this.prefix = 'bp_';
+  }
+
+  store_createClass(Store, [{
+    key: "get",
+    value: function get() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      return localStorage.getItem(this.prefix + key) || '';
+    }
+  }, {
+    key: "set",
+    value: function set() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var value = arguments.length > 1 ? arguments[1] : undefined;
+      localStorage.setItem(this.prefix + key, value);
+    }
+  }]);
+
+  return Store;
+}();
+
+var store = new Store();
+// EXTERNAL MODULE: ./src/js/ui/message.js + 1 modules
+var message = __webpack_require__("./src/js/ui/message.js");
+// EXTERNAL MODULE: ./src/js/utils/ajax.js
+var ajax = __webpack_require__("./src/js/utils/ajax.js");
+;// CONCATENATED MODULE: ./src/js/utils/api.js
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+
+
+
+
+
+
+function get_url_base(page, quality, video_format, success, error, request_type) {
+  var _success, _error;
+
+  if ('function' === typeof success) {
+    _success = function _success(e) {
+      // todo
+      success(e);
+    };
+  } else {
+    _success = function _success(res) {
+      return console.log(res);
+    };
+  }
+
+  if ('function' === typeof error) {
+    _error = function _error(e) {
+      message.Message.error('请求失败');
+      error(e);
+    };
+  } else {
+    _error = function _error(err) {
+      return console.error(err);
+    };
+  }
+
+  var vb = video.base();
+  var _ref = [vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type],
+      aid = _ref[0],
+      cid = _ref[1],
+      epid = _ref[2],
+      q = _ref[3],
+      type = _ref[4]; // 参数预处理
+
+  var format = video_format || config_config.format;
+  if (format === 'mp4' && type !== 'video') format = 'flv';
+  if (request_type === 'auto' && user.needReplace()) request_type = 'online';
+
+  var url_replace_cdn = function url_replace_cdn(url) {
+    if (config_config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
+      // 切换CDN
+      var url_tmp = url.split('/');
+      url_tmp[2] = hostMap[config_config.host_key];
+      url = url_tmp.join('/');
+    }
+
+    return url;
+  };
+
+  var base_api;
+  var ajax_obj = {
+    type: 'GET',
+    dataType: 'json'
+  };
+
+  if (request_type === 'auto' || request_type === 'local') {
+    var fnver, fnval;
+
+    if (type === 'cheese') {
+      base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
+
+      if (format === 'dash') {
+        fnver = 0, fnval = 80;
+      } else {
+        fnver = 1, fnval = 80;
+      }
+    } else {
+      base_api = type === 'video' ? 'https://api.bilibili.com/x/player/playurl' : 'https://api.bilibili.com/pgc/player/web/playurl';
+
+      if (format === 'dash') {
+        fnver = 0, fnval = 4048;
+      } else {
+        fnver = 0, fnval = 0;
+      }
+    }
+
+    base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
+    base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
+    ajax_obj.xhrFields = {
+      withCredentials: true
+    };
+  } else {
+    base_api = config_config.base_api;
+    base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
+    var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+        auth_id = _ref2[0],
+        auth_sec = _ref2[1];
+
+    if (config_config.auth === '1' && auth_id && auth_sec) {
+      base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
+      !!page && (base_api += '&s');
+    }
+  }
+
+  ajax_obj.url = base_api;
+  (0,ajax.ajax)(ajax_obj).then(function (res) {
+    var data;
+
+    if (!res.code) {
+      data = res.result || res.data;
+    }
+
+    if (!data) {
+      if (request_type === 'auto') {
+        get_url_base(page, quality, video_format, success, error, 'online');
+        return;
+      } // online
+
+
+      res.url && (res.url = url_replace_cdn(res.url));
+      res.video && (res.video = url_replace_cdn(res.video));
+      res.audio && (res.audio = url_replace_cdn(res.audio));
+
+      _success(res);
+
+      return;
+    }
+
+    if (data.dash) {
+      var result = {
+        'code': 0,
+        'quality': data.quality,
+        'accept_quality': data.accept_quality,
+        'video': '',
+        'audio': ''
+      };
+      var videos = data.dash.video;
+
+      for (var i = 0; i < videos.length; i++) {
+        var _video = videos[i];
+
+        if (_video.id <= q) {
+          result.video = url_replace_cdn(_video.base_url);
+          result.audio = url_replace_cdn(data.dash.audio[0].base_url);
+          break;
+        }
+      }
+
+      _success(result);
+
+      return;
+    }
+
+    _success({
+      'code': 0,
+      'quality': data.quality,
+      'accept_quality': data.accept_quality,
+      'url': url_replace_cdn(data.durl[0].url)
+    });
+  }).catch(function (err) {
+    return _error(err);
+  });
+}
+
+function _get_subtitle(p, callback) {
+  var to_blob_url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  var video_base = video.base();
+  var _ref3 = [video_base.aid(p), video_base.cid(p), video_base.epid(p)],
+      aid = _ref3[0],
+      cid = _ref3[1],
+      epid = _ref3[2];
+  (0,ajax.ajax)({
+    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
+    dataType: 'json'
+  }).then(function (res) {
+    // todo
+    if (!res.code && res.data.subtitle.subtitles[0]) {
+      (0,ajax.ajax)({
+        url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
+        dataType: 'json'
+      }).then(function (res) {
+        // json -> webvtt -> blob_url
+        var datas = res.body || [{
+          from: 0,
+          to: 0,
+          content: ''
+        }];
+        var webvtt = 'WEBVTT\n\n';
+
+        var _iterator = _createForOfIteratorHelper(datas),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var data = _step.value;
+            var a = new Date((parseInt(data.from) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.from.toString().split('.')[1] || '000').padEnd(3, '0');
+            var b = new Date((parseInt(data.to) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0');
+            webvtt += "".concat(a, " --> ").concat(b, "\n").concat(data.content.trim(), "\n\n");
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+
+        if (to_blob_url) {
+          callback(URL.createObjectURL(new Blob([webvtt], {
+            type: 'text/vtt'
+          })));
+        } else {
+          callback(webvtt);
+        }
+      }).catch(callback);
+    } else {
+      callback();
+    }
+  }).catch(callback);
+}
+
+function get_subtitle_data(p, callback) {
+  _get_subtitle(p, callback, false);
+}
+
+function get_subtitle_url(p, callback) {
+  _get_subtitle(p, callback, true);
+}
+
+function get_season(epid) {
+  (0,ajax.ajax)({
+    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
+    xhrFields: {
+      withCredentials: true
+    },
+    dataType: 'json'
+  }).then(function (res) {
+    if (res.code) {
+      message.Message.warning('获取剧集信息失败');
+      return;
+    }
+
+    window.bp_episodes = res.data.episodes || null;
+  });
+}
+
+var api = {
+  get_url: function get_url(success, error) {
+    var request_type = config_config.request_type;
+    var format = config_config.format;
+    var quality = config_config.video_quality === '0' ? 0 : parseInt(config_config.video_quality);
+    get_url_base(0, quality, format, success, error, request_type);
+  },
+  get_urls: function get_urls(page, quality, format, success, error) {
+    var request_type = config_config.request_type;
+    get_url_base(page, quality, format, success, error, request_type);
+  },
+  get_subtitle_url: get_subtitle_url,
+  get_subtitle_data: get_subtitle_data,
+  get_season: get_season
+};
 ;// CONCATENATED MODULE: ./src/js/utils/video.js
 
 
@@ -940,8 +1221,6 @@ var video = {
   get_quality: get_quality,
   get_quality_support: get_quality_support
 };
-// EXTERNAL MODULE: ./src/js/utils/ajax.js
-var ajax = __webpack_require__("./src/js/utils/ajax.js");
 // EXTERNAL MODULE: ./src/js/utils/runtime-lib.js
 var runtime_lib = __webpack_require__("./src/js/utils/runtime-lib.js");
 ;// CONCATENATED MODULE: ./src/js/utils/player.js
@@ -1242,16 +1521,14 @@ var Check = /*#__PURE__*/function () {
 }();
 
 var check = new Check();
-// EXTERNAL MODULE: ./src/js/ui/message.js + 1 modules
-var message = __webpack_require__("./src/js/ui/message.js");
 // EXTERNAL MODULE: ./src/js/ui/scroll.js
 var ui_scroll = __webpack_require__("./src/js/ui/scroll.js");
 ;// CONCATENATED MODULE: ./src/js/utils/download.js
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function download_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = download_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function download_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return download_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return download_arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function download_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 
 
@@ -1301,7 +1578,7 @@ function download_all() {
   var quality_support = video.get_quality_support();
   var option_support_html = '';
 
-  var _iterator = _createForOfIteratorHelper(quality_support),
+  var _iterator = download_createForOfIteratorHelper(quality_support),
       _step;
 
   try {
@@ -1451,7 +1728,7 @@ function download_all() {
     };
     var json_rpc = [];
 
-    var _iterator2 = _createForOfIteratorHelper(video_urls),
+    var _iterator2 = download_createForOfIteratorHelper(video_urls),
         _step2;
 
     try {
@@ -1776,7 +2053,7 @@ function _download_danmaku_ass(cid, title) {
       var scroll_id = 0,
           fix_id = 0;
 
-      var _iterator3 = _createForOfIteratorHelper(danmaku_data),
+      var _iterator3 = download_createForOfIteratorHelper(danmaku_data),
           _step3;
 
       try {
@@ -1957,6 +2234,265 @@ var Download = {
   download_subtitle_vtt: download_subtitle_vtt,
   open_ariang: open_ariang
 };
+;// CONCATENATED MODULE: ./src/html/config.html
+// Module
+var config_code = "<div id=\"bp_config\">\n  <div class=\"config-mark\"></div>\n  <div class=\"config-bg\">\n    <span style=\"font-size: 20px\">\n      <b>bilibili视频下载 参数设置</b>\n      <b>\n        <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a>\n        <a style=\"text-decoration: underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a>\n      </b>\n    </span>\n    <div style=\"margin: 2% 0\">\n      <label>请求地址：</label>\n      <input id=\"base_api\" style=\"width: 30%\" />&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>请求方式：</label>\n      <select id=\"request_type\">\n        <option value=\"auto\">自动判断</option>\n        <option value=\"local\">本地请求</option>\n        <option value=\"online\">远程请求</option>\n      </select><br />\n      <small>注意：普通使用请勿修改；默认使用混合请求</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>视频格式：</label>\n      <select id=\"format\">\n        <option value=\"flv\">FLV</option>\n        <option value=\"dash\">DASH</option>\n        <option value=\"mp4\">MP4</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>切换CDN：</label>\n      <select id=\"host_key\">\n        {{host_key_options}}\n      </select><br />\n      <small>注意：仅Video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>下载方式：</label>\n      <select id=\"download_type\">\n        <option value=\"a\">URL链接</option>\n        <option value=\"web\">Web浏览器</option>\n        <option value=\"blob\">Blob请求</option>\n        <option value=\"rpc\">RPC接口</option>\n        <option value=\"aria\">Aria命令</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>AriaNg地址：</label>\n      <input id=\"ariang_host\" style=\"width: 30%\" /><br />\n      <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>aria2c命令配置：（用于自定义Aria命令下载方式下的命令生成）</label><br />\n      <label>单URL最大连接数：</label>\n      <input id=\"aria2c_max_concurrent_downloads\" style=\"width: 5%\" />&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>单服务器最大连接数(小于等于16)：</label>\n      <input id=\"aria2c_max_connection_per_server\" style=\"width: 5%\" /><br />\n      <small>提示：前者为配置项--max-concurrent-downloads，后者为--max-connection-per-server，详情见<a\n          href=\"https://aria2.github.io/manual/en/html/aria2c.html\" class=\"setting-context\">aria2c(1)</a></small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />\n      <input id=\"rpc_domain\" style=\"width: 25%\" /> :\n      <input id=\"rpc_port\" style=\"width: 10%\" /> |\n      <input id=\"rpc_token\" placeholder=\"没有密钥不用填\" style=\"width: 15%\" /> |\n      <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width: 20%\" /><br />\n      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>强制换源：</label>\n      <select id=\"replace_force\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕速度：</label>\n      <input id=\"danmaku_speed\" style=\"width: 5%\" /> s\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕字号：</label>\n      <input id=\"danmaku_fontsize\" style=\"width: 5%\" /> px<br />\n      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>自动下载：</label>\n      <select id=\"auto_download\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>视频质量：</label>\n      <select id=\"video_quality\">\n        {{video_quality_options}}\n      </select><br />\n      <small>说明：请求地址成功后将自动点击下载视频按钮</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>授权状态：</label>\n      <select id=\"auth\" disabled>\n        <option value=\"0\">未授权</option>\n        <option value=\"1\">已授权</option>\n      </select>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a>\n    </div>\n    <br />\n    <div style=\"text-align: right\">\n      <button class=\"setting-button\" id=\"save_config\">确定</button>\n    </div>\n  </div>\n\n  <style>\n    #bp_config {\n      opacity: 0;\n      display: none;\n      position: fixed;\n      inset: 0px;\n      top: 0px;\n      left: 0px;\n      width: 100%;\n      height: 100%;\n      z-index: 10000;\n    }\n\n    #bp_config .config-bg {\n      position: absolute;\n      background: rgb(255, 255, 255);\n      border-radius: 10px;\n      padding: 20px;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      width: 600px;\n      z-index: 10001;\n    }\n\n    #bp_config .config-mark {\n      width: 100%;\n      height: 100%;\n      position: fixed;\n      top: 0;\n      left: 0;\n      background: rgba(0, 0, 0, 0.5);\n      z-index: 10000;\n    }\n\n    #bp_config .setting-button {\n      width: 120px;\n      height: 40px;\n      border-width: 0px;\n      border-radius: 3px;\n      background: #1e90ff;\n      cursor: pointer;\n      outline: none;\n      color: white;\n      font-size: 17px;\n    }\n\n    #bp_config .setting-button:hover {\n      background: #5599ff;\n    }\n\n    #bp_config .setting-context {\n      margin: 0 1%;\n      color: blue;\n    }\n\n    #bp_config .setting-context:hover {\n      color: red;\n    }\n\n  </style>\n</div>\n";
+// Exports
+/* harmony default export */ var config = (config_code);
+;// CONCATENATED MODULE: ./src/js/ui/config.js
+
+
+
+
+
+
+
+
+
+var config_config = {
+  base_api: 'https://api.injahow.cn/bparse/',
+  request_type: 'auto',
+  format: 'flv',
+  host_key: '0',
+  replace_force: '0',
+  auth: '0',
+  download_type: 'web',
+  rpc_domain: 'http://localhost',
+  rpc_port: '16800',
+  rpc_token: '',
+  rpc_dir: 'D:/',
+  aria2c_max_concurrent_downloads: 1,
+  aria2c_max_connection_per_server: 5,
+  ariang_host: 'http://ariang.injahow.com/',
+  auto_download: '0',
+  video_quality: '0',
+  danmaku_speed: '15',
+  danmaku_fontsize: '22'
+};
+var default_config = Object.assign({}, config_config); // 浅拷贝
+
+var hostMap = {
+  ks3: 'upos-sz-mirrorks3.bilivideo.com',
+  ks3b: 'upos-sz-mirrorks3b.bilivideo.com',
+  ks3c: 'upos-sz-mirrorks3c.bilivideo.com',
+  ks32: 'upos-sz-mirrorks32.bilivideo.com',
+  kodo: 'upos-sz-mirrorkodo.bilivideo.com',
+  kodob: 'upos-sz-mirrorkodob.bilivideo.com',
+  cos: 'upos-sz-mirrorcos.bilivideo.com',
+  cosb: 'upos-sz-mirrorcosb.bilivideo.com',
+  bos: 'upos-sz-mirrorbos.bilivideo.com',
+  wcs: 'upos-sz-mirrorwcs.bilivideo.com',
+  wcsb: 'upos-sz-mirrorwcsb.bilivideo.com',
+
+  /* 不限CROS, 限制UA */
+  hw: 'upos-sz-mirrorhw.bilivideo.com',
+  hwb: 'upos-sz-mirrorhwb.bilivideo.com',
+  upbda2: 'upos-sz-upcdnbda2.bilivideo.com',
+  upws: 'upos-sz-upcdnws.bilivideo.com',
+  uptx: 'upos-sz-upcdntx.bilivideo.com',
+  uphw: 'upos-sz-upcdnhw.bilivideo.com',
+  js: 'upos-tf-all-js.bilivideo.com',
+  hk: 'cn-hk-eq-bcache-01.bilivideo.com',
+  akamai: 'upos-hz-mirrorakam.akamaized.net'
+};
+var videoQualityMap = {
+  '120': '4K 超清',
+  '116': '1080P 60帧',
+  '112': '1080P 高码率',
+  '80': '1080P 高清',
+  '74': '720P 60帧',
+  '64': '720P 高清',
+  '48': '720P 高清(MP4)',
+  '32': '480P 清晰',
+  '16': '360P 流畅'
+};
+var help_clicked = false;
+var config_functions = {
+  save_config: function save_config() {
+    var old_config;
+
+    try {
+      old_config = JSON.parse(store.get('config_str'));
+      store.set('config_str', JSON.stringify(config_config));
+    } catch (err) {
+      old_config = Object.assign({}, config_config);
+    } // 判断重新请求
+
+
+    for (var _i = 0, _arr = ['base_api', 'format', 'auth', 'video_quality']; _i < _arr.length; _i++) {
+      var key = _arr[_i];
+
+      if (config_config[key] !== old_config[key]) {
+        $('#video_download').hide();
+        $('#video_download_2').hide();
+        break;
+      }
+    }
+
+    if (config_config.host_key !== old_config.host_key) {
+      check.refresh();
+      $('#video_url').attr('href', '#');
+      $('#video_url_2').attr('href', '#');
+    } // 判断RPC配置情况
+
+
+    if (config_config.rpc_domain !== old_config.rpc_domain) {
+      if (!(config_config.rpc_domain.match('https://') || config_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
+        message.MessageBox.alert('检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；' + '请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；' + '配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！', function () {
+          Download.open_ariang({
+            domain: config_config.rpc_domain,
+            port: config_config.rpc_port,
+            token: config_config.rpc_token
+          });
+        });
+      }
+    } // 更新弹幕设置
+
+
+    for (var _i2 = 0, _arr2 = ['danmaku_speed', 'danmaku_fontsize']; _i2 < _arr2.length; _i2++) {
+      var _key = _arr2[_i2];
+
+      if (config_config[_key] !== old_config[_key]) {
+        player.danmaku.config();
+        break;
+      }
+    } // todo
+    // 关闭
+
+
+    $('#bp_config').hide();
+    $('#bp_config').css('opacity', 0);
+    ui_scroll.scroll.show();
+  },
+  reset_config: function reset_config() {
+    for (var key in default_config) {
+      if (key === 'auth') {
+        continue;
+      }
+
+      config_config[key] = default_config[key];
+      $("#".concat(key)).val(default_config[key]);
+    }
+  },
+  show_help: function show_help() {
+    if (help_clicked) {
+      message.Message.miaow();
+      return;
+    }
+
+    help_clicked = true;
+    (0,ajax.ajax)({
+      url: "".concat(config_config.base_api, "/auth/v2/?act=help"),
+      dataType: 'text'
+    }).then(function (res) {
+      if (res) {
+        message.MessageBox.alert(res);
+      } else {
+        message.Message.warning('获取失败');
+      }
+    }).finally(function () {
+      return help_clicked = false;
+    });
+  },
+  show_login: function show_login() {
+    auth.login('1');
+  },
+  show_login_2: function show_login_2() {
+    auth.login('0');
+  },
+  show_logout: function show_logout() {
+    auth.logout();
+  },
+  show_login_help: function show_login_help() {
+    message.MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', function () {
+      auth.login();
+    });
+  }
+};
+
+function initConfig(el) {
+  // 注入 host_key_options
+  var options = '<option value="0">关闭</option>';
+
+  for (var k in hostMap) {
+    options += "<option value=\"".concat(k, "\">").concat(hostMap[k], "</option>");
+  }
+
+  config = config.replace('{{host_key_options}}', options); // 注入 video_quality_options
+
+  options = '<option value="0">与播放器相同</option>';
+
+  for (var _k in videoQualityMap) {
+    options += "<option value=\"".concat(_k, "\">").concat(videoQualityMap[_k], "</option>");
+  }
+
+  config = config.replace('{{video_quality_options}}', options);
+
+  if (el && !!$(el)[0]) {
+    $(el).append(config);
+  } else {
+    $('body').append(config);
+  } // 同步数据
+
+
+  var config_str = store.get('config_str');
+
+  if (config_str) {
+    // set config from cache
+    try {
+      var old_config = JSON.parse(config_str);
+
+      for (var key in old_config) {
+        if (Object.hasOwnProperty.call(config_config, key)) {
+          config_config[key] = old_config[key];
+        }
+      }
+    } catch (_unused) {
+      console.log('初始化脚本配置');
+    }
+  }
+
+  config_config.auth = store.get('auth_id') ? '1' : '0';
+  store.set('config_str', JSON.stringify(config_config)); // 函数绑定
+
+  var _loop = function _loop(_key2) {
+    if (_key2 === 'auth') {
+      return "continue";
+    }
+
+    $("#".concat(_key2)).on('input', function (e) {
+      config_config[_key2] = e.delegateTarget.value;
+    });
+  };
+
+  for (var _key2 in config_config) {
+    var _ret = _loop(_key2);
+
+    if (_ret === "continue") continue;
+  }
+
+  for (var _k2 in config_functions) {
+    var e = $("#".concat(_k2))[0]; // a && button
+
+    !!e && (e.onclick = config_functions[_k2]);
+  } // 渲染数据
+
+
+  for (var _key3 in config_config) {
+    $("#".concat(_key3)).val(config_config[_key3]);
+  }
+
+  window.onbeforeunload = function () {
+    // todo
+    var bp_aria2_window = window.bp_aria2_window;
+
+    if (bp_aria2_window && !bp_aria2_window.closed) {
+      bp_aria2_window.close();
+    }
+  };
+}
+
+
 ;// CONCATENATED MODULE: ./src/js/auth.js
 function auth_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2200,540 +2736,6 @@ var Auth = /*#__PURE__*/function () {
 }();
 
 var auth = new Auth();
-;// CONCATENATED MODULE: ./src/html/config.html
-// Module
-var code = "<div id=\"bp_config\">\n  <div class=\"config-mark\"></div>\n  <div class=\"config-bg\">\n    <span style=\"font-size: 20px\">\n      <b>bilibili视频下载 参数设置</b>\n      <b>\n        <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a>\n        <a style=\"text-decoration: underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a>\n      </b>\n    </span>\n    <div style=\"margin: 2% 0\">\n      <label>请求地址：</label>\n      <input id=\"base_api\" style=\"width: 30%\" />&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>请求方式：</label>\n      <select id=\"request_type\">\n        <option value=\"auto\">自动判断</option>\n        <option value=\"local\">本地请求</option>\n        <option value=\"online\">远程请求</option>\n      </select><br />\n      <small>注意：普通使用请勿修改；默认使用混合请求</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>视频格式：</label>\n      <select id=\"format\">\n        <option value=\"flv\">FLV</option>\n        <option value=\"dash\">DASH</option>\n        <option value=\"mp4\">MP4</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>切换CDN：</label>\n      <select id=\"host_key\">\n        {{host_key_options}}\n      </select><br />\n      <small>注意：仅Video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>下载方式：</label>\n      <select id=\"download_type\">\n        <option value=\"a\">URL链接</option>\n        <option value=\"web\">Web浏览器</option>\n        <option value=\"blob\">Blob请求</option>\n        <option value=\"rpc\">RPC接口</option>\n        <option value=\"aria\">Aria命令</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>AriaNg地址：</label>\n      <input id=\"ariang_host\" style=\"width: 30%\" /><br />\n      <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />\n      <input id=\"rpc_domain\" style=\"width: 25%\" /> :\n      <input id=\"rpc_port\" style=\"width: 10%\" /> |\n      <input id=\"rpc_token\" placeholder=\"没有密钥不用填\" style=\"width: 15%\" /> |\n      <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width: 20%\" /><br />\n      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>强制换源：</label>\n      <select id=\"replace_force\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕速度：</label>\n      <input id=\"danmaku_speed\" style=\"width: 5%\" /> s\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕字号：</label>\n      <input id=\"danmaku_fontsize\" style=\"width: 5%\" /> px<br />\n      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>自动下载：</label>\n      <select id=\"auto_download\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>视频质量：</label>\n      <select id=\"video_quality\">\n        {{video_quality_options}}\n      </select><br />\n      <small>说明：请求地址成功后将自动点击下载视频按钮</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>授权状态：</label>\n      <select id=\"auth\" disabled>\n        <option value=\"0\">未授权</option>\n        <option value=\"1\">已授权</option>\n      </select>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a>\n    </div>\n    <br />\n    <div style=\"text-align: right\">\n      <button class=\"setting-button\" id=\"save_config\">确定</button>\n    </div>\n  </div>\n\n  <style>\n    #bp_config {\n      opacity: 0;\n      display: none;\n      position: fixed;\n      inset: 0px;\n      top: 0px;\n      left: 0px;\n      width: 100%;\n      height: 100%;\n      z-index: 10000;\n    }\n\n    #bp_config .config-bg {\n      position: absolute;\n      background: rgb(255, 255, 255);\n      border-radius: 10px;\n      padding: 20px;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      width: 600px;\n      z-index: 10001;\n    }\n\n    #bp_config .config-mark {\n      width: 100%;\n      height: 100%;\n      position: fixed;\n      top: 0;\n      left: 0;\n      background: rgba(0, 0, 0, 0.5);\n      z-index: 10000;\n    }\n\n    #bp_config .setting-button {\n      width: 120px;\n      height: 40px;\n      border-width: 0px;\n      border-radius: 3px;\n      background: #1e90ff;\n      cursor: pointer;\n      outline: none;\n      color: white;\n      font-size: 17px;\n    }\n\n    #bp_config .setting-button:hover {\n      background: #5599ff;\n    }\n\n    #bp_config .setting-context {\n      margin: 0 1%;\n      color: blue;\n    }\n\n    #bp_config .setting-context:hover {\n      color: red;\n    }\n  </style>\n</div>\n";
-// Exports
-/* harmony default export */ var config = (code);
-;// CONCATENATED MODULE: ./src/js/ui/config.js
-
-
-
-
-
-
-
-
-
-var config_config = {
-  base_api: 'https://api.injahow.cn/bparse/',
-  request_type: 'auto',
-  format: 'flv',
-  host_key: '0',
-  replace_force: '0',
-  auth: '0',
-  download_type: 'web',
-  rpc_domain: 'http://localhost',
-  rpc_port: '16800',
-  rpc_token: '',
-  rpc_dir: 'D:/',
-  ariang_host: 'http://ariang.injahow.com/',
-  auto_download: '0',
-  video_quality: '0',
-  danmaku_speed: '15',
-  danmaku_fontsize: '22'
-};
-var default_config = Object.assign({}, config_config); // 浅拷贝
-
-var hostMap = {
-  ks3: 'upos-sz-mirrorks3.bilivideo.com',
-  ks3b: 'upos-sz-mirrorks3b.bilivideo.com',
-  ks3c: 'upos-sz-mirrorks3c.bilivideo.com',
-  ks32: 'upos-sz-mirrorks32.bilivideo.com',
-  kodo: 'upos-sz-mirrorkodo.bilivideo.com',
-  kodob: 'upos-sz-mirrorkodob.bilivideo.com',
-  cos: 'upos-sz-mirrorcos.bilivideo.com',
-  cosb: 'upos-sz-mirrorcosb.bilivideo.com',
-  bos: 'upos-sz-mirrorbos.bilivideo.com',
-  wcs: 'upos-sz-mirrorwcs.bilivideo.com',
-  wcsb: 'upos-sz-mirrorwcsb.bilivideo.com',
-
-  /* 不限CROS, 限制UA */
-  hw: 'upos-sz-mirrorhw.bilivideo.com',
-  hwb: 'upos-sz-mirrorhwb.bilivideo.com',
-  upbda2: 'upos-sz-upcdnbda2.bilivideo.com',
-  upws: 'upos-sz-upcdnws.bilivideo.com',
-  uptx: 'upos-sz-upcdntx.bilivideo.com',
-  uphw: 'upos-sz-upcdnhw.bilivideo.com',
-  js: 'upos-tf-all-js.bilivideo.com',
-  hk: 'cn-hk-eq-bcache-01.bilivideo.com',
-  akamai: 'upos-hz-mirrorakam.akamaized.net'
-};
-var videoQualityMap = {
-  '120': '4K 超清',
-  '116': '1080P 60帧',
-  '112': '1080P 高码率',
-  '80': '1080P 高清',
-  '74': '720P 60帧',
-  '64': '720P 高清',
-  '48': '720P 高清(MP4)',
-  '32': '480P 清晰',
-  '16': '360P 流畅'
-};
-var help_clicked = false;
-var config_functions = {
-  save_config: function save_config() {
-    var old_config;
-
-    try {
-      old_config = JSON.parse(store.get('config_str'));
-      store.set('config_str', JSON.stringify(config_config));
-    } catch (err) {
-      old_config = Object.assign({}, config_config);
-    } // 判断重新请求
-
-
-    for (var _i = 0, _arr = ['base_api', 'format', 'auth', 'video_quality']; _i < _arr.length; _i++) {
-      var key = _arr[_i];
-
-      if (config_config[key] !== old_config[key]) {
-        $('#video_download').hide();
-        $('#video_download_2').hide();
-        break;
-      }
-    }
-
-    if (config_config.host_key !== old_config.host_key) {
-      check.refresh();
-      $('#video_url').attr('href', '#');
-      $('#video_url_2').attr('href', '#');
-    } // 判断RPC配置情况
-
-
-    if (config_config.rpc_domain !== old_config.rpc_domain) {
-      if (!(config_config.rpc_domain.match('https://') || config_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
-        message.MessageBox.alert('检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；' + '请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；' + '配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！', function () {
-          Download.open_ariang({
-            domain: config_config.rpc_domain,
-            port: config_config.rpc_port,
-            token: config_config.rpc_token
-          });
-        });
-      }
-    } // 更新弹幕设置
-
-
-    for (var _i2 = 0, _arr2 = ['danmaku_speed', 'danmaku_fontsize']; _i2 < _arr2.length; _i2++) {
-      var _key = _arr2[_i2];
-
-      if (config_config[_key] !== old_config[_key]) {
-        player.danmaku.config();
-        break;
-      }
-    } // todo
-    // 关闭
-
-
-    $('#bp_config').hide();
-    $('#bp_config').css('opacity', 0);
-    ui_scroll.scroll.show();
-  },
-  reset_config: function reset_config() {
-    for (var key in default_config) {
-      if (key === 'auth') {
-        continue;
-      }
-
-      config_config[key] = default_config[key];
-      $("#".concat(key)).val(default_config[key]);
-    }
-  },
-  show_help: function show_help() {
-    if (help_clicked) {
-      message.Message.miaow();
-      return;
-    }
-
-    help_clicked = true;
-    (0,ajax.ajax)({
-      url: "".concat(config_config.base_api, "/auth/v2/?act=help"),
-      dataType: 'text'
-    }).then(function (res) {
-      if (res) {
-        message.MessageBox.alert(res);
-      } else {
-        message.Message.warning('获取失败');
-      }
-    }).finally(function () {
-      return help_clicked = false;
-    });
-  },
-  show_login: function show_login() {
-    auth.login('1');
-  },
-  show_login_2: function show_login_2() {
-    auth.login('0');
-  },
-  show_logout: function show_logout() {
-    auth.logout();
-  },
-  show_login_help: function show_login_help() {
-    message.MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', function () {
-      auth.login();
-    });
-  }
-};
-
-function initConfig(el) {
-  // 注入 host_key_options
-  var options = '<option value="0">关闭</option>';
-
-  for (var k in hostMap) {
-    options += "<option value=\"".concat(k, "\">").concat(hostMap[k], "</option>");
-  }
-
-  config = config.replace('{{host_key_options}}', options); // 注入 video_quality_options
-
-  options = '<option value="0">与播放器相同</option>';
-
-  for (var _k in videoQualityMap) {
-    options += "<option value=\"".concat(_k, "\">").concat(videoQualityMap[_k], "</option>");
-  }
-
-  config = config.replace('{{video_quality_options}}', options);
-
-  if (el && !!$(el)[0]) {
-    $(el).append(config);
-  } else {
-    $('body').append(config);
-  } // 同步数据
-
-
-  var config_str = store.get('config_str');
-
-  if (config_str) {
-    // set config from cache
-    try {
-      var old_config = JSON.parse(config_str);
-
-      for (var key in old_config) {
-        if (Object.hasOwnProperty.call(config_config, key)) {
-          config_config[key] = old_config[key];
-        }
-      }
-    } catch (_unused) {
-      console.log('初始化脚本配置');
-    }
-  }
-
-  config_config.auth = store.get('auth_id') ? '1' : '0';
-  store.set('config_str', JSON.stringify(config_config)); // 函数绑定
-
-  var _loop = function _loop(_key2) {
-    if (_key2 === 'auth') {
-      return "continue";
-    }
-
-    $("#".concat(_key2)).on('input', function (e) {
-      config_config[_key2] = e.delegateTarget.value;
-    });
-  };
-
-  for (var _key2 in config_config) {
-    var _ret = _loop(_key2);
-
-    if (_ret === "continue") continue;
-  }
-
-  for (var _k2 in config_functions) {
-    var e = $("#".concat(_k2))[0]; // a && button
-
-    !!e && (e.onclick = config_functions[_k2]);
-  } // 渲染数据
-
-
-  for (var _key3 in config_config) {
-    $("#".concat(_key3)).val(config_config[_key3]);
-  }
-
-  window.onbeforeunload = function () {
-    // todo
-    var bp_aria2_window = window.bp_aria2_window;
-
-    if (bp_aria2_window && !bp_aria2_window.closed) {
-      bp_aria2_window.close();
-    }
-  };
-}
-
-
-;// CONCATENATED MODULE: ./src/js/utils/api.js
-function api_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = api_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-function api_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return api_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return api_arrayLikeToArray(o, minLen); }
-
-function api_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-
-
-
-
-
-
-
-function get_url_base(page, quality, video_format, success, error, request_type) {
-  var _success, _error;
-
-  if ('function' === typeof success) {
-    _success = function _success(e) {
-      // todo
-      success(e);
-    };
-  } else {
-    _success = function _success(res) {
-      return console.log(res);
-    };
-  }
-
-  if ('function' === typeof error) {
-    _error = function _error(e) {
-      message.Message.error('请求失败');
-      error(e);
-    };
-  } else {
-    _error = function _error(err) {
-      return console.error(err);
-    };
-  }
-
-  var vb = video.base();
-  var _ref = [vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type],
-      aid = _ref[0],
-      cid = _ref[1],
-      epid = _ref[2],
-      q = _ref[3],
-      type = _ref[4]; // 参数预处理
-
-  var format = video_format || config_config.format;
-  if (format === 'mp4' && type !== 'video') format = 'flv';
-  if (request_type === 'auto' && user.needReplace()) request_type = 'online';
-
-  var url_replace_cdn = function url_replace_cdn(url) {
-    if (config_config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
-      // 切换CDN
-      var url_tmp = url.split('/');
-      url_tmp[2] = hostMap[config_config.host_key];
-      url = url_tmp.join('/');
-    }
-
-    return url;
-  };
-
-  var base_api;
-  var ajax_obj = {
-    type: 'GET',
-    dataType: 'json'
-  };
-
-  if (request_type === 'auto' || request_type === 'local') {
-    var fnver, fnval;
-
-    if (type === 'cheese') {
-      base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
-
-      if (format === 'dash') {
-        fnver = 0, fnval = 80;
-      } else {
-        fnver = 1, fnval = 80;
-      }
-    } else {
-      base_api = type === 'video' ? 'https://api.bilibili.com/x/player/playurl' : 'https://api.bilibili.com/pgc/player/web/playurl';
-
-      if (format === 'dash') {
-        fnver = 0, fnval = 4048;
-      } else {
-        fnver = 0, fnval = 0;
-      }
-    }
-
-    base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
-    base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
-    ajax_obj.xhrFields = {
-      withCredentials: true
-    };
-  } else {
-    base_api = config_config.base_api;
-    base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
-    var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
-        auth_id = _ref2[0],
-        auth_sec = _ref2[1];
-
-    if (config_config.auth === '1' && auth_id && auth_sec) {
-      base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
-      !!page && (base_api += '&s');
-    }
-  }
-
-  ajax_obj.url = base_api;
-  (0,ajax.ajax)(ajax_obj).then(function (res) {
-    var data;
-
-    if (!res.code) {
-      data = res.result || res.data;
-    }
-
-    if (!data) {
-      if (request_type === 'auto') {
-        get_url_base(page, quality, video_format, success, error, 'online');
-        return;
-      } // online
-
-
-      res.url && (res.url = url_replace_cdn(res.url));
-      res.video && (res.video = url_replace_cdn(res.video));
-      res.audio && (res.audio = url_replace_cdn(res.audio));
-
-      _success(res);
-
-      return;
-    }
-
-    if (data.dash) {
-      var result = {
-        'code': 0,
-        'quality': data.quality,
-        'accept_quality': data.accept_quality,
-        'video': '',
-        'audio': ''
-      };
-      var videos = data.dash.video;
-
-      for (var i = 0; i < videos.length; i++) {
-        var _video = videos[i];
-
-        if (_video.id <= q) {
-          result.video = url_replace_cdn(_video.base_url);
-          result.audio = url_replace_cdn(data.dash.audio[0].base_url);
-          break;
-        }
-      }
-
-      _success(result);
-
-      return;
-    }
-
-    _success({
-      'code': 0,
-      'quality': data.quality,
-      'accept_quality': data.accept_quality,
-      'url': url_replace_cdn(data.durl[0].url)
-    });
-  }).catch(function (err) {
-    return _error(err);
-  });
-}
-
-function _get_subtitle(p, callback) {
-  var to_blob_url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  var video_base = video.base();
-  var _ref3 = [video_base.aid(p), video_base.cid(p), video_base.epid(p)],
-      aid = _ref3[0],
-      cid = _ref3[1],
-      epid = _ref3[2];
-  (0,ajax.ajax)({
-    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
-    dataType: 'json'
-  }).then(function (res) {
-    // todo
-    if (!res.code && res.data.subtitle.subtitles[0]) {
-      (0,ajax.ajax)({
-        url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
-        dataType: 'json'
-      }).then(function (res) {
-        // json -> webvtt -> blob_url
-        var datas = res.body || [{
-          from: 0,
-          to: 0,
-          content: ''
-        }];
-        var webvtt = 'WEBVTT\n\n';
-
-        var _iterator = api_createForOfIteratorHelper(datas),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var data = _step.value;
-            var a = new Date((parseInt(data.from) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.from.toString().split('.')[1] || '000').padEnd(3, '0');
-            var b = new Date((parseInt(data.to) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0');
-            webvtt += "".concat(a, " --> ").concat(b, "\n").concat(data.content.trim(), "\n\n");
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-
-        if (to_blob_url) {
-          callback(URL.createObjectURL(new Blob([webvtt], {
-            type: 'text/vtt'
-          })));
-        } else {
-          callback(webvtt);
-        }
-      }).catch(callback);
-    } else {
-      callback();
-    }
-  }).catch(callback);
-}
-
-function get_subtitle_data(p, callback) {
-  _get_subtitle(p, callback, false);
-}
-
-function get_subtitle_url(p, callback) {
-  _get_subtitle(p, callback, true);
-}
-
-function get_season(epid) {
-  (0,ajax.ajax)({
-    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
-    xhrFields: {
-      withCredentials: true
-    },
-    dataType: 'json'
-  }).then(function (res) {
-    if (res.code) {
-      message.Message.warning('获取剧集信息失败');
-      return;
-    }
-
-    window.bp_episodes = res.data.episodes || null;
-  });
-}
-
-var api = {
-  get_url: function get_url(success, error) {
-    var request_type = config_config.request_type;
-    var format = config_config.format;
-    var quality = config_config.video_quality === '0' ? 0 : parseInt(config_config.video_quality);
-    get_url_base(0, quality, format, success, error, request_type);
-  },
-  get_urls: function get_urls(page, quality, format, success, error) {
-    var request_type = config_config.request_type;
-    get_url_base(page, quality, format, success, error, request_type);
-  },
-  get_subtitle_url: get_subtitle_url,
-  get_subtitle_data: get_subtitle_data,
-  get_season: get_season
-};
-;// CONCATENATED MODULE: ./src/html/arc_toolbar.html
-// Module
-var arc_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
-// Exports
-/* harmony default export */ var arc_toolbar = (arc_toolbar_code);
-;// CONCATENATED MODULE: ./src/html/video_toolbar.html
-// Module
-var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
-// Exports
-/* harmony default export */ var video_toolbar = (video_toolbar_code);
-;// CONCATENATED MODULE: ./src/html/toolbar.html
-// Module
-var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\n  scrollshow=\"true\">\n  <div id=\"setting_btn\" class=\"like-info\">\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\n  </div>\n  <div id=\"bilibili_parse\" class=\"like-info\">\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\n  </div>\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\n  </div>\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\n  </div>\n  <div id=\"video_download_all\" class=\"like-info\">\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\n  </div>\n  <div class=\"more\">更多<div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n  <style>\n    .tool-bar .more {\n      float: right;\n      cursor: pointer;\n      color: #757575;\n      font-size: 16px;\n      transition: all .3s;\n      position: relative;\n      text-align: center\n    }\n\n    .tool-bar .more:hover .more-ops-list {\n      display: block\n    }\n\n    .tool-bar:after {\n      display: block;\n      content: \"\";\n      clear: both\n    }\n\n    .more-ops-list {\n      display: none;\n      position: absolute;\n      width: 80px;\n      left: -65px;\n      z-index: 30;\n      text-align: center;\n      padding: 10px 0;\n      background: #fff;\n      border: 1px solid #e5e9ef;\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n      border-radius: 2px;\n      font-size: 14px;\n      color: #222\n    }\n\n    .more-ops-list li {\n      position: relative;\n      height: 34px;\n      line-height: 34px;\n      cursor: pointer;\n      transition: all .3s\n    }\n\n    .more-ops-list li:hover {\n      color: #00a1d6;\n      background: #e7e7e7\n    }\n  </style>\n</div>\n";
-// Exports
-/* harmony default export */ var toolbar = (toolbar_code);
 ;// CONCATENATED MODULE: ./src/js/main.js
 function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2756,13 +2758,12 @@ function main_createClass(Constructor, protoProps, staticProps) { if (protoProps
 
 
 
-
 var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.2", " ").concat("034a4a3", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.2", " ").concat("43653b8", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -2853,8 +2854,10 @@ var Main = /*#__PURE__*/function () {
           file_name = video_title + Download.url_format(_video_url);
           file_name_2 = video_title + '_audio.mp4';
           var aria2_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
-          var code = "aria2c \"".concat(_video_url, "\" --out \"").concat(file_name, "\" ").concat(aria2_header),
-              code_2 = "aria2c \"".concat(_video_url_, "\" --out \"").concat(file_name_2, "\" ").concat(aria2_header);
+          var aria2c_max_concurrent_downloads = "--max-concurrent-downloads ".concat(config_config.aria2c_max_concurrent_downloads);
+          var aria2c_max_connection_per_server = "--max-connection-per-server ".concat(config_config.aria2c_max_connection_per_server);
+          var code = "aria2c \"".concat(_video_url, "\" --out \"").concat(file_name, "\" ").concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server),
+              code_2 = "aria2c \"".concat(_video_url_, "\" --out \"").concat(file_name_2, "\" ").concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server);
 
           var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config_config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
 
