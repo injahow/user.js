@@ -47,12 +47,12 @@
     </div>
     <div style="margin: 2% 0">
       <label>aria2c命令配置：（用于自定义Aria命令下载方式下的命令生成）</label><br />
-      <label>单URL最大连接数：</label>
-      <input id="aria2c_max_concurrent_downloads" style="width: 5%" />&nbsp;&nbsp;&nbsp;&nbsp;
-      <label>单服务器最大连接数(小于等于16)：</label>
-      <input id="aria2c_max_connection_per_server" style="width: 5%" /><br />
-      <small>提示：前者为配置项--max-concurrent-downloads，后者为--max-connection-per-server，详情见<a
-          href="https://aria2.github.io/manual/en/html/aria2c.html" class="setting-context">aria2c(1)</a></small>
+      <label>最大连接数：</label>
+      <select id="aria2c_connection_level">
+        <option value="min">1</option>
+        <option value="mid">8</option>
+        <option value="max">16</option>
+      </select>
     </div>
     <div style="margin: 2% 0">
       <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />

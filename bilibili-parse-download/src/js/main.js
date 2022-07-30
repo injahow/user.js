@@ -117,8 +117,23 @@ class Main {
                 file_name = video_title + Download.url_format(video_url)
                 file_name_2 = video_title + '_audio.mp4'
                 const aria2_header = `--header "User-Agent: ${window.navigator.userAgent}" --header "Referer: ${window.location.href}"`
-                const aria2c_max_concurrent_downloads = `--max-concurrent-downloads ${config.aria2c_max_concurrent_downloads}`
-                const aria2c_max_connection_per_server = `--max-connection-per-server ${config.aria2c_max_connection_per_server}`
+                let [url_max_connection, server_max_connection] = [1, 5]
+                switch (config.aria2c_connection_level) {
+                    case "min":
+                        url_max_connection = 1
+                        server_max_connection = 5
+                        break
+                    case "mid":
+                        url_max_connection = 16
+                        server_max_connection = 8
+                        break
+                    case "max":
+                        url_max_connection = 32
+                        server_max_connection = 16
+                        break
+                }
+                const aria2c_max_concurrent_downloads = `--max-concurrent-downloads ${url_max_connection}`
+                const aria2c_max_connection_per_server = `--max-connection-per-server ${server_max_connection}`
                 const [code, code_2] = [
                     `aria2c "${video_url}" --out "${file_name}" ${aria2_header} ${aria2c_max_concurrent_downloads} ${aria2c_max_connection_per_server}`,
                     `aria2c "${video_url_2}" --out "${file_name_2}" ${aria2_header} ${aria2c_max_concurrent_downloads} ${aria2c_max_connection_per_server}`
