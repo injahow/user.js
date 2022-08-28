@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.3.2
+// @version       2.3.3
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -952,15 +952,14 @@
                 };
             },
             get_quality_support: function get_quality_support() {
-                var list, quality_list = [], vb = video.base();
-                return "video" !== vb.type ? ((list = "cheese" === vb.type ? $("div.edu-player-quality-item span") : $(".squirtle-quality-text")).each((function() {
-                    if ("自动" === $(this).text()) return !1;
-                    quality_list.push(q_map[$(this).text()]);
-                })), quality_list.length ? quality_list : [ "80", "64", "32", "16" ]) : (list = $("li.bui-select-item")) && list.length ? (list.each((function() {
-                    var q = "".concat($(this).attr("data-value"));
-                    if ("0" === q) return !1;
-                    quality_list.push(q);
-                })), quality_list) : [ "80", "64", "32", "16" ];
+                var list, quality_list = [], keys = Object.keys(videoQualityMap), vb = video.base();
+                return "cheese" === vb.type ? (list = $("div.edu-player-quality-item span")).each((function() {
+                    var k = $(this).text();
+                    q_map[k] && quality_list.push(q_map[k]);
+                })) : (list = "video" === vb.type ? $("li.bpx-player-ctrl-quality-menu-item") : $("li.squirtle-select-item")) && list.length && list.each((function() {
+                    var q = "".concat(parseInt($(this).attr("data-value")));
+                    keys.indexOf(q) > -1 && quality_list.push(q);
+                })), quality_list.length ? quality_list : [ "80", "64", "32", "16" ];
             }
         }, ajax = __webpack_require__(866), runtime_lib = __webpack_require__(711);
         function request_danmaku(options, _cid) {
@@ -1939,7 +1938,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.2", " ").concat("034a4a3", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.3", " ").concat("43653b8", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

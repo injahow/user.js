@@ -615,6 +615,7 @@ var user = new User();
 
 
 
+
 function type() {
   if (location.pathname.match('/cheese/play/')) {
     return 'cheese';
@@ -900,38 +901,33 @@ function get_quality() {
 function get_quality_support() {
   var list,
       quality_list = [];
+  var keys = Object.keys(videoQualityMap);
   var vb = video.base();
 
-  if (vb.type !== 'video') {
-    list = vb.type === 'cheese' ? $('div.edu-player-quality-item span') : $('.squirtle-quality-text');
+  if (vb.type === 'cheese') {
+    list = $('div.edu-player-quality-item span');
     list.each(function () {
       var k = $(this).text();
 
-      if (k === '自动') {
-        return false;
+      if (q_map[k]) {
+        quality_list.push(q_map[k]);
       }
-
-      quality_list.push(q_map[$(this).text()]);
     });
-    return quality_list.length ? quality_list : ['80', '64', '32', '16'];
   } else {
-    list = $('li.bui-select-item');
+    list = vb.type === 'video' ? $('li.bpx-player-ctrl-quality-menu-item') : $('li.squirtle-select-item');
 
     if (list && list.length) {
       list.each(function () {
-        var q = "".concat($(this).attr('data-value'));
+        var q = "".concat(parseInt($(this).attr('data-value')));
 
-        if (q === '0') {
-          return false;
+        if (keys.indexOf(q) > -1) {
+          quality_list.push(q);
         }
-
-        quality_list.push(q);
       });
-      return quality_list;
     }
   }
 
-  return ['80', '64', '32', '16'];
+  return quality_list.length ? quality_list : ['80', '64', '32', '16'];
 }
 
 var video = {
@@ -2762,7 +2758,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.2", " ").concat("034a4a3", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.3", " ").concat("43653b8", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

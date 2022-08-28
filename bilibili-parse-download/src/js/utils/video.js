@@ -1,3 +1,4 @@
+import { videoQualityMap } from '../ui/config'
 import { user } from '../user'
 import { api } from './api'
 
@@ -244,35 +245,34 @@ function get_quality() {
 
 function get_quality_support() {
     let list, quality_list = []
+    const keys = Object.keys(videoQualityMap)
     const vb = video.base()
-    if (vb.type !== 'video') {
-        list = vb.type === 'cheese'
-            ? $('div.edu-player-quality-item span')
-            : $('.squirtle-quality-text')
+    if (vb.type === 'cheese') {
+        list = $('div.edu-player-quality-item span')
         list.each(function () {
             const k = $(this).text()
-            if (k === '自动') {
-                return false
+            if (q_map[k]) {
+                quality_list.push(q_map[k])
             }
-            quality_list.push(q_map[$(this).text()])
         })
-        return quality_list.length
-            ? quality_list
-            : ['80', '64', '32', '16']
     } else {
-        list = $('li.bui-select-item')
+        list = vb.type === 'video'
+            ? $('li.bpx-player-ctrl-quality-menu-item')
+            : $('li.squirtle-select-item')
         if (list && list.length) {
             list.each(function () {
-                const q = `${$(this).attr('data-value')}`
-                if (q === '0') {
-                    return false
+                const q = `${parseInt($(this).attr('data-value'))}`
+                if (keys.indexOf(q) > -1) {
+                    quality_list.push(q)
                 }
-                quality_list.push(q)
             })
-            return quality_list
         }
     }
-    return ['80', '64', '32', '16']
+
+    return quality_list.length
+        ? quality_list
+        : ['80', '64', '32', '16']
+
 }
 
 export const video = {
