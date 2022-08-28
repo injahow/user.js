@@ -231,8 +231,8 @@ function get_quality() {
     if (vb.type === 'cheese') {
         const q = $('div.edu-player-quality-item.active span').text()
         const q_max = $($('div.edu-player-quality-item span').get(0)).text()
-        _q = q in q_map ? q : 0
-        _q_max = q_max in q_map ? q_max : 0
+        _q = q in q_map ? q_map[q] : 0
+        _q_max = q_max in q_map ? q_map[q_max] : 0
     } else {
         const keys = Object.keys(videoQualityMap)
         const q = parseInt((vb.type === 'video'
