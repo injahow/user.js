@@ -1162,8 +1162,8 @@ function get_quality() {
   if (vb.type === 'cheese') {
     var q = $('div.edu-player-quality-item.active span').text();
     var q_max = $($('div.edu-player-quality-item span').get(0)).text();
-    _q = q in q_map ? q : 0;
-    _q_max = q_max in q_map ? q_max : 0;
+    _q = q in q_map ? q_map[q] : 0;
+    _q_max = q_max in q_map ? q_map[q_max] : 0;
   } else {
     var keys = Object.keys(videoQualityMap);
 
@@ -2767,7 +2767,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.3", " ").concat("13eab1d", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.4", " ").concat("388df2c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
