@@ -222,30 +222,40 @@ const q_map = {
     '720P 高清': 64,
     '480P 清晰': 32,
     '360P 流畅': 16,
-    '自动': 64
+    '自动': 32
 }
 
 function get_quality() {
     let _q = 0, _q_max = 0
-    if (!!$('li.bui-select-item')[0] && !!(_q_max = parseInt($('li.bui-select-item')[0].dataset.value))) {
-        _q = parseInt($('li.bui-select-item.bui-select-item-active').attr('data-value')) || (_q_max > 80 ? 80 : _q_max)
-    } else if (!!$('li.squirtle-select-item')[0] && !!(_q_max = parseInt($('li.squirtle-select-item')[0].dataset.value))) {
-        _q = parseInt($('li.squirtle-select-item.active').attr('data-value')) || (_q_max > 80 ? 80 : _q_max)
-    } else if (!!$('div.edu-player-quality-item')[0]) {
-        _q = q_map[$('div.edu-player-quality-item.active span').text() || '自动'] || 80
-        _q_max = q_map[$('div.edu-player-quality-item span').text() || '自动'] || 80
+    const vb = video.base()
+    if (vb.type === 'cheese') {
+        const q = $('div.edu-player-quality-item.active span').text()
+        const q_max = $($('div.edu-player-quality-item span').get(0)).text()
+        _q = q in q_map ? q : 0
+        _q_max = q_max in q_map ? q_max : 0
     } else {
-        _q = _q_max = 80
+        const keys = Object.keys(videoQualityMap)
+        const q = parseInt((vb.type === 'video'
+            ? $('li.bpx-player-ctrl-quality-menu-item.bpx-state-active')
+            : $('li.squirtle-select-item.active')).attr('data-value'))
+        const q_max = parseInt($((vb.type === 'video'
+            ? $('li.bpx-player-ctrl-quality-menu-item')
+            : $('li.squirtle-select-item')).get(0)).attr('data-value'))
+        _q = keys.indexOf(`${q}`) > -1 ? q : 0
+        _q_max = keys.indexOf(`${q_max}`) > -1 ? q_max : 0
     }
+    !_q && (_q = 80)
+    !_q_max && (_q_max = 80)
+
     if (!user.isVIP()) {
         _q = _q > 80 ? 80 : _q
     }
+
     return { q: _q, q_max: _q_max }
 }
 
 function get_quality_support() {
     let list, quality_list = []
-    const keys = Object.keys(videoQualityMap)
     const vb = video.base()
     if (vb.type === 'cheese') {
         list = $('div.edu-player-quality-item span')
@@ -256,6 +266,7 @@ function get_quality_support() {
             }
         })
     } else {
+        const keys = Object.keys(videoQualityMap)
         list = vb.type === 'video'
             ? $('li.bpx-player-ctrl-quality-menu-item')
             : $('li.squirtle-select-item')

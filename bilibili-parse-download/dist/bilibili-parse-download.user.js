@@ -919,7 +919,7 @@
             "720P 高清": 64,
             "480P 清晰": 32,
             "360P 流畅": 16,
-            "自动": 64
+            "自动": 32
         };
         var video = {
             type: type,
@@ -1124,23 +1124,33 @@
                 };
             },
             get_quality: function get_quality() {
-                var _q = 0, _q_max = 0;
-                return $("li.bui-select-item")[0] && (_q_max = parseInt($("li.bui-select-item")[0].dataset.value)) ? _q = parseInt($("li.bui-select-item.bui-select-item-active").attr("data-value")) || (_q_max > 80 ? 80 : _q_max) : $("li.squirtle-select-item")[0] && (_q_max = parseInt($("li.squirtle-select-item")[0].dataset.value)) ? _q = parseInt($("li.squirtle-select-item.active").attr("data-value")) || (_q_max > 80 ? 80 : _q_max) : $("div.edu-player-quality-item")[0] ? (_q = q_map[$("div.edu-player-quality-item.active span").text() || "自动"] || 80, 
-                _q_max = q_map[$("div.edu-player-quality-item span").text() || "自动"] || 80) : _q = _q_max = 80, 
-                user.isVIP() || (_q = _q > 80 ? 80 : _q), {
+                var _q = 0, _q_max = 0, vb = video.base();
+                if ("cheese" === vb.type) {
+                    var q = $("div.edu-player-quality-item.active span").text(), q_max = $($("div.edu-player-quality-item span").get(0)).text();
+                    _q = q in q_map ? q : 0, _q_max = q_max in q_map ? q_max : 0;
+                } else {
+                    var keys = Object.keys(videoQualityMap), _q2 = parseInt(("video" === vb.type ? $("li.bpx-player-ctrl-quality-menu-item.bpx-state-active") : $("li.squirtle-select-item.active")).attr("data-value")), _q_max2 = parseInt($(("video" === vb.type ? $("li.bpx-player-ctrl-quality-menu-item") : $("li.squirtle-select-item")).get(0)).attr("data-value"));
+                    _q = keys.indexOf("".concat(_q2)) > -1 ? _q2 : 0, _q_max = keys.indexOf("".concat(_q_max2)) > -1 ? _q_max2 : 0;
+                }
+                return !_q && (_q = 80), !_q_max && (_q_max = 80), user.isVIP() || (_q = _q > 80 ? 80 : _q), 
+                {
                     q: _q,
                     q_max: _q_max
                 };
             },
             get_quality_support: function get_quality_support() {
-                var list, quality_list = [], keys = Object.keys(videoQualityMap), vb = video.base();
-                return "cheese" === vb.type ? (list = $("div.edu-player-quality-item span")).each((function() {
+                var list, quality_list = [], vb = video.base();
+                if ("cheese" === vb.type) (list = $("div.edu-player-quality-item span")).each((function() {
                     var k = $(this).text();
                     q_map[k] && quality_list.push(q_map[k]);
-                })) : (list = "video" === vb.type ? $("li.bpx-player-ctrl-quality-menu-item") : $("li.squirtle-select-item")) && list.length && list.each((function() {
-                    var q = "".concat(parseInt($(this).attr("data-value")));
-                    keys.indexOf(q) > -1 && quality_list.push(q);
-                })), quality_list.length ? quality_list : [ "80", "64", "32", "16" ];
+                })); else {
+                    var keys = Object.keys(videoQualityMap);
+                    (list = "video" === vb.type ? $("li.bpx-player-ctrl-quality-menu-item") : $("li.squirtle-select-item")) && list.length && list.each((function() {
+                        var q = "".concat(parseInt($(this).attr("data-value")));
+                        keys.indexOf(q) > -1 && quality_list.push(q);
+                    }));
+                }
+                return quality_list.length ? quality_list : [ "80", "64", "32", "16" ];
             }
         }, runtime_lib = __webpack_require__(711);
         function request_danmaku(options, _cid) {
@@ -1939,7 +1949,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.3", " ").concat("eb4af2d", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.3", " ").concat("13eab1d", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

@@ -1151,23 +1151,32 @@ var q_map = {
   '720P 高清': 64,
   '480P 清晰': 32,
   '360P 流畅': 16,
-  '自动': 64
+  '自动': 32
 };
 
 function get_quality() {
   var _q = 0,
       _q_max = 0;
+  var vb = video.base();
 
-  if (!!$('li.bui-select-item')[0] && !!(_q_max = parseInt($('li.bui-select-item')[0].dataset.value))) {
-    _q = parseInt($('li.bui-select-item.bui-select-item-active').attr('data-value')) || (_q_max > 80 ? 80 : _q_max);
-  } else if (!!$('li.squirtle-select-item')[0] && !!(_q_max = parseInt($('li.squirtle-select-item')[0].dataset.value))) {
-    _q = parseInt($('li.squirtle-select-item.active').attr('data-value')) || (_q_max > 80 ? 80 : _q_max);
-  } else if (!!$('div.edu-player-quality-item')[0]) {
-    _q = q_map[$('div.edu-player-quality-item.active span').text() || '自动'] || 80;
-    _q_max = q_map[$('div.edu-player-quality-item span').text() || '自动'] || 80;
+  if (vb.type === 'cheese') {
+    var q = $('div.edu-player-quality-item.active span').text();
+    var q_max = $($('div.edu-player-quality-item span').get(0)).text();
+    _q = q in q_map ? q : 0;
+    _q_max = q_max in q_map ? q_max : 0;
   } else {
-    _q = _q_max = 80;
+    var keys = Object.keys(videoQualityMap);
+
+    var _q2 = parseInt((vb.type === 'video' ? $('li.bpx-player-ctrl-quality-menu-item.bpx-state-active') : $('li.squirtle-select-item.active')).attr('data-value'));
+
+    var _q_max2 = parseInt($((vb.type === 'video' ? $('li.bpx-player-ctrl-quality-menu-item') : $('li.squirtle-select-item')).get(0)).attr('data-value'));
+
+    _q = keys.indexOf("".concat(_q2)) > -1 ? _q2 : 0;
+    _q_max = keys.indexOf("".concat(_q_max2)) > -1 ? _q_max2 : 0;
   }
+
+  !_q && (_q = 80);
+  !_q_max && (_q_max = 80);
 
   if (!user.isVIP()) {
     _q = _q > 80 ? 80 : _q;
@@ -1182,7 +1191,6 @@ function get_quality() {
 function get_quality_support() {
   var list,
       quality_list = [];
-  var keys = Object.keys(videoQualityMap);
   var vb = video.base();
 
   if (vb.type === 'cheese') {
@@ -1195,6 +1203,7 @@ function get_quality_support() {
       }
     });
   } else {
+    var keys = Object.keys(videoQualityMap);
     list = vb.type === 'video' ? $('li.bpx-player-ctrl-quality-menu-item') : $('li.squirtle-select-item');
 
     if (list && list.length) {
@@ -2758,7 +2767,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.3", " ").concat("eb4af2d", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.3", " ").concat("13eab1d", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
