@@ -1,19 +1,18 @@
 
-import { api } from './utils/api'
-import { player } from './utils/player'
-import { video } from './utils/video'
-import { Download } from './utils/download'
-import { scroll } from './ui/scroll'
-import { initConfig } from './ui/config'
-import { initMessage, Message, MessageBox } from './ui/message'
-import { config } from './ui/config'
-import { user } from './user'
+import arc_toolbar_html from '../html/arc_toolbar.html'
+import toolbar_html from '../html/toolbar.html'
+import video_toolbar_html from '../html/video_toolbar.html'
 import { auth } from './auth'
 import { check } from './check'
 import { store } from './store'
-import arc_toolbar_html from '../html/arc_toolbar.html'
-import video_toolbar_html from '../html/video_toolbar.html'
-import toolbar_html from '../html/toolbar.html'
+import { config, initConfig } from './ui/config'
+import { initMessage, Message, MessageBox } from './ui/message'
+import { scroll } from './ui/scroll'
+import { user } from './user'
+import { api } from './utils/api'
+import { Download } from './utils/download'
+import { player } from './utils/player'
+import { video } from './utils/video'
 
 
 class Main {
@@ -118,9 +117,26 @@ class Main {
                 file_name = video_title + Download.url_format(video_url)
                 file_name_2 = video_title + '_audio.mp4'
                 const aria2_header = `--header "User-Agent: ${window.navigator.userAgent}" --header "Referer: ${window.location.href}"`
+                let [url_max_connection, server_max_connection] = [1, 5]
+                switch (config.aria2c_connection_level) {
+                    case "min":
+                        url_max_connection = 1
+                        server_max_connection = 5
+                        break
+                    case "mid":
+                        url_max_connection = 16
+                        server_max_connection = 8
+                        break
+                    case "max":
+                        url_max_connection = 32
+                        server_max_connection = 16
+                        break
+                }
+                const aria2c_max_concurrent_downloads = `--max-concurrent-downloads ${url_max_connection}`
+                const aria2c_max_connection_per_server = `--max-connection-per-server ${server_max_connection}`
                 const [code, code_2] = [
-                    `aria2c "${video_url}" --out "${file_name}" ${aria2_header}`,
-                    `aria2c "${video_url_2}" --out "${file_name_2}" ${aria2_header}`
+                    `aria2c "${video_url}" --out "${file_name}" ${aria2_header} ${aria2c_max_concurrent_downloads} ${aria2c_max_connection_per_server}`,
+                    `aria2c "${video_url_2}" --out "${file_name_2}" ${aria2_header} ${aria2c_max_concurrent_downloads} ${aria2c_max_connection_per_server}`
                 ]
                 const msg = '点击文本框即可复制下载命令！<br/><br/>' +
                     `视频：<br/><input id="aria2_code" value='${code}' onclick="bp_clip_btn('aria2_code')" style="width:100%;"></br></br>` +
