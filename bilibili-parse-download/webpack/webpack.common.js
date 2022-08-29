@@ -57,18 +57,6 @@ const getDefaultConfig = () => {
                     loader: 'html-loader',
                 },
                 {
-                    test: /\.vue$/,
-                    use: [
-                        {
-                            loader: 'vue-loader',
-                            options: {
-                                optimizeSSR: false,
-                                hotReload: false,
-                            }
-                        }
-                    ]
-                },
-                {
                     test: /\.css$/,
                     use: [
                         'style-loader',
