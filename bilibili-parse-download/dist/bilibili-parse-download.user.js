@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.3.4
+// @version       2.3.5
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -798,7 +798,7 @@
                 return console.error(err);
             };
             var vb = video.base(), _ref = [ vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type ], aid = _ref[0], cid = _ref[1], epid = _ref[2], q = _ref[3], type = _ref[4], format = video_format || config_config.format;
-            "mp4" === format && "video" !== type && (format = "flv"), "auto" === request_type && user.needReplace() && (request_type = "online");
+            "auto" === request_type && user.needReplace() && (request_type = "online");
             var base_api, url_replace_cdn = function url_replace_cdn(url) {
                 if ("0" !== config_config.host_key && "online" === request_type && "mp4" !== format) {
                     var url_tmp = url.split("/");
@@ -810,10 +810,14 @@
                 dataType: "json"
             };
             if ("auto" === request_type || "local" === request_type) {
-                var fnver, fnval;
+                var fnver, fnval = {
+                    dash: 4048,
+                    flv: 4049,
+                    mp4: 80
+                }[format] || 0;
                 "cheese" === type ? (base_api = "https://api.bilibili.com/pugv/player/web/playurl", 
-                "dash" === format ? (fnver = 0, fnval = 80) : (fnver = 1, fnval = 80)) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl", 
-                "dash" === format ? (fnver = 0, fnval = 4048) : (fnver = 0, fnval = 0)), base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
+                fnver = "mp4" === format ? 1 : 0) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl", 
+                fnver = 0), base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
                 base_api += "mp4" === format ? "&platform=html5&high_quality=1" : "", ajax_obj.xhrFields = {
                     withCredentials: !0
                 };
@@ -887,7 +891,7 @@
         var api = {
             get_url: function get_url(success, error) {
                 var request_type = config_config.request_type, format = config_config.format;
-                get_url_base(0, "0" === config_config.video_quality ? 0 : parseInt(config_config.video_quality), format, success, error, request_type);
+                get_url_base(0, parseInt(config_config.video_quality), format, success, error, request_type);
             },
             get_urls: function get_urls(page, quality, format, success, error) {
                 get_url_base(page, quality, format, success, error, config_config.request_type);
@@ -1051,7 +1055,11 @@
                 if ("cheese" === _type) {
                     var epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1];
                     window.bp_episodes || (window.bp_episodes = [], api.get_season(epid));
-                    var episodes = window.bp_episodes, _id2 = $("li.on.list-box-li").index(), _main_title3 = ($("div.season-info h1").html() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                    for (var episodes = window.bp_episodes, _id2 = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
+                        _id2 = i;
+                        break;
+                    }
+                    var _main_title3 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
                     return {
                         type: "cheese",
                         name: _main_title3,
@@ -1590,7 +1598,7 @@
                 } finally {
                     _iterator.f();
                 }
-                var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="flv" selected>FLV</option>\n                <option value="mp4">MP4</option>\n            </select>\n            &nbsp;&nbsp;仅Video支持MP4\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video" >视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, "\n        </div>\n        <div>").concat("medialist" === video.type() ? "不支持多页视频，若需要请到视频原播放页面下载" : "", '</div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
+                var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="flv" selected>FLV</option>\n                <option value="mp4">MP4</option>\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video" >视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, "\n        </div>\n        <div>").concat("medialist" === video.type() ? "不支持多页视频，若需要请到视频原播放页面下载" : "", '</div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
                 function download_videos(videos, i, video_urls) {
                     if (videos.length) if (i < videos.length) {
                         var _video = videos[i], _msg = "第".concat(i + 1, "（").concat(i + 1, "/").concat(videos.length, "）个视频");
@@ -1685,7 +1693,7 @@
             download_danmaku_ass: download_danmaku_ass,
             download_subtitle_vtt: download_subtitle_vtt,
             open_ariang: open_ariang
-        }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="online">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="flv">FLV</option> <option value="dash">DASH</option> <option value="mp4">MP4</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：仅Video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>aria2c命令配置：（用于自定义Aria命令下载方式下的命令生成）</label><br/> <label>最大连接数：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" style="width:25%"/> : <input id="rpc_port" style="width:10%"/> | <input id="rpc_token" placeholder="没有密钥不用填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">账号授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">手动授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ', config_config = {
+        }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="online">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="flv">FLV</option> <option value="dash">DASH</option> <option value="mp4">MP4</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" style="width:25%"/> : <input id="rpc_port" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria参数：</label> 最大连接数：<select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">账号授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">手动授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ', config_config = {
             base_api: "https://api.injahow.cn/bparse/",
             request_type: "auto",
             format: "flv",
@@ -1949,7 +1957,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.4", " ").concat("388df2c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.5", " ").concat("12ac511", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -1999,86 +2007,98 @@
                     }("#".concat(root_div.id)), (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), 
                     auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
                     $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
-                    $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
-                    $("body").on("click", "#setting_btn", (function() {
-                        for (var key in user.lazyInit(!0), config_config) $("#".concat(key)).val(config_config[key]);
-                        $("#bp_config").show(), $("#bp_config").animate({
-                            opacity: "1"
-                        }, 300), ui_scroll.A.hide();
-                    })), $("body").on("click", "#download_danmaku", (function() {
-                        var vb = video.base();
-                        Download.download_danmaku_ass(vb.cid(), vb.filename());
-                    })), $("body").on("click", "#download_subtitle", (function() {
-                        Download.download_subtitle_vtt(0, video.base().filename());
-                    })), $("body").on("click", "#video_download_all", (function() {
-                        user.lazyInit(!0), store.get("auth_id") && store.get("auth_sec") ? "rpc" === config_config.download_type ? Download.download_all() : message._p.confirm("仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？", (function() {
-                            Download.download_all();
-                        })) : message._p.confirm("批量下载仅支持授权用户使用RPC接口下载，是否进行授权？", (function() {
-                            auth.login();
-                        }));
-                    })), $("body").on("click", "#video_download", (function() {
-                        var type = config_config.download_type;
-                        if ("web" === type) $("#video_url")[0].click(); else if ("a" === type) {
-                            var _ref = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], video_url_2 = _ref[1], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref[0], '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
-                            message._p.alert(msg);
-                        } else if ("aria" === type) {
-                            var file_name, file_name_2, _ref2 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref2[0], _video_url_ = _ref2[1], video_title = video.base().filename();
-                            file_name = video_title + Download.url_format(_video_url), file_name_2 = video_title + "_audio.mp4";
-                            var aria2_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), url_max_connection = 1, server_max_connection = 5;
-                            switch (config_config.aria2c_connection_level) {
-                              case "min":
-                                url_max_connection = 1, server_max_connection = 5;
-                                break;
+                    $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
+                    var e = {
+                        setting_btn: function setting_btn() {
+                            for (var key in user.lazyInit(!0), config_config) $("#".concat(key)).val(config_config[key]);
+                            $("#bp_config").show(), $("#bp_config").animate({
+                                opacity: "1"
+                            }, 300), ui_scroll.A.hide();
+                        },
+                        download_danmaku: function download_danmaku() {
+                            var vb = video.base();
+                            Download.download_danmaku_ass(vb.cid(), vb.filename());
+                        },
+                        download_subtitle: function download_subtitle() {
+                            Download.download_subtitle_vtt(0, video.base().filename());
+                        },
+                        video_download_all: function video_download_all() {
+                            user.lazyInit(!0), store.get("auth_id") && store.get("auth_sec") ? "rpc" === config_config.download_type ? Download.download_all() : message._p.confirm("仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？", (function() {
+                                Download.download_all();
+                            })) : message._p.confirm("批量下载仅支持授权用户使用RPC接口下载，是否进行授权？", (function() {
+                                auth.login();
+                            }));
+                        },
+                        video_download: function video_download() {
+                            var type = config_config.download_type;
+                            if ("web" === type) $("#video_url")[0].click(); else if ("a" === type) {
+                                var _ref = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], video_url_2 = _ref[1], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref[0], '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
+                                message._p.alert(msg);
+                            } else if ("aria" === type) {
+                                var file_name, file_name_2, _ref2 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref2[0], _video_url_ = _ref2[1], video_title = video.base().filename();
+                                file_name = video_title + Download.url_format(_video_url), file_name_2 = video_title + "_audio.mp4";
+                                var aria2_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), url_max_connection = 1, server_max_connection = 5;
+                                switch (config_config.aria2c_connection_level) {
+                                  case "min":
+                                    url_max_connection = 1, server_max_connection = 5;
+                                    break;
 
-                              case "mid":
-                                url_max_connection = 16, server_max_connection = 8;
-                                break;
+                                  case "mid":
+                                    url_max_connection = 16, server_max_connection = 8;
+                                    break;
 
-                              case "max":
-                                url_max_connection = 32, server_max_connection = 16;
-                            }
-                            var aria2c_max_concurrent_downloads = "--max-concurrent-downloads ".concat(url_max_connection), aria2c_max_connection_per_server = "--max-connection-per-server ".concat(server_max_connection), code = 'aria2c "'.concat(_video_url, '" --out "').concat(file_name, '" ').concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server), code_2 = 'aria2c "'.concat(_video_url_, '" --out "').concat(file_name_2, '" ').concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server), _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
-                            !window.bp_clip_btn && (window.bp_clip_btn = function(id) {
-                                $("#".concat(id)).select(), document.execCommand("copy") ? message.v0.success("复制成功") : message.v0.warning("复制失败");
-                            }), message._p.alert(_msg);
-                        } else {
-                            var url = $("#video_url").attr("href"), filename = video.base().filename();
-                            Download.download(url, filename, type);
-                        }
-                    })), $("body").on("click", "#video_download_2", (function() {
-                        var type = config_config.download_type;
-                        if ("web" === type) $("#video_url_2")[0].click(); else if ("a" === type) $("#video_download").click(); else if ("aria" === type) $("#video_download").click(); else {
-                            var url = $("#video_url_2").attr("href"), filename = video.base().filename();
-                            Download.download(url, filename, type);
-                        }
-                    })), $("body").on("click", "#bilibili_parse", (function() {
-                        user.lazyInit(!0);
-                        var vb = video.base(), _ref3 = [ vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid() ], type = _ref3[0], aid = _ref3[1], p = _ref3[2], cid = _ref3[3], epid = _ref3[4], q = video.get_quality().q;
-                        api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
-                        var _ref4 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref4[0], auth_sec = _ref4[1];
-                        if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
-                        api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"), 
-                        $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message.v0.info("开始请求"), 
-                        api.get_url((function(res) {
-                            if (res && !res.code) {
-                                var _url, _url_;
-                                if (message.v0.success("请求成功"), res.times && message.v0.info("剩余请求次数：".concat(res.times)), 
-                                res.url) _url = res.url.replace("http://", "https://"), _url_ = "#"; else {
-                                    if (!res.video || !res.audio) return void message.v0.warning("数据错误");
-                                    _url = res.video.replace("http://", "https://"), _url_ = res.audio.replace("http://", "https://");
+                                  case "max":
+                                    url_max_connection = 32, server_max_connection = 16;
                                 }
-                                $("#video_url").attr("href", _url), $("#video_download").show(), "#" !== _url_ && ($("#video_url_2").attr("href", _url_), 
-                                $("#video_download_2").show()), (user.needReplace() || vb.is_limited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_), 
-                                "1" === config_config.auto_download && $("#video_download").click();
+                                var aria2c_max_concurrent_downloads = "--max-concurrent-downloads ".concat(url_max_connection), aria2c_max_connection_per_server = "--max-connection-per-server ".concat(server_max_connection), code = 'aria2c "'.concat(_video_url, '" --out "').concat(file_name, '" ').concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server), code_2 = 'aria2c "'.concat(_video_url_, '" --out "').concat(file_name_2, '" ').concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server), _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
+                                !window.bp_clip_btn && (window.bp_clip_btn = function(id) {
+                                    $("#".concat(id)).select(), document.execCommand("copy") ? message.v0.success("复制成功") : message.v0.warning("复制失败");
+                                }), message._p.alert(_msg);
+                            } else {
+                                var url = $("#video_url").attr("href"), filename = video.base().filename();
+                                Download.download(url, filename, type);
                             }
-                        })); else {
-                            message.v0.miaow();
-                            var url = $("#video_url").attr("href"), url_2 = $("#video_url_2").attr("href");
-                            url && "#" !== url && ($("#video_download").show(), "dash" === config_config.format && $("#video_download_2").show(), 
-                            (user.needReplace() || vb.is_limited() || "1" === config_config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2), 
-                            "1" === config_config.auto_download && $("#video_download").click());
+                        },
+                        video_download_2: function video_download_2() {
+                            var type = config_config.download_type;
+                            if ("web" === type) $("#video_url_2")[0].click(); else if ("a" === type) $("#video_download").click(); else if ("aria" === type) $("#video_download").click(); else {
+                                var url = $("#video_url_2").attr("href"), filename = video.base().filename();
+                                Download.download(url, filename, type);
+                            }
+                        },
+                        bilibili_parse: function bilibili_parse() {
+                            user.lazyInit(!0);
+                            var vb = video.base(), _ref3 = [ vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid() ], type = _ref3[0], aid = _ref3[1], p = _ref3[2], cid = _ref3[3], epid = _ref3[4], q = video.get_quality().q;
+                            api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
+                            var _ref4 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref4[0], auth_sec = _ref4[1];
+                            if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
+                            api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"), 
+                            $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message.v0.info("开始请求"), 
+                            api.get_url((function(res) {
+                                if (res && !res.code) {
+                                    var _url, _url_;
+                                    if (message.v0.success("请求成功"), res.times && message.v0.info("剩余请求次数：".concat(res.times)), 
+                                    res.url) _url = res.url.replace("http://", "https://"), _url_ = "#"; else {
+                                        if (!res.video || !res.audio) return void message.v0.warning("数据错误");
+                                        _url = res.video.replace("http://", "https://"), _url_ = res.audio.replace("http://", "https://");
+                                    }
+                                    $("#video_url").attr("href", _url), $("#video_download").show(), "#" !== _url_ && ($("#video_url_2").attr("href", _url_), 
+                                    $("#video_download_2").show()), (user.needReplace() || vb.is_limited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_), 
+                                    "1" === config_config.auto_download && $("#video_download").click();
+                                }
+                            })); else {
+                                message.v0.miaow();
+                                var url = $("#video_url").attr("href"), url_2 = $("#video_url_2").attr("href");
+                                url && "#" !== url && ($("#video_download").show(), "dash" === config_config.format && $("#video_download_2").show(), 
+                                (user.needReplace() || vb.is_limited() || "1" === config_config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2), 
+                                "1" === config_config.auto_download && $("#video_download").click());
+                            }
                         }
-                    })), $("body").on("click", "a.router-link-active", (function() {
+                    };
+                    window.bpd = e, $("body").on("click", "#setting_btn", e.setting_btn), $("body").on("click", "#download_danmaku", e.download_danmaku), 
+                    $("body").on("click", "#download_subtitle", e.download_subtitle), $("body").on("click", "#video_download_all", e.video_download_all), 
+                    $("body").on("click", "#video_download", e.video_download), $("body").on("click", "#video_download_2", e.video_download_2), 
+                    $("body").on("click", "#bilibili_parse", e.bilibili_parse), $("body").on("click", "a.router-link-active", (function() {
                         this !== $('li[class="on"]').find("a")[0] && check.refresh();
                     })), $("body").on("click", "li.ep-item", (function() {
                         check.refresh();

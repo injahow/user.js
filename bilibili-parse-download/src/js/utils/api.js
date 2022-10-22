@@ -38,7 +38,6 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
     // 参数预处理
     let format = video_format || config.format
-    if (format === 'mp4' && type !== 'video') format = 'flv'
     if (request_type === 'auto' && user.needReplace()) request_type = 'online'
 
     const url_replace_cdn = url => {
@@ -58,23 +57,15 @@ function get_url_base(page, quality, video_format, success, error, request_type)
     }
 
     if (request_type === 'auto' || request_type === 'local') {
-        let fnver, fnval
+        let fnver, fnval = { dash: 4048, flv: 4049, mp4: 80 }[format] || 0
         if (type === 'cheese') {
             base_api = 'https://api.bilibili.com/pugv/player/web/playurl'
-            if (format === 'dash') {
-                fnver = 0, fnval = 80
-            } else {
-                fnver = 1, fnval = 80
-            }
+            fnver = format === 'mp4' ? 1 : 0
         } else {
             base_api = type === 'video'
                 ? 'https://api.bilibili.com/x/player/playurl'
                 : 'https://api.bilibili.com/pgc/player/web/playurl'
-            if (format === 'dash') {
-                fnver = 0, fnval = 4048
-            } else {
-                fnver = 0, fnval = 0
-            }
+            fnver = 0
         }
         base_api += `?avid=${aid}&cid=${cid}&qn=${q}&fnver=${fnver}&fnval=${fnval}&fourk=1&ep_id=${epid}&type=${format}&otype=json`
         base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : ''
@@ -209,7 +200,7 @@ export const api = {
     get_url: (success, error) => {
         const request_type = config.request_type
         const format = config.format
-        const quality = config.video_quality === '0' ? 0 : parseInt(config.video_quality)
+        const quality = parseInt(config.video_quality)
         get_url_base(0, quality, format, success, error, request_type)
     },
     get_urls: (page, quality, format, success, error) => {
