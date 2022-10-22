@@ -678,7 +678,6 @@ function get_url_base(page, quality, video_format, success, error, request_type)
       type = _ref[4]; // 参数预处理
 
   var format = video_format || config_config.format;
-  if (format === 'mp4' && type !== 'video') format = 'flv';
   if (request_type === 'auto' && user.needReplace()) request_type = 'online';
 
   var url_replace_cdn = function url_replace_cdn(url) {
@@ -699,24 +698,19 @@ function get_url_base(page, quality, video_format, success, error, request_type)
   };
 
   if (request_type === 'auto' || request_type === 'local') {
-    var fnver, fnval;
+    var fnver,
+        fnval = {
+      dash: 4048,
+      flv: 4049,
+      mp4: 80
+    }[format] || 0;
 
     if (type === 'cheese') {
       base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
-
-      if (format === 'dash') {
-        fnver = 0, fnval = 80;
-      } else {
-        fnver = 1, fnval = 80;
-      }
+      fnver = format === 'mp4' ? 1 : 0;
     } else {
       base_api = type === 'video' ? 'https://api.bilibili.com/x/player/playurl' : 'https://api.bilibili.com/pgc/player/web/playurl';
-
-      if (format === 'dash') {
-        fnver = 0, fnval = 4048;
-      } else {
-        fnver = 0, fnval = 0;
-      }
+      fnver = 0;
     }
 
     base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
@@ -881,7 +875,7 @@ var api = {
   get_url: function get_url(success, error) {
     var request_type = config_config.request_type;
     var format = config_config.format;
-    var quality = config_config.video_quality === '0' ? 0 : parseInt(config_config.video_quality);
+    var quality = parseInt(config_config.video_quality);
     get_url_base(0, quality, format, success, error, request_type);
   },
   get_urls: function get_urls(page, quality, format, success, error) {
@@ -1062,10 +1056,16 @@ function base() {
     }
 
     var episodes = window.bp_episodes;
+    var _id2 = 0;
 
-    var _id2 = $('li.on.list-box-li').index();
+    for (var i = 0; i < episodes.length; i++) {
+      if (episodes[i].id == epid) {
+        _id2 = i;
+        break;
+      }
+    }
 
-    var _main_title3 = ($('div.season-info h1').html() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+    var _main_title3 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
 
     return {
       type: 'cheese',
@@ -1597,7 +1597,7 @@ function download_all() {
     _iterator.f();
   }
 
-  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"flv\" selected>FLV</option>\n                <option value=\"mp4\">MP4</option>\n            </select>\n            &nbsp;&nbsp;\u4EC5Video\u652F\u6301MP4\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <label style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_video\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_video\" >\u89C6\u9891</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_subtitle\" name=\"dl_option\">\n                <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_danmaku\" name=\"dl_option\">\n                <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n            </label>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div>").concat(video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : '', "</div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
+  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"flv\" selected>FLV</option>\n                <option value=\"mp4\">MP4</option>\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <label style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_video\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_video\" >\u89C6\u9891</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_subtitle\" name=\"dl_option\">\n                <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_danmaku\" name=\"dl_option\">\n                <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n            </label>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div>").concat(video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : '', "</div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
   message.MessageBox.confirm(msg, function () {
     // 获取参数
     var dl_quality = $('#dl_quality').val() || q;
@@ -2241,7 +2241,7 @@ var Download = {
 };
 ;// CONCATENATED MODULE: ./src/html/config.html
 // Module
-var config_code = "<div id=\"bp_config\">\n  <div class=\"config-mark\"></div>\n  <div class=\"config-bg\">\n    <span style=\"font-size: 20px\">\n      <b>bilibili视频下载 参数设置</b>\n      <b>\n        <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a>\n        <a style=\"text-decoration: underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a>\n      </b>\n    </span>\n    <div style=\"margin: 2% 0\">\n      <label>请求地址：</label>\n      <input id=\"base_api\" style=\"width: 30%\" />&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>请求方式：</label>\n      <select id=\"request_type\">\n        <option value=\"auto\">自动判断</option>\n        <option value=\"local\">本地请求</option>\n        <option value=\"online\">远程请求</option>\n      </select><br />\n      <small>注意：普通使用请勿修改；默认使用混合请求</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>视频格式：</label>\n      <select id=\"format\">\n        <option value=\"flv\">FLV</option>\n        <option value=\"dash\">DASH</option>\n        <option value=\"mp4\">MP4</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>切换CDN：</label>\n      <select id=\"host_key\">\n        {{host_key_options}}\n      </select><br />\n      <small>注意：仅Video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>下载方式：</label>\n      <select id=\"download_type\">\n        <option value=\"a\">URL链接</option>\n        <option value=\"web\">Web浏览器</option>\n        <option value=\"blob\">Blob请求</option>\n        <option value=\"rpc\">RPC接口</option>\n        <option value=\"aria\">Aria命令</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>AriaNg地址：</label>\n      <input id=\"ariang_host\" style=\"width: 30%\" /><br />\n      <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>aria2c命令配置：（用于自定义Aria命令下载方式下的命令生成）</label><br />\n      <label>最大连接数：</label>\n      <select id=\"aria2c_connection_level\">\n        <option value=\"min\">1</option>\n        <option value=\"mid\">8</option>\n        <option value=\"max\">16</option>\n      </select>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />\n      <input id=\"rpc_domain\" style=\"width: 25%\" /> :\n      <input id=\"rpc_port\" style=\"width: 10%\" /> |\n      <input id=\"rpc_token\" placeholder=\"没有密钥不用填\" style=\"width: 15%\" /> |\n      <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width: 20%\" /><br />\n      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>强制换源：</label>\n      <select id=\"replace_force\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕速度：</label>\n      <input id=\"danmaku_speed\" style=\"width: 5%\" /> s\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕字号：</label>\n      <input id=\"danmaku_fontsize\" style=\"width: 5%\" /> px<br />\n      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>自动下载：</label>\n      <select id=\"auto_download\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>视频质量：</label>\n      <select id=\"video_quality\">\n        {{video_quality_options}}\n      </select><br />\n      <small>说明：请求地址成功后将自动点击下载视频按钮</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>授权状态：</label>\n      <select id=\"auth\" disabled>\n        <option value=\"0\">未授权</option>\n        <option value=\"1\">已授权</option>\n      </select>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a>\n    </div>\n    <br />\n    <div style=\"text-align: right\">\n      <button class=\"setting-button\" id=\"save_config\">确定</button>\n    </div>\n  </div>\n\n  <style>\n    #bp_config {\n      opacity: 0;\n      display: none;\n      position: fixed;\n      inset: 0px;\n      top: 0px;\n      left: 0px;\n      width: 100%;\n      height: 100%;\n      z-index: 10000;\n    }\n\n    #bp_config .config-bg {\n      position: absolute;\n      background: rgb(255, 255, 255);\n      border-radius: 10px;\n      padding: 20px;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      width: 600px;\n      z-index: 10001;\n    }\n\n    #bp_config .config-mark {\n      width: 100%;\n      height: 100%;\n      position: fixed;\n      top: 0;\n      left: 0;\n      background: rgba(0, 0, 0, 0.5);\n      z-index: 10000;\n    }\n\n    #bp_config .setting-button {\n      width: 120px;\n      height: 40px;\n      border-width: 0px;\n      border-radius: 3px;\n      background: #1e90ff;\n      cursor: pointer;\n      outline: none;\n      color: white;\n      font-size: 17px;\n    }\n\n    #bp_config .setting-button:hover {\n      background: #5599ff;\n    }\n\n    #bp_config .setting-context {\n      margin: 0 1%;\n      color: blue;\n    }\n\n    #bp_config .setting-context:hover {\n      color: red;\n    }\n\n  </style>\n</div>\n";
+var config_code = "<div id=\"bp_config\">\n  <div class=\"config-mark\"></div>\n  <div class=\"config-bg\">\n    <span style=\"font-size: 20px\">\n      <b>bilibili视频下载 参数设置</b>\n      <b>\n        <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a>\n        <a style=\"text-decoration: underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a>\n      </b>\n    </span>\n    <div style=\"margin: 2% 0\">\n      <label>请求地址：</label>\n      <input id=\"base_api\" style=\"width: 30%\" />&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>请求方式：</label>\n      <select id=\"request_type\">\n        <option value=\"auto\">自动判断</option>\n        <option value=\"local\">本地请求</option>\n        <option value=\"online\">远程请求</option>\n      </select><br />\n      <small>注意：普通使用请勿修改；默认使用混合请求</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>视频格式：</label>\n      <select id=\"format\">\n        <option value=\"flv\">FLV</option>\n        <option value=\"dash\">DASH</option>\n        <option value=\"mp4\">MP4</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>切换CDN：</label>\n      <select id=\"host_key\">\n        {{host_key_options}}\n      </select><br />\n      <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>下载方式：</label>\n      <select id=\"download_type\">\n        <option value=\"a\">URL链接</option>\n        <option value=\"web\">Web浏览器</option>\n        <option value=\"blob\">Blob请求</option>\n        <option value=\"rpc\">RPC接口</option>\n        <option value=\"aria\">Aria命令</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>AriaNg地址：</label>\n      <input id=\"ariang_host\" style=\"width: 30%\" /><br />\n      <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />\n      <input id=\"rpc_domain\" style=\"width: 25%\" /> :\n      <input id=\"rpc_port\" style=\"width: 10%\" /> |\n      <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width: 15%\" /> |\n      <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width: 20%\" /><br />\n      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>Aria参数：</label>\n      最大连接数：<select id=\"aria2c_connection_level\">\n        <option value=\"min\">1</option>\n        <option value=\"mid\">8</option>\n        <option value=\"max\">16</option>\n      </select><br />\n      <small>说明：用于配置Aria命令下载方式的参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>强制换源：</label>\n      <select id=\"replace_force\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕速度：</label>\n      <input id=\"danmaku_speed\" style=\"width: 5%\" /> s\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕字号：</label>\n      <input id=\"danmaku_fontsize\" style=\"width: 5%\" /> px<br />\n      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>自动下载：</label>\n      <select id=\"auto_download\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>视频质量：</label>\n      <select id=\"video_quality\">\n        {{video_quality_options}}\n      </select><br />\n      <small>说明：请求地址成功后将自动点击下载视频按钮</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>授权状态：</label>\n      <select id=\"auth\" disabled>\n        <option value=\"0\">未授权</option>\n        <option value=\"1\">已授权</option>\n      </select>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a>\n    </div>\n    <br />\n    <div style=\"text-align: right\">\n      <button class=\"setting-button\" id=\"save_config\">确定</button>\n    </div>\n  </div>\n\n  <style>\n    #bp_config {\n      opacity: 0;\n      display: none;\n      position: fixed;\n      inset: 0px;\n      top: 0px;\n      left: 0px;\n      width: 100%;\n      height: 100%;\n      z-index: 10000;\n    }\n\n    #bp_config .config-bg {\n      position: absolute;\n      background: rgb(255, 255, 255);\n      border-radius: 10px;\n      padding: 20px;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      width: 600px;\n      z-index: 10001;\n    }\n\n    #bp_config .config-mark {\n      width: 100%;\n      height: 100%;\n      position: fixed;\n      top: 0;\n      left: 0;\n      background: rgba(0, 0, 0, 0.5);\n      z-index: 10000;\n    }\n\n    #bp_config .setting-button {\n      width: 120px;\n      height: 40px;\n      border-width: 0px;\n      border-radius: 3px;\n      background: #1e90ff;\n      cursor: pointer;\n      outline: none;\n      color: white;\n      font-size: 17px;\n    }\n\n    #bp_config .setting-button:hover {\n      background: #5599ff;\n    }\n\n    #bp_config .setting-context {\n      margin: 0 1%;\n      color: blue;\n    }\n\n    #bp_config .setting-context:hover {\n      color: red;\n    }\n  </style>\n</div>\n";
 // Exports
 /* harmony default export */ var config = (config_code);
 ;// CONCATENATED MODULE: ./src/js/ui/config.js
@@ -2767,7 +2767,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.4", " ").concat("388df2c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.5", " ").concat("12ac511", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -2776,6 +2776,7 @@ var Main = /*#__PURE__*/function () {
       if (!!$('#arc_toolbar_report')[0]) {
         $('#arc_toolbar_report').after(arc_toolbar);
       } else if (!!$('#toolbar_module')[0]) {
+        // ! fix
         $('#toolbar_module').after(toolbar);
       } else if (!!$('div.video-toolbar')[0]) {
         $('div.video-toolbar').after(video_toolbar);
@@ -2799,208 +2800,219 @@ var Main = /*#__PURE__*/function () {
 
       $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
       $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
-      $('body').on('click', '#setting_btn', function () {
-        user.lazyInit(true); // init
-        // set form by config
+      var api_url, api_url_temp;
+      var e = {
+        setting_btn: function setting_btn() {
+          user.lazyInit(true); // init
+          // set form by config
 
-        for (var key in config_config) {
-          $("#".concat(key)).val(config_config[key]);
-        } //show setting
+          for (var key in config_config) {
+            $("#".concat(key)).val(config_config[key]);
+          } //show setting
 
 
-        $("#bp_config").show();
-        $("#bp_config").animate({
-          'opacity': '1'
-        }, 300);
-        ui_scroll.scroll.hide();
-      });
-      $('body').on('click', '#download_danmaku', function () {
-        var vb = video.base();
-        Download.download_danmaku_ass(vb.cid(), vb.filename());
-      });
-      $('body').on('click', '#download_subtitle', function () {
-        Download.download_subtitle_vtt(0, video.base().filename());
-      });
-      $('body').on('click', '#video_download_all', function () {
-        user.lazyInit(true); // init
+          $("#bp_config").show();
+          $("#bp_config").animate({
+            'opacity': '1'
+          }, 300);
+          ui_scroll.scroll.hide();
+        },
+        download_danmaku: function download_danmaku() {
+          var vb = video.base();
+          Download.download_danmaku_ass(vb.cid(), vb.filename());
+        },
+        download_subtitle: function download_subtitle() {
+          Download.download_subtitle_vtt(0, video.base().filename());
+        },
+        video_download_all: function video_download_all() {
+          user.lazyInit(true); // init
 
-        if (store.get('auth_id') && store.get('auth_sec')) {
-          if (config_config.download_type === 'rpc') {
-            Download.download_all();
-          } else {
-            message.MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
+          if (store.get('auth_id') && store.get('auth_sec')) {
+            if (config_config.download_type === 'rpc') {
               Download.download_all();
+            } else {
+              message.MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
+                Download.download_all();
+              });
+            }
+          } else {
+            message.MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
+              auth.login();
             });
           }
-        } else {
-          message.MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
-            auth.login();
+        },
+        video_download: function video_download() {
+          var type = config_config.download_type;
+
+          if (type === 'web') {
+            $('#video_url')[0].click();
+          } else if (type === 'a') {
+            var _ref = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
+                video_url = _ref[0],
+                video_url_2 = _ref[1];
+            var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
+            message.MessageBox.alert(msg);
+          } else if (type === 'aria') {
+            var _ref2 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
+                _video_url = _ref2[0],
+                _video_url_ = _ref2[1];
+            var video_title = video.base().filename();
+            var file_name, file_name_2;
+            file_name = video_title + Download.url_format(_video_url);
+            file_name_2 = video_title + '_audio.mp4';
+            var aria2_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
+            var url_max_connection = 1,
+                server_max_connection = 5;
+
+            switch (config_config.aria2c_connection_level) {
+              case "min":
+                url_max_connection = 1;
+                server_max_connection = 5;
+                break;
+
+              case "mid":
+                url_max_connection = 16;
+                server_max_connection = 8;
+                break;
+
+              case "max":
+                url_max_connection = 32;
+                server_max_connection = 16;
+                break;
+            }
+
+            var aria2c_max_concurrent_downloads = "--max-concurrent-downloads ".concat(url_max_connection);
+            var aria2c_max_connection_per_server = "--max-connection-per-server ".concat(server_max_connection);
+            var code = "aria2c \"".concat(_video_url, "\" --out \"").concat(file_name, "\" ").concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server),
+                code_2 = "aria2c \"".concat(_video_url_, "\" --out \"").concat(file_name_2, "\" ").concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server);
+
+            var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config_config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
+
+            !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
+              $("#".concat(id)).select();
+
+              if (document.execCommand('copy')) {
+                message.Message.success('复制成功');
+              } else {
+                message.Message.warning('复制失败');
+              }
+            });
+            message.MessageBox.alert(_msg);
+          } else {
+            var url = $('#video_url').attr('href');
+            var filename = video.base().filename();
+            Download.download(url, filename, type);
+          }
+        },
+        video_download_2: function video_download_2() {
+          var type = config_config.download_type;
+
+          if (type === 'web') {
+            $('#video_url_2')[0].click();
+          } else if (type === 'a') {
+            $('#video_download').click();
+          } else if (type === 'aria') {
+            $('#video_download').click();
+          } else {
+            var url = $('#video_url_2').attr('href');
+            var filename = video.base().filename();
+            Download.download(url, filename, type);
+          }
+        },
+        bilibili_parse: function bilibili_parse() {
+          user.lazyInit(true); // init
+
+          var vb = video.base();
+          var _ref3 = [vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid()],
+              type = _ref3[0],
+              aid = _ref3[1],
+              p = _ref3[2],
+              cid = _ref3[3],
+              epid = _ref3[4];
+
+          var _video$get_quality = video.get_quality(),
+              q = _video$get_quality.q;
+
+          api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
+          var _ref4 = [store.get('auth_id'), store.get('auth_sec')],
+              auth_id = _ref4[0],
+              auth_sec = _ref4[1];
+
+          if (config_config.auth === '1' && auth_id && auth_sec) {
+            api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
+          }
+
+          if (api_url === api_url_temp && config_config.request_type !== 'local') {
+            message.Message.miaow();
+            var url = $('#video_url').attr('href');
+            var url_2 = $('#video_url_2').attr('href');
+
+            if (url && url !== '#') {
+              $('#video_download').show();
+              config_config.format === 'dash' && $('#video_download_2').show();
+
+              if (user.needReplace() || vb.is_limited() || config_config.replace_force === '1') {
+                !$('#bp_dplayer')[0] && player.replace_player(url, url_2);
+              }
+
+              if (config_config.auto_download === '1') {
+                $('#video_download').click();
+              }
+            }
+
+            return;
+          }
+
+          $('#video_url').attr('href', '#');
+          $('#video_url_2').attr('href', '#');
+          api_url_temp = api_url;
+          message.Message.info('开始请求');
+          api.get_url(function (res) {
+            if (res && !res.code) {
+              message.Message.success('请求成功');
+              res.times && message.Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
+
+              var _url, _url_;
+
+              if (res.url) {
+                _url = res.url.replace('http://', 'https://');
+                _url_ = '#';
+              } else if (res.video && res.audio) {
+                _url = res.video.replace('http://', 'https://');
+                _url_ = res.audio.replace('http://', 'https://');
+              } else {
+                message.Message.warning('数据错误');
+                return;
+              }
+
+              $('#video_url').attr('href', _url);
+              $('#video_download').show();
+
+              if (_url_ !== '#') {
+                $('#video_url_2').attr('href', _url_);
+                $('#video_download_2').show();
+              }
+
+              if (user.needReplace() || vb.is_limited() || config_config.replace_force === '1') {
+                player.replace_player(_url, _url_);
+              }
+
+              if (config_config.auto_download === '1') {
+                $('#video_download').click();
+              }
+            }
           });
         }
-      });
-      $('body').on('click', '#video_download', function () {
-        var type = config_config.download_type;
+      }; // api & click
 
-        if (type === 'web') {
-          $('#video_url')[0].click();
-        } else if (type === 'a') {
-          var _ref = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
-              video_url = _ref[0],
-              video_url_2 = _ref[1];
-          var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
-          message.MessageBox.alert(msg);
-        } else if (type === 'aria') {
-          var _ref2 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
-              _video_url = _ref2[0],
-              _video_url_ = _ref2[1];
-          var video_title = video.base().filename();
-          var file_name, file_name_2;
-          file_name = video_title + Download.url_format(_video_url);
-          file_name_2 = video_title + '_audio.mp4';
-          var aria2_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
-          var url_max_connection = 1,
-              server_max_connection = 5;
-
-          switch (config_config.aria2c_connection_level) {
-            case "min":
-              url_max_connection = 1;
-              server_max_connection = 5;
-              break;
-
-            case "mid":
-              url_max_connection = 16;
-              server_max_connection = 8;
-              break;
-
-            case "max":
-              url_max_connection = 32;
-              server_max_connection = 16;
-              break;
-          }
-
-          var aria2c_max_concurrent_downloads = "--max-concurrent-downloads ".concat(url_max_connection);
-          var aria2c_max_connection_per_server = "--max-connection-per-server ".concat(server_max_connection);
-          var code = "aria2c \"".concat(_video_url, "\" --out \"").concat(file_name, "\" ").concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server),
-              code_2 = "aria2c \"".concat(_video_url_, "\" --out \"").concat(file_name_2, "\" ").concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server);
-
-          var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config_config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
-
-          !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
-            $("#".concat(id)).select();
-
-            if (document.execCommand('copy')) {
-              message.Message.success('复制成功');
-            } else {
-              message.Message.warning('复制失败');
-            }
-          });
-          message.MessageBox.alert(_msg);
-        } else {
-          var url = $('#video_url').attr('href');
-          var filename = video.base().filename();
-          Download.download(url, filename, type);
-        }
-      });
-      $('body').on('click', '#video_download_2', function () {
-        var type = config_config.download_type;
-
-        if (type === 'web') {
-          $('#video_url_2')[0].click();
-        } else if (type === 'a') {
-          $('#video_download').click();
-        } else if (type === 'aria') {
-          $('#video_download').click();
-        } else {
-          var url = $('#video_url_2').attr('href');
-          var filename = video.base().filename();
-          Download.download(url, filename, type);
-        }
-      });
-      var api_url, api_url_temp;
-      $('body').on('click', '#bilibili_parse', function () {
-        user.lazyInit(true); // init
-
-        var vb = video.base();
-        var _ref3 = [vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid()],
-            type = _ref3[0],
-            aid = _ref3[1],
-            p = _ref3[2],
-            cid = _ref3[3],
-            epid = _ref3[4];
-
-        var _video$get_quality = video.get_quality(),
-            q = _video$get_quality.q;
-
-        api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
-        var _ref4 = [store.get('auth_id'), store.get('auth_sec')],
-            auth_id = _ref4[0],
-            auth_sec = _ref4[1];
-
-        if (config_config.auth === '1' && auth_id && auth_sec) {
-          api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
-        }
-
-        if (api_url === api_url_temp && config_config.request_type !== 'local') {
-          message.Message.miaow();
-          var url = $('#video_url').attr('href');
-          var url_2 = $('#video_url_2').attr('href');
-
-          if (url && url !== '#') {
-            $('#video_download').show();
-            config_config.format === 'dash' && $('#video_download_2').show();
-
-            if (user.needReplace() || vb.is_limited() || config_config.replace_force === '1') {
-              !$('#bp_dplayer')[0] && player.replace_player(url, url_2);
-            }
-
-            if (config_config.auto_download === '1') {
-              $('#video_download').click();
-            }
-          }
-
-          return;
-        }
-
-        $('#video_url').attr('href', '#');
-        $('#video_url_2').attr('href', '#');
-        api_url_temp = api_url;
-        message.Message.info('开始请求');
-        api.get_url(function (res) {
-          if (res && !res.code) {
-            message.Message.success('请求成功');
-            res.times && message.Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
-
-            var _url, _url_;
-
-            if (res.url) {
-              _url = res.url.replace('http://', 'https://');
-              _url_ = '#';
-            } else if (res.video && res.audio) {
-              _url = res.video.replace('http://', 'https://');
-              _url_ = res.audio.replace('http://', 'https://');
-            } else {
-              message.Message.warning('数据错误');
-              return;
-            }
-
-            $('#video_url').attr('href', _url);
-            $('#video_download').show();
-
-            if (_url_ !== '#') {
-              $('#video_url_2').attr('href', _url_);
-              $('#video_download_2').show();
-            }
-
-            if (user.needReplace() || vb.is_limited() || config_config.replace_force === '1') {
-              player.replace_player(_url, _url_);
-            }
-
-            if (config_config.auto_download === '1') {
-              $('#video_download').click();
-            }
-          }
-        });
-      }); // part of check
+      window.bpd = e;
+      $('body').on('click', '#setting_btn', e.setting_btn);
+      $('body').on('click', '#download_danmaku', e.download_danmaku);
+      $('body').on('click', '#download_subtitle', e.download_subtitle);
+      $('body').on('click', '#video_download_all', e.video_download_all);
+      $('body').on('click', '#video_download', e.video_download);
+      $('body').on('click', '#video_download_2', e.video_download_2);
+      $('body').on('click', '#bilibili_parse', e.bilibili_parse); // part of check
 
       $('body').on('click', 'a.router-link-active', function () {
         if (this !== $('li[class="on"]').find('a')[0]) {

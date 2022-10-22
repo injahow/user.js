@@ -30,7 +30,7 @@
       <select id="host_key">
         {{host_key_options}}
       </select><br />
-      <small>注意：仅Video支持MP4；建议特殊地区或网络受限时切换（自行选择合适线路）</small>
+      <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small>
     </div>
     <div style="margin: 2% 0">
       <label>下载方式：</label>
@@ -46,21 +46,21 @@
       <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>
     </div>
     <div style="margin: 2% 0">
-      <label>aria2c命令配置：（用于自定义Aria命令下载方式下的命令生成）</label><br />
-      <label>最大连接数：</label>
-      <select id="aria2c_connection_level">
-        <option value="min">1</option>
-        <option value="mid">8</option>
-        <option value="max">16</option>
-      </select>
-    </div>
-    <div style="margin: 2% 0">
       <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />
       <input id="rpc_domain" style="width: 25%" /> :
       <input id="rpc_port" style="width: 10%" /> |
-      <input id="rpc_token" placeholder="没有密钥不用填" style="width: 15%" /> |
+      <input id="rpc_token" placeholder="未设置不填" style="width: 15%" /> |
       <input id="rpc_dir" placeholder="留空使用默认目录" style="width: 20%" /><br />
       <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>
+    </div>
+    <div style="margin: 2% 0">
+      <label>Aria参数：</label>
+      最大连接数：<select id="aria2c_connection_level">
+        <option value="min">1</option>
+        <option value="mid">8</option>
+        <option value="max">16</option>
+      </select><br />
+      <small>说明：用于配置Aria命令下载方式的参数</small>
     </div>
     <div style="margin: 2% 0">
       <label>强制换源：</label>
@@ -165,6 +165,5 @@
     #bp_config .setting-context:hover {
       color: red;
     }
-
   </style>
 </div>

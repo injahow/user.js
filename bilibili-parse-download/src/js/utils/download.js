@@ -62,7 +62,6 @@ function download_all() {
                 <option value="flv" selected>FLV</option>
                 <option value="mp4">MP4</option>
             </select>
-            &nbsp;&nbsp;仅Video支持MP4
         </div>
         <div style="margin:2% 0;">
             <label>视频质量:</label>

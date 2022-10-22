@@ -157,8 +157,15 @@ function base() {
         }
 
         const episodes = window.bp_episodes
-        const _id = $('li.on.list-box-li').index()
-        const main_title = ($('div.season-info h1').html() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+        let _id = 0
+        for (let i = 0; i < episodes.length; i++) {
+            if (episodes[i].id == epid) {
+                _id = i
+                break
+            }
+        }
+
+        const main_title = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
         return {
             type: 'cheese',
             name: main_title,
