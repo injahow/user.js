@@ -136,7 +136,7 @@ function base() {
             aid: (_p) => {
                 return _p ? state.epList[_p - 1].aid : state.epInfo.aid
             },
-            bvid: () => {
+            bvid: (_p) => {
                 return _p ? state.epList[_p - 1].bvid : state.epInfo.bvid
             },
             p: () => {

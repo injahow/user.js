@@ -1034,7 +1034,7 @@ function base() {
       aid: function aid(_p) {
         return _p ? _state.epList[_p - 1].aid : _state.epInfo.aid;
       },
-      bvid: function bvid() {
+      bvid: function bvid(_p) {
         return _p ? _state.epList[_p - 1].bvid : _state.epInfo.bvid;
       },
       p: function p() {
@@ -2781,7 +2781,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.6", " ").concat("fd5f1d4", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.7", " ").concat("58f53b6", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
