@@ -58,15 +58,17 @@ function get_url_base(page, quality, video_format, success, error, request_type)
     }
 
     if (request_type === 'auto' || request_type === 'local') {
-        let fnver, fnval = { dash: 4048, flv: 4049, mp4: 80 }[format] || 0
+        let fnver, fnval
         if (type === 'cheese') {
             base_api = 'https://api.bilibili.com/pugv/player/web/playurl'
             fnver = format === 'mp4' ? 1 : 0
+            fnval = 80
         } else {
             base_api = type === 'video'
                 ? 'https://api.bilibili.com/x/player/playurl'
                 : 'https://api.bilibili.com/pgc/player/web/playurl'
             fnver = 0
+            fnval = { dash: 4048, flv: 4049, mp4: 0 }[format] || 0
         }
         base_api += `?avid=${aid}&bvid=${bvid}&cid=${cid}&qn=${q}&fnver=${fnver}&fnval=${fnval}&fourk=1&ep_id=${epid}&type=${format}&otype=json`
         base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : ''

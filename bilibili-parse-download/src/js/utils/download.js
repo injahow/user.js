@@ -62,6 +62,7 @@ function download_all() {
                 <option value="flv" selected>FLV</option>
                 <option value="mp4">MP4</option>
             </select>
+            &nbsp;&nbsp;无法设置MP4清晰度
         </div>
         <div style="margin:2% 0;">
             <label>视频质量:</label>
