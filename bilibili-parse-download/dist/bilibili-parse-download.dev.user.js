@@ -670,12 +670,13 @@ function get_url_base(page, quality, video_format, success, error, request_type)
   }
 
   var vb = video.base();
-  var _ref = [vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type],
+  var _ref = [vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type],
       aid = _ref[0],
-      cid = _ref[1],
-      epid = _ref[2],
-      q = _ref[3],
-      type = _ref[4]; // 参数预处理
+      bvid = _ref[1],
+      cid = _ref[2],
+      epid = _ref[3],
+      q = _ref[4],
+      type = _ref[5]; // 参数预处理
 
   var format = video_format || config_config.format;
   if (request_type === 'auto' && user.needReplace()) request_type = 'online';
@@ -713,14 +714,14 @@ function get_url_base(page, quality, video_format, success, error, request_type)
       fnver = 0;
     }
 
-    base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
+    base_api += "?avid=".concat(aid, "&bvid=").concat(bvid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
     base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
     ajax_obj.xhrFields = {
       withCredentials: true
     };
   } else {
     base_api = config_config.base_api;
-    base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
+    base_api += "?av=".concat(aid, "&bv=").concat(bvid, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(format, "&otype=json");
     var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
         auth_id = _ref2[0],
         auth_sec = _ref2[1];
@@ -928,8 +929,11 @@ function base() {
         var title = main_title + " P".concat(p, " \uFF08").concat(state.videoData.pages[p - 1].part || p, "\uFF09");
         return title.replace(/[\/\\:*?"<>|]+/g, '');
       },
-      aid: function aid(_p) {
+      aid: function aid() {
         return state.videoData.aid;
+      },
+      bvid: function bvid() {
+        return state.videoData.bvid;
       },
       p: function p() {
         return state.p || 1;
@@ -938,7 +942,7 @@ function base() {
         var p = _p || state.p || 1;
         return state.videoData.pages[p - 1].cid;
       },
-      epid: function epid(_p) {
+      epid: function epid() {
         return '';
       },
       need_vip: function need_vip() {
@@ -980,6 +984,10 @@ function base() {
         var id = _p ? _p - 1 : _id;
         return medialist.eq(id).attr('data-aid');
       },
+      bvid: function bvid(_p) {
+        var id = _p ? _p - 1 : _id;
+        return medialist.eq(id).attr('data-bvid');
+      },
       p: function p() {
         return _id + 1;
       },
@@ -987,7 +995,7 @@ function base() {
         var id = _p ? _p - 1 : _id;
         return medialist.eq(id).attr('data-cid');
       },
-      epid: function epid(_p) {
+      epid: function epid() {
         return '';
       },
       need_vip: function need_vip() {
@@ -1025,6 +1033,9 @@ function base() {
       },
       aid: function aid(_p) {
         return _p ? _state.epList[_p - 1].aid : _state.epInfo.aid;
+      },
+      bvid: function bvid() {
+        return _p ? _state.epList[_p - 1].bvid : _state.epInfo.bvid;
       },
       p: function p() {
         return _state.epInfo.i || 1;
@@ -1084,6 +1095,9 @@ function base() {
       aid: function aid(_p) {
         var id = _p ? _p - 1 : _id2;
         return episodes[id].aid;
+      },
+      bvid: function bvid() {
+        return '';
       },
       p: function p() {
         return _id2 + 1;
@@ -2767,7 +2781,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.5", " ").concat("12ac511", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.6", " ").concat("fd5f1d4", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
