@@ -38,8 +38,11 @@ function base() {
                 const title = main_title + ` P${p} （${state.videoData.pages[p - 1].part || p}）`
                 return title.replace(/[\/\\:*?"<>|]+/g, '')
             },
-            aid: (_p) => {
+            aid: () => {
                 return state.videoData.aid
+            },
+            bvid: () => {
+                return state.videoData.bvid
             },
             p: () => {
                 return state.p || 1
@@ -48,7 +51,7 @@ function base() {
                 const p = _p || state.p || 1
                 return state.videoData.pages[p - 1].cid
             },
-            epid: (_p) => {
+            epid: () => {
                 return ''
             },
             need_vip: () => {
@@ -86,6 +89,10 @@ function base() {
                 let id = _p ? (_p - 1) : _id
                 return medialist.eq(id).attr('data-aid')
             },
+            bvid: (_p) => {
+                let id = _p ? (_p - 1) : _id
+                return medialist.eq(id).attr('data-bvid')
+            },
             p: () => {
                 return _id + 1
             },
@@ -93,7 +100,7 @@ function base() {
                 let id = _p ? (_p - 1) : _id
                 return medialist.eq(id).attr('data-cid')
             },
-            epid: (_p) => {
+            epid: () => {
                 return ''
             },
             need_vip: () => {
@@ -128,6 +135,9 @@ function base() {
             },
             aid: (_p) => {
                 return _p ? state.epList[_p - 1].aid : state.epInfo.aid
+            },
+            bvid: () => {
+                return _p ? state.epList[_p - 1].bvid : state.epInfo.bvid
             },
             p: () => {
                 return state.epInfo.i || 1
@@ -183,6 +193,9 @@ function base() {
             aid: (_p) => {
                 let id = _p ? (_p - 1) : _id
                 return episodes[id].aid
+            },
+            bvid: () => {
+                return ''
             },
             p: () => {
                 return _id + 1

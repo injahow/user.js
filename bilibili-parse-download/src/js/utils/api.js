@@ -28,8 +28,9 @@ function get_url_base(page, quality, video_format, success, error, request_type)
     }
 
     const vb = video.base()
-    const [aid, cid, epid, q, type] = [
+    const [aid, bvid, cid, epid, q, type] = [
         vb.aid(page),
+        vb.bvid(page),
         vb.cid(page),
         vb.epid(page),
         quality || video.get_quality().q,
@@ -67,12 +68,12 @@ function get_url_base(page, quality, video_format, success, error, request_type)
                 : 'https://api.bilibili.com/pgc/player/web/playurl'
             fnver = 0
         }
-        base_api += `?avid=${aid}&cid=${cid}&qn=${q}&fnver=${fnver}&fnval=${fnval}&fourk=1&ep_id=${epid}&type=${format}&otype=json`
+        base_api += `?avid=${aid}&bvid=${bvid}&cid=${cid}&qn=${q}&fnver=${fnver}&fnval=${fnval}&fourk=1&ep_id=${epid}&type=${format}&otype=json`
         base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : ''
         ajax_obj.xhrFields = { withCredentials: true }
     } else {
         base_api = config.base_api
-        base_api += `?av=${aid}&cid=${cid}&q=${q}&ep=${epid}&type=${type}&format=${format}&otype=json`
+        base_api += `?av=${aid}&bv=${bvid}&cid=${cid}&ep=${epid}&q=${q}&type=${type}&format=${format}&otype=json`
         const [auth_id, auth_sec] = [
             store.get('auth_id'),
             store.get('auth_sec')

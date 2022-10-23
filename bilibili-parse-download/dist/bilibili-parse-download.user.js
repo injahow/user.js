@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.3.5
+// @version       2.3.6
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -797,7 +797,7 @@
             } : function _error(err) {
                 return console.error(err);
             };
-            var vb = video.base(), _ref = [ vb.aid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type ], aid = _ref[0], cid = _ref[1], epid = _ref[2], q = _ref[3], type = _ref[4], format = video_format || config_config.format;
+            var vb = video.base(), _ref = [ vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type ], aid = _ref[0], bvid = _ref[1], cid = _ref[2], epid = _ref[3], q = _ref[4], type = _ref[5], format = video_format || config_config.format;
             "auto" === request_type && user.needReplace() && (request_type = "online");
             var base_api, url_replace_cdn = function url_replace_cdn(url) {
                 if ("0" !== config_config.host_key && "online" === request_type && "mp4" !== format) {
@@ -817,12 +817,12 @@
                 }[format] || 0;
                 "cheese" === type ? (base_api = "https://api.bilibili.com/pugv/player/web/playurl", 
                 fnver = "mp4" === format ? 1 : 0) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl", 
-                fnver = 0), base_api += "?avid=".concat(aid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
+                fnver = 0), base_api += "?avid=".concat(aid, "&bvid=").concat(bvid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
                 base_api += "mp4" === format ? "&platform=html5&high_quality=1" : "", ajax_obj.xhrFields = {
                     withCredentials: !0
                 };
             } else {
-                base_api = config_config.base_api, base_api += "?av=".concat(aid, "&cid=").concat(cid, "&q=").concat(q, "&ep=").concat(epid, "&type=").concat(type, "&format=").concat(format, "&otype=json");
+                base_api = config_config.base_api, base_api += "?av=".concat(aid, "&bv=").concat(bvid, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(format, "&otype=json");
                 var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
                 "1" === config_config.auth && auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec), 
                 page && (base_api += "&s"));
@@ -945,8 +945,11 @@
                             var p = _p || state.p || 1;
                             return (main_title + " P".concat(p, " （").concat(state.videoData.pages[p - 1].part || p, "）")).replace(/[\/\\:*?"<>|]+/g, "");
                         },
-                        aid: function aid(_p) {
+                        aid: function aid() {
                             return state.videoData.aid;
+                        },
+                        bvid: function bvid() {
+                            return state.videoData.bvid;
                         },
                         p: function p() {
                             return state.p || 1;
@@ -955,7 +958,7 @@
                             var p = _p || state.p || 1;
                             return state.videoData.pages[p - 1].cid;
                         },
-                        epid: function epid(_p) {
+                        epid: function epid() {
                             return "";
                         },
                         need_vip: function need_vip() {
@@ -989,6 +992,10 @@
                             var id = _p ? _p - 1 : _id;
                             return medialist.eq(id).attr("data-aid");
                         },
+                        bvid: function bvid(_p) {
+                            var id = _p ? _p - 1 : _id;
+                            return medialist.eq(id).attr("data-bvid");
+                        },
                         p: function p() {
                             return _id + 1;
                         },
@@ -996,7 +1003,7 @@
                             var id = _p ? _p - 1 : _id;
                             return medialist.eq(id).attr("data-cid");
                         },
-                        epid: function epid(_p) {
+                        epid: function epid() {
                             return "";
                         },
                         need_vip: function need_vip() {
@@ -1031,6 +1038,9 @@
                         },
                         aid: function aid(_p) {
                             return _p ? _state.epList[_p - 1].aid : _state.epInfo.aid;
+                        },
+                        bvid: function bvid() {
+                            return _p ? _state.epList[_p - 1].bvid : _state.epInfo.bvid;
                         },
                         p: function p() {
                             return _state.epInfo.i || 1;
@@ -1075,6 +1085,9 @@
                         },
                         aid: function aid(_p) {
                             return episodes[_p ? _p - 1 : _id2].aid;
+                        },
+                        bvid: function bvid() {
+                            return "";
                         },
                         p: function p() {
                             return _id2 + 1;
@@ -1957,7 +1970,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.5", " ").concat("12ac511", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.6", " ").concat("fd5f1d4", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
