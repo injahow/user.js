@@ -1546,7 +1546,15 @@ var ui_scroll = __webpack_require__("./src/js/ui/scroll.js");
 ;// CONCATENATED MODULE: ./src/js/utils/download.js
 function download_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = download_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || download_unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
 function download_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return download_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return download_arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return download_arrayLikeToArray(arr); }
 
 function download_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
@@ -1570,11 +1578,44 @@ function download_all() {
   var _ref = [video.get_quality().q, vb.total()],
       q = _ref[0],
       total = _ref[1];
-  $('body').on('click', 'input[name="option_video"]', function () {
+  $('body').on('click', 'input[name="option_video"]', function (event) {
     if ($(this).is(':checked')) {
       $(this).parent().css('color', 'rgba(0,0,0,1)');
     } else {
       $(this).parent().css('color', 'rgba(0,0,0,0.5)');
+    }
+
+    function get_option_index(element) {
+      return element && parseInt(element.id.split('_')[1]) || 0;
+    }
+
+    if (event.ctrlKey || event.altKey) {
+      // 记录当前点击option的index
+      var current_select_option_index = get_option_index(event.target); // 获取所有复选框
+
+      var option_videos = _toConsumableArray(document.getElementsByName('option_video'));
+
+      if (event.target.checked) {
+        // checked = true: 选中`上一个被选中`到`这次被选中`的所有option
+        var previous_selected_option_index = get_option_index(option_videos.filter(function (e) {
+          return e.checked && get_option_index(e) < current_select_option_index;
+        }).slice(-1)[0]);
+
+        for (var i = previous_selected_option_index; i < current_select_option_index; i++) {
+          option_videos[i].checked = true;
+          option_videos[i].parentNode.style.color = 'rgba(0,0,0,1)';
+        }
+      } else {
+        //checked = false，取消选中`上一个未被选中`到`这次被取消选中`的所有option
+        var previous_not_selected_option_index = get_option_index(option_videos.filter(function (e) {
+          return !e.checked && get_option_index(e) < current_select_option_index;
+        }).slice(-1)[0]);
+
+        for (var _i = previous_not_selected_option_index; _i < current_select_option_index; _i++) {
+          option_videos[_i].checked = false;
+          option_videos[_i].parentNode.style.color = 'rgba(0,0,0,0.5)';
+        }
+      }
     }
   });
   var video_html = '';
@@ -1622,12 +1663,12 @@ function download_all() {
         dl_danmaku = _ref2[2];
     var videos = [];
 
-    for (var _i = 0; _i < total; _i++) {
-      if (!$("input#option_".concat(_i)).is(':checked')) {
+    for (var _i2 = 0; _i2 < total; _i2++) {
+      if (!$("input#option_".concat(_i2)).is(':checked')) {
         continue;
       }
 
-      var p = _i + 1;
+      var p = _i2 + 1;
       var _ref3 = [vb.cid(p), vb.filename(p)],
           cid = _ref3[0],
           filename = _ref3[1];
@@ -2782,7 +2823,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.8", " ").concat("c70e599", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.8", " ").concat("4f5271b", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
