@@ -1341,14 +1341,7 @@
         function download_createForOfIteratorHelper(o, allowArrayLike) {
             var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
             if (!it) {
-                if (Array.isArray(o) || (it = function download_unsupportedIterableToArray(o, minLen) {
-                    if (!o) return;
-                    if ("string" == typeof o) return download_arrayLikeToArray(o, minLen);
-                    var n = Object.prototype.toString.call(o).slice(8, -1);
-                    "Object" === n && o.constructor && (n = o.constructor.name);
-                    if ("Map" === n || "Set" === n) return Array.from(o);
-                    if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return download_arrayLikeToArray(o, minLen);
-                }(o)) || allowArrayLike && o && "number" == typeof o.length) {
+                if (Array.isArray(o) || (it = download_unsupportedIterableToArray(o)) || allowArrayLike && o && "number" == typeof o.length) {
                     it && (o = it);
                     var i = 0, F = function F() {};
                     return {
@@ -1389,6 +1382,22 @@
                     }
                 }
             };
+        }
+        function _toConsumableArray(arr) {
+            return function _arrayWithoutHoles(arr) {
+                if (Array.isArray(arr)) return download_arrayLikeToArray(arr);
+            }(arr) || function _iterableToArray(iter) {
+                if ("undefined" != typeof Symbol && null != iter[Symbol.iterator] || null != iter["@@iterator"]) return Array.from(iter);
+            }(arr) || download_unsupportedIterableToArray(arr) || function _nonIterableSpread() {
+                throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+            }();
+        }
+        function download_unsupportedIterableToArray(o, minLen) {
+            if (o) {
+                if ("string" == typeof o) return download_arrayLikeToArray(o, minLen);
+                var n = Object.prototype.toString.call(o).slice(8, -1);
+                return "Object" === n && o.constructor && (n = o.constructor.name), "Map" === n || "Set" === n ? Array.from(o) : "Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n) ? download_arrayLikeToArray(o, minLen) : void 0;
+            }
         }
         function download_arrayLikeToArray(arr, len) {
             (null == len || len > arr.length) && (len = arr.length);
@@ -1591,29 +1600,19 @@
             download_all: function download_all() {
                 var vb = video.base(), _ref = [ video.get_quality().q, vb.total() ], q = _ref[0], total = _ref[1];
                 $("body").on("click", 'input[name="option_video"]', (function(event) {
-                    $(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)");
-                    
                     function get_option_index(element) {
-                        return element && parseInt(element.id.split('_')[1]) || 0
+                        return element && parseInt(element.id.split("_")[1]) || 0;
                     }
-                    if (event.ctrlKey || event.altKey) {
-                        // 记录当前被选中option的index
-                        const current_selected_option_index = get_option_index(event.target)
-                        // 获取所有复选框
-                        const option_videos = [...document.getElementsByName('option_video')]
-                        if (event.target.checked) { // checked = true: 选中`上一个被选中`到`这次被选中`的所有option
-                            const previous_selected_option_index = get_option_index(option_videos.filter(e => e.checked && get_option_index(e) < current_selected_option_index).slice(-1)[0])
-                            for (let i = previous_selected_option_index; i < current_selected_option_index; i++){
-                                option_videos[i].checked = true
-                                option_videos[i].parentNode.style.color = 'rgba(0,0,0,1)'
-                            }
-                        } else { //checked = false，取消选中`上一个未被选中`到`这次被取消选中`的所有option
-                            const previous_not_selected_option_index = get_option_index(option_videos.filter(e => !e.checked && get_option_index(e) < current_selected_option_index).slice(-1)[0])
-                            for (let i = previous_not_selected_option_index; i < current_selected_option_index; i++){
-                                option_videos[i].checked = false
-                                option_videos[i].parentNode.style.color = 'rgba(0,0,0,0.5)'
-                            }
-                        }
+                    if ($(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)"), 
+                    event.ctrlKey || event.altKey) {
+                        var current_select_option_index = get_option_index(event.target), option_videos = _toConsumableArray(document.getElementsByName("option_video"));
+                        if (event.target.checked) for (var i = get_option_index(option_videos.filter((function(e) {
+                            return e.checked && get_option_index(e) < current_select_option_index;
+                        })).slice(-1)[0]); i < current_select_option_index; i++) option_videos[i].checked = !0, 
+                        option_videos[i].parentNode.style.color = "rgba(0,0,0,1)"; else for (var _i = get_option_index(option_videos.filter((function(e) {
+                            return !e.checked && get_option_index(e) < current_select_option_index;
+                        })).slice(-1)[0]); _i < current_select_option_index; _i++) option_videos[_i].checked = !1, 
+                        option_videos[_i].parentNode.style.color = "rgba(0,0,0,0.5)";
                     }
                 }));
                 for (var video_html = "", i = 0; i < total; i++) video_html += "" + '<label for="option_'.concat(i, '"><div style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="option_').concat(i, '" name="option_video" value="').concat(i, '">\n                P').concat(i + 1, " ").concat(vb.title(i + 1), "\n            </div></label>");
@@ -1710,8 +1709,8 @@
                     }));
                 }
                 message._p.confirm(msg, (function() {
-                    for (var dl_quality = $("#dl_quality").val() || q, _ref2 = [ $("#dl_video").is(":checked"), $("#dl_subtitle").is(":checked"), $("#dl_danmaku").is(":checked") ], dl_video = _ref2[0], dl_subtitle = _ref2[1], dl_danmaku = _ref2[2], videos = [], _i = 0; _i < total; _i++) if ($("input#option_".concat(_i)).is(":checked")) {
-                        var p = _i + 1, _ref3 = [ vb.cid(p), vb.filename(p) ], cid = _ref3[0], filename = _ref3[1], _format = $("#dl_format").val();
+                    for (var dl_quality = $("#dl_quality").val() || q, _ref2 = [ $("#dl_video").is(":checked"), $("#dl_subtitle").is(":checked"), $("#dl_danmaku").is(":checked") ], dl_video = _ref2[0], dl_subtitle = _ref2[1], dl_danmaku = _ref2[2], videos = [], _i2 = 0; _i2 < total; _i2++) if ($("input#option_".concat(_i2)).is(":checked")) {
+                        var p = _i2 + 1, _ref3 = [ vb.cid(p), vb.filename(p) ], cid = _ref3[0], filename = _ref3[1], _format = $("#dl_format").val();
                         videos.push({
                             cid: cid,
                             p: p,
@@ -1993,7 +1992,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.8", " ").concat("c70e599", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.8", " ").concat("4f5271b", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

@@ -21,11 +21,33 @@ function download_all() {
         vb.total()
     ]
 
-    $('body').on('click', 'input[name="option_video"]', function () {
+    $('body').on('click', 'input[name="option_video"]', function (event) {
         if ($(this).is(':checked')) {
             $(this).parent().css('color', 'rgba(0,0,0,1)')
         } else {
             $(this).parent().css('color', 'rgba(0,0,0,0.5)')
+        }
+        function get_option_index(element) {
+            return element && parseInt(element.id.split('_')[1]) || 0
+        }
+        if (event.ctrlKey || event.altKey) {
+            // 记录当前点击option的index
+            const current_select_option_index = get_option_index(event.target)
+            // 获取所有复选框
+            const option_videos = [...document.getElementsByName('option_video')]
+            if (event.target.checked) { // checked = true: 选中`上一个被选中`到`这次被选中`的所有option
+                const previous_selected_option_index = get_option_index(option_videos.filter(e => e.checked && get_option_index(e) < current_select_option_index).slice(-1)[0])
+                for (let i = previous_selected_option_index; i < current_select_option_index; i++){
+                    option_videos[i].checked = true
+                    option_videos[i].parentNode.style.color = 'rgba(0,0,0,1)'
+                }
+            } else { //checked = false，取消选中`上一个未被选中`到`这次被取消选中`的所有option
+                const previous_not_selected_option_index = get_option_index(option_videos.filter(e => !e.checked && get_option_index(e) < current_select_option_index).slice(-1)[0])
+                for (let i = previous_not_selected_option_index; i < current_select_option_index; i++){
+                    option_videos[i].checked = false
+                    option_videos[i].parentNode.style.color = 'rgba(0,0,0,0.5)'
+                }
+            }
         }
     })
     let video_html = ''
