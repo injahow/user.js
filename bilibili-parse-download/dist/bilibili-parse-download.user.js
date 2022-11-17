@@ -1590,8 +1590,31 @@
             },
             download_all: function download_all() {
                 var vb = video.base(), _ref = [ video.get_quality().q, vb.total() ], q = _ref[0], total = _ref[1];
-                $("body").on("click", 'input[name="option_video"]', (function() {
+                $("body").on("click", 'input[name="option_video"]', (function(event) {
                     $(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)");
+                    
+                    function get_option_index(element) {
+                        return element && parseInt(element.id.split('_')[1]) || 0
+                    }
+                    if (event.ctrlKey || event.altKey) {
+                        // 记录当前被选中option的index
+                        const current_selected_option_index = get_option_index(event.target)
+                        // 获取所有复选框
+                        const option_videos = [...document.getElementsByName('option_video')]
+                        if (event.target.checked) { // checked = true: 选中`上一个被选中`到`这次被选中`的所有option
+                            const previous_selected_option_index = get_option_index(option_videos.filter(e => e.checked && get_option_index(e) < current_selected_option_index).slice(-1)[0])
+                            for (let i = previous_selected_option_index; i < current_selected_option_index; i++){
+                                option_videos[i].checked = true
+                                option_videos[i].parentNode.style.color = 'rgba(0,0,0,1)'
+                            }
+                        } else { //checked = false，取消选中`上一个未被选中`到`这次被取消选中`的所有option
+                            const previous_not_selected_option_index = get_option_index(option_videos.filter(e => !e.checked && get_option_index(e) < current_selected_option_index).slice(-1)[0])
+                            for (let i = previous_not_selected_option_index; i < current_selected_option_index; i++){
+                                option_videos[i].checked = false
+                                option_videos[i].parentNode.style.color = 'rgba(0,0,0,0.5)'
+                            }
+                        }
+                    }
                 }));
                 for (var video_html = "", i = 0; i < total; i++) video_html += "" + '<label for="option_'.concat(i, '"><div style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="option_').concat(i, '" name="option_video" value="').concat(i, '">\n                P').concat(i + 1, " ").concat(vb.title(i + 1), "\n            </div></label>");
                 var all_checked = !1;
