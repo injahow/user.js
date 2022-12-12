@@ -5,7 +5,7 @@
       "name": "bilibili视频下载",
       "namespace ": "https://github.com/injahow",
       "version": "${version}",
-      "description": "支持Web、RPC、Blob、Aria等下载方式、下载flv、dash、mp4视频格式、下载港区番剧、下载字幕弹幕、换源播放等功能",
+      "description": "支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能",
       "author": "injahow",
       "copyright": "2021, injahow (https://github.com/injahow)",
       "license": "MIT",
