@@ -645,7 +645,6 @@ function get_url_base(page, quality, video_format, success, error, request_type)
   if ('function' === typeof error) {
     _error = function _error(e) {
       message.Message.error('请求失败');
-      console.log(e);
       error(e);
     };
   } else {
@@ -2835,7 +2834,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.9", " ").concat("adcbf5b", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.9", " ").concat("a2c9737", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
