@@ -12,7 +12,7 @@ import config_html from '@/html/config.html'
 const config = {
     base_api: 'https://api.injahow.cn/bparse/',
     request_type: 'auto',
-    format: 'flv',
+    format: 'mp4',
     host_key: '0',
     replace_force: '0',
     auth: '0',

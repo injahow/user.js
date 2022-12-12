@@ -151,7 +151,7 @@ class Main {
                     MessageBox.alert(msg)
                 } else {
                     const url = $('#video_url').attr('href')
-                    const filename = video.base().filename()
+                    const filename = video.base().filename() + (url.match('.m4s') ? '_video' : '')
                     Download.download(url, filename, type)
                 }
             },
@@ -165,7 +165,7 @@ class Main {
                     $('#video_download').click()
                 } else {
                     const url = $('#video_url_2').attr('href')
-                    const filename = video.base().filename()
+                    const filename = video.base().filename() + '_audio'
                     Download.download(url, filename, type)
                 }
             },

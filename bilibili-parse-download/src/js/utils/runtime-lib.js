@@ -62,27 +62,16 @@ const urls = ({ name, ver, filename, cdn_keys }) => {
     return cdn_keys.map(k => cdn_map[k](name, ver, filename))
 }
 
+const init = (name, ver, filename, getModule) => {
+    new RuntimeLib({
+        urls: urls({ name, ver, filename }), getModule
+    }).getModulePromise().then(null)
+}
+
 // 伪同步
 export let JSZip
-new RuntimeLib({
-    urls: urls({
-        name: 'jszip', ver: '3.10.0', filename: 'jszip.min.js'
-    }),
-    getModule: window => window.JSZip
-}).getModulePromise().then(module => JSZip = module)
-
+init('jszip', '3.10.0', 'jszip.min.js', w => JSZip = w.JSZip)
 export let flvjs
-new RuntimeLib({
-    urls: urls({
-        name: 'flv.js', ver: '1.6.2', filename: 'flv.min.js'
-    }),
-    getModule: window => window.flvjs
-}).getModulePromise().then(module => flvjs = module)
-
+init('flv.js', '1.6.2', 'flv.min.js', w => flvjs = w.flvjs)
 export let DPlayer
-new RuntimeLib({
-    urls: urls({
-        name: 'dplayer', ver: '1.26.0', filename: 'DPlayer.min.js'
-    }),
-    getModule: window => window.DPlayer
-}).getModulePromise().then(module => DPlayer = module)
+init('dplayer', '1.26.0', 'DPlayer.min.js', w => DPlayer = w.DPlayer)

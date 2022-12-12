@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.3.8
-// @description   支持Web、RPC、Blob、Aria等下载方式；支持flv、dash、mp4视频格式；支持下载港区番剧；支持会员下载；支持换源播放，自动切换为高清视频源
+// @version       2.3.9
+// @description   支持Web、RPC、Blob、Aria等下载方式、下载flv、dash、mp4视频格式、下载港区番剧、下载字幕弹幕、换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
 // @license       MIT
@@ -600,40 +600,22 @@
                 })) : Object.keys(cdn_map)).map((function(k) {
                     return cdn_map[k](name, ver, filename);
                 }));
+            }, init = function init(name, ver, filename, getModule) {
+                new RuntimeLib({
+                    urls: urls({
+                        name: name,
+                        ver: ver,
+                        filename: filename
+                    }),
+                    getModule: getModule
+                }).getModulePromise().then(null);
             }, JSZip, flvjs, DPlayer;
-            new RuntimeLib({
-                urls: urls({
-                    name: "jszip",
-                    ver: "3.10.0",
-                    filename: "jszip.min.js"
-                }),
-                getModule: function getModule(window) {
-                    return window.JSZip;
-                }
-            }).getModulePromise().then((function(module) {
-                return JSZip = module;
-            })), new RuntimeLib({
-                urls: urls({
-                    name: "flv.js",
-                    ver: "1.6.2",
-                    filename: "flv.min.js"
-                }),
-                getModule: function getModule(window) {
-                    return window.flvjs;
-                }
-            }).getModulePromise().then((function(module) {
-                return flvjs = module;
-            })), new RuntimeLib({
-                urls: urls({
-                    name: "dplayer",
-                    ver: "1.26.0",
-                    filename: "DPlayer.min.js"
-                }),
-                getModule: function getModule(window) {
-                    return window.DPlayer;
-                }
-            }).getModulePromise().then((function(module) {
-                return DPlayer = module;
+            init("jszip", "3.10.0", "jszip.min.js", (function(w) {
+                return JSZip = w.JSZip;
+            })), init("flv.js", "1.6.2", "flv.min.js", (function(w) {
+                return flvjs = w.flvjs;
+            })), init("dplayer", "1.26.0", "DPlayer.min.js", (function(w) {
+                return DPlayer = w.DPlayer;
             }));
         }
     }, __webpack_module_cache__ = {};
@@ -793,7 +775,7 @@
             } : function _success(res) {
                 return console.log(res);
             }, _error = "function" == typeof error ? function _error(e) {
-                message.v0.error("请求失败"), error(e);
+                message.v0.error("请求失败"), console.log(e), error(e);
             } : function _error(err) {
                 return console.error(err);
             };
@@ -1407,6 +1389,16 @@
         function rpc_type() {
             return config_config.rpc_domain.match("https://") || config_config.rpc_domain.match(/localhost|127\.0\.0\.1/) ? "post" : "ariang";
         }
+        function download_rpc_ariang_one(video) {
+            var bp_aria2_window = window.bp_aria2_window, time = 100;
+            bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3), setTimeout((function() {
+                var bp_aria2_window = window.bp_aria2_window, aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
+                if (bp_aria2_window && !bp_aria2_window.closed) {
+                    var task_hash = "#!/new/task?url=".concat(window.btoa(video.url), "&out=").concat(encodeURIComponent(video.filename), "&").concat(aria2_header);
+                    bp_aria2_window.location.href = config_config.ariang_host + task_hash, message.v0.success("RPC请求成功");
+                } else message.v0.warning("请检查RPC参数");
+            }), time);
+        }
         var download_rpc_clicked = !1;
         function open_ariang(rpc) {
             var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port, "/jsonrpc/").concat(window.btoa(rpc.token)) : "", url = config_config.ariang_host + hash_tag, a = document.createElement("a");
@@ -1549,8 +1541,8 @@
             }
         }
         function format(url) {
-            return url.match(".flv") ? ".flv" : url.match(".m4s") ? "_video.mp4" : (url.match(".mp4"), 
-            ".mp4");
+            return url ? url.match(".flv") ? ".flv" : (url.match(".m4s") || url.match(".mp4"), 
+            ".mp4") : "";
         }
         var Download = {
             url_format: format,
@@ -1633,7 +1625,7 @@
                 } finally {
                     _iterator.f();
                 }
-                var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="flv" selected>FLV</option>\n                <option value="mp4">MP4</option>\n            </select>\n            &nbsp;&nbsp;无法设置MP4清晰度\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video" >视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, "\n        </div>\n        <div>").concat("medialist" === video.type() ? "不支持多页视频，若需要请到视频原播放页面下载" : "", '</div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
+                var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="mp4" selected>MP4</option>\n                <option value="flv">FLV</option>\n                <option value="dash">DASH</option>\n            </select>\n            &nbsp;&nbsp;无法设置MP4清晰度\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video" >视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, "\n        </div>\n        <div>").concat("medialist" === video.type() ? "不支持多页视频，若需要请到视频原播放页面下载" : "", '</div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
                 function download_videos(videos, i, video_urls) {
                     if (videos.length) if (i < videos.length) {
                         var _video = videos[i], _msg = "第".concat(i + 1, "（").concat(i + 1, "/").concat(videos.length, "）个视频");
@@ -1642,24 +1634,26 @@
                                 if (!res.code) {
                                     message.v0.success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
                                     message._p.alert("".concat(_msg, "：获取成功！"));
-                                    var _ref4 = [ res.url, format(res.url), rpc_type() ], url = _ref4[0], video_format = _ref4[1], type = _ref4[2];
-                                    "post" === type ? (video_urls.push({
+                                    var _ref4 = [ res.url, rpc_type(), res.video, res.audio ], url = _ref4[0], type = _ref4[1], video_url = _ref4[2], audio_url = _ref4[3];
+                                    "post" === type ? ("dash" === _video.format ? (video_urls.push({
+                                        url: video_url,
+                                        filename: _video.filename + "_video" + format(video_url)
+                                    }), video_urls.push({
+                                        url: audio_url,
+                                        filename: _video.filename + "_audio" + format(video_url)
+                                    })) : video_urls.push({
                                         url: url,
-                                        filename: _video.filename + video_format
-                                    }), video_urls.length > 3 && (download_rpc_all(video_urls), video_urls.length = 0)) : "ariang" === type && function download_rpc_ariang_one(video) {
-                                        var bp_aria2_window = window.bp_aria2_window, time = 100;
-                                        bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3);
-                                        setTimeout((function() {
-                                            var bp_aria2_window = window.bp_aria2_window, aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
-                                            if (bp_aria2_window && !bp_aria2_window.closed) {
-                                                var task_hash = "#!/new/task?url=".concat(window.btoa(video.url), "&out=").concat(encodeURIComponent(video.filename), "&").concat(aria2_header);
-                                                bp_aria2_window.location.href = config_config.ariang_host + task_hash, message.v0.success("RPC请求成功");
-                                            } else message.v0.warning("请检查RPC参数");
-                                        }), time);
-                                    }({
+                                        filename: _video.filename + format(url)
+                                    }), video_urls.length > 3 && (download_rpc_all(video_urls), video_urls.length = 0)) : "ariang" === type && ("dash" === _video.format ? (download_rpc_ariang_one({
+                                        url: video_url,
+                                        filename: _video.filename + "_video" + format(video_url)
+                                    }), download_rpc_ariang_one({
+                                        url: audio_url,
+                                        filename: _video.filename + "_audio" + format(video_url)
+                                    })) : download_rpc_ariang_one({
                                         url: url,
-                                        filename: _video.filename + video_format
-                                    });
+                                        filename: _video.filename + format(url)
+                                    }));
                                 }
                                 setTimeout((function() {
                                     download_videos(videos, ++i, video_urls);
@@ -1709,18 +1703,18 @@
                     }));
                 }
                 message._p.confirm(msg, (function() {
-                    for (var dl_quality = $("#dl_quality").val() || q, _ref2 = [ $("#dl_video").is(":checked"), $("#dl_subtitle").is(":checked"), $("#dl_danmaku").is(":checked") ], dl_video = _ref2[0], dl_subtitle = _ref2[1], dl_danmaku = _ref2[2], videos = [], _i2 = 0; _i2 < total; _i2++) if ($("input#option_".concat(_i2)).is(":checked")) {
-                        var p = _i2 + 1, _ref3 = [ vb.cid(p), vb.filename(p) ], cid = _ref3[0], filename = _ref3[1], _format = $("#dl_format").val();
+                    for (var _ref2 = [ $("#dl_video").is(":checked"), $("#dl_subtitle").is(":checked"), $("#dl_danmaku").is(":checked"), $("#dl_format").val(), $("#dl_quality").val() || q, [] ], dl_video = _ref2[0], dl_subtitle = _ref2[1], dl_danmaku = _ref2[2], dl_format = _ref2[3], dl_quality = _ref2[4], videos = _ref2[5], _i2 = 0; _i2 < total; _i2++) if ($("input#option_".concat(_i2)).is(":checked")) {
+                        var p = _i2 + 1, _ref3 = [ vb.cid(p), vb.filename(p) ], cid = _ref3[0], filename = _ref3[1];
                         videos.push({
                             cid: cid,
                             p: p,
                             q: dl_quality,
-                            format: _format,
+                            format: dl_format,
                             filename: filename
                         });
                     }
-                    dl_video && download_videos(videos, 0, []), dl_subtitle && (1 === videos.length ? download_subtitle_vtt(videos[0].p, videos[0].filename) : download_subtitle_vtt_zip([].concat(videos), new runtime_lib.$c)), 
-                    dl_danmaku && (1 === videos.length ? download_danmaku_ass(videos[0].cid, videos[0].filename) : download_danmaku_ass_zip([].concat(videos), new runtime_lib.$c));
+                    dl_video && download_videos(videos, 0, []), dl_subtitle && (1 === videos.length ? download_subtitle_vtt(videos[0].p, videos[0].filename) : download_subtitle_vtt_zip(_toConsumableArray(videos), new runtime_lib.$c)), 
+                    dl_danmaku && (1 === videos.length ? download_danmaku_ass(videos[0].cid, videos[0].filename) : download_danmaku_ass_zip(_toConsumableArray(videos), new runtime_lib.$c));
                 })), $("body").on("click", 'input[name="dl_option"]', (function() {
                     $(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)");
                 })), $("#dl_quality").val(q > 120 ? 80 : q);
@@ -1728,10 +1722,10 @@
             download_danmaku_ass: download_danmaku_ass,
             download_subtitle_vtt: download_subtitle_vtt,
             open_ariang: open_ariang
-        }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="online">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="flv">FLV</option> <option value="dash">DASH</option> <option value="mp4">MP4</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" style="width:25%"/> : <input id="rpc_port" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria参数：</label> 最大连接数：<select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">账号授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">手动授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ', config_config = {
+        }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="online">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria参数：</label> 最大连接数：<select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">账号授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">手动授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ', config_config = {
             base_api: "https://api.injahow.cn/bparse/",
             request_type: "auto",
-            format: "flv",
+            format: "mp4",
             host_key: "0",
             replace_force: "0",
             auth: "0",
@@ -1860,24 +1854,29 @@
                 key: "checkLoginStatus",
                 value: function checkLoginStatus() {
                     var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || "0" ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
-                    access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5) && (0, 
-                    ajax.h)({
-                        url: "https://api.bilibili.com/x/space/myinfo?access_key=".concat(access_key),
-                        type: "GET",
-                        dataType: "json"
-                    }).then((function(res) {
-                        res.code ? message._p.alert("授权已过期，准备重新授权", (function() {
-                            _this.reLogin();
-                        })) : (store.set("auth_time", Date.now()), (0, ajax.h)({
-                            url: "".concat(config_config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
-                            type: "GET",
-                            dataType: "json"
-                        }).then((function(res) {
-                            res.code && message._p.alert("检查失败，准备重新授权", (function() {
-                                _this.reLogin();
+                    if (access_key) {
+                        if (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5)) {
+                            var vb = video.base();
+                            (0, ajax.h)({
+                                url: "https://api.bilibili.com/x/player/v2?aid=".concat(vb.aid(), "&cid=").concat(vb.cid(), "&access_key=").concat(access_key),
+                                type: "GET",
+                                dataType: "json"
+                            }).then((function(res) {
+                                res.data && !res.data.login_mid ? message._p.alert("授权已过期，准备重新授权", (function() {
+                                    _this.reLogin();
+                                })) : (store.set("auth_time", Date.now()), (0, ajax.h)({
+                                    url: "".concat(config_config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+                                    type: "GET",
+                                    dataType: "json"
+                                }).then((function(res) {
+                                    res.code && message._p.alert("检查失败，准备重新授权", (function() {
+                                        _this.reLogin();
+                                    }));
+                                })));
                             }));
-                        })));
-                    })), store.set("pre_base_api", config_config.base_api));
+                        }
+                        store.set("pre_base_api", config_config.base_api);
+                    }
                 }
             }, {
                 key: "_login",
@@ -1992,7 +1991,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.8", " ").concat("4f5271b", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.9", " ").concat("adcbf5b", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2090,14 +2089,14 @@
                                     $("#".concat(id)).select(), document.execCommand("copy") ? message.v0.success("复制成功") : message.v0.warning("复制失败");
                                 }), message._p.alert(_msg);
                             } else {
-                                var url = $("#video_url").attr("href"), filename = video.base().filename();
+                                var url = $("#video_url").attr("href"), filename = video.base().filename() + (url.match(".m4s") ? "_video" : "");
                                 Download.download(url, filename, type);
                             }
                         },
                         video_download_2: function video_download_2() {
                             var type = config_config.download_type;
                             if ("web" === type) $("#video_url_2")[0].click(); else if ("a" === type) $("#video_download").click(); else if ("aria" === type) $("#video_download").click(); else {
-                                var url = $("#video_url_2").attr("href"), filename = video.base().filename();
+                                var url = $("#video_url_2").attr("href"), filename = video.base().filename() + "_audio";
                                 Download.download(url, filename, type);
                             }
                         },

@@ -37,19 +37,20 @@ function download_all() {
             const option_videos = [...document.getElementsByName('option_video')]
             if (event.target.checked) { // checked = true: 选中`上一个被选中`到`这次被选中`的所有option
                 const previous_selected_option_index = get_option_index(option_videos.filter(e => e.checked && get_option_index(e) < current_select_option_index).slice(-1)[0])
-                for (let i = previous_selected_option_index; i < current_select_option_index; i++){
+                for (let i = previous_selected_option_index; i < current_select_option_index; i++) {
                     option_videos[i].checked = true
                     option_videos[i].parentNode.style.color = 'rgba(0,0,0,1)'
                 }
             } else { //checked = false，取消选中`上一个未被选中`到`这次被取消选中`的所有option
                 const previous_not_selected_option_index = get_option_index(option_videos.filter(e => !e.checked && get_option_index(e) < current_select_option_index).slice(-1)[0])
-                for (let i = previous_not_selected_option_index; i < current_select_option_index; i++){
+                for (let i = previous_not_selected_option_index; i < current_select_option_index; i++) {
                     option_videos[i].checked = false
                     option_videos[i].parentNode.style.color = 'rgba(0,0,0,0.5)'
                 }
             }
         }
     })
+
     let video_html = ''
     for (let i = 0; i < total; i++) {
         video_html += '' +
@@ -81,8 +82,9 @@ function download_all() {
         `<div style="margin:2% 0;">
             <label>视频格式:</label>
             <select id="dl_format">
-                <option value="flv" selected>FLV</option>
-                <option value="mp4">MP4</option>
+                <option value="mp4" selected>MP4</option>
+                <option value="flv">FLV</option>
+                <option value="dash">DASH</option>
             </select>
             &nbsp;&nbsp;无法设置MP4清晰度
         </div>
@@ -120,13 +122,14 @@ function download_all() {
 
     MessageBox.confirm(msg, () => {
         // 获取参数
-        let dl_quality = $('#dl_quality').val() || q
-        const [dl_video, dl_subtitle, dl_danmaku] = [
+        const [dl_video, dl_subtitle, dl_danmaku, dl_format, dl_quality, videos] = [
             $('#dl_video').is(':checked'),
             $('#dl_subtitle').is(':checked'),
-            $('#dl_danmaku').is(':checked')
+            $('#dl_danmaku').is(':checked'),
+            $('#dl_format').val(),
+            $('#dl_quality').val() || q,
+            []
         ]
-        const videos = []
         for (let i = 0; i < total; i++) {
             if (!$(`input#option_${i}`).is(':checked')) {
                 continue
@@ -136,12 +139,11 @@ function download_all() {
                 vb.cid(p),
                 vb.filename(p)
             ]
-            const format = $('#dl_format').val()
             videos.push({
                 cid: cid,
                 p: p,
                 q: dl_quality,
-                format: format,
+                format: dl_format,
                 filename: filename
             })
         }
@@ -197,26 +199,52 @@ function download_all() {
                             Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
                             MessageBox.alert(`${msg}：获取成功！`)
 
-                            const [url, video_format, type] = [
+                            const [url, type, video_url, audio_url] = [
                                 res.url,
-                                format(res.url),
-                                rpc_type()
+                                rpc_type(),
+                                res.video,
+                                res.audio
                             ]
 
                             if (type === 'post') {
-                                video_urls.push({
-                                    url: url,
-                                    filename: video.filename + video_format
-                                })
+
+                                if (video.format === 'dash') { // 处理dash
+                                    video_urls.push({
+                                        url: video_url,
+                                        filename: video.filename + '_video' + format(video_url)
+                                    })
+                                    video_urls.push({
+                                        url: audio_url,
+                                        filename: video.filename + '_audio' + format(video_url)
+                                    })
+                                } else {
+                                    video_urls.push({
+                                        url: url,
+                                        filename: video.filename + format(url)
+                                    })
+                                }
+
                                 if (video_urls.length > 3) {
                                     download_rpc_all(video_urls)
                                     video_urls.length = 0
                                 }
                             } else if (type === 'ariang') {
-                                download_rpc_ariang_one({
-                                    url: url,
-                                    filename: video.filename + video_format
-                                })
+
+                                if (video.format === 'dash') { // 处理dash
+                                    download_rpc_ariang_one({
+                                        url: video_url,
+                                        filename: video.filename + '_video' + format(video_url)
+                                    })
+                                    download_rpc_ariang_one({
+                                        url: audio_url,
+                                        filename: video.filename + '_audio' + format(video_url)
+                                    })
+                                } else {
+                                    download_rpc_ariang_one({
+                                        url: url,
+                                        filename: video.filename + format(url)
+                                    })
+                                }
                             }
                         }
 
@@ -647,10 +675,11 @@ function download_subtitle_vtt_zip(videos, zip) { // 异步递归
 
 
 function format(url) {
+    if (!url) return ''
     if (url.match('.flv')) {
         return '.flv'
     } else if (url.match('.m4s')) {
-        return '_video.mp4'
+        return '.mp4'
     } else if (url.match('.mp4')) {
         return '.mp4'
     }

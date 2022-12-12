@@ -22,9 +22,9 @@
     <div style="margin: 2% 0">
       <label>视频格式：</label>
       <select id="format">
+        <option value="mp4">MP4</option>
         <option value="flv">FLV</option>
         <option value="dash">DASH</option>
-        <option value="mp4">MP4</option>
       </select>&nbsp;&nbsp;&nbsp;&nbsp;
       <label>切换CDN：</label>
       <select id="host_key">
@@ -47,8 +47,8 @@
     </div>
     <div style="margin: 2% 0">
       <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />
-      <input id="rpc_domain" style="width: 25%" /> :
-      <input id="rpc_port" style="width: 10%" /> |
+      <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width: 25%" /> :
+      <input id="rpc_port" placeholder="6800" style="width: 10%" /> |
       <input id="rpc_token" placeholder="未设置不填" style="width: 15%" /> |
       <input id="rpc_dir" placeholder="留空使用默认目录" style="width: 20%" /><br />
       <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>
