@@ -2,7 +2,7 @@
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
 // @version       2.3.9
-// @description   支持Web、RPC、Blob、Aria等下载方式、下载flv、dash、mp4视频格式、下载港区番剧、下载字幕弹幕、换源播放等功能
+// @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
 // @license       MIT
@@ -775,7 +775,7 @@
             } : function _success(res) {
                 return console.log(res);
             }, _error = "function" == typeof error ? function _error(e) {
-                message.v0.error("请求失败"), console.log(e), error(e);
+                message.v0.error("请求失败"), error(e);
             } : function _error(err) {
                 return console.error(err);
             };
@@ -1991,7 +1991,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.9", " ").concat("adcbf5b", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.9", " ").concat("a2c9737", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
