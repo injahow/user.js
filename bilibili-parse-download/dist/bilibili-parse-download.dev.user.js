@@ -2575,7 +2575,6 @@ function auth_createClass(Constructor, protoProps, staticProps) { if (protoProps
 
 
 
-
 var Auth = /*#__PURE__*/function () {
   function Auth() {
     auth_classCallCheck(this, Auth);
@@ -2597,16 +2596,15 @@ var Auth = /*#__PURE__*/function () {
 
       if (user.is_login && (config_config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
         // check key
-        var vb = video.base();
         (0,ajax.ajax)({
-          url: "https://api.bilibili.com/x/player/v2?aid=".concat(vb.aid(), "&cid=").concat(vb.cid(), "&access_key=").concat(access_key),
+          url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
           type: 'GET',
           dataType: 'json'
         }).then(function (res) {
-          if (res.data && !res.data.login_mid) {
-            message.MessageBox.alert('授权已过期，准备重新授权', function () {
-              _this.reLogin();
-            });
+          if (res.code) {
+            message.Message.info('授权已过期，准备重新授权');
+
+            _this.reLogin();
           } else {
             store.set('auth_time', Date.now());
             (0,ajax.ajax)({
@@ -2615,9 +2613,9 @@ var Auth = /*#__PURE__*/function () {
               dataType: 'json'
             }).then(function (res) {
               if (res.code) {
-                message.MessageBox.alert('检查失败，准备重新授权', function () {
-                  _this.reLogin();
-                });
+                message.Message.info('检查失败，准备重新授权');
+
+                _this.reLogin();
               }
             });
           }
@@ -2834,7 +2832,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.9", " ").concat("a2c9737", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.10", " ").concat("198cae1", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

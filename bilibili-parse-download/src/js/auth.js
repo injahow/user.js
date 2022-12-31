@@ -3,7 +3,6 @@ import { store } from './store'
 import { Message, MessageBox } from './ui/message'
 import { user } from './user'
 import { ajax } from './utils/ajax'
-import { video } from './utils/video'
 
 class Auth {
     constructor() {
@@ -24,16 +23,14 @@ class Auth {
         if (user.is_login && (config.base_api !== store.get('pre_base_api') ||
             Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
             // check key
-            const vb = video.base()
             ajax({
-                url: `https://api.bilibili.com/x/player/v2?aid=${vb.aid()}&cid=${vb.cid()}&access_key=${access_key}`,
+                url: `https://passport.bilibili.com/api/oauth?access_key=${access_key}`,
                 type: 'GET',
                 dataType: 'json'
             }).then(res => {
-                if (res.data && !res.data.login_mid) {
-                    MessageBox.alert('授权已过期，准备重新授权', () => {
-                        this.reLogin()
-                    })
+                if (res.code) {
+                    Message.info('授权已过期，准备重新授权')
+                    this.reLogin()
                 } else {
                     store.set('auth_time', Date.now())
                     ajax({
@@ -42,9 +39,8 @@ class Auth {
                         dataType: 'json'
                     }).then(res => {
                         if (res.code) {
-                            MessageBox.alert('检查失败，准备重新授权', () => {
-                                this.reLogin()
-                            })
+                            Message.info('检查失败，准备重新授权')
+                            this.reLogin()
                         }
                     })
                 }

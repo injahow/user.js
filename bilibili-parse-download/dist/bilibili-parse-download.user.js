@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.3.9
+// @version       2.3.10
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -1854,29 +1854,21 @@
                 key: "checkLoginStatus",
                 value: function checkLoginStatus() {
                     var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || "0" ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
-                    if (access_key) {
-                        if (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5)) {
-                            var vb = video.base();
-                            (0, ajax.h)({
-                                url: "https://api.bilibili.com/x/player/v2?aid=".concat(vb.aid(), "&cid=").concat(vb.cid(), "&access_key=").concat(access_key),
-                                type: "GET",
-                                dataType: "json"
-                            }).then((function(res) {
-                                res.data && !res.data.login_mid ? message._p.alert("授权已过期，准备重新授权", (function() {
-                                    _this.reLogin();
-                                })) : (store.set("auth_time", Date.now()), (0, ajax.h)({
-                                    url: "".concat(config_config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
-                                    type: "GET",
-                                    dataType: "json"
-                                }).then((function(res) {
-                                    res.code && message._p.alert("检查失败，准备重新授权", (function() {
-                                        _this.reLogin();
-                                    }));
-                                })));
-                            }));
-                        }
-                        store.set("pre_base_api", config_config.base_api);
-                    }
+                    access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5) && (0, 
+                    ajax.h)({
+                        url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
+                        type: "GET",
+                        dataType: "json"
+                    }).then((function(res) {
+                        res.code ? (message.v0.info("授权已过期，准备重新授权"), _this.reLogin()) : (store.set("auth_time", Date.now()), 
+                        (0, ajax.h)({
+                            url: "".concat(config_config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+                            type: "GET",
+                            dataType: "json"
+                        }).then((function(res) {
+                            res.code && (message.v0.info("检查失败，准备重新授权"), _this.reLogin());
+                        })));
+                    })), store.set("pre_base_api", config_config.base_api));
                 }
             }, {
                 key: "_login",
@@ -1991,7 +1983,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.9", " ").concat("a2c9737", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.10", " ").concat("198cae1", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
