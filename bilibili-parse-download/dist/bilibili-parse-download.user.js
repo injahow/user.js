@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.3.10
+// @version       2.3.11
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -814,6 +814,22 @@
                 if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "online") : (res.url && (res.url = url_replace_cdn(res.url)), 
                 res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)), 
                 void _success(res));
+                var resultConvertor = function resultConvertor(data, _success) {
+                    (0, ajax.j)({
+                        type: "GET",
+                        url: data.url ? data.url : data.video,
+                        cache: !1,
+                        timeout: 1e3,
+                        success: function success() {
+                            _success(data);
+                        },
+                        error: function error(res) {
+                            "timeout" == res.statusText ? (console.log("use url"), _success(data)) : (console.log("use backup_url"), 
+                            data.backup_url && (data.url = data.backup_url), data.backup_video && (data.video = data.backup_video), 
+                            data.backup_audio && (data.audio = data.backup_audio), _success(data));
+                        }
+                    });
+                };
                 if (data.dash) {
                     for (var result = {
                         code: 0,
@@ -824,17 +840,20 @@
                     }, videos = data.dash.video, i = 0; i < videos.length; i++) {
                         var _video = videos[i];
                         if (_video.id <= q) {
-                            result.video = url_replace_cdn(_video.base_url), result.audio = url_replace_cdn(data.dash.audio[0].base_url);
+                            result.video = url_replace_cdn(_video.base_url), result.audio = url_replace_cdn(data.dash.audio[0].base_url), 
+                            result.backup_video = _video.backup_url && url_replace_cdn(_video.backup_url[0]), 
+                            result.backup_audio = data.dash.audio[0].backup_url && url_replace_cdn(data.dash.audio[0].backup_url[0]);
                             break;
                         }
                     }
-                    _success(result);
-                } else _success({
+                    resultConvertor(result, _success);
+                } else resultConvertor({
                     code: 0,
                     quality: data.quality,
                     accept_quality: data.accept_quality,
-                    url: url_replace_cdn(data.durl[0].url)
-                });
+                    url: url_replace_cdn(data.durl[0].url),
+                    backup_url: data.durl[0].backup_url && url_replace_cdn(data.durl[0].backup_url[0])
+                }, _success);
             })).catch((function(err) {
                 return _error(err);
             }));
@@ -1255,7 +1274,7 @@
                             container: $("#bp_dplayer_2")[0],
                             mutex: !1,
                             volume: 1,
-                            autoplay: !0,
+                            autoplay: !1,
                             video: {
                                 url: url_2,
                                 type: "auto"
@@ -1983,7 +2002,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.10", " ").concat("198cae1", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.11", " ").concat("72a359c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

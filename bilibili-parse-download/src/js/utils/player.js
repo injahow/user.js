@@ -130,7 +130,7 @@ function replace_player(url, url_2) {
                 container: $('#bp_dplayer_2')[0],
                 mutex: false,
                 volume: 1,
-                autoplay: true,
+                autoplay: false,
                 video: {
                     url: url_2,
                     type: 'auto'

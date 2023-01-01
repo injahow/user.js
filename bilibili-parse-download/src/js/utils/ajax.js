@@ -1,7 +1,7 @@
 
 import { Message } from '../ui/message'
 
-export function ajax(obj) {
+function ajax(obj) {
     return new Promise((resolve, reject) => {
         // set obj.success & obj.success
         obj.success = res => {
@@ -23,7 +23,7 @@ export function ajax(obj) {
     })
 }
 
-export function _ajax(obj) {
+function _ajax(obj) {
     return new Promise((resolve, reject) => {
         // set obj.success & obj.success
         obj.success || (obj.success = res => {
@@ -34,4 +34,8 @@ export function _ajax(obj) {
         })
         $.ajax(obj)
     })
+}
+
+export {
+    ajax, _ajax
 }

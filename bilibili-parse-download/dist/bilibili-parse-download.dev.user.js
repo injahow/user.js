@@ -212,6 +212,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ui/message */ "./src/js/ui/message.js");
 
+
 function ajax(obj) {
   return new Promise(function (resolve, reject) {
     // set obj.success & obj.success
@@ -231,6 +232,7 @@ function ajax(obj) {
     $.ajax(obj);
   });
 }
+
 function _ajax(obj) {
   return new Promise(function (resolve, reject) {
     // set obj.success & obj.success
@@ -243,6 +245,8 @@ function _ajax(obj) {
     $.ajax(obj);
   });
 }
+
+
 
 /***/ }),
 
@@ -741,13 +745,42 @@ function get_url_base(page, quality, video_format, success, error, request_type)
       return;
     }
 
+    var resultConvertor = function resultConvertor(data, _success) {
+      // 判断地址有效性
+      (0,ajax._ajax)({
+        type: 'GET',
+        url: data.url ? data.url : data.video,
+        cache: false,
+        timeout: 1000,
+        success: function success() {
+          _success(data);
+        },
+        error: function error(res) {
+          if (res.statusText == 'timeout') {
+            console.log('use url');
+
+            _success(data);
+          } else {
+            // back_url
+            console.log('use backup_url');
+            data.backup_url && (data.url = data.backup_url);
+            data.backup_video && (data.video = data.backup_video);
+            data.backup_audio && (data.audio = data.backup_audio);
+
+            _success(data);
+          }
+        }
+      });
+    }; // local
+
+
     if (data.dash) {
       var result = {
-        'code': 0,
-        'quality': data.quality,
-        'accept_quality': data.accept_quality,
-        'video': '',
-        'audio': ''
+        code: 0,
+        quality: data.quality,
+        accept_quality: data.accept_quality,
+        video: '',
+        audio: ''
       };
       var videos = data.dash.video;
 
@@ -757,21 +790,24 @@ function get_url_base(page, quality, video_format, success, error, request_type)
         if (_video.id <= q) {
           result.video = url_replace_cdn(_video.base_url);
           result.audio = url_replace_cdn(data.dash.audio[0].base_url);
+          result.backup_video = _video.backup_url && url_replace_cdn(_video.backup_url[0]);
+          result.backup_audio = data.dash.audio[0].backup_url && url_replace_cdn(data.dash.audio[0].backup_url[0]);
           break;
         }
       }
 
-      _success(result);
-
+      resultConvertor(result, _success);
       return;
-    }
+    } // durl
 
-    _success({
-      'code': 0,
-      'quality': data.quality,
-      'accept_quality': data.accept_quality,
-      'url': url_replace_cdn(data.durl[0].url)
-    });
+
+    resultConvertor({
+      code: 0,
+      quality: data.quality,
+      accept_quality: data.accept_quality,
+      url: url_replace_cdn(data.durl[0].url),
+      backup_url: data.durl[0].backup_url && url_replace_cdn(data.durl[0].backup_url[0])
+    }, _success);
   }).catch(function (err) {
     return _error(err);
   });
@@ -1376,7 +1412,7 @@ function replace_player(url, url_2) {
         container: $('#bp_dplayer_2')[0],
         mutex: false,
         volume: 1,
-        autoplay: true,
+        autoplay: false,
         video: {
           url: url_2,
           type: 'auto'
@@ -2832,7 +2868,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.10", " ").concat("198cae1", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.11", " ").concat("72a359c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

@@ -3,7 +3,7 @@ import { config, hostMap } from '../ui/config'
 import { store } from '../store'
 import { Message } from '../ui/message'
 import { user } from '../user'
-import { ajax } from './ajax'
+import { ajax, _ajax } from './ajax'
 import { video } from './video'
 
 function get_url_base(page, quality, video_format, success, error, request_type) {
@@ -106,13 +106,38 @@ function get_url_base(page, quality, video_format, success, error, request_type)
             return
         }
 
+        const resultConvertor = (data, _success) => { // 判断地址有效性
+            _ajax({
+                type: 'GET',
+                url: data.url ? data.url : data.video,
+                cache: false,
+                timeout: 1000,
+                success: function () {
+                    _success(data)
+                },
+                error: function (res) {
+                    if (res.statusText == 'timeout') {
+                        console.log('use url')
+                        _success(data)
+                    } else { // back_url
+                        console.log('use backup_url')
+                        data.backup_url && (data.url = data.backup_url)
+                        data.backup_video && (data.video = data.backup_video)
+                        data.backup_audio && (data.audio = data.backup_audio)
+                        _success(data)
+                    }
+                }
+            })
+        }
+
+        // local
         if (data.dash) {
             const result = {
-                'code': 0,
-                'quality': data.quality,
-                'accept_quality': data.accept_quality,
-                'video': '',
-                'audio': ''
+                code: 0,
+                quality: data.quality,
+                accept_quality: data.accept_quality,
+                video: '',
+                audio: ''
             }
             const videos = data.dash.video
             for (let i = 0; i < videos.length; i++) {
@@ -120,19 +145,23 @@ function get_url_base(page, quality, video_format, success, error, request_type)
                 if (video.id <= q) {
                     result.video = url_replace_cdn(video.base_url)
                     result.audio = url_replace_cdn(data.dash.audio[0].base_url)
+                    result.backup_video = video.backup_url && url_replace_cdn(video.backup_url[0])
+                    result.backup_audio = data.dash.audio[0].backup_url && url_replace_cdn(data.dash.audio[0].backup_url[0])
                     break
                 }
             }
-            _success(result)
+            resultConvertor(result, _success)
             return
         }
 
-        _success({
-            'code': 0,
-            'quality': data.quality,
-            'accept_quality': data.accept_quality,
-            'url': url_replace_cdn(data.durl[0].url)
-        })
+        // durl
+        resultConvertor({
+            code: 0,
+            quality: data.quality,
+            accept_quality: data.accept_quality,
+            url: url_replace_cdn(data.durl[0].url),
+            backup_url: data.durl[0].backup_url && url_replace_cdn(data.durl[0].backup_url[0])
+        }, _success)
 
     }).catch(err => _error(err))
 
