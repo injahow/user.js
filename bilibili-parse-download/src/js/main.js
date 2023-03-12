@@ -20,6 +20,7 @@ class Main {
     }
 
     init() {
+
         initToolbar()
 
         const root_div = document.createElement('div')
@@ -43,23 +44,6 @@ class Main {
     run() {
 
         this.init()
-
-        const root_div = document.createElement('div')
-        root_div.id = 'bp_root'
-        document.body.append(root_div)
-        // initConfig
-        initConfig(`#${root_div.id}`)
-        initMessage(`#${root_div.id}`)
-
-        user.lazyInit()
-        auth.initAuth()
-        auth.checkLoginStatus()
-        check.refresh()
-
-        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">') // for dom changed
-
-        $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
-        $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
 
         let api_url, api_url_temp
         const e = {
