@@ -1912,37 +1912,6 @@
                 }));
             }
         };
-        function initConfig(el) {
-            var options = '<option value="0">关闭</option>';
-            for (var k in hostMap) options += '<option value="'.concat(k, '">').concat(hostMap[k], "</option>");
-            for (var _k in config = config.replace("{{host_key_options}}", options), options = '<option value="0">与播放器相同</option>', 
-            videoQualityMap) options += '<option value="'.concat(_k, '">').concat(videoQualityMap[_k], "</option>");
-            config = config.replace("{{video_quality_options}}", options), el && $(el)[0] ? $(el).append(config) : $("body").append(config);
-            var config_str = store.get("config_str");
-            if (config_str) try {
-                var old_config = JSON.parse(config_str);
-                for (var key in old_config) Object.hasOwnProperty.call(config_config, key) && (config_config[key] = old_config[key]);
-            } catch (_unused) {
-                console.log("初始化脚本配置");
-            }
-            config_config.auth = store.get("auth_id") ? "1" : "0", store.set("config_str", JSON.stringify(config_config));
-            var _loop = function _loop(_key2) {
-                if ("auth" === _key2) return "continue";
-                $("#".concat(_key2)).on("input", (function(e) {
-                    config_config[_key2] = e.delegateTarget.value;
-                }));
-            };
-            for (var _key2 in config_config) _loop(_key2);
-            for (var _k2 in config_functions) {
-                var e = $("#".concat(_k2))[0];
-                e && (e.onclick = config_functions[_k2]);
-            }
-            for (var _key3 in config_config) $("#".concat(_key3)).val(config_config[_key3]);
-            window.onbeforeunload = function() {
-                var bp_aria2_window = window.bp_aria2_window;
-                bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
-            };
-        }
         function auth_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
@@ -2126,7 +2095,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.12", " ").concat("5f0de97", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.12", " ").concat("888aadc", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2146,22 +2115,46 @@
                         }
                     }();
                     var root_div = document.createElement("div");
-                    root_div.id = "bp_root", document.body.append(root_div), initConfig("#".concat(root_div.id)), 
-                    (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), auth.initAuth(), auth.checkLoginStatus(), 
-                    check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
+                    root_div.id = "bp_root", document.body.append(root_div), function initConfig(el) {
+                        var options = '<option value="0">关闭</option>';
+                        for (var k in hostMap) options += '<option value="'.concat(k, '">').concat(hostMap[k], "</option>");
+                        for (var _k in config = config.replace("{{host_key_options}}", options), options = '<option value="0">与播放器相同</option>', 
+                        videoQualityMap) options += '<option value="'.concat(_k, '">').concat(videoQualityMap[_k], "</option>");
+                        config = config.replace("{{video_quality_options}}", options), el && $(el)[0] ? $(el).append(config) : $("body").append(config);
+                        var config_str = store.get("config_str");
+                        if (config_str) try {
+                            var old_config = JSON.parse(config_str);
+                            for (var key in old_config) Object.hasOwnProperty.call(config_config, key) && (config_config[key] = old_config[key]);
+                        } catch (_unused) {
+                            console.log("初始化脚本配置");
+                        }
+                        config_config.auth = store.get("auth_id") ? "1" : "0", store.set("config_str", JSON.stringify(config_config));
+                        var _loop = function _loop(_key2) {
+                            if ("auth" === _key2) return "continue";
+                            $("#".concat(_key2)).on("input", (function(e) {
+                                config_config[_key2] = e.delegateTarget.value;
+                            }));
+                        };
+                        for (var _key2 in config_config) _loop(_key2);
+                        for (var _k2 in config_functions) {
+                            var e = $("#".concat(_k2))[0];
+                            e && (e.onclick = config_functions[_k2]);
+                        }
+                        for (var _key3 in config_config) $("#".concat(_key3)).val(config_config[_key3]);
+                        window.onbeforeunload = function() {
+                            var bp_aria2_window = window.bp_aria2_window;
+                            bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
+                        };
+                    }("#".concat(root_div.id)), (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), 
+                    auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
                     $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
                 }
             }, {
                 key: "run",
                 value: function run() {
+                    var api_url, api_url_temp;
                     this.init();
-                    var api_url, api_url_temp, root_div = document.createElement("div");
-                    root_div.id = "bp_root", document.body.append(root_div), initConfig("#".concat(root_div.id)), 
-                    (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), auth.initAuth(), auth.checkLoginStatus(), 
-                    check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
-                    $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
-                    $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
                     var e = {
                         setting_btn: function setting_btn() {
                             for (var key in user.lazyInit(!0), config_config) $("#".concat(key)).val(config_config[key]);
