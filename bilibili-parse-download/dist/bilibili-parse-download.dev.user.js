@@ -3018,7 +3018,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.12", " ").concat("5f0de97", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.12", " ").concat("888aadc", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3044,20 +3044,6 @@ var Main = /*#__PURE__*/function () {
     key: "run",
     value: function run() {
       this.init();
-      var root_div = document.createElement('div');
-      root_div.id = 'bp_root';
-      document.body.append(root_div); // initConfig
-
-      initConfig("#".concat(root_div.id));
-      (0,message.initMessage)("#".concat(root_div.id));
-      user.lazyInit();
-      auth.initAuth();
-      auth.checkLoginStatus();
-      check.refresh();
-      $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'); // for dom changed
-
-      $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
-      $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
       var api_url, api_url_temp;
       var e = {
         setting_btn: function setting_btn() {
