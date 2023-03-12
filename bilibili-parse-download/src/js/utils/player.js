@@ -9,22 +9,18 @@ function get_bili_player_id() {
         return '#bilibiliPlayer'
     } else if (!!$('#bilibili-player')[0]) {
         return '#bilibili-player'
-    } else if (video.type() === 'cheese') {
-        if (!!$('div.bpx-player[data-injector="nano"]')[0]) {
-            return 'div.bpx-player[data-injector="nano"]'
-        } else { // first
-            return '#pay-mask'
-        }
+    } else if (!!$('#edu-player')[0]) {
+        return 'div.bpx-player-primary-area'
     }
 }
 
-function request_danmaku(options, _cid) {
-    if (!_cid) {
+function request_danmaku(options, cid) {
+    if (!cid) {
         options.error('cid未知，无法获取弹幕')
         return
     }
     ajax({
-        url: `https://api.bilibili.com/x/v1/dm/list.so?oid=${_cid}`,
+        url: `https://api.bilibili.com/x/v1/dm/list.so?oid=${cid}`,
         dataType: 'text',
     }).then(result => {
         const result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''))
@@ -73,17 +69,10 @@ function replace_player(url, url_2) {
         bili_player_id = '#bilibili-player'
         $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>')
         $(bili_player_id).hide()
-    } else if (video.type() === 'cheese') {
-        if (!!$('div.bpx-player[data-injector="nano"]')[0]) {
-            $('#pay-mask').hide()
-            $('#bofqi').show()
-            bili_player_id = 'div.bpx-player[data-injector="nano"]'
-            $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>')
-            $(bili_player_id).hide()
-        } else { // 第一次
-            bili_player_id = '#pay-mask'
-            $(bili_player_id).html('<div id="bp_dplayer" style="width:100%;height:100%;"></div>')
-        }
+    } else if (!!$('#edu-player')[0]) {
+        bili_player_id = '.bpx-player-primary-area'
+        $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>')
+        $(bili_player_id).hide()
     }
     $('#player_mask_module').hide()
     const dplayer_init = (subtitle_url = '') => {

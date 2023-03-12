@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.3.11
+// @version       2.3.12
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -903,20 +903,26 @@
             get_subtitle_data: function get_subtitle_data(p, callback) {
                 _get_subtitle(p, callback, !1);
             },
-            get_season: function get_season(epid) {
-                (0, ajax.h)({
-                    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
+            get_season: function get_season(sid, epid) {
+                sid || epid ? (0, ajax.h)({
+                    url: "https://api.bilibili.com/pugv/view/web/season?season_id=".concat(sid || "", "&ep_id=").concat(epid || ""),
                     xhrFields: {
                         withCredentials: !0
                     },
                     dataType: "json"
                 }).then((function(res) {
                     res.code ? message.v0.warning("获取剧集信息失败") : window.bp_episodes = res.data.episodes || null;
-                }));
+                })) : console.log("get_season error");
             }
+        }, routerMap = {
+            video: "/video/",
+            bangumi: "/bangumi/play/",
+            medialist: "/medialist/play/",
+            cheese: "/cheese/play/"
         };
         function type() {
-            return location.pathname.match("/cheese/play/") ? "cheese" : location.pathname.match("/medialist/play/") ? "medialist" : window.__INITIAL_STATE__ ? window.__INITIAL_STATE__.epInfo ? "bangumi" : window.__INITIAL_STATE__.videoData ? "video" : void 0 : "?";
+            for (var key in routerMap) if (location.pathname.startsWith(routerMap[key])) return key;
+            return "?";
         }
         var q_map = {
             "1080P 高码率": 112,
@@ -938,13 +944,13 @@
                         total: function total() {
                             return state.videoData.pages.length || 1;
                         },
-                        title: function title(_p) {
-                            var p = _p || state.p || 1;
-                            return (state.videoData.pages[p - 1].part || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                        title: function title(p) {
+                            var id = p || state.p || 1;
+                            return (state.videoData.pages[id - 1].part || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
                         },
-                        filename: function filename(_p) {
-                            var p = _p || state.p || 1;
-                            return (main_title + " P".concat(p, " （").concat(state.videoData.pages[p - 1].part || p, "）")).replace(/[\/\\:*?"<>|]+/g, "");
+                        filename: function filename(p) {
+                            var id = p || state.p || 1;
+                            return (main_title + " P".concat(p, " （").concat(state.videoData.pages[id - 1].part || p, "）")).replace(/[\/\\:*?"<>|]+/g, "");
                         },
                         aid: function aid() {
                             return state.videoData.aid;
@@ -955,14 +961,14 @@
                         p: function p() {
                             return state.p || 1;
                         },
-                        cid: function cid(_p) {
-                            var p = _p || state.p || 1;
-                            return state.videoData.pages[p - 1].cid;
+                        cid: function cid(p) {
+                            var id = p || state.p || 1;
+                            return state.videoData.pages[id - 1].cid;
                         },
                         epid: function epid() {
                             return "";
                         },
-                        need_vip: function need_vip() {
+                        need_vip: function need_vip(p) {
                             return !1;
                         },
                         vip_need_pay: function vip_need_pay() {
@@ -981,33 +987,33 @@
                         total: function total() {
                             return medialist.length;
                         },
-                        title: function title(_p) {
-                            var id = _p ? _p - 1 : _id, title = medialist.eq(id).find(".player-auxiliary-playlist-item-title").attr("title") || "unknown";
+                        title: function title(p) {
+                            var id = p ? p - 1 : _id, title = medialist.eq(id).find(".player-auxiliary-playlist-item-title").attr("title") || "unknown";
                             return title.replace(/[\/\\:*?"<>|]+/g, "");
                         },
-                        filename: function filename(_p) {
-                            var id = _p ? _p - 1 : _id, title = medialist.eq(id).find(".player-auxiliary-playlist-item-title").attr("title") || "unknown";
+                        filename: function filename(p) {
+                            var id = p ? p - 1 : _id, title = medialist.eq(id).find(".player-auxiliary-playlist-item-title").attr("title") || "unknown";
                             return "".concat(_main_title, " P").concat(id + 1, " （").concat(title, "）").replace(/[\/\\:*?"<>|]+/g, "");
                         },
-                        aid: function aid(_p) {
-                            var id = _p ? _p - 1 : _id;
+                        aid: function aid(p) {
+                            var id = p ? p - 1 : _id;
                             return medialist.eq(id).attr("data-aid");
                         },
-                        bvid: function bvid(_p) {
-                            var id = _p ? _p - 1 : _id;
+                        bvid: function bvid(p) {
+                            var id = p ? p - 1 : _id;
                             return medialist.eq(id).attr("data-bvid");
                         },
                         p: function p() {
                             return _id + 1;
                         },
-                        cid: function cid(_p) {
-                            var id = _p ? _p - 1 : _id;
+                        cid: function cid(p) {
+                            var id = p ? p - 1 : _id;
                             return medialist.eq(id).attr("data-cid");
                         },
                         epid: function epid() {
                             return "";
                         },
-                        need_vip: function need_vip() {
+                        need_vip: function need_vip(p) {
                             return !1;
                         },
                         vip_need_pay: function vip_need_pay() {
@@ -1019,87 +1025,140 @@
                     };
                 }
                 if ("bangumi" === _type) {
-                    var _state = window.__INITIAL_STATE__, _main_title2 = (_state.mediaInfo.season_title || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                    if (window.__INITIAL_STATE__) {
+                        var _state2 = window.__INITIAL_STATE__, _main_title3 = (_state2.mediaInfo.season_title || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                        return {
+                            type: "bangumi",
+                            name: _main_title3,
+                            total: function total() {
+                                return _state2.epList.length;
+                            },
+                            title: function title(p) {
+                                var ep = p ? _state2.epList[p - 1] : _state2.epInfo;
+                                return "".concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, "");
+                            },
+                            filename: function filename(p) {
+                                if (p) {
+                                    var ep = _state2.epList[p - 1];
+                                    return "".concat(_main_title3, "：").concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, "");
+                                }
+                                return (_state2.h1Title || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                            },
+                            aid: function aid(p) {
+                                return p ? _state2.epList[p - 1].aid : _state2.epInfo.aid;
+                            },
+                            bvid: function bvid(p) {
+                                return p ? _state2.epList[p - 1].bvid : _state2.epInfo.bvid;
+                            },
+                            p: function p() {
+                                return _state2.epInfo.i || 1;
+                            },
+                            cid: function cid(p) {
+                                return p ? _state2.epList[p - 1].cid : _state2.epInfo.cid;
+                            },
+                            epid: function epid(p) {
+                                return p ? _state2.epList[p - 1].id : _state2.epInfo.id;
+                            },
+                            need_vip: function need_vip() {
+                                return "会员" === _state2.epInfo.badge;
+                            },
+                            vip_need_pay: function vip_need_pay() {
+                                return _state2.epPayMent.vipNeedPay;
+                            },
+                            is_limited: function is_limited() {
+                                return _state2.userState.areaLimit;
+                            }
+                        };
+                    }
+                    var epid, queries = __NEXT_DATA__.props.pageProps.dehydratedState.queries, mediaInfo = queries[0].state.data.mediaInfo, historyEpId = queries[1].state.data.userInfo.history.epId, _main_title2 = mediaInfo.season_title, episodes = mediaInfo.episodes;
+                    epid = location.pathname.startsWith("/bangumi/play/ss") ? parseInt(historyEpId) : (epid = location.pathname.match(/ep(\d+)/)) ? parseInt(epid[1]) : 0;
+                    for (var _id2 = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
+                        _id2 = i;
+                        break;
+                    }
+                    var _state = {
+                        epList: episodes,
+                        epInfo: episodes[_id2]
+                    };
                     return {
                         type: "bangumi",
                         name: _main_title2,
                         total: function total() {
                             return _state.epList.length;
                         },
-                        title: function title(_p) {
-                            var ep = _p ? _state.epList[_p - 1] : _state.epInfo;
-                            return "".concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, "");
+                        title: function title(p) {
+                            var ep = p ? _state.epList[p - 1] : _state.epInfo;
+                            return "".concat(ep.titleFormat, " ").concat(ep.long_title).replace(/[\/\\:*?"<>|]+/g, "");
                         },
-                        filename: function filename(_p) {
-                            if (_p) {
-                                var ep = _state.epList[_p - 1];
-                                return "".concat(_main_title2, "：").concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, "");
-                            }
-                            return (_state.h1Title || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                        filename: function filename(p) {
+                            var ep = p ? _state.epList[p - 1] : _state.epInfo;
+                            return "".concat(_main_title2, "：").concat(ep.titleFormat, " ").concat(ep.long_title).replace(/[\/\\:*?"<>|]+/g, "");
                         },
-                        aid: function aid(_p) {
-                            return _p ? _state.epList[_p - 1].aid : _state.epInfo.aid;
+                        aid: function aid(p) {
+                            return p ? _state.epList[p - 1].aid : _state.epInfo.aid;
                         },
-                        bvid: function bvid(_p) {
-                            return _p ? _state.epList[_p - 1].bvid : _state.epInfo.bvid;
-                        },
-                        p: function p() {
-                            return _state.epInfo.i || 1;
-                        },
-                        cid: function cid(_p) {
-                            return _p ? _state.epList[_p - 1].cid : _state.epInfo.cid;
-                        },
-                        epid: function epid(_p) {
-                            return _p ? _state.epList[_p - 1].id : _state.epInfo.id;
-                        },
-                        need_vip: function need_vip() {
-                            return "会员" === _state.epInfo.badge;
-                        },
-                        vip_need_pay: function vip_need_pay() {
-                            return _state.epPayMent.vipNeedPay;
-                        },
-                        is_limited: function is_limited() {
-                            return _state.userState.areaLimit;
-                        }
-                    };
-                }
-                if ("cheese" === _type) {
-                    var epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1];
-                    window.bp_episodes || (window.bp_episodes = [], api.get_season(epid));
-                    for (var episodes = window.bp_episodes, _id2 = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
-                        _id2 = i;
-                        break;
-                    }
-                    var _main_title3 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
-                    return {
-                        type: "cheese",
-                        name: _main_title3,
-                        total: function total() {
-                            return episodes.length;
-                        },
-                        title: function title(_p) {
-                            return (episodes[_p ? _p - 1 : _id2].title || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
-                        },
-                        filename: function filename(_p) {
-                            var id = _p ? _p - 1 : _id2;
-                            return "".concat(_main_title3, " P").concat(id + 1, " （").concat(episodes[id].title || "unknown", "）").replace(/[\/\\:*?"<>|]+/g, "");
-                        },
-                        aid: function aid(_p) {
-                            return episodes[_p ? _p - 1 : _id2].aid;
-                        },
-                        bvid: function bvid() {
-                            return "";
+                        bvid: function bvid(p) {
+                            return p ? _state.epList[p - 1].bvid : _state.epInfo.bvid;
                         },
                         p: function p() {
                             return _id2 + 1;
                         },
-                        cid: function cid(_p) {
-                            return episodes[_p ? _p - 1 : _id2].cid;
+                        cid: function cid(p) {
+                            return p ? _state.epList[p - 1].cid : _state.epInfo.cid;
                         },
-                        epid: function epid(_p) {
-                            return episodes[_p ? _p - 1 : _id2].id;
+                        epid: function epid(p) {
+                            return p ? _state.epList[p - 1].id : _state.epInfo.id;
                         },
-                        need_vip: function need_vip() {
+                        need_vip: function need_vip(p) {
+                            return "会员" === _state.epList[p - 1].badge;
+                        },
+                        vip_need_pay: function vip_need_pay(p) {
+                            return "付费" === _state.epList[p - 1].badge;
+                        },
+                        is_limited: function is_limited() {
+                            return !!mediaInfo.user_status.area_limit;
+                        }
+                    };
+                }
+                if ("cheese" === _type) {
+                    var _epid, sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
+                    sid || (_epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
+                    window.bp_episodes || (window.bp_episodes = [], api.get_season(sid, _epid));
+                    for (var _episodes = window.bp_episodes, _id3 = 0, _i = 0; _i < _episodes.length; _i++) if (_episodes[_i].id == _epid) {
+                        _id3 = _i;
+                        break;
+                    }
+                    var _main_title4 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                    return {
+                        type: "cheese",
+                        name: _main_title4,
+                        total: function total() {
+                            return _episodes.length;
+                        },
+                        title: function title(p) {
+                            var id = p ? p - 1 : id;
+                            return (_episodes[id].title || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                        },
+                        filename: function filename(p) {
+                            var id = p ? p - 1 : _id3;
+                            return "".concat(_main_title4, " P").concat(id + 1, " （").concat(_episodes[id].title || "unknown", "）").replace(/[\/\\:*?"<>|]+/g, "");
+                        },
+                        aid: function aid(p) {
+                            return _episodes[p ? p - 1 : _id3].aid;
+                        },
+                        bvid: function bvid(p) {
+                            return "";
+                        },
+                        p: function p() {
+                            return _id3 + 1;
+                        },
+                        cid: function cid(p) {
+                            return _episodes[p ? p - 1 : _id3].cid;
+                        },
+                        epid: function epid(p) {
+                            return _episodes[p ? p - 1 : _id3].id;
+                        },
+                        need_vip: function need_vip(p) {
                             return !1;
                         },
                         vip_need_pay: function vip_need_pay() {
@@ -1116,25 +1175,28 @@
                     total: function total() {
                         return 0;
                     },
-                    title: function title(_p) {
+                    title: function title(p) {
                         return "";
                     },
-                    filename: function filename(_p) {
+                    filename: function filename(p) {
                         return "";
                     },
-                    aid: function aid(_p) {
+                    aid: function aid(p) {
+                        return "";
+                    },
+                    bvid: function bvid(p) {
                         return "";
                     },
                     p: function p() {
                         return 1;
                     },
-                    cid: function cid(_p) {
+                    cid: function cid(p) {
                         return "";
                     },
-                    epid: function epid(_p) {
+                    epid: function epid(p) {
                         return "";
                     },
-                    need_vip: function need_vip() {
+                    need_vip: function need_vip(p) {
                         return !1;
                     },
                     vip_need_pay: function vip_need_pay() {
@@ -1175,9 +1237,9 @@
                 return quality_list.length ? quality_list : [ "80", "64", "32", "16" ];
             }
         }, runtime_lib = __webpack_require__(711);
-        function request_danmaku(options, _cid) {
-            _cid ? (0, ajax.h)({
-                url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(_cid),
+        function request_danmaku(options, cid) {
+            cid ? (0, ajax.h)({
+                url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(cid),
                 dataType: "text"
             }).then((function(result) {
                 var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ""));
@@ -1214,7 +1276,7 @@
                 bili_video && bili_video.removeEventListener("play", bili_video_stop, !1), window.bp_dplayer.destroy(), 
                 window.bp_dplayer = null, $("#bp_dplayer").remove(), window.bp_dplayer_2 && (window.bp_dplayer_2.destroy(), 
                 window.bp_dplayer_2 = null, $("#bp_dplayer_2").remove()), $(function get_bili_player_id() {
-                    return $("#bilibiliPlayer")[0] ? "#bilibiliPlayer" : $("#bilibili-player")[0] ? "#bilibili-player" : "cheese" === video.type() ? $('div.bpx-player[data-injector="nano"]')[0] ? 'div.bpx-player[data-injector="nano"]' : "#pay-mask" : void 0;
+                    return $("#bilibiliPlayer")[0] ? "#bilibiliPlayer" : $("#bilibili-player")[0] ? "#bilibili-player" : $("#edu-player")[0] ? "div.bpx-player-primary-area" : void 0;
                 }()).show();
             }
         }
@@ -1232,10 +1294,9 @@
                 $("#bilibiliPlayer")[0] ? (bili_player_id = "#bilibiliPlayer", $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">'), 
                 $(bili_player_id).hide()) : $("#bilibili-player")[0] ? (bili_player_id = "#bilibili-player", 
                 $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>'), 
-                $(bili_player_id).hide()) : "cheese" === video.type() && ($('div.bpx-player[data-injector="nano"]')[0] ? ($("#pay-mask").hide(), 
-                $("#bofqi").show(), bili_player_id = 'div.bpx-player[data-injector="nano"]', $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>'), 
-                $(bili_player_id).hide()) : (bili_player_id = "#pay-mask", $(bili_player_id).html('<div id="bp_dplayer" style="width:100%;height:100%;"></div>'))), 
-                $("#player_mask_module").hide(), api.get_subtitle_url(0, (function dplayer_init() {
+                $(bili_player_id).hide()) : $("#edu-player")[0] && (bili_player_id = ".bpx-player-primary-area", 
+                $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>'), 
+                $(bili_player_id).hide()), $("#player_mask_module").hide(), api.get_subtitle_url(0, (function dplayer_init() {
                     var subtitle_url = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
                     if (window.bp_dplayer = new runtime_lib.bc({
                         container: $("#bp_dplayer")[0],
@@ -1851,6 +1912,37 @@
                 }));
             }
         };
+        function initConfig(el) {
+            var options = '<option value="0">关闭</option>';
+            for (var k in hostMap) options += '<option value="'.concat(k, '">').concat(hostMap[k], "</option>");
+            for (var _k in config = config.replace("{{host_key_options}}", options), options = '<option value="0">与播放器相同</option>', 
+            videoQualityMap) options += '<option value="'.concat(_k, '">').concat(videoQualityMap[_k], "</option>");
+            config = config.replace("{{video_quality_options}}", options), el && $(el)[0] ? $(el).append(config) : $("body").append(config);
+            var config_str = store.get("config_str");
+            if (config_str) try {
+                var old_config = JSON.parse(config_str);
+                for (var key in old_config) Object.hasOwnProperty.call(config_config, key) && (config_config[key] = old_config[key]);
+            } catch (_unused) {
+                console.log("初始化脚本配置");
+            }
+            config_config.auth = store.get("auth_id") ? "1" : "0", store.set("config_str", JSON.stringify(config_config));
+            var _loop = function _loop(_key2) {
+                if ("auth" === _key2) return "continue";
+                $("#".concat(_key2)).on("input", (function(e) {
+                    config_config[_key2] = e.delegateTarget.value;
+                }));
+            };
+            for (var _key2 in config_config) _loop(_key2);
+            for (var _k2 in config_functions) {
+                var e = $("#".concat(_k2))[0];
+                e && (e.onclick = config_functions[_k2]);
+            }
+            for (var _key3 in config_config) $("#".concat(_key3)).val(config_config[_key3]);
+            window.onbeforeunload = function() {
+                var bp_aria2_window = window.bp_aria2_window;
+                bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
+            };
+        }
         function auth_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
@@ -1990,7 +2082,39 @@
                     }));
                 }
             } ]), Auth;
-        }(), auth = new Auth;
+        }(), auth = new Auth, btn_list = {
+            setting_btn: "脚本设置",
+            bilibili_parse: "请求地址",
+            video_download: "下载视频",
+            video_download_2: "下载音频",
+            video_download_all: "批量下载",
+            more: {
+                download_danmaku: "下载弹幕",
+                download_subtitle: "下载字幕"
+            }
+        }, download_svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">\n        <path fill="#757575" d="M16.015,0C7.186,0,0.03,7.157,0.03,15.985 S7.186,31.97,16.015,31.97S32,24.814,32,15.985S24.843,0,16.015,0z"/>\n        <path style="fill:#FFFFFF;" d="M16.942,23.642H9.109C8.496,23.642,8,24.17,8,24.821v0C8,25.472,8.496,26,9.109,26h14.783 C24.504,26,25,25.472,25,24.821v0c0-0.651-0.496-1.179-1.109-1.179H16.942z"/>\n        <path style="fill:#FFFFFF;" d="M8.798,16.998l6.729,6.33c0.398,0.375,1.029,0.375,1.427,0l6.729-6.33 c0.666-0.627,0.212-1.726-0.714-1.726h-3.382c-0.568,0-1.028-0.449-1.028-1.003V8.003C18.56,7.449,18.099,7,17.532,7h-2.582 c-0.568,0-1.028,0.449-1.028,1.003v6.266c0,0.554-0.46,1.003-1.028,1.003H9.511C8.586,15.273,8.132,16.372,8.798,16.998z"/>\n    </svg>', svg_map = {
+            setting_btn: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">\n        <path fill="#757575" style="stroke-miterlimit:10;" d="M16,29.5L16,29.5c-0.828,0-1.5-0.672-1.5-1.5V4c0-0.828,0.672-1.5,1.5-1.5h0 c0.828,0,1.5,0.672,1.5,1.5v24C17.5,28.828,16.828,29.5,16,29.5z"/>\n        <path fill="#757575" style="stroke-miterlimit:10;" d="M29.5,16L29.5,16c0,0.828-0.672,1.5-1.5,1.5H4c-0.828,0-1.5-0.672-1.5-1.5v0 c0-0.828,0.672-1.5,1.5-1.5h24C28.828,14.5,29.5,15.172,29.5,16z"/>\n    </svg>',
+            bilibili_parse: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">\n        <path fill="#757575" d="M28.282,13.508c-0.623-6.932-6.627-12.036-13.41-11.399C8.947,2.665,4.254,7.465,3.716,13.521 c0.786,0.404,1.283,1.226,1.284,2.126v4.157c-0.023,0.565-0.49,1.004-1.043,0.98c-0.521-0.022-0.938-0.448-0.959-0.98v-4.157 c0-0.188-0.113-0.452-0.508-0.452s-0.492,0.275-0.492,0.452v8.176c0,2.446,1.94,4.428,4.333,4.428c0,0,0,0,0,0h7.191 c0.552-1.396,2.107-2.07,3.473-1.505s2.025,2.154,1.473,3.549c-0.552,1.396-2.107,2.07-3.473,1.505 c-0.67-0.277-1.202-0.82-1.473-1.505h-7.19c-3.497,0-6.332-2.897-6.333-6.471l0,0v-8.178c0-1.077,0.706-2.02,1.723-2.303C2.429,5.285,9.393-0.662,17.278,0.059c6.952,0.636,12.445,6.297,13.009,13.407c1.032,0.404,1.713,1.416,1.712,2.545v4.088 c-0.038,1.505-1.262,2.694-2.735,2.656c-1.42-0.037-2.562-1.205-2.599-2.656l0,0v-4.085C26.667,14.924,27.302,13.939,28.282,13.508zM11.334,14.653c-1.105,0-2-0.915-2-2.044s0.896-2.044,2-2.044l0,0c1.105,0,2,0.915,2,2.044S12.439,14.653,11.334,14.653z M20.666,14.653c-1.105,0-2-0.915-2-2.044s0.896-2.044,2-2.044l0,0c1.105,0,2,0.915,2,2.044S21.771,14.653,20.666,14.653z M13.629,21.805c-2.167,0-3.962-1.653-3.962-3.748c0-0.564,0.448-1.022,1-1.022c0.552,0,1,0.458,1,1.022 c0,0.916,0.856,1.704,1.962,1.704c0.612,0.012,1.198-0.253,1.602-0.723c0.352-0.433,0.982-0.493,1.406-0.132 c0,0,0.001,0.001,0.001,0.001c0.047,0.039,0.09,0.083,0.128,0.131c0.404,0.47,0.99,0.734,1.602,0.723 c1.106,0,1.964-0.788,1.964-1.704c0-0.564,0.448-1.022,1-1.022c0.552,0,1,0.458,1,1.022c0,2.095-1.797,3.748-3.964,3.748 c-0.844,0.003-1.67-0.256-2.368-0.742C15.302,21.55,14.475,21.809,13.629,21.805z M29.332,15.333c-0.368,0-0.666,0.305-0.666,0.68 v4.088c-0.001,0.376,0.297,0.681,0.665,0.681c0.368,0.001,0.666-0.304,0.666-0.679c0-0.001,0-0.001,0-0.002v-4.088 c0.002-0.374-0.293-0.678-0.659-0.68c-0.001,0-0.002,0-0.003,0H29.332z"/>\n    </svg>',
+            video_download: download_svg,
+            video_download_2: download_svg,
+            video_download_all: download_svg
+        };
+        function make_toolbar_bangumi(main_class_name, sub_class_names) {
+            var toolbar_elements = Object.keys(btn_list).map((function(key) {
+                if ("more" === key) {
+                    var more_map = btn_list[key];
+                    return "" + '<div class="more">更多<div class="more-ops-list">\n                    <ul>'.concat(Object.keys(more_map).map((function(key) {
+                        return function more_element(id, name) {
+                            return '<li><span id="'.concat(id, '">').concat(name, "</span></li>");
+                        }(key, more_map[key]);
+                    })).join(""), "</ul>\n                </div>");
+                }
+                return function list_element(id, class_names, svg, name) {
+                    return "" + '<div id="'.concat(id, '" mr-show="" class="').concat(class_names[0], '">\n                <span class="').concat(class_names[1], '">\n                    ').concat(svg, '\n                </span>\n                <span class="').concat(class_names[2], '">').concat(name, "</span>\n            </div>");
+                }(key, sub_class_names, svg_map[key], btn_list[key]);
+            })).join("");
+            return "" + '<div class="'.concat(main_class_name, '">\n            ').concat(toolbar_elements, "\n            <style>\n            .").concat(main_class_name, " .more {\n              float: right;\n              padding: 15px;\n              cursor: pointer;\n              color: #757575;\n              font-size: 16px;\n              transition: all .3s;\n              position: relative;\n              text-align: center\n            }\n\n            .").concat(main_class_name, " .more:hover .more-ops-list {\n              display: block\n            }\n\n            .").concat(main_class_name, ':after {\n              display: block;\n              content: "";\n              clear: both\n            }\n\n            .more-ops-list {\n              display: none;\n              position: absolute;\n              width: 80px;\n              left: -15px;\n              z-index: 30;\n              text-align: center;\n              padding: 10px 0;\n              background: #fff;\n              border: 1px solid #e5e9ef;\n              box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n              border-radius: 2px;\n              font-size: 14px;\n              color: #222\n            }\n\n            .more-ops-list li {\n              position: relative;\n              height: 34px;\n              line-height: 34px;\n              cursor: pointer;\n              transition: all .3s\n            }\n\n            .more-ops-list li:hover {\n              color: #00a1d6;\n              background: #e7e7e7\n            }\n          </style>\n        </div>');
+        }
         function main_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
@@ -2002,7 +2126,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.11", " ").concat("72a359c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.3.12", " ").concat("5f0de97", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2010,47 +2134,32 @@
                     writable: !1
                 }), Constructor;
             }(Main, [ {
-                key: "set_toolbar",
-                value: function set_toolbar() {
-                    $("#arc_toolbar_report")[0] ? $("#arc_toolbar_report").after('<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true"> <div class="ops"> <span id="setting_btn"> <i class="van-icon-general_addto_s"></i>脚本设置 </span> <span id="bilibili_parse"> <i class="van-icon-floatwindow_custome"></i>请求地址 </span> <span id="video_download" style="display:none"> <i class="van-icon-download"></i>下载视频 </span> <span id="video_download_2" style="display:none"> <i class="van-icon-download"></i>下载音频 </span> <span id="video_download_all"> <i class="van-icon-download"></i>批量下载 </span> </div> <div class="more"> <i class="van-icon-general_moreactions"></i> <div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> </div> ') : $("#toolbar_module")[0] ? $("#toolbar_module").after('<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true"> <div id="setting_btn" class="like-info"> <i class="iconfont icon-add"></i><span>脚本设置</span> </div> <div id="bilibili_parse" class="like-info"> <i class="iconfont icon-customer-serv"></i><span>请求地址</span> </div> <div id="video_download" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载视频</span> </div> <div id="video_download_2" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载音频</span> </div> <div id="video_download_all" class="like-info"> <i class="iconfont icon-download"></i><span>批量下载</span> </div> <div class="more">更多<div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:"";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ') : $("div.video-toolbar")[0] && $("div.video-toolbar").after('<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true"> <div class="ops"> <span id="setting_btn"> <i class="van-icon-general_addto_s"></i>脚本设置 </span> <span id="bilibili_parse"> <i class="van-icon-floatwindow_custome"></i>请求地址 </span> <span id="video_download" style="display:none"> <i class="van-icon-download"></i>下载视频 </span> <span id="video_download_2" style="display:none"> <i class="van-icon-download"></i>下载音频 </span> <span id="video_download_all"> <i class="van-icon-download"></i>批量下载 </span> </div> <div class="more"> <i class="van-icon-general_moreactions"></i> <div class="more-ops-list"> <ul class="more-ops-list-box"> <li class="more-ops-list-box-li"> <span id="download_danmaku">下载弹幕</span> </li> <li class="more-ops-list-box-li"> <span id="download_subtitle">下载字幕</span> </li> </ul> </div> </div> </div> ');
+                key: "init",
+                value: function init() {
+                    !function initToolbar() {
+                        if ($("#arc_toolbar_report")[0]) $("#arc_toolbar_report").after('<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true"> <div class="ops"> <span id="setting_btn"> <i class="van-icon-general_addto_s"></i>脚本设置 </span> <span id="bilibili_parse"> <i class="van-icon-floatwindow_custome"></i>请求地址 </span> <span id="video_download" style="display:none"> <i class="van-icon-download"></i>下载视频 </span> <span id="video_download_2" style="display:none"> <i class="van-icon-download"></i>下载音频 </span> <span id="video_download_all"> <i class="van-icon-download"></i>批量下载 </span> </div> <div class="more"> <i class="van-icon-general_moreactions"></i> <div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> </div> '); else if ($("#toolbar_module")[0]) $("#toolbar_module").after('<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true"> <div id="setting_btn" class="like-info"> <i class="iconfont icon-add"></i><span>脚本设置</span> </div> <div id="bilibili_parse" class="like-info"> <i class="iconfont icon-customer-serv"></i><span>请求地址</span> </div> <div id="video_download" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载视频</span> </div> <div id="video_download_2" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载音频</span> </div> <div id="video_download_all" class="like-info"> <i class="iconfont icon-download"></i><span>批量下载</span> </div> <div class="more">更多<div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:"";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> '); else if ($("div.video-toolbar")[0]) $("div.video-toolbar").after('<div id="arc_toolbar_report_2" style="margin-top:16px" class="video-toolbar report-wrap-module report-scroll-module" scrollshow="true"> <div class="ops"> <span id="setting_btn"> <i class="van-icon-general_addto_s"></i>脚本设置 </span> <span id="bilibili_parse"> <i class="van-icon-floatwindow_custome"></i>请求地址 </span> <span id="video_download" style="display:none"> <i class="van-icon-download"></i>下载视频 </span> <span id="video_download_2" style="display:none"> <i class="van-icon-download"></i>下载音频 </span> <span id="video_download_all"> <i class="van-icon-download"></i>批量下载 </span> </div> <div class="more"> <i class="van-icon-general_moreactions"></i> <div class="more-ops-list"> <ul class="more-ops-list-box"> <li class="more-ops-list-box-li"> <span id="download_danmaku">下载弹幕</span> </li> <li class="more-ops-list-box-li"> <span id="download_subtitle">下载字幕</span> </li> </ul> </div> </div> </div> '); else if ($(".player-left-components")[0]) {
+                            var toolbar_obj = $(".player-left-components").children().eq(0), toolbar_class = toolbar_obj.attr("class"), span_class = toolbar_obj.children().eq(0).attr("class"), span_class_svg = toolbar_obj.children().eq(0).children().eq(0).attr("class"), span_class_test = toolbar_obj.children().eq(0).children().eq(1).attr("class");
+                            toolbar_obj.after(make_toolbar_bangumi(toolbar_class, [ span_class, span_class_svg, span_class_test ]));
+                        } else if ($(".edu-play-left")[0]) {
+                            var _toolbar_obj = $(".edu-play-left").children().eq(1), _toolbar_class = _toolbar_obj.attr("class"), _span_class = _toolbar_obj.children().eq(0).attr("class"), _span_class_svg = _toolbar_obj.children().eq(0).children().eq(0).attr("class"), _span_class_test = _toolbar_obj.children().eq(0).children().eq(1).attr("class");
+                            _toolbar_obj.after(make_toolbar_bangumi(_toolbar_class, [ _span_class, _span_class_svg, _span_class_test ]));
+                        }
+                    }();
+                    var root_div = document.createElement("div");
+                    root_div.id = "bp_root", document.body.append(root_div), initConfig("#".concat(root_div.id)), 
+                    (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), auth.initAuth(), auth.checkLoginStatus(), 
+                    check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
+                    $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
+                    $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
                 }
             }, {
                 key: "run",
                 value: function run() {
-                    this.set_toolbar();
+                    this.init();
                     var api_url, api_url_temp, root_div = document.createElement("div");
-                    root_div.id = "bp_root", document.body.append(root_div), function initConfig(el) {
-                        var options = '<option value="0">关闭</option>';
-                        for (var k in hostMap) options += '<option value="'.concat(k, '">').concat(hostMap[k], "</option>");
-                        for (var _k in config = config.replace("{{host_key_options}}", options), options = '<option value="0">与播放器相同</option>', 
-                        videoQualityMap) options += '<option value="'.concat(_k, '">').concat(videoQualityMap[_k], "</option>");
-                        config = config.replace("{{video_quality_options}}", options), el && $(el)[0] ? $(el).append(config) : $("body").append(config);
-                        var config_str = store.get("config_str");
-                        if (config_str) try {
-                            var old_config = JSON.parse(config_str);
-                            for (var key in old_config) Object.hasOwnProperty.call(config_config, key) && (config_config[key] = old_config[key]);
-                        } catch (_unused) {
-                            console.log("初始化脚本配置");
-                        }
-                        config_config.auth = store.get("auth_id") ? "1" : "0", store.set("config_str", JSON.stringify(config_config));
-                        var _loop = function _loop(_key2) {
-                            if ("auth" === _key2) return "continue";
-                            $("#".concat(_key2)).on("input", (function(e) {
-                                config_config[_key2] = e.delegateTarget.value;
-                            }));
-                        };
-                        for (var _key2 in config_config) _loop(_key2);
-                        for (var _k2 in config_functions) {
-                            var e = $("#".concat(_k2))[0];
-                            e && (e.onclick = config_functions[_k2]);
-                        }
-                        for (var _key3 in config_config) $("#".concat(_key3)).val(config_config[_key3]);
-                        window.onbeforeunload = function() {
-                            var bp_aria2_window = window.bp_aria2_window;
-                            bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
-                        };
-                    }("#".concat(root_div.id)), (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), 
-                    auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
+                    root_div.id = "bp_root", document.body.append(root_div), initConfig("#".concat(root_div.id)), 
+                    (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), auth.initAuth(), auth.checkLoginStatus(), 
+                    check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
                     $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
                     $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
                     var e = {

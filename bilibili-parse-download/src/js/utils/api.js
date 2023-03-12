@@ -214,9 +214,13 @@ function get_subtitle_url(p, callback) {
     _get_subtitle(p, callback, true)
 }
 
-function get_season(epid) {
+function get_season(sid, epid) {
+    if (!sid && !epid) {
+        console.log('get_season error')
+        return
+    }
     ajax({
-        url: `https://api.bilibili.com/pugv/view/web/season?ep_id=${epid}`,
+        url: `https://api.bilibili.com/pugv/view/web/season?season_id=${sid || ''}&ep_id=${epid || ''}`,
         xhrFields: { withCredentials: true },
         dataType: 'json'
     }).then(res => {

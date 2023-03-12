@@ -498,26 +498,11 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 !function() {
 /*!**************************************!*\
-  !*** ./src/js/index.js + 14 modules ***!
+  !*** ./src/js/index.js + 15 modules ***!
   \**************************************/
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
-;// CONCATENATED MODULE: ./src/html/arc_toolbar.html
-// Module
-var code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
-// Exports
-/* harmony default export */ var arc_toolbar = (code);
-;// CONCATENATED MODULE: ./src/html/toolbar.html
-// Module
-var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\n  scrollshow=\"true\">\n  <div id=\"setting_btn\" class=\"like-info\">\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\n  </div>\n  <div id=\"bilibili_parse\" class=\"like-info\">\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\n  </div>\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\n  </div>\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\n  </div>\n  <div id=\"video_download_all\" class=\"like-info\">\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\n  </div>\n  <div class=\"more\">更多<div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n  <style>\n    .tool-bar .more {\n      float: right;\n      cursor: pointer;\n      color: #757575;\n      font-size: 16px;\n      transition: all .3s;\n      position: relative;\n      text-align: center\n    }\n\n    .tool-bar .more:hover .more-ops-list {\n      display: block\n    }\n\n    .tool-bar:after {\n      display: block;\n      content: \"\";\n      clear: both\n    }\n\n    .more-ops-list {\n      display: none;\n      position: absolute;\n      width: 80px;\n      left: -65px;\n      z-index: 30;\n      text-align: center;\n      padding: 10px 0;\n      background: #fff;\n      border: 1px solid #e5e9ef;\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n      border-radius: 2px;\n      font-size: 14px;\n      color: #222\n    }\n\n    .more-ops-list li {\n      position: relative;\n      height: 34px;\n      line-height: 34px;\n      cursor: pointer;\n      transition: all .3s\n    }\n\n    .more-ops-list li:hover {\n      color: #00a1d6;\n      background: #e7e7e7\n    }\n  </style>\n</div>\n";
-// Exports
-/* harmony default export */ var toolbar = (toolbar_code);
-;// CONCATENATED MODULE: ./src/html/video_toolbar.html
-// Module
-var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
-// Exports
-/* harmony default export */ var video_toolbar = (video_toolbar_code);
 ;// CONCATENATED MODULE: ./src/js/user.js
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -876,9 +861,14 @@ function get_subtitle_url(p, callback) {
   _get_subtitle(p, callback, true);
 }
 
-function get_season(epid) {
+function get_season(sid, epid) {
+  if (!sid && !epid) {
+    console.log('get_season error');
+    return;
+  }
+
   (0,ajax.ajax)({
-    url: "https://api.bilibili.com/pugv/view/web/season?ep_id=".concat(epid),
+    url: "https://api.bilibili.com/pugv/view/web/season?season_id=".concat(sid || '', "&ep_id=").concat(epid || ''),
     xhrFields: {
       withCredentials: true
     },
@@ -912,21 +902,22 @@ var api = {
 
 
 
+var routerMap = {
+  video: '/video/',
+  bangumi: '/bangumi/play/',
+  // ss / ep
+  medialist: '/medialist/play/',
+  cheese: '/cheese/play/'
+};
 
 function type() {
-  if (location.pathname.match('/cheese/play/')) {
-    return 'cheese';
-  } else if (location.pathname.match('/medialist/play/')) {
-    // -/ml*/* or -/watchlater/*
-    return 'medialist';
-  } else if (!window.__INITIAL_STATE__) {
-    // todo
-    return '?';
-  } else if (!!window.__INITIAL_STATE__.epInfo) {
-    return 'bangumi';
-  } else if (!!window.__INITIAL_STATE__.videoData) {
-    return 'video';
+  for (var key in routerMap) {
+    if (location.pathname.startsWith(routerMap[key])) {
+      return key;
+    }
   }
+
+  return '?';
 }
 
 function base() {
@@ -941,13 +932,13 @@ function base() {
       total: function total() {
         return state.videoData.pages.length || 1;
       },
-      title: function title(_p) {
-        var p = _p || state.p || 1;
-        return (state.videoData.pages[p - 1].part || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+      title: function title(p) {
+        var id = p || state.p || 1;
+        return (state.videoData.pages[id - 1].part || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
       },
-      filename: function filename(_p) {
-        var p = _p || state.p || 1;
-        var title = main_title + " P".concat(p, " \uFF08").concat(state.videoData.pages[p - 1].part || p, "\uFF09");
+      filename: function filename(p) {
+        var id = p || state.p || 1;
+        var title = main_title + " P".concat(p, " \uFF08").concat(state.videoData.pages[id - 1].part || p, "\uFF09");
         return title.replace(/[\/\\:*?"<>|]+/g, '');
       },
       aid: function aid() {
@@ -959,14 +950,14 @@ function base() {
       p: function p() {
         return state.p || 1;
       },
-      cid: function cid(_p) {
-        var p = _p || state.p || 1;
-        return state.videoData.pages[p - 1].cid;
+      cid: function cid(p) {
+        var id = p || state.p || 1;
+        return state.videoData.pages[id - 1].cid;
       },
       epid: function epid() {
         return '';
       },
-      need_vip: function need_vip() {
+      need_vip: function need_vip(p) {
         return false;
       },
       vip_need_pay: function vip_need_pay() {
@@ -991,35 +982,35 @@ function base() {
       total: function total() {
         return medialist.length;
       },
-      title: function title(_p) {
-        var id = _p ? _p - 1 : _id;
+      title: function title(p) {
+        var id = p ? p - 1 : _id;
         var title = medialist.eq(id).find('.player-auxiliary-playlist-item-title').attr('title') || 'unknown';
         return title.replace(/[\/\\:*?"<>|]+/g, '');
       },
-      filename: function filename(_p) {
-        var id = _p ? _p - 1 : _id;
+      filename: function filename(p) {
+        var id = p ? p - 1 : _id;
         var title = medialist.eq(id).find('.player-auxiliary-playlist-item-title').attr('title') || 'unknown';
         return "".concat(_main_title, " P").concat(id + 1, " \uFF08").concat(title, "\uFF09").replace(/[\/\\:*?"<>|]+/g, '');
       },
-      aid: function aid(_p) {
-        var id = _p ? _p - 1 : _id;
+      aid: function aid(p) {
+        var id = p ? p - 1 : _id;
         return medialist.eq(id).attr('data-aid');
       },
-      bvid: function bvid(_p) {
-        var id = _p ? _p - 1 : _id;
+      bvid: function bvid(p) {
+        var id = p ? p - 1 : _id;
         return medialist.eq(id).attr('data-bvid');
       },
       p: function p() {
         return _id + 1;
       },
-      cid: function cid(_p) {
-        var id = _p ? _p - 1 : _id;
+      cid: function cid(p) {
+        var id = p ? p - 1 : _id;
         return medialist.eq(id).attr('data-cid');
       },
       epid: function epid() {
         return '';
       },
-      need_vip: function need_vip() {
+      need_vip: function need_vip(p) {
         return false;
       },
       vip_need_pay: function vip_need_pay() {
@@ -1030,64 +1021,71 @@ function base() {
       }
     };
   } else if (_type === 'bangumi') {
-    var _state = window.__INITIAL_STATE__;
+    if (!!window.__INITIAL_STATE__) {
+      var _state2 = window.__INITIAL_STATE__;
 
-    var _main_title2 = (_state.mediaInfo.season_title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+      var _main_title3 = (_state2.mediaInfo.season_title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
 
-    return {
-      type: 'bangumi',
-      name: _main_title2,
-      total: function total() {
-        return _state.epList.length;
-      },
-      title: function title(_p) {
-        var ep = _p ? _state.epList[_p - 1] : _state.epInfo;
-        return "".concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, '');
-      },
-      filename: function filename(_p) {
-        if (_p) {
-          var ep = _state.epList[_p - 1];
-          return "".concat(_main_title2, "\uFF1A").concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, '');
+      return {
+        type: 'bangumi',
+        name: _main_title3,
+        total: function total() {
+          return _state2.epList.length;
+        },
+        title: function title(p) {
+          var ep = p ? _state2.epList[p - 1] : _state2.epInfo;
+          return "".concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, '');
+        },
+        filename: function filename(p) {
+          if (p) {
+            var ep = _state2.epList[p - 1];
+            return "".concat(_main_title3, "\uFF1A").concat(ep.titleFormat, " ").concat(ep.longTitle).replace(/[\/\\:*?"<>|]+/g, '');
+          }
+
+          return (_state2.h1Title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+        },
+        aid: function aid(p) {
+          return p ? _state2.epList[p - 1].aid : _state2.epInfo.aid;
+        },
+        bvid: function bvid(p) {
+          return p ? _state2.epList[p - 1].bvid : _state2.epInfo.bvid;
+        },
+        p: function p() {
+          return _state2.epInfo.i || 1;
+        },
+        cid: function cid(p) {
+          return p ? _state2.epList[p - 1].cid : _state2.epInfo.cid;
+        },
+        epid: function epid(p) {
+          return p ? _state2.epList[p - 1].id : _state2.epInfo.id;
+        },
+        need_vip: function need_vip() {
+          return _state2.epInfo.badge === '会员';
+        },
+        vip_need_pay: function vip_need_pay() {
+          return _state2.epPayMent.vipNeedPay;
+        },
+        is_limited: function is_limited() {
+          return _state2.userState.areaLimit;
         }
+      };
+    } // todo vue ?
 
-        return (_state.h1Title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
-      },
-      aid: function aid(_p) {
-        return _p ? _state.epList[_p - 1].aid : _state.epInfo.aid;
-      },
-      bvid: function bvid(_p) {
-        return _p ? _state.epList[_p - 1].bvid : _state.epInfo.bvid;
-      },
-      p: function p() {
-        return _state.epInfo.i || 1;
-      },
-      cid: function cid(_p) {
-        return _p ? _state.epList[_p - 1].cid : _state.epInfo.cid;
-      },
-      epid: function epid(_p) {
-        return _p ? _state.epList[_p - 1].id : _state.epInfo.id;
-      },
-      need_vip: function need_vip() {
-        return _state.epInfo.badge === '会员';
-      },
-      vip_need_pay: function vip_need_pay() {
-        return _state.epPayMent.vipNeedPay;
-      },
-      is_limited: function is_limited() {
-        return _state.userState.areaLimit;
-      }
-    };
-  } else if (_type === 'cheese') {
-    var epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1];
 
-    if (!window.bp_episodes) {
-      // todo: 异步如何处理？
-      window.bp_episodes = []; // ref check
+    var queries = __NEXT_DATA__.props.pageProps.dehydratedState.queries;
+    var mediaInfo = queries[0].state.data.mediaInfo;
+    var historyEpId = queries[1].state.data.userInfo.history.epId;
+    var _main_title2 = mediaInfo.season_title;
+    var episodes = mediaInfo.episodes;
+    var epid;
 
-      api.get_season(epid);
+    if (location.pathname.startsWith('/bangumi/play/ss')) {
+      epid = parseInt(historyEpId);
+    } else {
+      epid = location.pathname.match(/ep(\d+)/);
+      epid = epid ? parseInt(epid[1]) : 0;
     }
 
-    var episodes = window.bp_episodes;
     var _id2 = 0;
 
     for (var i = 0; i < episodes.length; i++) {
@@ -1097,41 +1095,107 @@ function base() {
       }
     }
 
-    var _main_title3 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
-
+    var _state = {
+      epList: episodes,
+      epInfo: episodes[_id2]
+    };
     return {
-      type: 'cheese',
-      name: _main_title3,
+      type: 'bangumi',
+      name: _main_title2,
       total: function total() {
-        return episodes.length;
+        return _state.epList.length;
       },
-      title: function title(_p) {
-        var id = _p ? _p - 1 : _id2;
-        return (episodes[id].title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+      title: function title(p) {
+        var ep = p ? _state.epList[p - 1] : _state.epInfo;
+        return "".concat(ep.titleFormat, " ").concat(ep.long_title).replace(/[\/\\:*?"<>|]+/g, '');
       },
-      filename: function filename(_p) {
-        var id = _p ? _p - 1 : _id2;
-        return "".concat(_main_title3, " P").concat(id + 1, " \uFF08").concat(episodes[id].title || 'unknown', "\uFF09").replace(/[\/\\:*?"<>|]+/g, '');
+      filename: function filename(p) {
+        var ep = p ? _state.epList[p - 1] : _state.epInfo;
+        return "".concat(_main_title2, "\uFF1A").concat(ep.titleFormat, " ").concat(ep.long_title).replace(/[\/\\:*?"<>|]+/g, '');
       },
-      aid: function aid(_p) {
-        var id = _p ? _p - 1 : _id2;
-        return episodes[id].aid;
+      aid: function aid(p) {
+        return p ? _state.epList[p - 1].aid : _state.epInfo.aid;
       },
-      bvid: function bvid() {
-        return '';
+      bvid: function bvid(p) {
+        return p ? _state.epList[p - 1].bvid : _state.epInfo.bvid;
       },
       p: function p() {
         return _id2 + 1;
       },
-      cid: function cid(_p) {
-        var id = _p ? _p - 1 : _id2;
-        return episodes[id].cid;
+      cid: function cid(p) {
+        return p ? _state.epList[p - 1].cid : _state.epInfo.cid;
       },
-      epid: function epid(_p) {
-        var id = _p ? _p - 1 : _id2;
-        return episodes[id].id;
+      epid: function epid(p) {
+        return p ? _state.epList[p - 1].id : _state.epInfo.id;
       },
-      need_vip: function need_vip() {
+      need_vip: function need_vip(p) {
+        return _state.epList[p - 1].badge === '会员';
+      },
+      vip_need_pay: function vip_need_pay(p) {
+        return _state.epList[p - 1].badge === '付费';
+      },
+      is_limited: function is_limited() {
+        return !!mediaInfo.user_status.area_limit;
+      }
+    };
+  } else if (_type === 'cheese') {
+    var sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1];
+
+    var _epid;
+
+    if (!sid) {
+      _epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1];
+    }
+
+    if (!window.bp_episodes) {
+      // todo
+      window.bp_episodes = []; // ref check
+
+      api.get_season(sid, _epid);
+    }
+
+    var _episodes = window.bp_episodes;
+    var _id3 = 0;
+
+    for (var _i = 0; _i < _episodes.length; _i++) {
+      if (_episodes[_i].id == _epid) {
+        _id3 = _i;
+        break;
+      }
+    }
+
+    var _main_title4 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+
+    return {
+      type: 'cheese',
+      name: _main_title4,
+      total: function total() {
+        return _episodes.length;
+      },
+      title: function title(p) {
+        var id = p ? p - 1 : id;
+        return (_episodes[id].title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+      },
+      filename: function filename(p) {
+        var id = p ? p - 1 : _id3;
+        return "".concat(_main_title4, " P").concat(id + 1, " \uFF08").concat(_episodes[id].title || 'unknown', "\uFF09").replace(/[\/\\:*?"<>|]+/g, '');
+      },
+      aid: function aid(p) {
+        return _episodes[p ? p - 1 : _id3].aid;
+      },
+      bvid: function bvid(p) {
+        return '';
+      },
+      p: function p() {
+        return _id3 + 1;
+      },
+      cid: function cid(p) {
+        return _episodes[p ? p - 1 : _id3].cid;
+      },
+      epid: function epid(p) {
+        return _episodes[p ? p - 1 : _id3].id;
+      },
+      need_vip: function need_vip(p) {
         return false;
       },
       vip_need_pay: function vip_need_pay() {
@@ -1149,25 +1213,28 @@ function base() {
       total: function total() {
         return 0;
       },
-      title: function title(_p) {
+      title: function title(p) {
         return '';
       },
-      filename: function filename(_p) {
+      filename: function filename(p) {
         return '';
       },
-      aid: function aid(_p) {
+      aid: function aid(p) {
+        return '';
+      },
+      bvid: function bvid(p) {
         return '';
       },
       p: function p() {
         return 1;
       },
-      cid: function cid(_p) {
+      cid: function cid(p) {
         return '';
       },
-      epid: function epid(_p) {
+      epid: function epid(p) {
         return '';
       },
-      need_vip: function need_vip() {
+      need_vip: function need_vip(p) {
         return false;
       },
       vip_need_pay: function vip_need_pay() {
@@ -1275,24 +1342,19 @@ function get_bili_player_id() {
     return '#bilibiliPlayer';
   } else if (!!$('#bilibili-player')[0]) {
     return '#bilibili-player';
-  } else if (video.type() === 'cheese') {
-    if (!!$('div.bpx-player[data-injector="nano"]')[0]) {
-      return 'div.bpx-player[data-injector="nano"]';
-    } else {
-      // first
-      return '#pay-mask';
-    }
+  } else if (!!$('#edu-player')[0]) {
+    return 'div.bpx-player-primary-area';
   }
 }
 
-function request_danmaku(options, _cid) {
-  if (!_cid) {
+function request_danmaku(options, cid) {
+  if (!cid) {
     options.error('cid未知，无法获取弹幕');
     return;
   }
 
   (0,ajax.ajax)({
-    url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(_cid),
+    url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(cid),
     dataType: 'text'
   }).then(function (result) {
     var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ''));
@@ -1353,18 +1415,10 @@ function replace_player(url, url_2) {
     bili_player_id = '#bilibili-player';
     $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>');
     $(bili_player_id).hide();
-  } else if (video.type() === 'cheese') {
-    if (!!$('div.bpx-player[data-injector="nano"]')[0]) {
-      $('#pay-mask').hide();
-      $('#bofqi').show();
-      bili_player_id = 'div.bpx-player[data-injector="nano"]';
-      $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>');
-      $(bili_player_id).hide();
-    } else {
-      // 第一次
-      bili_player_id = '#pay-mask';
-      $(bili_player_id).html('<div id="bp_dplayer" style="width:100%;height:100%;"></div>');
-    }
+  } else if (!!$('#edu-player')[0]) {
+    bili_player_id = '.bpx-player-primary-area';
+    $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>');
+    $(bili_player_id).hide();
   }
 
   $('#player_mask_module').hide();
@@ -2342,9 +2396,9 @@ var Download = {
 };
 ;// CONCATENATED MODULE: ./src/html/config.html
 // Module
-var config_code = "<div id=\"bp_config\">\n  <div class=\"config-mark\"></div>\n  <div class=\"config-bg\">\n    <span style=\"font-size: 20px\">\n      <b>bilibili视频下载 参数设置</b>\n      <b>\n        <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a>\n        <a style=\"text-decoration: underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a>\n      </b>\n    </span>\n    <div style=\"margin: 2% 0\">\n      <label>请求地址：</label>\n      <input id=\"base_api\" style=\"width: 30%\" />&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>请求方式：</label>\n      <select id=\"request_type\">\n        <option value=\"auto\">自动判断</option>\n        <option value=\"local\">本地请求</option>\n        <option value=\"online\">远程请求</option>\n      </select><br />\n      <small>注意：普通使用请勿修改；默认使用混合请求</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>视频格式：</label>\n      <select id=\"format\">\n        <option value=\"mp4\">MP4</option>\n        <option value=\"flv\">FLV</option>\n        <option value=\"dash\">DASH</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>切换CDN：</label>\n      <select id=\"host_key\">\n        {{host_key_options}}\n      </select><br />\n      <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>下载方式：</label>\n      <select id=\"download_type\">\n        <option value=\"a\">URL链接</option>\n        <option value=\"web\">Web浏览器</option>\n        <option value=\"blob\">Blob请求</option>\n        <option value=\"rpc\">RPC接口</option>\n        <option value=\"aria\">Aria命令</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>AriaNg地址：</label>\n      <input id=\"ariang_host\" style=\"width: 30%\" /><br />\n      <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />\n      <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width: 25%\" /> :\n      <input id=\"rpc_port\" placeholder=\"6800\" style=\"width: 10%\" /> |\n      <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width: 15%\" /> |\n      <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width: 20%\" /><br />\n      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>Aria参数：</label>\n      最大连接数：<select id=\"aria2c_connection_level\">\n        <option value=\"min\">1</option>\n        <option value=\"mid\">8</option>\n        <option value=\"max\">16</option>\n      </select><br />\n      <small>说明：用于配置Aria命令下载方式的参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>强制换源：</label>\n      <select id=\"replace_force\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕速度：</label>\n      <input id=\"danmaku_speed\" style=\"width: 5%\" /> s\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕字号：</label>\n      <input id=\"danmaku_fontsize\" style=\"width: 5%\" /> px<br />\n      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>自动下载：</label>\n      <select id=\"auto_download\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>视频质量：</label>\n      <select id=\"video_quality\">\n        {{video_quality_options}}\n      </select><br />\n      <small>说明：请求地址成功后将自动点击下载视频按钮</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>授权状态：</label>\n      <select id=\"auth\" disabled>\n        <option value=\"0\">未授权</option>\n        <option value=\"1\">已授权</option>\n      </select>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a>\n    </div>\n    <br />\n    <div style=\"text-align: right\">\n      <button class=\"setting-button\" id=\"save_config\">确定</button>\n    </div>\n  </div>\n\n  <style>\n    #bp_config {\n      opacity: 0;\n      display: none;\n      position: fixed;\n      inset: 0px;\n      top: 0px;\n      left: 0px;\n      width: 100%;\n      height: 100%;\n      z-index: 10000;\n    }\n\n    #bp_config .config-bg {\n      position: absolute;\n      background: rgb(255, 255, 255);\n      border-radius: 10px;\n      padding: 20px;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      width: 600px;\n      z-index: 10001;\n    }\n\n    #bp_config .config-mark {\n      width: 100%;\n      height: 100%;\n      position: fixed;\n      top: 0;\n      left: 0;\n      background: rgba(0, 0, 0, 0.5);\n      z-index: 10000;\n    }\n\n    #bp_config .setting-button {\n      width: 120px;\n      height: 40px;\n      border-width: 0px;\n      border-radius: 3px;\n      background: #1e90ff;\n      cursor: pointer;\n      outline: none;\n      color: white;\n      font-size: 17px;\n    }\n\n    #bp_config .setting-button:hover {\n      background: #5599ff;\n    }\n\n    #bp_config .setting-context {\n      margin: 0 1%;\n      color: blue;\n    }\n\n    #bp_config .setting-context:hover {\n      color: red;\n    }\n  </style>\n</div>\n";
+var code = "<div id=\"bp_config\">\n  <div class=\"config-mark\"></div>\n  <div class=\"config-bg\">\n    <span style=\"font-size: 20px\">\n      <b>bilibili视频下载 参数设置</b>\n      <b>\n        <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a>\n        <a style=\"text-decoration: underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a>\n      </b>\n    </span>\n    <div style=\"margin: 2% 0\">\n      <label>请求地址：</label>\n      <input id=\"base_api\" style=\"width: 30%\" />&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>请求方式：</label>\n      <select id=\"request_type\">\n        <option value=\"auto\">自动判断</option>\n        <option value=\"local\">本地请求</option>\n        <option value=\"online\">远程请求</option>\n      </select><br />\n      <small>注意：普通使用请勿修改；默认使用混合请求</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>视频格式：</label>\n      <select id=\"format\">\n        <option value=\"mp4\">MP4</option>\n        <option value=\"flv\">FLV</option>\n        <option value=\"dash\">DASH</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>切换CDN：</label>\n      <select id=\"host_key\">\n        {{host_key_options}}\n      </select><br />\n      <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>下载方式：</label>\n      <select id=\"download_type\">\n        <option value=\"a\">URL链接</option>\n        <option value=\"web\">Web浏览器</option>\n        <option value=\"blob\">Blob请求</option>\n        <option value=\"rpc\">RPC接口</option>\n        <option value=\"aria\">Aria命令</option>\n      </select>&nbsp;&nbsp;&nbsp;&nbsp;\n      <label>AriaNg地址：</label>\n      <input id=\"ariang_host\" style=\"width: 30%\" /><br />\n      <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />\n      <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width: 25%\" /> :\n      <input id=\"rpc_port\" placeholder=\"6800\" style=\"width: 10%\" /> |\n      <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width: 15%\" /> |\n      <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width: 20%\" /><br />\n      <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>Aria参数：</label>\n      最大连接数：<select id=\"aria2c_connection_level\">\n        <option value=\"min\">1</option>\n        <option value=\"mid\">8</option>\n        <option value=\"max\">16</option>\n      </select><br />\n      <small>说明：用于配置Aria命令下载方式的参数</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>强制换源：</label>\n      <select id=\"replace_force\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕速度：</label>\n      <input id=\"danmaku_speed\" style=\"width: 5%\" /> s\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>弹幕字号：</label>\n      <input id=\"danmaku_fontsize\" style=\"width: 5%\" /> px<br />\n      <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>自动下载：</label>\n      <select id=\"auto_download\">\n        <option value=\"0\">关闭</option>\n        <option value=\"1\">开启</option>\n      </select>\n      &nbsp;&nbsp;&nbsp;&nbsp;\n      <label>视频质量：</label>\n      <select id=\"video_quality\">\n        {{video_quality_options}}\n      </select><br />\n      <small>说明：请求地址成功后将自动点击下载视频按钮</small>\n    </div>\n    <div style=\"margin: 2% 0\">\n      <label>授权状态：</label>\n      <select id=\"auth\" disabled>\n        <option value=\"0\">未授权</option>\n        <option value=\"1\">已授权</option>\n      </select>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a>\n      <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a>\n    </div>\n    <br />\n    <div style=\"text-align: right\">\n      <button class=\"setting-button\" id=\"save_config\">确定</button>\n    </div>\n  </div>\n\n  <style>\n    #bp_config {\n      opacity: 0;\n      display: none;\n      position: fixed;\n      inset: 0px;\n      top: 0px;\n      left: 0px;\n      width: 100%;\n      height: 100%;\n      z-index: 10000;\n    }\n\n    #bp_config .config-bg {\n      position: absolute;\n      background: rgb(255, 255, 255);\n      border-radius: 10px;\n      padding: 20px;\n      top: 50%;\n      left: 50%;\n      transform: translate(-50%, -50%);\n      width: 600px;\n      z-index: 10001;\n    }\n\n    #bp_config .config-mark {\n      width: 100%;\n      height: 100%;\n      position: fixed;\n      top: 0;\n      left: 0;\n      background: rgba(0, 0, 0, 0.5);\n      z-index: 10000;\n    }\n\n    #bp_config .setting-button {\n      width: 120px;\n      height: 40px;\n      border-width: 0px;\n      border-radius: 3px;\n      background: #1e90ff;\n      cursor: pointer;\n      outline: none;\n      color: white;\n      font-size: 17px;\n    }\n\n    #bp_config .setting-button:hover {\n      background: #5599ff;\n    }\n\n    #bp_config .setting-context {\n      margin: 0 1%;\n      color: blue;\n    }\n\n    #bp_config .setting-context:hover {\n      color: red;\n    }\n  </style>\n</div>\n";
 // Exports
-/* harmony default export */ var config = (config_code);
+/* harmony default export */ var config = (code);
 ;// CONCATENATED MODULE: ./src/js/ui/config.js
 
 
@@ -2841,6 +2895,104 @@ var Auth = /*#__PURE__*/function () {
 }();
 
 var auth = new Auth();
+;// CONCATENATED MODULE: ./src/html/arc_toolbar.html
+// Module
+var arc_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
+// Exports
+/* harmony default export */ var arc_toolbar = (arc_toolbar_code);
+;// CONCATENATED MODULE: ./src/html/toolbar.html
+// Module
+var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\"\n  scrollshow=\"true\">\n  <div id=\"setting_btn\" class=\"like-info\">\n    <i class=\"iconfont icon-add\"></i><span>脚本设置</span>\n  </div>\n  <div id=\"bilibili_parse\" class=\"like-info\">\n    <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span>\n  </div>\n  <div id=\"video_download\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载视频</span>\n  </div>\n  <div id=\"video_download_2\" class=\"like-info\" style=\"display:none;\">\n    <i class=\"iconfont icon-download\"></i><span>下载音频</span>\n  </div>\n  <div id=\"video_download_all\" class=\"like-info\">\n    <i class=\"iconfont icon-download\"></i><span>批量下载</span>\n  </div>\n  <div class=\"more\">更多<div class=\"more-ops-list\">\n      <ul>\n        <li><span id=\"download_danmaku\">下载弹幕</span></li>\n        <li><span id=\"download_subtitle\">下载字幕</span></li>\n      </ul>\n    </div>\n  </div>\n  <style>\n    .tool-bar .more {\n      float: right;\n      cursor: pointer;\n      color: #757575;\n      font-size: 16px;\n      transition: all .3s;\n      position: relative;\n      text-align: center\n    }\n\n    .tool-bar .more:hover .more-ops-list {\n      display: block\n    }\n\n    .tool-bar:after {\n      display: block;\n      content: \"\";\n      clear: both\n    }\n\n    .more-ops-list {\n      display: none;\n      position: absolute;\n      width: 80px;\n      left: -65px;\n      z-index: 30;\n      text-align: center;\n      padding: 10px 0;\n      background: #fff;\n      border: 1px solid #e5e9ef;\n      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n      border-radius: 2px;\n      font-size: 14px;\n      color: #222\n    }\n\n    .more-ops-list li {\n      position: relative;\n      height: 34px;\n      line-height: 34px;\n      cursor: pointer;\n      transition: all .3s\n    }\n\n    .more-ops-list li:hover {\n      color: #00a1d6;\n      background: #e7e7e7\n    }\n  </style>\n</div>\n";
+// Exports
+/* harmony default export */ var toolbar = (toolbar_code);
+;// CONCATENATED MODULE: ./src/html/video_toolbar.html
+// Module
+var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px;\" class=\"video-toolbar report-wrap-module report-scroll-module\"\n  scrollshow=\"true\">\n  <div class=\"ops\">\n    <span id=\"setting_btn\">\n      <i class=\"van-icon-general_addto_s\"></i>脚本设置\n    </span>\n    <span id=\"bilibili_parse\">\n      <i class=\"van-icon-floatwindow_custome\"></i>请求地址\n    </span>\n    <span id=\"video_download\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载视频\n    </span>\n    <span id=\"video_download_2\" style=\"display:none;\">\n      <i class=\"van-icon-download\"></i>下载音频\n    </span>\n    <span id=\"video_download_all\">\n      <i class=\"van-icon-download\"></i>批量下载\n    </span>\n  </div>\n  <div class=\"more\">\n    <i class=\"van-icon-general_moreactions\"></i>\n    <div class=\"more-ops-list\">\n      <ul class=\"more-ops-list-box\">\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_danmaku\">下载弹幕</span>\n        </li>\n        <li class=\"more-ops-list-box-li\">\n          <span id=\"download_subtitle\">下载字幕</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n";
+// Exports
+/* harmony default export */ var video_toolbar = (video_toolbar_code);
+;// CONCATENATED MODULE: ./src/js/utils/toolbar.js
+
+
+
+var btn_list = {
+  setting_btn: '脚本设置',
+  bilibili_parse: '请求地址',
+  video_download: '下载视频',
+  video_download_2: '下载音频',
+  video_download_all: '批量下载',
+  more: {
+    download_danmaku: '下载弹幕',
+    download_subtitle: '下载字幕'
+  }
+};
+var setting_svg = '' + "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 32 32\" style=\"enable-background:new 0 0 32 32;\" xml:space=\"preserve\">\n        <path fill=\"#757575\" style=\"stroke-miterlimit:10;\" d=\"M16,29.5L16,29.5c-0.828,0-1.5-0.672-1.5-1.5V4c0-0.828,0.672-1.5,1.5-1.5h0 c0.828,0,1.5,0.672,1.5,1.5v24C17.5,28.828,16.828,29.5,16,29.5z\"/>\n        <path fill=\"#757575\" style=\"stroke-miterlimit:10;\" d=\"M29.5,16L29.5,16c0,0.828-0.672,1.5-1.5,1.5H4c-0.828,0-1.5-0.672-1.5-1.5v0 c0-0.828,0.672-1.5,1.5-1.5h24C28.828,14.5,29.5,15.172,29.5,16z\"/>\n    </svg>";
+var request_svg = '' + "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 32 32\" style=\"enable-background:new 0 0 32 32;\" xml:space=\"preserve\">\n        <path fill=\"#757575\" d=\"M28.282,13.508c-0.623-6.932-6.627-12.036-13.41-11.399C8.947,2.665,4.254,7.465,3.716,13.521 c0.786,0.404,1.283,1.226,1.284,2.126v4.157c-0.023,0.565-0.49,1.004-1.043,0.98c-0.521-0.022-0.938-0.448-0.959-0.98v-4.157 c0-0.188-0.113-0.452-0.508-0.452s-0.492,0.275-0.492,0.452v8.176c0,2.446,1.94,4.428,4.333,4.428c0,0,0,0,0,0h7.191 c0.552-1.396,2.107-2.07,3.473-1.505s2.025,2.154,1.473,3.549c-0.552,1.396-2.107,2.07-3.473,1.505 c-0.67-0.277-1.202-0.82-1.473-1.505h-7.19c-3.497,0-6.332-2.897-6.333-6.471l0,0v-8.178c0-1.077,0.706-2.02,1.723-2.303C2.429,5.285,9.393-0.662,17.278,0.059c6.952,0.636,12.445,6.297,13.009,13.407c1.032,0.404,1.713,1.416,1.712,2.545v4.088 c-0.038,1.505-1.262,2.694-2.735,2.656c-1.42-0.037-2.562-1.205-2.599-2.656l0,0v-4.085C26.667,14.924,27.302,13.939,28.282,13.508zM11.334,14.653c-1.105,0-2-0.915-2-2.044s0.896-2.044,2-2.044l0,0c1.105,0,2,0.915,2,2.044S12.439,14.653,11.334,14.653z M20.666,14.653c-1.105,0-2-0.915-2-2.044s0.896-2.044,2-2.044l0,0c1.105,0,2,0.915,2,2.044S21.771,14.653,20.666,14.653z M13.629,21.805c-2.167,0-3.962-1.653-3.962-3.748c0-0.564,0.448-1.022,1-1.022c0.552,0,1,0.458,1,1.022 c0,0.916,0.856,1.704,1.962,1.704c0.612,0.012,1.198-0.253,1.602-0.723c0.352-0.433,0.982-0.493,1.406-0.132 c0,0,0.001,0.001,0.001,0.001c0.047,0.039,0.09,0.083,0.128,0.131c0.404,0.47,0.99,0.734,1.602,0.723 c1.106,0,1.964-0.788,1.964-1.704c0-0.564,0.448-1.022,1-1.022c0.552,0,1,0.458,1,1.022c0,2.095-1.797,3.748-3.964,3.748 c-0.844,0.003-1.67-0.256-2.368-0.742C15.302,21.55,14.475,21.809,13.629,21.805z M29.332,15.333c-0.368,0-0.666,0.305-0.666,0.68 v4.088c-0.001,0.376,0.297,0.681,0.665,0.681c0.368,0.001,0.666-0.304,0.666-0.679c0-0.001,0-0.001,0-0.002v-4.088 c0.002-0.374-0.293-0.678-0.659-0.68c-0.001,0-0.002,0-0.003,0H29.332z\"/>\n    </svg>";
+var download_svg = '' + "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 32 32\" style=\"enable-background:new 0 0 32 32;\" xml:space=\"preserve\">\n        <path fill=\"#757575\" d=\"M16.015,0C7.186,0,0.03,7.157,0.03,15.985 S7.186,31.97,16.015,31.97S32,24.814,32,15.985S24.843,0,16.015,0z\"/>\n        <path style=\"fill:#FFFFFF;\" d=\"M16.942,23.642H9.109C8.496,23.642,8,24.17,8,24.821v0C8,25.472,8.496,26,9.109,26h14.783 C24.504,26,25,25.472,25,24.821v0c0-0.651-0.496-1.179-1.109-1.179H16.942z\"/>\n        <path style=\"fill:#FFFFFF;\" d=\"M8.798,16.998l6.729,6.33c0.398,0.375,1.029,0.375,1.427,0l6.729-6.33 c0.666-0.627,0.212-1.726-0.714-1.726h-3.382c-0.568,0-1.028-0.449-1.028-1.003V8.003C18.56,7.449,18.099,7,17.532,7h-2.582 c-0.568,0-1.028,0.449-1.028,1.003v6.266c0,0.554-0.46,1.003-1.028,1.003H9.511C8.586,15.273,8.132,16.372,8.798,16.998z\"/>\n    </svg>";
+var svg_map = {
+  setting_btn: setting_svg,
+  bilibili_parse: request_svg,
+  video_download: download_svg,
+  video_download_2: download_svg,
+  video_download_all: download_svg
+};
+
+function make_toolbar_bangumi(main_class_name, sub_class_names) {
+  // class-3
+  var list_element = function list_element(id, class_names, svg, name) {
+    return '' + "<div id=\"".concat(id, "\" mr-show=\"\" class=\"").concat(class_names[0], "\">\n                <span class=\"").concat(class_names[1], "\">\n                    ").concat(svg, "\n                </span>\n                <span class=\"").concat(class_names[2], "\">").concat(name, "</span>\n            </div>");
+  };
+
+  var more_element = function more_element(id, name) {
+    return "<li><span id=\"".concat(id, "\">").concat(name, "</span></li>");
+  };
+
+  var toolbar_elements = Object.keys(btn_list).map(function (key) {
+    if (key === 'more') {
+      var more_map = btn_list[key];
+      return '' + "<div class=\"more\">\u66F4\u591A<div class=\"more-ops-list\">\n                    <ul>".concat(Object.keys(more_map).map(function (key) {
+        return more_element(key, more_map[key]);
+      }).join(''), "</ul>\n                </div>");
+    }
+
+    return list_element(key, sub_class_names, svg_map[key], btn_list[key]);
+  }).join('');
+  return '' + "<div class=\"".concat(main_class_name, "\">\n            ").concat(toolbar_elements, "\n            <style>\n            .").concat(main_class_name, " .more {\n              float: right;\n              padding: 15px;\n              cursor: pointer;\n              color: #757575;\n              font-size: 16px;\n              transition: all .3s;\n              position: relative;\n              text-align: center\n            }\n\n            .").concat(main_class_name, " .more:hover .more-ops-list {\n              display: block\n            }\n\n            .").concat(main_class_name, ":after {\n              display: block;\n              content: \"\";\n              clear: both\n            }\n\n            .more-ops-list {\n              display: none;\n              position: absolute;\n              width: 80px;\n              left: -15px;\n              z-index: 30;\n              text-align: center;\n              padding: 10px 0;\n              background: #fff;\n              border: 1px solid #e5e9ef;\n              box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .14);\n              border-radius: 2px;\n              font-size: 14px;\n              color: #222\n            }\n\n            .more-ops-list li {\n              position: relative;\n              height: 34px;\n              line-height: 34px;\n              cursor: pointer;\n              transition: all .3s\n            }\n\n            .more-ops-list li:hover {\n              color: #00a1d6;\n              background: #e7e7e7\n            }\n          </style>\n        </div>");
+}
+
+function initToolbar() {
+  if (!!$('#arc_toolbar_report')[0]) {
+    $('#arc_toolbar_report').after(arc_toolbar);
+  } else if (!!$('#toolbar_module')[0]) {
+    // ! fix
+    $('#toolbar_module').after(toolbar);
+  } else if (!!$('div.video-toolbar')[0]) {
+    $('div.video-toolbar').after(video_toolbar);
+  } else if (!!$('.player-left-components')[0]) {
+    // bungumi test
+    var toolbar_obj = $('.player-left-components').children().eq(0);
+    var toolbar_class = toolbar_obj.attr('class');
+    var span_class = toolbar_obj.children().eq(0).attr('class');
+    var span_class_svg = toolbar_obj.children().eq(0).children().eq(0).attr('class');
+    var span_class_test = toolbar_obj.children().eq(0).children().eq(1).attr('class');
+    toolbar_obj.after(make_toolbar_bangumi(toolbar_class, [span_class, span_class_svg, span_class_test]));
+  } else if (!!$('.edu-play-left')[0]) {
+    // cheese test
+    // todo
+    var _toolbar_obj = $('.edu-play-left').children().eq(1);
+
+    var _toolbar_class = _toolbar_obj.attr('class');
+
+    var _span_class = _toolbar_obj.children().eq(0).attr('class');
+
+    var _span_class_svg = _toolbar_obj.children().eq(0).children().eq(0).attr('class');
+
+    var _span_class_test = _toolbar_obj.children().eq(0).children().eq(1).attr('class');
+
+    _toolbar_obj.after(make_toolbar_bangumi(_toolbar_class, [_span_class, _span_class_svg, _span_class_test]));
+  }
+}
+
+
 ;// CONCATENATED MODULE: ./src/js/main.js
 function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2861,32 +3013,37 @@ function main_createClass(Constructor, protoProps, staticProps) { if (protoProps
 
 
 
-
-
 var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.11", " ").concat("72a359c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.3.12", " ").concat("5f0de97", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
-    key: "set_toolbar",
-    value: function set_toolbar() {
-      if (!!$('#arc_toolbar_report')[0]) {
-        $('#arc_toolbar_report').after(arc_toolbar);
-      } else if (!!$('#toolbar_module')[0]) {
-        // ! fix
-        $('#toolbar_module').after(toolbar);
-      } else if (!!$('div.video-toolbar')[0]) {
-        $('div.video-toolbar').after(video_toolbar);
-      }
+    key: "init",
+    value: function init() {
+      initToolbar();
+      var root_div = document.createElement('div');
+      root_div.id = 'bp_root';
+      document.body.append(root_div); // initConfig
+
+      initConfig("#".concat(root_div.id));
+      (0,message.initMessage)("#".concat(root_div.id));
+      user.lazyInit();
+      auth.initAuth();
+      auth.checkLoginStatus();
+      check.refresh();
+      $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'); // for dom changed
+
+      $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
+      $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
     }
   }, {
     key: "run",
     value: function run() {
-      this.set_toolbar();
+      this.init();
       var root_div = document.createElement('div');
       root_div.id = 'bp_root';
       document.body.append(root_div); // initConfig

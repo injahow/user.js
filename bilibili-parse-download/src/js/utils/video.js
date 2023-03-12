@@ -2,20 +2,20 @@ import { videoQualityMap } from '../ui/config'
 import { user } from '../user'
 import { api } from './api'
 
+const routerMap = {
+    video: '/video/',
+    bangumi: '/bangumi/play/', // ss / ep
+    medialist: '/medialist/play/',
+    cheese: '/cheese/play/',
+}
+
 function type() {
-    if (location.pathname.match('/cheese/play/')) {
-        return 'cheese'
-    } else if (location.pathname.match('/medialist/play/')) {
-        // -/ml*/* or -/watchlater/*
-        return 'medialist'
-    } else if (!window.__INITIAL_STATE__) {
-        // todo
-        return '?'
-    } else if (!!window.__INITIAL_STATE__.epInfo) {
-        return 'bangumi'
-    } else if (!!window.__INITIAL_STATE__.videoData) {
-        return 'video'
+    for (const key in routerMap) {
+        if (location.pathname.startsWith(routerMap[key])) {
+            return key
+        }
     }
+    return '?'
 }
 
 function base() {
@@ -29,13 +29,13 @@ function base() {
             total: () => {
                 return state.videoData.pages.length || 1
             },
-            title: (_p) => {
-                const p = _p || state.p || 1
-                return (state.videoData.pages[p - 1].part || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+            title: (p) => {
+                const id = p || state.p || 1
+                return (state.videoData.pages[id - 1].part || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
             },
-            filename: (_p) => {
-                const p = _p || state.p || 1
-                const title = main_title + ` P${p} （${state.videoData.pages[p - 1].part || p}）`
+            filename: (p) => {
+                const id = p || state.p || 1
+                const title = main_title + ` P${p} （${state.videoData.pages[id - 1].part || p}）`
                 return title.replace(/[\/\\:*?"<>|]+/g, '')
             },
             aid: () => {
@@ -47,14 +47,14 @@ function base() {
             p: () => {
                 return state.p || 1
             },
-            cid: (_p) => {
-                const p = _p || state.p || 1
-                return state.videoData.pages[p - 1].cid
+            cid: (p) => {
+                const id = p || state.p || 1
+                return state.videoData.pages[id - 1].cid
             },
             epid: () => {
                 return ''
             },
-            need_vip: () => {
+            need_vip: (p) => {
                 return false
             },
             vip_need_pay: () => {
@@ -75,35 +75,35 @@ function base() {
             total: () => {
                 return medialist.length
             },
-            title: (_p) => {
-                let id = _p ? (_p - 1) : _id
+            title: (p) => {
+                let id = p ? (p - 1) : _id
                 const title = medialist.eq(id).find('.player-auxiliary-playlist-item-title').attr('title') || 'unknown'
                 return title.replace(/[\/\\:*?"<>|]+/g, '')
             },
-            filename: (_p) => {
-                let id = _p ? (_p - 1) : _id
+            filename: (p) => {
+                let id = p ? (p - 1) : _id
                 const title = medialist.eq(id).find('.player-auxiliary-playlist-item-title').attr('title') || 'unknown'
                 return (`${main_title} P${id + 1} （${title}）`).replace(/[\/\\:*?"<>|]+/g, '')
             },
-            aid: (_p) => {
-                let id = _p ? (_p - 1) : _id
+            aid: (p) => {
+                let id = p ? (p - 1) : _id
                 return medialist.eq(id).attr('data-aid')
             },
-            bvid: (_p) => {
-                let id = _p ? (_p - 1) : _id
+            bvid: (p) => {
+                let id = p ? (p - 1) : _id
                 return medialist.eq(id).attr('data-bvid')
             },
             p: () => {
                 return _id + 1
             },
-            cid: (_p) => {
-                let id = _p ? (_p - 1) : _id
+            cid: (p) => {
+                let id = p ? (p - 1) : _id
                 return medialist.eq(id).attr('data-cid')
             },
             epid: () => {
                 return ''
             },
-            need_vip: () => {
+            need_vip: (p) => {
                 return false
             },
             vip_need_pay: () => {
@@ -114,60 +114,138 @@ function base() {
             }
         }
     } else if (_type === 'bangumi') {
-        const state = window.__INITIAL_STATE__
-        const main_title = (state.mediaInfo.season_title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+
+        if (!!window.__INITIAL_STATE__) {
+            const state = window.__INITIAL_STATE__
+            const main_title = (state.mediaInfo.season_title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+            return {
+                type: 'bangumi',
+                name: main_title,
+                total: () => {
+                    return state.epList.length
+                },
+                title: (p) => {
+                    const ep = p ? state.epList[p - 1] : state.epInfo
+                    return (`${ep.titleFormat} ${ep.longTitle}`).replace(/[\/\\:*?"<>|]+/g, '')
+                },
+                filename: (p) => {
+                    if (p) {
+                        const ep = state.epList[p - 1]
+                        return (`${main_title}：${ep.titleFormat} ${ep.longTitle}`).replace(/[\/\\:*?"<>|]+/g, '')
+                    }
+                    return (state.h1Title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+                },
+                aid: (p) => {
+                    return p ? state.epList[p - 1].aid : state.epInfo.aid
+                },
+                bvid: (p) => {
+                    return p ? state.epList[p - 1].bvid : state.epInfo.bvid
+                },
+                p: () => {
+                    return state.epInfo.i || 1
+                },
+                cid: (p) => {
+                    return p ? state.epList[p - 1].cid : state.epInfo.cid
+                },
+                epid: (p) => {
+                    return p ? state.epList[p - 1].id : state.epInfo.id
+                },
+                need_vip: () => {
+                    return state.epInfo.badge === '会员'
+                },
+                vip_need_pay: () => {
+                    return state.epPayMent.vipNeedPay
+                },
+                is_limited: () => {
+                    return state.userState.areaLimit
+                }
+            }
+        }
+
+        // todo vue ?
+        const queries = __NEXT_DATA__.props.pageProps.dehydratedState.queries
+        const mediaInfo = queries[0].state.data.mediaInfo
+        const historyEpId = queries[1].state.data.userInfo.history.epId
+        const main_title = mediaInfo.season_title
+        const episodes = mediaInfo.episodes
+
+        let epid
+        if (location.pathname.startsWith('/bangumi/play/ss')) {
+            epid = parseInt(historyEpId)
+        } else {
+            epid = location.pathname.match(/ep(\d+)/)
+            epid = epid ? parseInt(epid[1]) : 0
+        }
+
+        let _id = 0
+        for (let i = 0; i < episodes.length; i++) {
+            if (episodes[i].id == epid) {
+                _id = i
+                break
+            }
+        }
+
+        const state = {
+            epList: episodes,
+            epInfo: episodes[_id]
+        }
+
         return {
             type: 'bangumi',
             name: main_title,
             total: () => {
                 return state.epList.length
             },
-            title: (_p) => {
-                const ep = _p ? state.epList[_p - 1] : state.epInfo
-                return (`${ep.titleFormat} ${ep.longTitle}`).replace(/[\/\\:*?"<>|]+/g, '')
+            title: (p) => {
+                const ep = p ? state.epList[p - 1] : state.epInfo
+                return (`${ep.titleFormat} ${ep.long_title}`).replace(/[\/\\:*?"<>|]+/g, '')
             },
-            filename: (_p) => {
-                if (_p) {
-                    const ep = state.epList[_p - 1]
-                    return (`${main_title}：${ep.titleFormat} ${ep.longTitle}`).replace(/[\/\\:*?"<>|]+/g, '')
-                }
-                return (state.h1Title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+            filename: (p) => {
+                const ep = p ? state.epList[p - 1] : state.epInfo
+                return (`${main_title}：${ep.titleFormat} ${ep.long_title}`).replace(/[\/\\:*?"<>|]+/g, '')
             },
-            aid: (_p) => {
-                return _p ? state.epList[_p - 1].aid : state.epInfo.aid
+            aid: (p) => {
+                return p ? state.epList[p - 1].aid : state.epInfo.aid
             },
-            bvid: (_p) => {
-                return _p ? state.epList[_p - 1].bvid : state.epInfo.bvid
+            bvid: (p) => {
+                return p ? state.epList[p - 1].bvid : state.epInfo.bvid
             },
             p: () => {
-                return state.epInfo.i || 1
+                return _id + 1
             },
-            cid: (_p) => {
-                return _p ? state.epList[_p - 1].cid : state.epInfo.cid
+            cid: (p) => {
+                return p ? state.epList[p - 1].cid : state.epInfo.cid
             },
-            epid: (_p) => {
-                return _p ? state.epList[_p - 1].id : state.epInfo.id
+            epid: (p) => {
+                return p ? state.epList[p - 1].id : state.epInfo.id
             },
-            need_vip: () => {
-                return state.epInfo.badge === '会员'
+            need_vip: (p) => {
+                return state.epList[p - 1].badge === '会员'
             },
-            vip_need_pay: () => {
-                return state.epPayMent.vipNeedPay
+            vip_need_pay: (p) => {
+                return state.epList[p - 1].badge === '付费'
             },
             is_limited: () => {
-                return state.userState.areaLimit
+                return !!mediaInfo.user_status.area_limit
             }
         }
     } else if (_type === 'cheese') {
-        const epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1]
 
-        if (!window.bp_episodes) { // todo: 异步如何处理？
+        const sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1]
+        let epid
+
+        if (!sid) {
+            epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1]
+        }
+
+        if (!window.bp_episodes) { // todo
             window.bp_episodes = [] // ref check
-            api.get_season(epid)
+            api.get_season(sid, epid)
         }
 
         const episodes = window.bp_episodes
         let _id = 0
+
         for (let i = 0; i < episodes.length; i++) {
             if (episodes[i].id == epid) {
                 _id = i
@@ -182,33 +260,30 @@ function base() {
             total: () => {
                 return episodes.length
             },
-            title: (_p) => {
-                let id = _p ? (_p - 1) : _id
+            title: (p) => {
+                let id = p ? (p - 1) : id
                 return (episodes[id].title || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
             },
-            filename: (_p) => {
-                let id = _p ? (_p - 1) : _id
+            filename: (p) => {
+                let id = p ? (p - 1) : _id
                 return (`${main_title} P${id + 1} （${episodes[id].title || 'unknown'}）`).replace(/[\/\\:*?"<>|]+/g, '')
             },
-            aid: (_p) => {
-                let id = _p ? (_p - 1) : _id
-                return episodes[id].aid
+            aid: (p) => {
+                return episodes[p ? (p - 1) : _id].aid
             },
-            bvid: () => {
+            bvid: (p) => {
                 return ''
             },
             p: () => {
                 return _id + 1
             },
-            cid: (_p) => {
-                let id = _p ? (_p - 1) : _id
-                return episodes[id].cid
+            cid: (p) => {
+                return episodes[p ? (p - 1) : _id].cid
             },
-            epid: (_p) => {
-                let id = _p ? (_p - 1) : _id
-                return episodes[id].id
+            epid: (p) => {
+                return episodes[p ? (p - 1) : _id].id
             },
-            need_vip: () => {
+            need_vip: (p) => {
                 return false
             },
             vip_need_pay: () => {
@@ -223,13 +298,14 @@ function base() {
             type: '?',
             name: 'none',
             total: () => { return 0 },
-            title: (_p) => { return '' },
-            filename: (_p) => { return '' },
-            aid: (_p) => { return '' },
+            title: (p) => { return '' },
+            filename: (p) => { return '' },
+            aid: (p) => { return '' },
+            bvid: (p) => { return '' },
             p: () => { return 1 },
-            cid: (_p) => { return '' },
-            epid: (_p) => { return '' },
-            need_vip: () => { return false },
+            cid: (p) => { return '' },
+            epid: (p) => { return '' },
+            need_vip: (p) => { return false },
             vip_need_pay: () => { return false },
             is_limited: () => { return false }
         }

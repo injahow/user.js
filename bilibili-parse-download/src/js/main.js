@@ -1,7 +1,4 @@
 
-import arc_toolbar_html from '../html/arc_toolbar.html'
-import toolbar_html from '../html/toolbar.html'
-import video_toolbar_html from '../html/video_toolbar.html'
 import { auth } from './auth'
 import { check } from './check'
 import { store } from './store'
@@ -13,7 +10,7 @@ import { api } from './utils/api'
 import { Download } from './utils/download'
 import { player } from './utils/player'
 import { video } from './utils/video'
-
+import { initToolbar } from './utils/toolbar';
 
 class Main {
 
@@ -22,19 +19,30 @@ class Main {
         console.log(`${'\n'} %c bilibili-parse-download.user.js v${JS_VERSION} ${GIT_HASH} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;')
     }
 
-    set_toolbar() {
-        if (!!$('#arc_toolbar_report')[0]) {
-            $('#arc_toolbar_report').after(arc_toolbar_html)
-        } else if (!!$('#toolbar_module')[0]) { // ! fix
-            $('#toolbar_module').after(toolbar_html)
-        } else if (!!$('div.video-toolbar')[0]) {
-            $('div.video-toolbar').after(video_toolbar_html)
-        }
+    init() {
+        initToolbar()
+
+        const root_div = document.createElement('div')
+        root_div.id = 'bp_root'
+        document.body.append(root_div)
+        // initConfig
+        initConfig(`#${root_div.id}`)
+        initMessage(`#${root_div.id}`)
+
+        user.lazyInit()
+        auth.initAuth()
+        auth.checkLoginStatus()
+        check.refresh()
+
+        $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">') // for dom changed
+        $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
+        $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
+
     }
 
     run() {
 
-        this.set_toolbar()
+        this.init()
 
         const root_div = document.createElement('div')
         root_div.id = 'bp_root'
