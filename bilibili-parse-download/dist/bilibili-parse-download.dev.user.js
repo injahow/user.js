@@ -1928,73 +1928,72 @@ function download_all() {
       var _msg = "\u7B2C".concat(i + 1, "\uFF08").concat(i + 1, "/").concat(videos.length, "\uFF09\u4E2A\u89C6\u9891");
 
       message.MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
-      setTimeout(function () {
-        var success = function success(res) {
-          if (!res.code) {
-            message.Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
-            message.MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
-            var _ref3 = [res.url, rpc_type(), res.video, res.audio],
-                url = _ref3[0],
-                type = _ref3[1],
-                video_url = _ref3[2],
-                audio_url = _ref3[3];
 
-            if (type === 'post') {
-              if (_video.format === 'dash') {
-                // 处理dash
-                video_urls.push({
-                  url: video_url,
-                  filename: _video.filename + '_video' + format(video_url),
-                  rpc_dir: _video.rpc_dir
-                });
-                video_urls.push({
-                  url: audio_url,
-                  filename: _video.filename + '_audio' + format(audio_url),
-                  rpc_dir: _video.rpc_dir
-                });
-              } else {
-                video_urls.push({
-                  url: url,
-                  filename: _video.filename + format(url),
-                  rpc_dir: _video.rpc_dir
-                });
-              }
+      var success = function success(res) {
+        if (!res.code) {
+          message.Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
+          message.MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
+          var _ref3 = [res.url, rpc_type(), res.video, res.audio],
+              url = _ref3[0],
+              type = _ref3[1],
+              video_url = _ref3[2],
+              audio_url = _ref3[3];
 
-              if (video_urls.length > 3) {
-                download_rpc_all(video_urls);
-                video_urls.length = 0;
-              }
-            } else if (type === 'ariang') {
-              if (_video.format === 'dash') {
-                // 处理dash
-                download_rpc_ariang_one({
-                  url: video_url,
-                  filename: _video.filename + '_video' + format(video_url)
-                });
-                download_rpc_ariang_one({
-                  url: audio_url,
-                  filename: _video.filename + '_audio' + format(audio_url)
-                });
-              } else {
-                download_rpc_ariang_one({
-                  url: url,
-                  filename: _video.filename + format(url)
-                });
-              }
+          if (type === 'post') {
+            if (_video.format === 'dash') {
+              // 处理dash
+              video_urls.push({
+                url: video_url,
+                filename: _video.filename + '_video' + format(video_url),
+                rpc_dir: _video.rpc_dir
+              });
+              video_urls.push({
+                url: audio_url,
+                filename: _video.filename + '_audio' + format(audio_url),
+                rpc_dir: _video.rpc_dir
+              });
+            } else {
+              video_urls.push({
+                url: url,
+                filename: _video.filename + format(url),
+                rpc_dir: _video.rpc_dir
+              });
+            }
+
+            if (video_urls.length > 3) {
+              download_rpc_all(video_urls);
+              video_urls.length = 0;
+            }
+          } else if (type === 'ariang') {
+            if (_video.format === 'dash') {
+              // 处理dash
+              download_rpc_ariang_one({
+                url: video_url,
+                filename: _video.filename + '_video' + format(video_url)
+              });
+              download_rpc_ariang_one({
+                url: audio_url,
+                filename: _video.filename + '_audio' + format(audio_url)
+              });
+            } else {
+              download_rpc_ariang_one({
+                url: url,
+                filename: _video.filename + format(url)
+              });
             }
           }
+        }
 
-          setTimeout(function () {
-            download_videos(videos, ++i, video_urls);
-          }, 3000);
-        };
-
-        var error = function error() {
+        setTimeout(function () {
           download_videos(videos, ++i, video_urls);
-        };
+        }, 4000);
+      };
 
-        api.get_urls(_video.p, _video.q, _video.format, success, error);
-      }, 3000);
+      var error = function error() {
+        download_videos(videos, ++i, video_urls);
+      };
+
+      api.get_urls(_video.p, _video.q, _video.format, success, error);
     } else {
       message.MessageBox.alert('视频地址请求完成！');
 
@@ -2009,13 +2008,11 @@ function download_all() {
   }
 }
 
-function get_rpc_post(data_list) {
+function get_rpc_post(data) {
   // [...{ url, filename, rpc_dir }]
-  var data = data_list;
-
-  if (!(data_list instanceof Array)) {
-    data = data_list instanceof Object ? [data_list] : [{
-      data_list: data_list
+  if (!(data instanceof Array)) {
+    data = data instanceof Object ? [data] : [{
+      data: data
     }];
   }
 
@@ -2025,33 +2022,30 @@ function get_rpc_post(data_list) {
     token: config_config.rpc_token,
     dir: config_config.rpc_dir
   };
-  console.log(data);
-  data = data.map(function (_ref4) {
-    var url = _ref4.url,
-        filename = _ref4.filename,
-        rpc_dir = _ref4.rpc_dir;
-    var param = {
-      out: filename,
-      header: ["User-Agent: ".concat(window.navigator.userAgent), "Referer: ".concat(window.location.href)]
-    };
-
-    if (rpc_dir || rpc.dir) {
-      param.dir = rpc_dir || rpc.dir;
-    }
-
-    return {
-      id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
-      jsonrpc: '2.0',
-      method: 'aria2.addUri',
-      params: ["token:".concat(rpc.token), [url], param]
-    };
-  });
-  console.log(data);
   return {
     url: "".concat(rpc.domain, ":").concat(rpc.port, "/jsonrpc"),
     type: 'POST',
     dataType: 'json',
-    data: JSON.stringify(data)
+    data: JSON.stringify(data.map(function (_ref4) {
+      var url = _ref4.url,
+          filename = _ref4.filename,
+          rpc_dir = _ref4.rpc_dir;
+      var param = {
+        out: filename,
+        header: ["User-Agent: ".concat(window.navigator.userAgent), "Referer: ".concat(window.location.href)]
+      };
+
+      if (rpc_dir || rpc.dir) {
+        param.dir = rpc_dir || rpc.dir;
+      }
+
+      return {
+        id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
+        jsonrpc: '2.0',
+        method: 'aria2.addUri',
+        params: ["token:".concat(rpc.token), [url], param]
+      };
+    }))
   };
 }
 
@@ -3177,7 +3171,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.0", " ").concat("6d4e164", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.0", " ").concat("d11d439", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
