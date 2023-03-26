@@ -655,8 +655,8 @@ function get_url_base(page, quality, video_format, success, error, request_type)
   if (request_type === 'auto' && user.needReplace()) request_type = 'online';
 
   var url_replace_cdn = function url_replace_cdn(url) {
-    if (config_config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
-      // 切换CDN
+    if (config_config.host_key !== '0') {
+      // 全部切换CDN
       var url_tmp = url.split('/');
       url_tmp[2] = hostMap[config_config.host_key];
       url = url_tmp.join('/');
@@ -3170,7 +3170,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.0", " ").concat("f478afd", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.1", " ").concat("7301685", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

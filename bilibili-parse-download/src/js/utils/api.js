@@ -42,8 +42,8 @@ function get_url_base(page, quality, video_format, success, error, request_type)
     if (request_type === 'auto' && user.needReplace()) request_type = 'online'
 
     const url_replace_cdn = url => {
-        if (config.host_key !== '0' && request_type === 'online' && format !== 'mp4') {
-            // 切换CDN
+        if (config.host_key !== '0') {
+            // 全部切换CDN
             let url_tmp = url.split('/')
             url_tmp[2] = hostMap[config.host_key]
             url = url_tmp.join('/')
