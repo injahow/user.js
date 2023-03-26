@@ -398,9 +398,8 @@ function show_progress({ total, loaded, percent }) {
     if (need_show_progress) {
         MessageBox.alert(`文件大小：${Math.floor(total / (1024 * 1024))}MB(${total}Byte)<br/>` +
             `已经下载：${Math.floor(loaded / (1024 * 1024))}MB(${loaded}Byte)<br/>` +
-            `当前进度：${percent}%<br/>下载中请勿操作浏览器！`, () => {
+            `当前进度：${percent}%<br/>下载中请勿操作浏览器，刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。`, () => {
                 need_show_progress = false
-                MessageBox.alert('注意：刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。')
             })
     }
     if (total === loaded) {
