@@ -20,8 +20,8 @@ const config = {
     rpc_domain: 'http://localhost',
     rpc_port: '16800',
     rpc_token: '',
-    rpc_dir: 'D:/',
-    aria2c_connection_level: "min",
+    rpc_dir: '',
+    aria2c_connection_level: 'min',
     ariang_host: 'http://ariang.injahow.com/',
     auto_download: '0',
     video_quality: '0',
@@ -102,7 +102,7 @@ const config_functions = {
                 MessageBox.alert(
                     '检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；' +
                     '请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；' +
-                    '配置好后即可使用脚本进行远程下载<br/>使用期间不用关闭控制台页面！',
+                    '配置好后即可使用脚本进行远程下载，使用期间不用关闭AriaNg页面！',
                     () => {
                         Download.open_ariang({
                             domain: config.rpc_domain,
