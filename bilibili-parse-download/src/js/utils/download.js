@@ -194,75 +194,73 @@ function download_all() {
             const msg = `第${i + 1}（${i + 1}/${videos.length}）个视频`
             MessageBox.alert(`${msg}：获取中...`)
 
-            setTimeout(() => {
+            const success = res => {
+                if (!res.code) {
+                    Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
+                    MessageBox.alert(`${msg}：获取成功！`)
 
-                const success = res => {
-                    if (!res.code) {
-                        Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
-                        MessageBox.alert(`${msg}：获取成功！`)
+                    const [url, type, video_url, audio_url] = [
+                        res.url,
+                        rpc_type(),
+                        res.video,
+                        res.audio
+                    ]
 
-                        const [url, type, video_url, audio_url] = [
-                            res.url,
-                            rpc_type(),
-                            res.video,
-                            res.audio
-                        ]
+                    if (type === 'post') {
 
-                        if (type === 'post') {
+                        if (video.format === 'dash') { // 处理dash
+                            video_urls.push({
+                                url: video_url,
+                                filename: video.filename + '_video' + format(video_url),
+                                rpc_dir: video.rpc_dir
+                            })
+                            video_urls.push({
+                                url: audio_url,
+                                filename: video.filename + '_audio' + format(audio_url),
+                                rpc_dir: video.rpc_dir
+                            })
+                        } else {
+                            video_urls.push({
+                                url: url,
+                                filename: video.filename + format(url),
+                                rpc_dir: video.rpc_dir
+                            })
+                        }
 
-                            if (video.format === 'dash') { // 处理dash
-                                video_urls.push({
-                                    url: video_url,
-                                    filename: video.filename + '_video' + format(video_url),
-                                    rpc_dir: video.rpc_dir
-                                })
-                                video_urls.push({
-                                    url: audio_url,
-                                    filename: video.filename + '_audio' + format(audio_url),
-                                    rpc_dir: video.rpc_dir
-                                })
-                            } else {
-                                video_urls.push({
-                                    url: url,
-                                    filename: video.filename + format(url),
-                                    rpc_dir: video.rpc_dir
-                                })
-                            }
+                        if (video_urls.length > 3) {
+                            download_rpc_all(video_urls)
+                            video_urls.length = 0
+                        }
+                    } else if (type === 'ariang') {
 
-                            if (video_urls.length > 3) {
-                                download_rpc_all(video_urls)
-                                video_urls.length = 0
-                            }
-                        } else if (type === 'ariang') {
-
-                            if (video.format === 'dash') { // 处理dash
-                                download_rpc_ariang_one({
-                                    url: video_url,
-                                    filename: video.filename + '_video' + format(video_url)
-                                })
-                                download_rpc_ariang_one({
-                                    url: audio_url,
-                                    filename: video.filename + '_audio' + format(audio_url)
-                                })
-                            } else {
-                                download_rpc_ariang_one({
-                                    url: url,
-                                    filename: video.filename + format(url)
-                                })
-                            }
+                        if (video.format === 'dash') { // 处理dash
+                            download_rpc_ariang_one({
+                                url: video_url,
+                                filename: video.filename + '_video' + format(video_url)
+                            })
+                            download_rpc_ariang_one({
+                                url: audio_url,
+                                filename: video.filename + '_audio' + format(audio_url)
+                            })
+                        } else {
+                            download_rpc_ariang_one({
+                                url: url,
+                                filename: video.filename + format(url)
+                            })
                         }
                     }
-
-                    setTimeout(() => {
-                        download_videos(videos, ++i, video_urls)
-                    }, 3000)
                 }
-                const error = () => {
+
+                setTimeout(() => {
                     download_videos(videos, ++i, video_urls)
-                }
-                api.get_urls(video.p, video.q, video.format, success, error)
+                }, 4000)
+            }
 
-            }, 3000)
+            const error = () => {
+                download_videos(videos, ++i, video_urls)
+            }
+
+            api.get_urls(video.p, video.q, video.format, success, error)
 
         } else {
 
@@ -275,17 +273,14 @@ function download_all() {
             }
             // one by one -> null
         }
-
     }
-
 }
 
-function get_rpc_post(data_list) { // [...{ url, filename, rpc_dir }]
-    let data = data_list
-    if (!(data_list instanceof Array)) {
-        data = data_list instanceof Object
-            ? [data_list]
-            : [{ data_list }]
+function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
+    if (!(data instanceof Array)) {
+        data = data instanceof Object
+            ? [data]
+            : [{ data }]
     }
     const rpc = {
         domain: config.rpc_domain,
@@ -293,41 +288,36 @@ function get_rpc_post(data_list) { // [...{ url, filename, rpc_dir }]
         token: config.rpc_token,
         dir: config.rpc_dir
     }
-    console.log(data);
-    data = data.map(({ url, filename, rpc_dir }) => {
-        const param = {
-            out: filename,
-            header: [
-                `User-Agent: ${window.navigator.userAgent}`,
-                `Referer: ${window.location.href}`
-            ]
-        }
-        if (rpc_dir || rpc.dir) {
-            param.dir = rpc_dir || rpc.dir
-        }
 
-        return {
-            id: window.btoa(`BParse_${Date.now()}_${Math.random()}`),
-            jsonrpc: '2.0',
-            method: 'aria2.addUri',
-            params: [`token:${rpc.token}`, [url], param]
-        }
-    })
-
-    console.log(data);
     return {
         url: `${rpc.domain}:${rpc.port}/jsonrpc`,
         type: 'POST',
         dataType: 'json',
-        data: JSON.stringify(data)
-    }
+        data: JSON.stringify(data.map(({ url, filename, rpc_dir }) => {
+            const param = {
+                out: filename,
+                header: [
+                    `User-Agent: ${window.navigator.userAgent}`,
+                    `Referer: ${window.location.href}`
+                ]
+            }
+            if (rpc_dir || rpc.dir) {
+                param.dir = rpc_dir || rpc.dir
+            }
 
+            return {
+                id: window.btoa(`BParse_${Date.now()}_${Math.random()}`),
+                jsonrpc: '2.0',
+                method: 'aria2.addUri',
+                params: [`token:${rpc.token}`, [url], param]
+            }
+        }))
+    }
 }
 
 let download_rpc_clicked = false
 
 function download_rpc_all(videos) {  // post
-
     if (download_rpc_clicked) {
         Message.miaow()
         return
