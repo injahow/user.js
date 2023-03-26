@@ -57,7 +57,7 @@ function download_all() {
             `<label for="option_${i}"><div style="color:rgba(0,0,0,0.5);">
                 <input type="checkbox" id="option_${i}" name="option_video" value="${i}">
                 P${i + 1} ${vb.title(i + 1)}
-            </div></label>`
+            </div></label><hr>`
     }
 
     let all_checked = false
@@ -98,7 +98,7 @@ function download_all() {
             <label>下载选择:</label>
             <label style="color:rgba(0,0,0,1);">
                 <input type="checkbox" id="dl_video" name="dl_option" checked="checked">
-                <label for="dl_video" >视频</label>
+                <label for="dl_video">视频</label>
             </label>
             <label style="color:rgba(0,0,0,0.5);">
                 <input type="checkbox" id="dl_subtitle" name="dl_option">
@@ -109,42 +109,42 @@ function download_all() {
                 <label for="dl_danmaku">弹幕</label>
             </label>
         </div>
+        <div style="margin:2% 0;">
+            <label>保存目录:</label><input id="dl_rpc_dir" placeholder="${config.rpc_dir || '为空使用默认目录'}"/>
+        </div>
         <b>
             <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>
         </b><br />
-        <div style="height:220px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">
+        <div style="height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">
             ${video_html}
         </div>
-        <div>${video.type() === 'medialist' ? '不支持多页视频，若需要请到视频原播放页面下载' : ''}</div>
         <div style="margin:2% 0;">
             <button id="checkbox_btn">全选</button>
         </div>`
 
     MessageBox.confirm(msg, () => {
         // 获取参数
-        const [dl_video, dl_subtitle, dl_danmaku, dl_format, dl_quality, videos] = [
+        const [dl_video, dl_subtitle, dl_danmaku, dl_format, dl_quality, dl_rpc_dir] = [
             $('#dl_video').is(':checked'),
             $('#dl_subtitle').is(':checked'),
             $('#dl_danmaku').is(':checked'),
             $('#dl_format').val(),
             $('#dl_quality').val() || q,
-            []
+            $('#dl_rpc_dir').val()
         ]
+        const videos = []
         for (let i = 0; i < total; i++) {
             if (!$(`input#option_${i}`).is(':checked')) {
                 continue
             }
             const p = i + 1
-            const [cid, filename] = [
-                vb.cid(p),
-                vb.filename(p)
-            ]
             videos.push({
-                cid: cid,
+                cid: vb.cid(p),
                 p: p,
                 q: dl_quality,
                 format: dl_format,
-                filename: filename
+                filename: vb.filename(p),
+                rpc_dir: dl_rpc_dir
             })
         }
 
@@ -161,6 +161,7 @@ function download_all() {
                 download_subtitle_vtt_zip([...videos], new JSZip())
             }
         }
+
         if (dl_danmaku) {
             // 下载弹幕
             if (videos.length === 1) {
@@ -172,7 +173,9 @@ function download_all() {
 
     })
 
-    // 处理被隐藏的input
+    $('#dl_quality').val(q)
+
+    // 处理input颜色
     $('body').on('click', 'input[name="dl_option"]', function () {
         if ($(this).is(':checked')) {
             $(this).parent().css('color', 'rgba(0,0,0,1)')
@@ -181,203 +184,171 @@ function download_all() {
         }
     })
 
-    // 初始化参数，去除8k及以上
-    $('#dl_quality').val(q > 120 ? 80 : q)
-
     function download_videos(videos, i, video_urls) {
-        // 单线递归处理，请求下载同时进行
-        if (videos.length) {
-            if (i < videos.length) {
-                const video = videos[i]
-                const msg = `第${i + 1}（${i + 1}/${videos.length}）个视频`
-                MessageBox.alert(`${msg}：获取中...`)
+        // 递归请求下载
+        if (!videos.length) {
+            return
+        }
+        if (i < videos.length) {
+            const video = videos[i]
+            const msg = `第${i + 1}（${i + 1}/${videos.length}）个视频`
+            MessageBox.alert(`${msg}：获取中...`)
 
-                setTimeout(() => {
+            setTimeout(() => {
 
-                    const success = res => {
-                        if (!res.code) {
-                            Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
-                            MessageBox.alert(`${msg}：获取成功！`)
+                const success = res => {
+                    if (!res.code) {
+                        Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
+                        MessageBox.alert(`${msg}：获取成功！`)
 
-                            const [url, type, video_url, audio_url] = [
-                                res.url,
-                                rpc_type(),
-                                res.video,
-                                res.audio
-                            ]
+                        const [url, type, video_url, audio_url] = [
+                            res.url,
+                            rpc_type(),
+                            res.video,
+                            res.audio
+                        ]
 
-                            if (type === 'post') {
+                        if (type === 'post') {
 
-                                if (video.format === 'dash') { // 处理dash
-                                    video_urls.push({
-                                        url: video_url,
-                                        filename: video.filename + '_video' + format(video_url)
-                                    })
-                                    video_urls.push({
-                                        url: audio_url,
-                                        filename: video.filename + '_audio' + format(video_url)
-                                    })
-                                } else {
-                                    video_urls.push({
-                                        url: url,
-                                        filename: video.filename + format(url)
-                                    })
-                                }
+                            if (video.format === 'dash') { // 处理dash
+                                video_urls.push({
+                                    url: video_url,
+                                    filename: video.filename + '_video' + format(video_url),
+                                    rpc_dir: video.rpc_dir
+                                })
+                                video_urls.push({
+                                    url: audio_url,
+                                    filename: video.filename + '_audio' + format(audio_url),
+                                    rpc_dir: video.rpc_dir
+                                })
+                            } else {
+                                video_urls.push({
+                                    url: url,
+                                    filename: video.filename + format(url),
+                                    rpc_dir: video.rpc_dir
+                                })
+                            }
 
-                                if (video_urls.length > 3) {
-                                    download_rpc_all(video_urls)
-                                    video_urls.length = 0
-                                }
-                            } else if (type === 'ariang') {
+                            if (video_urls.length > 3) {
+                                download_rpc_all(video_urls)
+                                video_urls.length = 0
+                            }
+                        } else if (type === 'ariang') {
 
-                                if (video.format === 'dash') { // 处理dash
-                                    download_rpc_ariang_one({
-                                        url: video_url,
-                                        filename: video.filename + '_video' + format(video_url)
-                                    })
-                                    download_rpc_ariang_one({
-                                        url: audio_url,
-                                        filename: video.filename + '_audio' + format(video_url)
-                                    })
-                                } else {
-                                    download_rpc_ariang_one({
-                                        url: url,
-                                        filename: video.filename + format(url)
-                                    })
-                                }
+                            if (video.format === 'dash') { // 处理dash
+                                download_rpc_ariang_one({
+                                    url: video_url,
+                                    filename: video.filename + '_video' + format(video_url)
+                                })
+                                download_rpc_ariang_one({
+                                    url: audio_url,
+                                    filename: video.filename + '_audio' + format(audio_url)
+                                })
+                            } else {
+                                download_rpc_ariang_one({
+                                    url: url,
+                                    filename: video.filename + format(url)
+                                })
                             }
                         }
-
-                        setTimeout(() => {
-                            download_videos(videos, ++i, video_urls)
-                        }, 3000)
                     }
-                    const error = () => {
+
+                    setTimeout(() => {
                         download_videos(videos, ++i, video_urls)
-                    }
-                    api.get_urls(video.p, video.q, video.format, success, error)
-
-                }, 3000)
-
-            } else {
-
-                MessageBox.alert('视频地址请求完成！')
-                if (rpc_type() === 'post') {
-                    if (video_urls.length > 0) {
-                        download_rpc_all(video_urls)
-                        video_urls.length = 0
-                    }
+                    }, 3000)
                 }
-                // one by one -> null
-            }
-        }
-    }
+                const error = () => {
+                    download_videos(videos, ++i, video_urls)
+                }
+                api.get_urls(video.p, video.q, video.format, success, error)
 
-    function download_rpc_all(video_urls) {
-        const rpc = {
-            domain: config.rpc_domain,
-            port: config.rpc_port,
-            token: config.rpc_token,
-            dir: config.rpc_dir
-        }
-        const json_rpc = []
-        for (const video of video_urls) {
-            json_rpc.push({
-                id: window.btoa(`BParse_${Date.now()}_${Math.random()}`),
-                jsonrpc: '2.0',
-                method: 'aria2.addUri',
-                params: [`token:${rpc.token}`, [video.url], {
-                    dir: rpc.dir,
-                    out: video.filename,
-                    header: [
-                        `User-Agent: ${window.navigator.userAgent}`,
-                        `Referer: ${window.location.href}`
-                    ]
-                }]
-            })
-        }
-        Message.info('发送RPC下载请求')
-        ajax({
-            url: `${rpc.domain}:${rpc.port}/jsonrpc`,
-            type: 'POST',
-            dataType: 'json',
-            data: JSON.stringify(json_rpc),
-        }).then(res => {
-            if (res.length === json_rpc.length) {
-                Message.success('RPC请求成功')
-            } else {
-                Message.warning('请检查RPC参数')
-            }
-        }).catch(_ => {
-            Message.error('请检查RPC服务配置')
-        })
-    }
-}
+            }, 3000)
 
-function download_rpc_ariang_one(video) {
-    const bp_aria2_window = window.bp_aria2_window
-    let time = 100
-    if (!bp_aria2_window || bp_aria2_window.closed) {
-        open_ariang()
-        time = 3000
-    }
-    setTimeout(() => {
-        const bp_aria2_window = window.bp_aria2_window
-        const aria2_header = `header=User-Agent:${window.navigator.userAgent}&header=Referer:${window.location.href}`
-        if (bp_aria2_window && !bp_aria2_window.closed) {
-            const task_hash = `#!/new/task?url=${window.btoa(video.url)}&out=${encodeURIComponent(video.filename)}&${aria2_header}`
-            bp_aria2_window.location.href = config.ariang_host + task_hash
-            Message.success('RPC请求成功')
         } else {
-            Message.warning('请检查RPC参数')
+
+            MessageBox.alert('视频地址请求完成！')
+            if (rpc_type() === 'post') {
+                if (video_urls.length > 0) {
+                    download_rpc_all(video_urls)
+                    video_urls.length = 0
+                }
+            }
+            // one by one -> null
         }
-    }, time)
+
+    }
+
 }
 
-let download_rpc_clicked = false
-
-function download_rpc(url, filename, type = 'post') {
-    if (download_rpc_clicked) {
-        Message.miaow()
-        return
+function get_rpc_post(data_list) { // [...{ url, filename, rpc_dir }]
+    let data = data_list
+    if (!(data_list instanceof Array)) {
+        data = data_list instanceof Object
+            ? [data_list]
+            : [{ data_list }]
     }
-    download_rpc_clicked = true
     const rpc = {
         domain: config.rpc_domain,
         port: config.rpc_port,
         token: config.rpc_token,
         dir: config.rpc_dir
     }
-    const json_rpc = {
-        id: window.btoa(`BParse_${Date.now()}_${Math.random()}`),
-        jsonrpc: '2.0',
-        method: 'aria2.addUri',
-        params: [`token:${rpc.token}`, [url], {
-            dir: rpc.dir,
+    console.log(data);
+    data = data.map(({ url, filename, rpc_dir }) => {
+        const param = {
             out: filename,
             header: [
                 `User-Agent: ${window.navigator.userAgent}`,
                 `Referer: ${window.location.href}`
             ]
-        }]
-    }
-    Message.info('发送RPC下载请求')
-    if (type === 'post') {
-        ajax({
-            url: `${rpc.domain}:${rpc.port}/jsonrpc`,
-            type: 'POST',
-            dataType: 'json',
-            data: JSON.stringify(json_rpc),
-        }).then(res => {
-            if (res.result) {
-                Message.success('RPC请求成功')
-            } else {
-                Message.warning('请检查RPC参数')
-            }
-        }).catch(_ => {
-            Message.error('请检查RPC服务配置')
-        }).finally(_ => download_rpc_clicked = false)
+        }
+        if (rpc_dir || rpc.dir) {
+            param.dir = rpc_dir || rpc.dir
+        }
 
+        return {
+            id: window.btoa(`BParse_${Date.now()}_${Math.random()}`),
+            jsonrpc: '2.0',
+            method: 'aria2.addUri',
+            params: [`token:${rpc.token}`, [url], param]
+        }
+    })
+
+    console.log(data);
+    return {
+        url: `${rpc.domain}:${rpc.port}/jsonrpc`,
+        type: 'POST',
+        dataType: 'json',
+        data: JSON.stringify(data)
+    }
+
+}
+
+let download_rpc_clicked = false
+
+function download_rpc_all(videos) {  // post
+
+    if (download_rpc_clicked) {
+        Message.miaow()
+        return
+    }
+    download_rpc_clicked = true
+    const data = [...videos]
+    ajax(get_rpc_post(data)).then(res => {
+        if (res.length === data.length) {
+            Message.success('RPC请求成功')
+        } else {
+            Message.warning('请检查RPC参数')
+        }
+    }).catch(_ => {
+        Message.error('请检查RPC服务配置')
+    }).finally(_ => download_rpc_clicked = false)
+    Message.info('发送RPC下载请求')
+}
+
+function download_rpc(url, filename, type = 'post') {
+    if (type === 'post') {
+        download_rpc_all([{ url, filename }])
     } else if (type === 'ariang') {
         const bp_aria2_window = window.bp_aria2_window
         let time = 100
@@ -409,6 +380,26 @@ function open_ariang(rpc) {
     a.setAttribute('target', '_blank')
     a.setAttribute('onclick', `window.bp_aria2_window=window.open('${url}');`)
     a.click()
+}
+
+function download_rpc_ariang_one(video) {
+    const bp_aria2_window = window.bp_aria2_window
+    let time = 100
+    if (!bp_aria2_window || bp_aria2_window.closed) {
+        open_ariang()
+        time = 3000
+    }
+    setTimeout(() => {
+        const bp_aria2_window = window.bp_aria2_window
+        const aria2_header = `header=User-Agent:${window.navigator.userAgent}&header=Referer:${window.location.href}`
+        if (bp_aria2_window && !bp_aria2_window.closed) {
+            const task_hash = `#!/new/task?url=${window.btoa(video.url)}&out=${encodeURIComponent(video.filename)}&${aria2_header}`
+            bp_aria2_window.location.href = config.ariang_host + task_hash
+            Message.success('RPC请求成功')
+        } else {
+            Message.warning('请检查RPC参数')
+        }
+    }, time)
 }
 
 let download_blob_clicked = false, need_show_progress = true

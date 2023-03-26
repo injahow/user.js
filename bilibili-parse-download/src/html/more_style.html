@@ -1,0 +1,45 @@
+<style>
+  .more {
+    float: right;
+    padding: 1px;
+    cursor: pointer;
+    color: #757575;
+    font-size: 16px;
+    transition: all 0.3s;
+    position: relative;
+    text-align: center;
+  }
+
+  .more:hover .more-ops-list {
+    display: block;
+  }
+
+  .more-ops-list {
+    display: none;
+    position: absolute;
+    width: 80px;
+    left: -15px;
+    z-index: 30;
+    text-align: center;
+    padding: 10px 0;
+    background: #fff;
+    border: 1px solid #e5e9ef;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.14);
+    border-radius: 2px;
+    font-size: 14px;
+    color: #222;
+  }
+
+  .more-ops-list li {
+    position: relative;
+    height: 34px;
+    line-height: 34px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .more-ops-list li:hover {
+    color: #00a1d6;
+    background: #e7e7e7;
+  }
+</style>
