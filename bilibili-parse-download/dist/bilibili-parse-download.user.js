@@ -1636,10 +1636,9 @@
             if (download_rpc_clicked) message.v0.miaow(); else {
                 download_rpc_clicked = !0;
                 var data = _toConsumableArray(videos);
-                (0, ajax.h)(function get_rpc_post(data_list) {
-                    var data = data_list;
-                    data_list instanceof Array || (data = data_list instanceof Object ? [ data_list ] : [ {
-                        data_list: data_list
+                (0, ajax.h)(function get_rpc_post(data) {
+                    data instanceof Array || (data = data instanceof Object ? [ data ] : [ {
+                        data: data
                     } ]);
                     var rpc = {
                         domain: config_config.rpc_domain,
@@ -1647,22 +1646,22 @@
                         token: config_config.rpc_token,
                         dir: config_config.rpc_dir
                     };
-                    return console.log(data), data = data.map((function(_ref4) {
-                        var url = _ref4.url, filename = _ref4.filename, rpc_dir = _ref4.rpc_dir, param = {
-                            out: filename,
-                            header: [ "User-Agent: ".concat(window.navigator.userAgent), "Referer: ".concat(window.location.href) ]
-                        };
-                        return (rpc_dir || rpc.dir) && (param.dir = rpc_dir || rpc.dir), {
-                            id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
-                            jsonrpc: "2.0",
-                            method: "aria2.addUri",
-                            params: [ "token:".concat(rpc.token), [ url ], param ]
-                        };
-                    })), console.log(data), {
+                    return {
                         url: "".concat(rpc.domain, ":").concat(rpc.port, "/jsonrpc"),
                         type: "POST",
                         dataType: "json",
-                        data: JSON.stringify(data)
+                        data: JSON.stringify(data.map((function(_ref4) {
+                            var url = _ref4.url, filename = _ref4.filename, rpc_dir = _ref4.rpc_dir, param = {
+                                out: filename,
+                                header: [ "User-Agent: ".concat(window.navigator.userAgent), "Referer: ".concat(window.location.href) ]
+                            };
+                            return (rpc_dir || rpc.dir) && (param.dir = rpc_dir || rpc.dir), {
+                                id: window.btoa("BParse_".concat(Date.now(), "_").concat(Math.random())),
+                                jsonrpc: "2.0",
+                                method: "aria2.addUri",
+                                params: [ "token:".concat(rpc.token), [ url ], param ]
+                            };
+                        })))
                     };
                 }(data)).then((function(res) {
                     res.length === data.length ? message.v0.success("RPC请求成功") : message.v0.warning("请检查RPC参数");
@@ -1886,42 +1885,41 @@
                 function download_videos(videos, i, video_urls) {
                     if (videos.length) if (i < videos.length) {
                         var _video = videos[i], _msg = "第".concat(i + 1, "（").concat(i + 1, "/").concat(videos.length, "）个视频");
-                        message._p.alert("".concat(_msg, "：获取中...")), setTimeout((function() {
-                            api.get_urls(_video.p, _video.q, _video.format, (function success(res) {
-                                if (!res.code) {
-                                    message.v0.success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
-                                    message._p.alert("".concat(_msg, "：获取成功！"));
-                                    var _ref3 = [ res.url, rpc_type(), res.video, res.audio ], url = _ref3[0], type = _ref3[1], video_url = _ref3[2], audio_url = _ref3[3];
-                                    "post" === type ? ("dash" === _video.format ? (video_urls.push({
-                                        url: video_url,
-                                        filename: _video.filename + "_video" + format(video_url),
-                                        rpc_dir: _video.rpc_dir
-                                    }), video_urls.push({
-                                        url: audio_url,
-                                        filename: _video.filename + "_audio" + format(audio_url),
-                                        rpc_dir: _video.rpc_dir
-                                    })) : video_urls.push({
-                                        url: url,
-                                        filename: _video.filename + format(url),
-                                        rpc_dir: _video.rpc_dir
-                                    }), video_urls.length > 3 && (download_rpc_all(video_urls), video_urls.length = 0)) : "ariang" === type && ("dash" === _video.format ? (download_rpc_ariang_one({
-                                        url: video_url,
-                                        filename: _video.filename + "_video" + format(video_url)
-                                    }), download_rpc_ariang_one({
-                                        url: audio_url,
-                                        filename: _video.filename + "_audio" + format(audio_url)
-                                    })) : download_rpc_ariang_one({
-                                        url: url,
-                                        filename: _video.filename + format(url)
-                                    }));
-                                }
-                                setTimeout((function() {
-                                    download_videos(videos, ++i, video_urls);
-                                }), 3e3);
-                            }), (function error() {
+                        message._p.alert("".concat(_msg, "：获取中..."));
+                        api.get_urls(_video.p, _video.q, _video.format, (function success(res) {
+                            if (!res.code) {
+                                message.v0.success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
+                                message._p.alert("".concat(_msg, "：获取成功！"));
+                                var _ref3 = [ res.url, rpc_type(), res.video, res.audio ], url = _ref3[0], type = _ref3[1], video_url = _ref3[2], audio_url = _ref3[3];
+                                "post" === type ? ("dash" === _video.format ? (video_urls.push({
+                                    url: video_url,
+                                    filename: _video.filename + "_video" + format(video_url),
+                                    rpc_dir: _video.rpc_dir
+                                }), video_urls.push({
+                                    url: audio_url,
+                                    filename: _video.filename + "_audio" + format(audio_url),
+                                    rpc_dir: _video.rpc_dir
+                                })) : video_urls.push({
+                                    url: url,
+                                    filename: _video.filename + format(url),
+                                    rpc_dir: _video.rpc_dir
+                                }), video_urls.length > 3 && (download_rpc_all(video_urls), video_urls.length = 0)) : "ariang" === type && ("dash" === _video.format ? (download_rpc_ariang_one({
+                                    url: video_url,
+                                    filename: _video.filename + "_video" + format(video_url)
+                                }), download_rpc_ariang_one({
+                                    url: audio_url,
+                                    filename: _video.filename + "_audio" + format(audio_url)
+                                })) : download_rpc_ariang_one({
+                                    url: url,
+                                    filename: _video.filename + format(url)
+                                }));
+                            }
+                            setTimeout((function() {
                                 download_videos(videos, ++i, video_urls);
-                            }));
-                        }), 3e3);
+                            }), 4e3);
+                        }), (function error() {
+                            download_videos(videos, ++i, video_urls);
+                        }));
                     } else message._p.alert("视频地址请求完成！"), "post" === rpc_type() && video_urls.length > 0 && (download_rpc_all(video_urls), 
                     video_urls.length = 0);
                 }
@@ -2239,7 +2237,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.0", " ").concat("6d4e164", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.0", " ").concat("d11d439", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
