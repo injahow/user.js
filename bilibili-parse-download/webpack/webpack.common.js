@@ -55,6 +55,9 @@ const getDefaultConfig = () => {
                     test: /\.html$/i,
                     enforce: 'post',
                     loader: 'html-loader',
+                    options: {
+                        minimize: true
+                    }
                 },
                 {
                     test: /\.css$/,
