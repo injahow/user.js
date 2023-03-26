@@ -1702,8 +1702,8 @@
                     var loaded = evt.loaded, tot = evt.total;
                     !function show_progress(_ref5) {
                         var total = _ref5.total, loaded = _ref5.loaded, percent = _ref5.percent;
-                        need_show_progress && message._p.alert("文件大小：".concat(Math.floor(total / 1048576), "MB(").concat(total, "Byte)<br/>") + "已经下载：".concat(Math.floor(loaded / 1048576), "MB(").concat(loaded, "Byte)<br/>") + "当前进度：".concat(percent, "%<br/>下载中请勿操作浏览器！"), (function() {
-                            need_show_progress = !1, message._p.alert("注意：刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。");
+                        need_show_progress && message._p.alert("文件大小：".concat(Math.floor(total / 1048576), "MB(").concat(total, "Byte)<br/>") + "已经下载：".concat(Math.floor(loaded / 1048576), "MB(").concat(loaded, "Byte)<br/>") + "当前进度：".concat(percent, "%<br/>下载中请勿操作浏览器，刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。"), (function() {
+                            need_show_progress = !1;
                         })), total === loaded && (message._p.alert("下载完成，请等待浏览器保存！"), download_blob_clicked = !1);
                     }({
                         total: tot,
@@ -2237,7 +2237,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.0", " ").concat("72a5e2d", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.0", " ").concat("f478afd", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
