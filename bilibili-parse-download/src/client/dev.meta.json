@@ -4,7 +4,7 @@
     {
       "name": "bilibili视频下载(development)",
       "namespace ": "https://github.com/injahow",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "description": "bilibili视频下载(development)",
       "author": "injahow",
       "copyright": "2021, injahow (https://github.com/injahow)",
@@ -23,9 +23,7 @@
         "*://www.bilibili.com/cheese/play/ss*",
         "https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*"
       ],
-      "require": [
-        "https://static.hdslb.com/js/jquery.min.js"
-      ],
+      "require": ["https://static.hdslb.com/js/jquery.min.js"],
       "icon": "https://static.hdslb.com/images/favicon.ico",
       "grant": "none"
     },
