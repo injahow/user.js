@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载(development)
 // @namespace     https://github.com/injahow
-// @version       1.0.0
+// @version       0.0.1
 // @description   bilibili视频下载(development)
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -3179,7 +3179,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.2", " ").concat("01288e2", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.2", " ").concat("e06fd1d", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
