@@ -101,7 +101,7 @@ class VideoList extends VideoBase {
         this.resourceList = state.resourceList || []
         const video_list = []
         for (const video of this.resourceList) {
-            let i = 0, length = video.pages && video.pages.length || 1
+            let i = 0, length = video.pages && video.pages.length || 0
             while (i < length) {
                 const _video = Object.assign({}, video)
                 _video.title = video.title + (length > 1 ? ` P${i + 1} ${video.pages[i].title}` : '')

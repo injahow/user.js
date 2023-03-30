@@ -3,6 +3,7 @@ import { ajax } from './ajax'
 import { api } from './api'
 import { video } from './video'
 import { DPlayer } from '../utils/runtime-lib'
+import { MessageBox } from '../ui/message'
 
 function get_bili_player_id() {
     if (!!$('#bilibiliPlayer')[0]) {
@@ -48,7 +49,7 @@ function request_danmaku(options, cid) {
                 danmaku_config()
             }, 100)
         }
-    }).catch(_ => {
+    }).catch(() => {
         options.error('弹幕请求异常')
     })
 }
@@ -60,21 +61,21 @@ function replace_player(url, url_2) {
     const bili_video = $(bili_video_tag())[0]
     bili_video_stop()
     !!bili_video && bili_video.addEventListener('play', bili_video_stop, false)
-    let bili_player_id
+    let bili_player_id = get_bili_player_id()
     if (!!$('#bilibiliPlayer')[0]) {
-        bili_player_id = '#bilibiliPlayer'
         $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">')
         $(bili_player_id).hide()
     } else if (!!$('#bilibili-player')[0]) {
-        bili_player_id = '#bilibili-player'
-        $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>')
+        $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;z-index:1000;"></div>')
         $(bili_player_id).hide()
     } else if (!!$('#edu-player')[0]) {
-        bili_player_id = '.bpx-player-primary-area'
-        $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>')
+        $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;z-index:1000;"></div>')
         $(bili_player_id).hide()
+    } else {
+        MessageBox.alert('<div id="bp_dplayer" style="width:100%;height:100%;"></div>', () => {
+            recover_player()
+        })
     }
-    $('#player_mask_module').hide()
     const dplayer_init = (subtitle_url = '') => {
         window.bp_dplayer = new DPlayer({
             container: $('#bp_dplayer')[0],
@@ -196,7 +197,6 @@ function recover_player() {
             $('#bp_dplayer_2').remove()
         }
         $(get_bili_player_id()).show()
-        // $('#player_mask_module').show()
     }
 }
 

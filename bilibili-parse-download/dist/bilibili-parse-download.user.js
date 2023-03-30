@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.4.1
+// @version       2.4.2
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -1161,7 +1161,7 @@
                 _this.resourceList = state.resourceList || [];
                 var _step, video_list = [], _iterator = video_base_createForOfIteratorHelper(_this.resourceList);
                 try {
-                    for (_iterator.s(); !(_step = _iterator.n()).done; ) for (var video = _step.value, i = 0, length = video.pages && video.pages.length || 1; i < length; ) {
+                    for (_iterator.s(); !(_step = _iterator.n()).done; ) for (var video = _step.value, i = 0, length = video.pages && video.pages.length || 0; i < length; ) {
                         var _video = Object.assign({}, video);
                         _video.title = video.title + (length > 1 ? " P".concat(i + 1, " ").concat(video.pages[i].title) : ""), 
                         _video.cid = video.pages[i].id, video_list.push(_video), i++;
@@ -1363,8 +1363,8 @@
                     }
                     var _main_title4 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
                     return new Cheese(_type, _main_title4, {
-                        episodes: _episodes,
-                        p: _id2 + 1
+                        p: _id2 + 1,
+                        episodes: _episodes
                     });
                 }
                 return new VideoBase(_type);
@@ -1399,6 +1399,9 @@
                 return quality_list.length ? quality_list : [ "80", "64", "32", "16" ];
             }
         }, runtime_lib = __webpack_require__(711);
+        function get_bili_player_id() {
+            return $("#bilibiliPlayer")[0] ? "#bilibiliPlayer" : $("#bilibili-player")[0] ? "#bilibili-player" : $("#edu-player")[0] ? "div.bpx-player-primary-area" : void 0;
+        }
         function request_danmaku(options, cid) {
             cid ? (0, ajax.h)({
                 url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(cid),
@@ -1421,7 +1424,7 @@
                         danmaku_config();
                     }), 100);
                 } else options.error("未发现弹幕"); else options.error("弹幕获取失败");
-            })).catch((function(_) {
+            })).catch((function() {
                 options.error("弹幕请求异常");
             })) : options.error("cid未知，无法获取弹幕");
         }
@@ -1437,9 +1440,7 @@
                 var bili_video = $(bili_video_tag())[0];
                 bili_video && bili_video.removeEventListener("play", bili_video_stop, !1), window.bp_dplayer.destroy(), 
                 window.bp_dplayer = null, $("#bp_dplayer").remove(), window.bp_dplayer_2 && (window.bp_dplayer_2.destroy(), 
-                window.bp_dplayer_2 = null, $("#bp_dplayer_2").remove()), $(function get_bili_player_id() {
-                    return $("#bilibiliPlayer")[0] ? "#bilibiliPlayer" : $("#bilibili-player")[0] ? "#bilibili-player" : $("#edu-player")[0] ? "div.bpx-player-primary-area" : void 0;
-                }()).show();
+                window.bp_dplayer_2 = null, $("#bp_dplayer_2").remove()), $(get_bili_player_id()).show();
             }
         }
         function danmaku_config() {
@@ -1451,14 +1452,15 @@
             recover_player: recover_player,
             replace_player: function replace_player(url, url_2) {
                 recover_player();
-                var bili_player_id, bili_video = $(bili_video_tag())[0];
-                bili_video_stop(), bili_video && bili_video.addEventListener("play", bili_video_stop, !1), 
-                $("#bilibiliPlayer")[0] ? (bili_player_id = "#bilibiliPlayer", $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">'), 
-                $(bili_player_id).hide()) : $("#bilibili-player")[0] ? (bili_player_id = "#bilibili-player", 
-                $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>'), 
-                $(bili_player_id).hide()) : $("#edu-player")[0] && (bili_player_id = ".bpx-player-primary-area", 
-                $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>'), 
-                $(bili_player_id).hide()), $("#player_mask_module").hide(), api.get_subtitle_url(0, (function dplayer_init() {
+                var bili_video = $(bili_video_tag())[0];
+                bili_video_stop(), bili_video && bili_video.addEventListener("play", bili_video_stop, !1);
+                var bili_player_id = get_bili_player_id();
+                $("#bilibiliPlayer")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">'), 
+                $(bili_player_id).hide()) : $("#bilibili-player")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;z-index:1000;"></div>'), 
+                $(bili_player_id).hide()) : $("#edu-player")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;z-index:1000;"></div>'), 
+                $(bili_player_id).hide()) : message._p.alert('<div id="bp_dplayer" style="width:100%;height:100%;"></div>', (function() {
+                    recover_player();
+                })), api.get_subtitle_url(0, (function dplayer_init() {
                     var subtitle_url = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
                     if (window.bp_dplayer = new runtime_lib.bc({
                         container: $("#bp_dplayer")[0],
@@ -1801,11 +1803,13 @@
                 if (0 === videos.length) return 0 === Object.keys(zip.files).length ? void message.v0.warning("未发现弹幕") : void zip.generateAsync({
                     type: "blob"
                 }).then((function(data) {
-                    return download_blob_zip(data, video.base().name + "_ass");
+                    return download_blob_zip(data, video.base().filename() + "_ass");
                 }));
-                var videos_pop = videos.pop();
-                _download_danmaku_ass(videos_pop.cid, videos_pop.filename, "callback", (function(data) {
-                    data && zip.file(videos_pop.filename + ".ass", data), download_danmaku_ass_zip(videos, zip);
+                var _videos$pop = videos.pop(), cid = _videos$pop.cid, filename = _videos$pop.filename;
+                _download_danmaku_ass(cid, filename, "callback", (function(data) {
+                    data && zip.file(filename + ".ass", data), setTimeout((function() {
+                        download_danmaku_ass_zip(videos, zip);
+                    }), 1e3);
                 }));
             }
         }
@@ -1814,11 +1818,13 @@
                 if (0 === videos.length) return 0 === Object.keys(zip.files).length ? void message.v0.warning("未发现字幕") : void zip.generateAsync({
                     type: "blob"
                 }).then((function(data) {
-                    return download_blob_zip(data, video.base().name + "_vtt");
+                    return download_blob_zip(data, video.base().filename() + "_vtt");
                 }));
-                var videos_pop = videos.pop();
-                api.get_subtitle_data(videos_pop.p, (function(data) {
-                    data && zip.file(videos_pop.filename + ".vtt", data), download_subtitle_vtt_zip(videos, zip);
+                var _videos$pop2 = videos.pop(), p = _videos$pop2.p, filename = _videos$pop2.filename;
+                api.get_subtitle_data(p, (function(data) {
+                    data && zip.file(filename + ".vtt", data), setTimeout((function() {
+                        download_subtitle_vtt_zip(videos, zip);
+                    }), 1e3);
                 }));
             }
         }
@@ -1881,7 +1887,7 @@
                 } finally {
                     _iterator.f();
                 }
-                var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="mp4" selected>MP4</option>\n                <option value="flv">FLV</option>\n                <option value="dash">DASH</option>\n            </select>\n            &nbsp;&nbsp;无法设置MP4清晰度\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video">视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <div style="margin:2% 0;">\n            <label>保存目录:</label><input id="dl_rpc_dir" placeholder="').concat(config_config.rpc_dir || "为空使用默认目录", '"/>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, '\n        </div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
+                var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="mp4" selected>MP4</option>\n                <option value="flv">FLV</option>\n                <option value="dash">DASH</option>\n            </select>\n            &nbsp;&nbsp;无法设置MP4清晰度\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video">视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <div style="margin:2% 0;">\n            <label>保存目录:</label>\n            <input id="dl_rpc_dir" placeholder="').concat(config_config.rpc_dir || "为空使用默认目录", '"/>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, '\n        </div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
                 function download_videos(videos, i, video_urls) {
                     if (videos.length) if (i < videos.length) {
                         var _video = videos[i], _msg = "第".concat(i + 1, "（").concat(i + 1, "/").concat(videos.length, "）个视频");
@@ -1984,6 +1990,7 @@
             hk: "cn-hk-eq-bcache-01.bilivideo.com",
             akamai: "upos-hz-mirrorakam.akamaized.net"
         }, videoQualityMap = {
+            127: "8K 超高清",
             120: "4K 超清",
             116: "1080P 60帧",
             112: "1080P 高码率",
@@ -2237,7 +2244,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.1", " ").concat("7301685", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.2", " ").concat("01288e2", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2257,8 +2264,8 @@
                                     var item = toolbar_obj.find(".toolbar-left-item-wrap").eq(0).clone();
                                     item.attr("id", key);
                                     var svg = svg_map[key].replaceAll("#757575", "currentColor").replace("class", 'class="'.concat(item.find("svg").attr("class"), '"')), span = item.find("span").text(btn_list[key]), item_div = item.find("div").eq(0);
-                                    item_div.attr("title", btn_list[key]), item_div.children().remove(), item_div.append(svg).append(span), 
-                                    left.append(item);
+                                    item_div.attr("title", btn_list[key]), item_div.removeClass("on"), item_div.children().remove(), 
+                                    item_div.append(svg).append(span), left.append(item);
                                 } else {
                                     var more_map = btn_list[key], el = "" + '<div class="more">更多<div class="more-ops-list">\n                        <ul>'.concat(Object.keys(more_map).map((function(key) {
                                         return '<li><span id="'.concat(key, '">').concat(more_map[key], "</span></li>");

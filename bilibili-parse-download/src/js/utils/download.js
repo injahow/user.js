@@ -110,7 +110,8 @@ function download_all() {
             </label>
         </div>
         <div style="margin:2% 0;">
-            <label>保存目录:</label><input id="dl_rpc_dir" placeholder="${config.rpc_dir || '为空使用默认目录'}"/>
+            <label>保存目录:</label>
+            <input id="dl_rpc_dir" placeholder="${config.rpc_dir || '为空使用默认目录'}"/>
         </div>
         <b>
             <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>
@@ -609,22 +610,24 @@ function download_blob_zip(blob_data, filename) {
  * @param {JSZip} zip
  * @returns
  */
-function download_danmaku_ass_zip(videos, zip) { // 异步递归
+function download_danmaku_ass_zip(videos, zip) {
     if (!videos) return
     if (videos.length === 0) {
         if (Object.keys(zip.files).length === 0) {
             Message.warning('未发现弹幕')
             return
         }
-        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().name + '_ass'))
+        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().filename() + '_ass'))
         return
     }
-    const videos_pop = videos.pop()
-    _download_danmaku_ass(videos_pop.cid, videos_pop.filename, 'callback', data => {
+    const { cid, filename } = videos.pop()
+    _download_danmaku_ass(cid, filename, 'callback', data => {
         if (data) {
-            zip.file(videos_pop.filename + '.ass', data)
+            zip.file(filename + '.ass', data)
         }
-        download_danmaku_ass_zip(videos, zip)
+        setTimeout(() => {
+            download_danmaku_ass_zip(videos, zip)
+        }, 1000)
     })
 }
 
@@ -634,22 +637,24 @@ function download_danmaku_ass_zip(videos, zip) { // 异步递归
  * @param {JSZip} zip
  * @returns
  */
-function download_subtitle_vtt_zip(videos, zip) { // 异步递归
+function download_subtitle_vtt_zip(videos, zip) {
     if (!videos) return
     if (videos.length === 0) {
         if (Object.keys(zip.files).length === 0) {
             Message.warning('未发现字幕')
             return
         }
-        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().name + '_vtt'))
+        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().filename() + '_vtt'))
         return
     }
-    const videos_pop = videos.pop()
-    api.get_subtitle_data(videos_pop.p, data => {
+    const { p, filename } = videos.pop()
+    api.get_subtitle_data(p, data => {
         if (data) {
-            zip.file(videos_pop.filename + '.vtt', data)
+            zip.file(filename + '.vtt', data)
         }
-        download_subtitle_vtt_zip(videos, zip)
+        setTimeout(() => {
+            download_subtitle_vtt_zip(videos, zip)
+        }, 1000)
     })
 }
 

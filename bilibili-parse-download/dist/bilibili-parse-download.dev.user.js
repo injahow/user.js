@@ -1075,7 +1075,7 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var video = _step.value;
         var i = 0,
-            length = video.pages && video.pages.length || 1;
+            length = video.pages && video.pages.length || 0;
 
         while (i < length) {
           var _video = Object.assign({}, video);
@@ -1363,8 +1363,8 @@ function base() {
     var _main_title4 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
 
     var _state4 = {
-      episodes: _episodes,
-      p: _id2 + 1
+      p: _id2 + 1,
+      episodes: _episodes
     };
     return new Cheese(_type, _main_title4, _state4);
   } else {
@@ -1465,6 +1465,7 @@ var runtime_lib = __webpack_require__("./src/js/utils/runtime-lib.js");
 
 
 
+
 function get_bili_player_id() {
   if (!!$('#bilibiliPlayer')[0]) {
     return '#bilibiliPlayer';
@@ -1521,7 +1522,7 @@ function request_danmaku(options, cid) {
         danmaku_config();
       }, 100);
     }
-  }).catch(function (_) {
+  }).catch(function () {
     options.error('弹幕请求异常');
   });
 }
@@ -1533,23 +1534,22 @@ function replace_player(url, url_2) {
   var bili_video = $(bili_video_tag())[0];
   bili_video_stop();
   !!bili_video && bili_video.addEventListener('play', bili_video_stop, false);
-  var bili_player_id;
+  var bili_player_id = get_bili_player_id();
 
   if (!!$('#bilibiliPlayer')[0]) {
-    bili_player_id = '#bilibiliPlayer';
     $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">');
     $(bili_player_id).hide();
   } else if (!!$('#bilibili-player')[0]) {
-    bili_player_id = '#bilibili-player';
-    $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;"></div>');
+    $(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;z-index:1000;"></div>');
     $(bili_player_id).hide();
   } else if (!!$('#edu-player')[0]) {
-    bili_player_id = '.bpx-player-primary-area';
-    $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;"></div>');
+    $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;z-index:1000;"></div>');
     $(bili_player_id).hide();
+  } else {
+    message.MessageBox.alert('<div id="bp_dplayer" style="width:100%;height:100%;"></div>', function () {
+      recover_player();
+    });
   }
-
-  $('#player_mask_module').hide();
 
   var dplayer_init = function dplayer_init() {
     var subtitle_url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -1675,7 +1675,7 @@ function recover_player() {
       $('#bp_dplayer_2').remove();
     }
 
-    $(get_bili_player_id()).show(); // $('#player_mask_module').show()
+    $(get_bili_player_id()).show();
   }
 } // DPlayer 弹幕设置
 
@@ -1855,7 +1855,7 @@ function download_all() {
     _iterator.f();
   }
 
-  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"mp4\" selected>MP4</option>\n                <option value=\"flv\">FLV</option>\n                <option value=\"dash\">DASH</option>\n            </select>\n            &nbsp;&nbsp;\u65E0\u6CD5\u8BBE\u7F6EMP4\u6E05\u6670\u5EA6\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <label style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_video\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_video\">\u89C6\u9891</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_subtitle\" name=\"dl_option\">\n                <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_danmaku\" name=\"dl_option\">\n                <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n            </label>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4FDD\u5B58\u76EE\u5F55:</label><input id=\"dl_rpc_dir\" placeholder=\"").concat(config_config.rpc_dir || '为空使用默认目录', "\"/>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
+  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"mp4\" selected>MP4</option>\n                <option value=\"flv\">FLV</option>\n                <option value=\"dash\">DASH</option>\n            </select>\n            &nbsp;&nbsp;\u65E0\u6CD5\u8BBE\u7F6EMP4\u6E05\u6670\u5EA6\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <label style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_video\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_video\">\u89C6\u9891</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_subtitle\" name=\"dl_option\">\n                <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_danmaku\" name=\"dl_option\">\n                <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n            </label>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4FDD\u5B58\u76EE\u5F55:</label>\n            <input id=\"dl_rpc_dir\" placeholder=\"").concat(config_config.rpc_dir || '为空使用默认目录', "\"/>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
   message.MessageBox.confirm(msg, function () {
     // 获取参数
     var _ref2 = [$('#dl_video').is(':checked'), $('#dl_subtitle').is(':checked'), $('#dl_danmaku').is(':checked'), $('#dl_format').val(), $('#dl_quality').val() || q, $('#dl_rpc_dir').val()],
@@ -2410,7 +2410,6 @@ function download_blob_zip(blob_data, filename) {
 
 
 function download_danmaku_ass_zip(videos, zip) {
-  // 异步递归
   if (!videos) return;
 
   if (videos.length === 0) {
@@ -2422,19 +2421,23 @@ function download_danmaku_ass_zip(videos, zip) {
     zip.generateAsync({
       type: 'blob'
     }).then(function (data) {
-      return download_blob_zip(data, video.base().name + '_ass');
+      return download_blob_zip(data, video.base().filename() + '_ass');
     });
     return;
   }
 
-  var videos_pop = videos.pop();
+  var _videos$pop = videos.pop(),
+      cid = _videos$pop.cid,
+      filename = _videos$pop.filename;
 
-  _download_danmaku_ass(videos_pop.cid, videos_pop.filename, 'callback', function (data) {
+  _download_danmaku_ass(cid, filename, 'callback', function (data) {
     if (data) {
-      zip.file(videos_pop.filename + '.ass', data);
+      zip.file(filename + '.ass', data);
     }
 
-    download_danmaku_ass_zip(videos, zip);
+    setTimeout(function () {
+      download_danmaku_ass_zip(videos, zip);
+    }, 1000);
   });
 }
 /**
@@ -2446,7 +2449,6 @@ function download_danmaku_ass_zip(videos, zip) {
 
 
 function download_subtitle_vtt_zip(videos, zip) {
-  // 异步递归
   if (!videos) return;
 
   if (videos.length === 0) {
@@ -2458,18 +2460,23 @@ function download_subtitle_vtt_zip(videos, zip) {
     zip.generateAsync({
       type: 'blob'
     }).then(function (data) {
-      return download_blob_zip(data, video.base().name + '_vtt');
+      return download_blob_zip(data, video.base().filename() + '_vtt');
     });
     return;
   }
 
-  var videos_pop = videos.pop();
-  api.get_subtitle_data(videos_pop.p, function (data) {
+  var _videos$pop2 = videos.pop(),
+      p = _videos$pop2.p,
+      filename = _videos$pop2.filename;
+
+  api.get_subtitle_data(p, function (data) {
     if (data) {
-      zip.file(videos_pop.filename + '.vtt', data);
+      zip.file(filename + '.vtt', data);
     }
 
-    download_subtitle_vtt_zip(videos, zip);
+    setTimeout(function () {
+      download_subtitle_vtt_zip(videos, zip);
+    }, 1000);
   });
 }
 
@@ -2565,6 +2572,7 @@ var hostMap = {
   akamai: 'upos-hz-mirrorakam.akamaized.net'
 };
 var videoQualityMap = {
+  127: '8K 超高清',
   120: '4K 超清',
   116: '1080P 60帧',
   112: '1080P 高码率',
@@ -3108,6 +3116,7 @@ function initToolbar() {
       var span = item.find('span').text(btn_list[key]);
       var item_div = item.find('div').eq(0);
       item_div.attr('title', btn_list[key]);
+      item_div.removeClass('on');
       item_div.children().remove();
       item_div.append(svg).append(span);
       left.append(item);
@@ -3170,7 +3179,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.1", " ").concat("7301685", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.2", " ").concat("01288e2", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

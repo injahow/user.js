@@ -95,8 +95,8 @@ function base() {
 
         const main_title = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
         const state = {
-            episodes,
-            p: _id + 1
+            p: _id + 1,
+            episodes
         }
 
         return new Cheese(_type, main_title, state)

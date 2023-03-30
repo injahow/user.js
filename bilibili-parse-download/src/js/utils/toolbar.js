@@ -106,6 +106,7 @@ function initToolbar() {
             const span = item.find('span').text(btn_list[key])
             const item_div = item.find('div').eq(0)
             item_div.attr('title', btn_list[key])
+            item_div.removeClass('on')
             item_div.children().remove()
             item_div.append(svg).append(span)
             left.append(item)

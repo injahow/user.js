@@ -56,6 +56,7 @@ const hostMap = {
 }
 
 const videoQualityMap = {
+    127: '8K 超高清',
     120: '4K 超清',
     116: '1080P 60帧',
     112: '1080P 高码率',
