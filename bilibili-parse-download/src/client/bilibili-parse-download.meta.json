@@ -23,9 +23,7 @@
         "*://www.bilibili.com/cheese/play/ss*",
         "https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*"
       ],
-      "require": [
-        "https://static.hdslb.com/js/jquery.min.js"
-      ],
+      "require": ["https://static.hdslb.com/js/jquery.min.js"],
       "icon": "https://static.hdslb.com/images/favicon.ico",
       "compatible": ["chrome", "firefox"],
       "grant": "none"
