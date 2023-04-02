@@ -80,7 +80,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
             store.get('auth_id'),
             store.get('auth_sec')
         ]
-        if (config.auth === '1' && auth_id && auth_sec) {
+        if (auth_id && auth_sec) {
             base_api += `&auth_id=${auth_id}&auth_sec=${auth_sec}`
             !!page && (base_api += '&s')
         }
@@ -168,11 +168,11 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 }
 
 function _get_subtitle(p, callback, to_blob_url = true) {
-    const video_base = video.base()
+    const vb = video.base()
     const [aid, cid, epid] = [
-        video_base.aid(p),
-        video_base.cid(p),
-        video_base.epid(p)
+        vb.aid(p),
+        vb.cid(p),
+        vb.epid(p)
     ]
     ajax({
         url: `https://api.bilibili.com/x/player/v2?aid=${aid}&cid=${cid}&ep_id=${epid}`,
