@@ -12,31 +12,31 @@ function initMessage(el) {
 
 function messageBox(ctx, type) {
     if (type === 'confirm') {
-        $('div.message-box-btn button[name="cancel"]').show()
+        $('.message-box-btn button[name="cancel"]').show()
     } else if (type === 'alert') {
-        $('div.message-box-btn button[name="cancel"]').hide()
+        $('.message-box-btn button[name="cancel"]').hide()
     }
     if (ctx.html) {
-        $('div#message_box_context').html(`<div style="font-size:18px">${ctx.html}</div>`)
+        $('#message_box_context').html(`<div style="font-size:18px">${ctx.html}</div>`)
     } else {
-        $('div#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>')
+        $('#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>')
     }
     scroll.hide()
     $('#message_box').show()
-    $('div#message_box').animate({
+    $('#message_box').animate({
         'opacity': '1'
     }, 300)
-    $('div.message-box-btn button[name="affirm"]')[0].onclick = () => {
-        $('div#message_box').hide()
-        $('div#message_box').css('opacity', 0)
+    $('.message-box-btn button[name="affirm"]')[0].onclick = () => {
+        $('#message_box').hide()
+        $('#message_box').css('opacity', 0)
         scroll.show()
         if (ctx.callback && ctx.callback.affirm) {
             ctx.callback.affirm()
         }
     }
-    $('div.message-box-btn button[name="cancel"]')[0].onclick = () => {
-        $('div#message_box').hide()
-        $('div#message_box').css('opacity', 0)
+    $('.message-box-btn button[name="cancel"]')[0].onclick = () => {
+        $('#message_box').hide()
+        $('#message_box').css('opacity', 0)
         scroll.show()
         if (ctx.callback && ctx.callback.cancel) {
             ctx.callback.cancel()
@@ -53,8 +53,8 @@ function message(html, type) {
 }
 
 function messageEnQueue(message, id) {
-    $('div.message-bg').append(message)
-    $(`div#message_${id}`).animate({
+    $('.message-bg').append(message)
+    $(`#message_${id}`).animate({
         'margin-top': '+=70px',
         'opacity': '1'
     }, 300)
@@ -77,7 +77,7 @@ const Message = {
     warning: html => message(html, 'warning'),
     error: html => message(html, 'error'),
     info: html => message(html, 'info'),
-    miaow: _ => message('(^・ω・^)~喵喵喵~', 'info')
+    miaow: () => message('(^・ω・^)~喵喵喵~', 'info')
 }
 
 const MessageBox = {
