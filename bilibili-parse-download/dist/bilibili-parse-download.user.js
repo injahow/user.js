@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.4.3
+// @version       2.4.4
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -46,15 +46,15 @@
                 el && $(el)[0] ? $(el).append(message) : $("body").append(message);
             }
             function messageBox(ctx, type) {
-                "confirm" === type ? $('.message-box-btn button[name="cancel"]').show() : "alert" === type && $('.message-box-btn button[name="cancel"]').hide(), 
-                ctx.html ? $("#message_box_context").html('<div style="font-size:18px">'.concat(ctx.html, "</div>")) : $("#message_box_context").html('<div style="font-size:18px">╰(￣▽￣)╮</div>'), 
+                "confirm" === type ? $('.message-box-btn button[name="cancel"]').show() : "alert" === type && $('.message-box-btn button[name="cancel"]').hide(),
+                ctx.html ? $("#message_box_context").html('<div style="font-size:18px">'.concat(ctx.html, "</div>")) : $("#message_box_context").html('<div style="font-size:18px">╰(￣▽￣)╮</div>'),
                 ui_scroll.A.hide(), $("#message_box").show(), $("#message_box").animate({
                     opacity: "1"
                 }, 300), $('.message-box-btn button[name="affirm"]')[0].onclick = function() {
-                    $("#message_box").hide(), $("#message_box").css("opacity", 0), ui_scroll.A.show(), 
+                    $("#message_box").hide(), $("#message_box").css("opacity", 0), ui_scroll.A.show(),
                     ctx.callback && ctx.callback.affirm && ctx.callback.affirm();
                 }, $('.message-box-btn button[name="cancel"]')[0].onclick = function() {
-                    $("#message_box").hide(), $("#message_box").css("opacity", 0), ui_scroll.A.show(), 
+                    $("#message_box").hide(), $("#message_box").css("opacity", 0), ui_scroll.A.show(),
                     ctx.callback && ctx.callback.cancel && ctx.callback.cancel();
                 };
             }
@@ -65,7 +65,7 @@
                         "margin-top": "+=70px",
                         opacity: "1"
                     }, 300);
-                })('<div id="message_'.concat(id += 1, '" class="message message-').concat(type, '"><div class="message-context"><p><strong>').concat(type, "：</strong></p><p>").concat(html, "</p></div></div>"), id), 
+                })('<div id="message_'.concat(id += 1, '" class="message message-').concat(type, '"><div class="message-context"><p><strong>').concat(type, "：</strong></p><p>").concat(html, "</p></div></div>"), id),
                 function messageDeQueue(id) {
                     var time = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 3;
                     setTimeout((function() {
@@ -143,7 +143,7 @@
             function ajax(obj) {
                 return new Promise((function(resolve, reject) {
                     obj.success = function(res) {
-                        res && res.code && _ui_message__WEBPACK_IMPORTED_MODULE_0__.v0.warning("".concat(res.message || "CODE:".concat(res.code))), 
+                        res && res.code && _ui_message__WEBPACK_IMPORTED_MODULE_0__.v0.warning("".concat(res.message || "CODE:".concat(res.code))),
                         resolve(res);
                     }, obj.error = function(err) {
                         _ui_message__WEBPACK_IMPORTED_MODULE_0__.v0.error("网络异常"), reject(err);
@@ -297,26 +297,26 @@
                     var method = delegate.iterator[context.method];
                     if (void 0 === method) {
                         if (context.delegate = null, "throw" === context.method) {
-                            if (delegate.iterator.return && (context.method = "return", context.arg = void 0, 
+                            if (delegate.iterator.return && (context.method = "return", context.arg = void 0,
                             maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel;
                             context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method");
                         }
                         return ContinueSentinel;
                     }
                     var record = tryCatch(method, delegate.iterator, context.arg);
-                    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, 
+                    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg,
                     context.delegate = null, ContinueSentinel;
                     var info = record.arg;
-                    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, 
-                    "return" !== context.method && (context.method = "next", context.arg = void 0), 
-                    context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), 
+                    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc,
+                    "return" !== context.method && (context.method = "next", context.arg = void 0),
+                    context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"),
                     context.delegate = null, ContinueSentinel);
                 }
                 function pushTryEntry(locs) {
                     var entry = {
                         tryLoc: locs[0]
                     };
-                    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], 
+                    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2],
                     entry.afterLoc = locs[3]), this.tryEntries.push(entry);
                 }
                 function resetTryEntry(entry) {
@@ -335,7 +335,7 @@
                         if ("function" == typeof iterable.next) return iterable;
                         if (!isNaN(iterable.length)) {
                             var i = -1, next = function next() {
-                                for (;++i < iterable.length; ) if (hasOwn.call(iterable, i)) return next.value = iterable[i], 
+                                for (;++i < iterable.length; ) if (hasOwn.call(iterable, i)) return next.value = iterable[i],
                                 next.done = !1, next;
                                 return next.value = void 0, next.done = !0, next;
                             };
@@ -352,14 +352,14 @@
                         done: !0
                     };
                 }
-                return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), 
-                define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), 
+                return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype),
+                define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"),
                 exports.isGeneratorFunction = function(genFun) {
                     var ctor = "function" == typeof genFun && genFun.constructor;
                     return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
                 }, exports.mark = function(genFun) {
-                    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, 
-                    define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), 
+                    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype,
+                    define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp),
                     genFun;
                 }, exports.awrap = function(arg) {
                     return {
@@ -390,8 +390,8 @@
                 }, exports.values = values, Context.prototype = {
                     constructor: Context,
                     reset: function reset(skipTempReset) {
-                        if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1, 
-                        this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(resetTryEntry), 
+                        if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1,
+                        this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(resetTryEntry),
                         !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = void 0);
                     },
                     stop: function stop() {
@@ -404,7 +404,7 @@
                         if (this.done) throw exception;
                         var context = this;
                         function handle(loc, caught) {
-                            return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", 
+                            return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next",
                             context.arg = void 0), !!caught;
                         }
                         for (var i = this.tryEntries.length - 1; i >= 0; --i) {
@@ -434,19 +434,19 @@
                         }
                         finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
                         var record = finallyEntry ? finallyEntry.completion : {};
-                        return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", 
+                        return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next",
                         this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
                     },
                     complete: function complete(record, afterLoc) {
                         if ("throw" === record.type) throw record.arg;
-                        return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, 
-                        this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), 
+                        return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg,
+                        this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc),
                         ContinueSentinel;
                     },
                     finish: function finish(finallyLoc) {
                         for (var i = this.tryEntries.length - 1; i >= 0; --i) {
                             var entry = this.tryEntries[i];
-                            if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), 
+                            if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc),
                             resetTryEntry(entry), ContinueSentinel;
                         }
                     },
@@ -502,12 +502,12 @@
             function _defineProperties(target, props) {
                 for (var i = 0; i < props.length; i++) {
                     var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                    descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0,
                     "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
                 }
             }
             function _createClass(Constructor, protoProps, staticProps) {
-                return protoProps && _defineProperties(Constructor.prototype, protoProps), staticProps && _defineProperties(Constructor, staticProps), 
+                return protoProps && _defineProperties(Constructor.prototype, protoProps), staticProps && _defineProperties(Constructor, staticProps),
                 Object.defineProperty(Constructor, "prototype", {
                     writable: !1
                 }), Constructor;
@@ -535,7 +535,7 @@
                                             return _context.abrupt("return");
 
                                           case 3:
-                                            return console.log("[Runtime Library] Start download from ".concat(url)), _context.next = 6, 
+                                            return console.log("[Runtime Library] Start download from ".concat(url)), _context.next = 6,
                                             (0, _ajax__WEBPACK_IMPORTED_MODULE_0__.j)({
                                                 url: url,
                                                 type: "GET",
@@ -551,7 +551,7 @@
                                             return _context.abrupt("return");
 
                                           case 9:
-                                            _this.anyResolved = !0, console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length)), 
+                                            _this.anyResolved = !0, console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length)),
                                             function runEval() {
                                                 return eval(code);
                                             }.bind(window)(), resolve(getModule(window)), _context.next = 21;
@@ -625,7 +625,7 @@
         var module = __webpack_module_cache__[moduleId] = {
             exports: {}
         };
-        return __webpack_modules__[moduleId](module, module.exports, __webpack_require__), 
+        return __webpack_modules__[moduleId](module, module.exports, __webpack_require__),
         module.exports;
     }
     __webpack_require__.d = function(exports, definition) {
@@ -641,7 +641,7 @@
         function _defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0,
                 "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
             }
         }
@@ -649,11 +649,11 @@
             function User() {
                 !function _classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, User), this.is_login = !1, this.vip_status = 0, this.mid = "", this.uname = "", 
+                }(this, User), this.is_login = !1, this.vip_status = 0, this.mid = "", this.uname = "",
                 this.has_init = !1, this.lazyInit();
             }
             return function _createClass(Constructor, protoProps, staticProps) {
-                return protoProps && _defineProperties(Constructor.prototype, protoProps), staticProps && _defineProperties(Constructor, staticProps), 
+                return protoProps && _defineProperties(Constructor.prototype, protoProps), staticProps && _defineProperties(Constructor, staticProps),
                 Object.defineProperty(Constructor, "prototype", {
                     writable: !1
                 }), Constructor;
@@ -670,11 +670,11 @@
             }, {
                 key: "lazyInit",
                 value: function lazyInit(last_init) {
-                    this.has_init || (window.__BILI_USER_INFO__ ? (this.is_login = window.__BILI_USER_INFO__.isLogin, 
-                    this.vip_status = window.__BILI_USER_INFO__.vipStatus, this.mid = window.__BILI_USER_INFO__.mid || "", 
-                    this.uname = window.__BILI_USER_INFO__.uname || "") : window.__BiliUser__ && (this.is_login = window.__BiliUser__.isLogin, 
-                    window.__BiliUser__.cache ? (this.vip_status = window.__BiliUser__.cache.data.vipStatus, 
-                    this.mid = window.__BiliUser__.cache.data.mid || "", this.uname = window.__BiliUser__.cache.data.uname || "") : (this.vip_status = 0, 
+                    this.has_init || (window.__BILI_USER_INFO__ ? (this.is_login = window.__BILI_USER_INFO__.isLogin,
+                    this.vip_status = window.__BILI_USER_INFO__.vipStatus, this.mid = window.__BILI_USER_INFO__.mid || "",
+                    this.uname = window.__BILI_USER_INFO__.uname || "") : window.__BiliUser__ && (this.is_login = window.__BiliUser__.isLogin,
+                    window.__BiliUser__.cache ? (this.vip_status = window.__BiliUser__.cache.data.vipStatus,
+                    this.mid = window.__BiliUser__.cache.data.mid || "", this.uname = window.__BiliUser__.cache.data.uname || "") : (this.vip_status = 0,
                     this.mid = "", this.uname = "")), this.has_init = last_init);
                 }
             } ]), User;
@@ -682,7 +682,7 @@
         function store_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0,
                 "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
             }
         }
@@ -693,7 +693,7 @@
                 }(this, Store), this.prefix = "bp_";
             }
             return function store_createClass(Constructor, protoProps, staticProps) {
-                return protoProps && store_defineProperties(Constructor.prototype, protoProps), 
+                return protoProps && store_defineProperties(Constructor.prototype, protoProps),
                 staticProps && store_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
                     writable: !1
                 }), Constructor;
@@ -793,26 +793,26 @@
             };
             if ("auto" === request_type || "local" === request_type) {
                 var fnver, fnval;
-                "cheese" === type ? (base_api = "https://api.bilibili.com/pugv/player/web/playurl", 
-                fnver = "mp4" === format ? 1 : 0, fnval = 80) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl", 
+                "cheese" === type ? (base_api = "https://api.bilibili.com/pugv/player/web/playurl",
+                fnver = "mp4" === format ? 1 : 0, fnval = 80) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl",
                 fnver = 0, fnval = {
                     dash: 4048,
                     flv: 4049,
                     mp4: 0
-                }[format] || 0), base_api += "?avid=".concat(aid, "&bvid=").concat(bvid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
+                }[format] || 0), base_api += "?avid=".concat(aid, "&bvid=").concat(bvid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"),
                 base_api += "mp4" === format ? "&platform=html5&high_quality=1" : "", ajax_obj.xhrFields = {
                     withCredentials: !0
                 };
             } else {
                 base_api = config_config.base_api, base_api += "?av=".concat(aid, "&bv=").concat(bvid, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(format, "&otype=json");
                 var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
-                auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec), 
+                auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec),
                 page && (base_api += "&s"));
             }
             ajax_obj.url = base_api, (0, ajax.h)(ajax_obj).then((function(res) {
                 var data;
-                if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "remote") : (res.url && (res.url = url_replace_cdn(res.url)), 
-                res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)), 
+                if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "remote") : (res.url && (res.url = url_replace_cdn(res.url)),
+                res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)),
                 void _success(res));
                 var resultConvertor = function resultConvertor(data, _success) {
                     (0, ajax.j)({
@@ -824,8 +824,8 @@
                             _success(data);
                         },
                         error: function error(res) {
-                            "timeout" == res.statusText ? (console.log("use url"), _success(data)) : (console.log("use backup_url"), 
-                            data.backup_url && (data.url = data.backup_url), data.backup_video && (data.video = data.backup_video), 
+                            "timeout" == res.statusText ? (console.log("use url"), _success(data)) : (console.log("use backup_url"),
+                            data.backup_url && (data.url = data.backup_url), data.backup_video && (data.video = data.backup_video),
                             data.backup_audio && (data.audio = data.backup_audio), _success(data));
                         }
                     });
@@ -840,8 +840,8 @@
                     }, videos = data.dash.video, i = 0; i < videos.length; i++) {
                         var _video = videos[i];
                         if (_video.id <= q) {
-                            result.video = url_replace_cdn(_video.base_url), result.audio = url_replace_cdn(data.dash.audio[0].base_url), 
-                            result.backup_video = _video.backup_url && url_replace_cdn(_video.backup_url[0]), 
+                            result.video = url_replace_cdn(_video.base_url), result.audio = url_replace_cdn(data.dash.audio[0].base_url),
+                            result.backup_video = _video.backup_url && url_replace_cdn(_video.backup_url[0]),
                             result.backup_audio = data.dash.audio[0].backup_url && url_replace_cdn(data.dash.audio[0].backup_url[0]);
                             break;
                         }
@@ -1002,7 +1002,7 @@
                 if (Reflect.construct.sham) return !1;
                 if ("function" == typeof Proxy) return !0;
                 try {
-                    return Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], (function() {}))), 
+                    return Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], (function() {}))),
                     !0;
                 } catch (e) {
                     return !1;
@@ -1036,20 +1036,20 @@
         function video_base_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0,
                 "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
             }
         }
         function video_base_createClass(Constructor, protoProps, staticProps) {
-            return protoProps && video_base_defineProperties(Constructor.prototype, protoProps), 
+            return protoProps && video_base_defineProperties(Constructor.prototype, protoProps),
             staticProps && video_base_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
                 writable: !1
             }), Constructor;
         }
         var clazzMap = {}, VideoBase = function() {
             function VideoBase(video_type, main_title, state) {
-                video_base_classCallCheck(this, VideoBase), this.constructor.name in clazzMap || (clazzMap[this.constructor.name] = this.constructor), 
-                this.video_type = video_type || "video", this.main_title = main_title || "", this.state = state, 
+                video_base_classCallCheck(this, VideoBase), this.constructor.name in clazzMap || (clazzMap[this.constructor.name] = this.constructor),
+                this.video_type = video_type || "video", this.main_title = main_title || "", this.state = state,
                 this.page = state && parseInt(state.p) || 1;
             }
             return video_base_createClass(VideoBase, [ {
@@ -1172,13 +1172,13 @@
             var _super2 = _createSuper(VideoList);
             function VideoList(main_title, state) {
                 var _this2;
-                video_base_classCallCheck(this, VideoList), (_this2 = _super2.call(this, "video", main_title, state)).video = new Video(state.videoData.title, state), 
+                video_base_classCallCheck(this, VideoList), (_this2 = _super2.call(this, "video", main_title, state)).video = new Video(state.videoData.title, state),
                 _this2.resourceList = state.resourceList || [];
                 var _step, video_list = [], _iterator = video_base_createForOfIteratorHelper(_this2.resourceList);
                 try {
                     for (_iterator.s(); !(_step = _iterator.n()).done; ) for (var video = _step.value, i = 0, length = video.pages && video.pages.length || 0; i < length; ) {
                         var _video = Object.assign({}, video);
-                        _video.title = video.title + (length > 1 ? " P".concat(i + 1, " ").concat(video.pages[i].title) : ""), 
+                        _video.title = video.title + (length > 1 ? " P".concat(i + 1, " ").concat(video.pages[i].title) : ""),
                         _video.cid = video.pages[i].id, video_list.push(_video), i++;
                     }
                 } catch (err) {
@@ -1226,7 +1226,7 @@
             var _super3 = _createSuper(Bangumi);
             function Bangumi(main_title, state) {
                 var _this3;
-                return video_base_classCallCheck(this, Bangumi), (_this3 = _super3.call(this, "bangumi", main_title, state)).epList = state.epList, 
+                return video_base_classCallCheck(this, Bangumi), (_this3 = _super3.call(this, "bangumi", main_title, state)).epList = state.epList,
                 _this3.mediaInfo = state.mediaInfo, _this3;
             }
             return video_base_createClass(Bangumi, [ {
@@ -1287,7 +1287,7 @@
             var _super4 = _createSuper(Cheese);
             function Cheese(main_title, state) {
                 var _this4;
-                return video_base_classCallCheck(this, Cheese), (_this4 = _super4.call(this, "cheese", main_title, state)).episodes = state.episodes, 
+                return video_base_classCallCheck(this, Cheese), (_this4 = _super4.call(this, "cheese", main_title, state)).episodes = state.episodes,
                 _this4;
             }
             return video_base_createClass(Cheese, [ {
@@ -1322,7 +1322,7 @@
                 }
             } ]), Cheese;
         }(VideoBase);
-        function video_type() {
+        function type() {
             var routerMap = {
                 video: "/video/",
                 list: "/list/",
@@ -1341,9 +1341,9 @@
             "自动": 32
         };
         var video = {
-            type: video_type,
+            type: type,
             base: function base() {
-                var _type = video_type();
+                var _type = type();
                 if ("video" === _type) {
                     var state = window.__INITIAL_STATE__, main_title = state.videoData && state.videoData.title;
                     return new Video(main_title, state);
@@ -1371,7 +1371,7 @@
                 }
                 if ("cheese" === _type) {
                     var _epid, sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
-                    sid || (_epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
+                    sid || (_epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]),
                     window.bp_episodes || (window.bp_episodes = [], api.get_season(sid, _epid));
                     for (var _episodes = window.bp_episodes, _id2 = 0, _i = 0; _i < _episodes.length; _i++) if (_episodes[_i].id == _epid) {
                         _id2 = _i;
@@ -1386,7 +1386,7 @@
                 return new VideoBase;
             },
             get_quality: function get_quality() {
-                var _q = 0, _q_max = 0, _type = video_type();
+                var _q = 0, _q_max = 0, _type = type();
                 if ("cheese" === _type) {
                     var q = $("div.edu-player-quality-item.active span").text(), q_max = $($("div.edu-player-quality-item span").get(0)).text();
                     _q = q in q_map ? q_map[q] : 0, _q_max = q_max in q_map ? q_map[q_max] : 0;
@@ -1394,14 +1394,14 @@
                     var keys = Object.keys(videoQualityMap), _q2 = parseInt(("video" === _type ? $("li.bpx-player-ctrl-quality-menu-item.bpx-state-active") : $("li.squirtle-select-item.active")).attr("data-value")), _q_max2 = parseInt($(("video" === _type ? $("li.bpx-player-ctrl-quality-menu-item") : $("li.squirtle-select-item")).get(0)).attr("data-value"));
                     _q = keys.indexOf("".concat(_q2)) > -1 ? _q2 : 0, _q_max = keys.indexOf("".concat(_q_max2)) > -1 ? _q_max2 : 0;
                 }
-                return !_q && (_q = 80), !_q_max && (_q_max = 80), user.isVIP() || (_q = _q > 80 ? 80 : _q), 
+                return !_q && (_q = 80), !_q_max && (_q_max = 80), user.isVIP() || (_q = _q > 80 ? 80 : _q),
                 {
                     q: _q,
                     q_max: _q_max
                 };
             },
             get_quality_support: function get_quality_support() {
-                var list, quality_list = [], _type = video_type();
+                var list, quality_list = [], _type = type();
                 if ("cheese" === _type) (list = $("div.edu-player-quality-item span")).each((function() {
                     var k = $(this).text();
                     q_map[k] && quality_list.push(q_map[k]);
@@ -1454,8 +1454,8 @@
         function recover_player() {
             if (window.bp_dplayer) {
                 var bili_video = $(bili_video_tag())[0];
-                bili_video && bili_video.removeEventListener("play", bili_video_stop, !1), window.bp_dplayer.destroy(), 
-                window.bp_dplayer = null, $("#bp_dplayer").remove(), window.bp_dplayer_2 && (window.bp_dplayer_2.destroy(), 
+                bili_video && bili_video.removeEventListener("play", bili_video_stop, !1), window.bp_dplayer.destroy(),
+                window.bp_dplayer = null, $("#bp_dplayer").remove(), window.bp_dplayer_2 && (window.bp_dplayer_2.destroy(),
                 window.bp_dplayer_2 = null, $("#bp_dplayer_2").remove()), $(get_bili_player_id()).show();
             }
         }
@@ -1471,9 +1471,9 @@
                 var bili_video = $(bili_video_tag())[0];
                 bili_video_stop(), bili_video && bili_video.addEventListener("play", bili_video_stop, !1);
                 var bili_player_id = get_bili_player_id();
-                $("#bilibiliPlayer")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">'), 
-                $(bili_player_id).hide()) : $("#bilibili-player")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;z-index:1000;"></div>'), 
-                $(bili_player_id).hide()) : $("#edu-player")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;z-index:1000;"></div>'), 
+                $("#bilibiliPlayer")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor">'),
+                $(bili_player_id).hide()) : $("#bilibili-player")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" class="bilibili-player relative bilibili-player-no-cursor" style="width:100%;height:100%;z-index:1000;"></div>'),
+                $(bili_player_id).hide()) : $("#edu-player")[0] ? ($(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;z-index:1000;"></div>'),
                 $(bili_player_id).hide()) : message._p.alert('<div id="bp_dplayer" style="width:100%;height:100%;"></div>', (function() {
                     recover_player();
                 })), api.get_subtitle_url(0, (function dplayer_init() {
@@ -1527,7 +1527,7 @@
                         })), bp_dplayer.on("playing", (function() {
                             !bp_dplayer.paused && bp_dplayer_2.play();
                         })), bp_dplayer.on("timeupdate", (function() {
-                            Math.abs(bp_dplayer.video.currentTime - bp_dplayer_2.video.currentTime) > 1 && (bp_dplayer_2.pause(), 
+                            Math.abs(bp_dplayer.video.currentTime - bp_dplayer_2.video.currentTime) > 1 && (bp_dplayer_2.pause(),
                             bp_dplayer_2.seek(bp_dplayer.video.currentTime)), !bp_dplayer.paused && bp_dplayer_2.play();
                         })), bp_dplayer.on("seeking", (function() {
                             bp_dplayer_2.pause(), bp_dplayer_2.seek(bp_dplayer.video.currentTime);
@@ -1550,7 +1550,7 @@
         function check_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0,
                 "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
             }
         }
@@ -1561,18 +1561,18 @@
                 }(this, Check), this.aid = "", this.cid = "", this.q = "", this.epid = "";
             }
             return function check_createClass(Constructor, protoProps, staticProps) {
-                return protoProps && check_defineProperties(Constructor.prototype, protoProps), 
+                return protoProps && check_defineProperties(Constructor.prototype, protoProps),
                 staticProps && check_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
                     writable: !1
                 }), Constructor;
             }(Check, [ {
                 key: "refresh",
                 value: function refresh() {
-                    console.log("refresh..."), $("#video_download").hide(), $("#video_download_2").hide(), 
+                    console.log("refresh..."), $("#video_download").hide(), $("#video_download_2").hide(),
                     player.recover_player();
                     try {
                         var vb = video.base();
-                        this.aid = vb.aid(), this.cid = vb.cid(), this.epid = vb.epid(), this.q = video.get_quality().q, 
+                        this.aid = vb.aid(), this.cid = vb.cid(), this.epid = vb.epid(), this.q = video.get_quality().q,
                         window.bp_episodes = null;
                     } catch (err) {
                         console.log(err);
@@ -1695,7 +1695,7 @@
         }
         function open_ariang(rpc) {
             var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port, "/jsonrpc/").concat(window.btoa(rpc.token)) : "", url = config_config.ariang_host + hash_tag, a = document.createElement("a");
-            a.setAttribute("target", "_blank"), a.setAttribute("onclick", "window.bp_aria2_window=window.open('".concat(url, "');")), 
+            a.setAttribute("target", "_blank"), a.setAttribute("onclick", "window.bp_aria2_window=window.open('".concat(url, "');")),
             a.click();
         }
         function download_rpc_ariang_send(video) {
@@ -1710,7 +1710,7 @@
         }
         function download_rpc_ariang() {
             for (var _len = arguments.length, videos = new Array(_len), _key = 0; _key < _len; _key++) videos[_key] = arguments[_key];
-            0 != videos.length && (1 == videos.length && videos[0] instanceof Array ? download_rpc_ariang.apply(void 0, _toConsumableArray(videos[0])) : (download_rpc_ariang_send(videos.pop()), 
+            0 != videos.length && (1 == videos.length && videos[0] instanceof Array ? download_rpc_ariang.apply(void 0, _toConsumableArray(videos[0])) : (download_rpc_ariang_send(videos.pop()),
             setTimeout((function() {
                 download_rpc_ariang.apply(void 0, videos);
             }), 100)));
@@ -1795,7 +1795,7 @@
                     var blob_url = URL.createObjectURL(new Blob([ data ], {
                         type: "text/ass"
                     })), a = document.createElement("a");
-                    a.style.display = "none", a.href = blob_url, a.download = title + ".ass", a.click(), 
+                    a.style.display = "none", a.href = blob_url, a.download = title + ".ass", a.click(),
                     URL.revokeObjectURL(blob_url);
                 } else "callback" === return_type && callback && callback(data);
             })).catch((function() {
@@ -1809,7 +1809,7 @@
             var p = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0, file_name = arguments.length > 1 ? arguments[1] : void 0, download_subtitle = function download_subtitle(blob_url) {
                 if (blob_url) {
                     var a = document.createElement("a");
-                    a.setAttribute("target", "_blank"), a.setAttribute("href", blob_url), a.setAttribute("download", file_name + ".vtt"), 
+                    a.setAttribute("target", "_blank"), a.setAttribute("href", blob_url), a.setAttribute("download", file_name + ".vtt"),
                     a.click(), URL.revokeObjectURL(blob_url);
                 } else message.v0.warning("未发现字幕");
             };
@@ -1818,7 +1818,7 @@
         function download_blob_zip(blob_data, filename) {
             if (blob_data) {
                 var blob_url = URL.createObjectURL(blob_data), a = document.createElement("a");
-                a.setAttribute("target", "_blank"), a.setAttribute("href", blob_url), a.setAttribute("download", filename + ".zip"), 
+                a.setAttribute("target", "_blank"), a.setAttribute("href", blob_url), a.setAttribute("download", filename + ".zip"),
                 a.click(), URL.revokeObjectURL(blob_url);
             }
         }
@@ -1858,7 +1858,7 @@
         var Download = {
             url_format: format,
             download: function download(url, filename, type) {
-                filename = filename.replace(/[\/\\*|]+/g, "-").replace(/:/g, "：").replace(/\?/g, "？").replace(/"/g, "'").replace(/</g, "《").replace(/>/g, "》"), 
+                filename = filename.replace(/[\/\\*|]+/g, "-").replace(/:/g, "：").replace(/\?/g, "？").replace(/"/g, "'").replace(/</g, "《").replace(/>/g, "》"),
                 "blob" === type ? download_blob(url, filename) : "rpc" === type && function download_rpc(url, filename) {
                     var type = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : "post";
                     if ("post" === type) download_rpc_one({
@@ -1868,7 +1868,7 @@
                         var bp_aria2_window = window.bp_aria2_window, time = 100;
                         bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3), setTimeout((function() {
                             var bp_aria2_window = window.bp_aria2_window, task_hash = "#!/new/task?" + [ "url=".concat(window.btoa(url)), "out=".concat(encodeURIComponent(filename)), "header=User-Agent:".concat(window.navigator.userAgent), "header=Referer:".concat(window.location.href) ].join("&");
-                            bp_aria2_window && !bp_aria2_window.closed ? (bp_aria2_window.location.href = config_config.ariang_host + task_hash, 
+                            bp_aria2_window && !bp_aria2_window.closed ? (bp_aria2_window.location.href = config_config.ariang_host + task_hash,
                             message.v0.success("发送RPC请求")) : message.v0.warning("AriaNG页面未打开"), download_rpc_clicked = !1;
                         }), time);
                     }
@@ -1880,23 +1880,23 @@
                     function get_option_index(element) {
                         return element && parseInt(element.id.split("_")[1]) || 0;
                     }
-                    if ($(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)"), 
+                    if ($(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)"),
                     event.ctrlKey || event.altKey) {
                         var current_select_option_index = get_option_index(event.target), option_videos = _toConsumableArray(document.getElementsByName("option_video"));
                         if (event.target.checked) for (var i = get_option_index(option_videos.filter((function(e) {
                             return e.checked && get_option_index(e) < current_select_option_index;
-                        })).slice(-1)[0]); i < current_select_option_index; i++) option_videos[i].checked = !0, 
+                        })).slice(-1)[0]); i < current_select_option_index; i++) option_videos[i].checked = !0,
                         option_videos[i].parentNode.style.color = "rgba(0,0,0,1)"; else for (var _i = get_option_index(option_videos.filter((function(e) {
                             return !e.checked && get_option_index(e) < current_select_option_index;
-                        })).slice(-1)[0]); _i < current_select_option_index; _i++) option_videos[_i].checked = !1, 
+                        })).slice(-1)[0]); _i < current_select_option_index; _i++) option_videos[_i].checked = !1,
                         option_videos[_i].parentNode.style.color = "rgba(0,0,0,0.5)";
                     }
                 }));
                 for (var video_html = "", i = 0; i < total; i++) video_html += "" + '<label for="option_'.concat(i, '"><div style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="option_').concat(i, '" name="option_video" value="').concat(i, '">\n                P').concat(i + 1, " ").concat(vb.title(i + 1), "\n            </div></label><hr>");
                 var all_checked = !1;
                 $("body").on("click", "button#checkbox_btn", (function() {
-                    all_checked ? (all_checked = !1, $('input[name="option_video"]').prop("checked", all_checked), 
-                    $('input[name="option_video"]').parent().css("color", "rgba(0,0,0,0.5)")) : (all_checked = !0, 
+                    all_checked ? (all_checked = !1, $('input[name="option_video"]').prop("checked", all_checked),
+                    $('input[name="option_video"]').parent().css("color", "rgba(0,0,0,0.5)")) : (all_checked = !0,
                     $('input[name="option_video"]').prop("checked", all_checked), $('input[name="option_video"]').parent().css("color", "rgb(0,0,0)"));
                 }));
                 var _step, option_support_html = "", _iterator = download_createForOfIteratorHelper(video.get_quality_support());
@@ -1913,7 +1913,7 @@
                 var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="mp4" selected>MP4</option>\n                <option value="flv">FLV</option>\n                <option value="dash">DASH</option>\n            </select>\n            &nbsp;&nbsp;无法设置MP4清晰度\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video">视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <div style="margin:2% 0;">\n            <label>保存目录:</label>\n            <input id="dl_rpc_dir" placeholder="').concat(config_config.rpc_dir || "为空使用默认目录", '"/>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, '\n        </div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
                 function download_videos(video_tasks, i, videos) {
                     if (video_tasks.length) {
-                        if (i >= video_tasks.length) return message._p.alert("视频地址请求完成！"), void ("post" === rpc_type() && videos.length > 0 && (download_rpc_all(videos), 
+                        if (i >= video_tasks.length) return message._p.alert("视频地址请求完成！"), void ("post" === rpc_type() && videos.length > 0 && (download_rpc_all(videos),
                         videos.length = 0));
                         var task = video_tasks[i], msg = "第".concat(i + 1, "（").concat(i + 1, "/").concat(video_tasks.length, "）个视频");
                         message._p.alert("".concat(msg, "：获取中..."));
@@ -1921,7 +1921,7 @@
                             if (setTimeout((function() {
                                 download_videos(video_tasks, ++i, videos);
                             }), 4e3), !res.code) {
-                                message.v0.success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
+                                message.v0.success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")),
                                 message._p.alert("".concat(msg, "：获取成功！"));
                                 var _ref3 = [ res.url, rpc_type(), res.video, res.audio ], url = _ref3[0], type = _ref3[1], video_url = _ref3[2], audio_url = _ref3[3];
                                 "post" === type ? ("dash" === task.format ? videos.push({
@@ -1964,7 +1964,7 @@
                             rpc_dir: dl_rpc_dir
                         });
                     }
-                    dl_video && download_videos(videos, 0, []), dl_subtitle && (1 === videos.length ? download_subtitle_vtt(videos[0].p, videos[0].filename) : download_subtitle_vtt_zip([].concat(videos), new runtime_lib.$c)), 
+                    dl_video && download_videos(videos, 0, []), dl_subtitle && (1 === videos.length ? download_subtitle_vtt(videos[0].p, videos[0].filename) : download_subtitle_vtt_zip([].concat(videos), new runtime_lib.$c)),
                     dl_danmaku && (1 === videos.length ? download_danmaku_ass(videos[0].cid, videos[0].filename) : download_danmaku_ass_zip([].concat(videos), new runtime_lib.$c));
                 })), $("#dl_quality").val(q), $("body").on("click", 'input[name="dl_option"]', (function() {
                     $(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)");
@@ -2039,7 +2039,7 @@
                         break;
                     }
                 }
-                config_config.host_key !== old_config.host_key && (check.refresh(), $("#video_url").attr("href", "#"), 
+                config_config.host_key !== old_config.host_key && (check.refresh(), $("#video_url").attr("href", "#"),
                 $("#video_url_2").attr("href", "#")), config_config.rpc_domain !== old_config.rpc_domain && (config_config.rpc_domain.match("https://") || config_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/) || message._p.alert("检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；配置好后即可使用脚本进行远程下载，使用期间不用关闭AriaNg页面！", (function() {
                     Download.open_ariang({
                         domain: config_config.rpc_domain,
@@ -2057,7 +2057,7 @@
                 $("#bp_config").hide(), $("#bp_config").css("opacity", 0), ui_scroll.A.show();
             },
             reset_config: function reset_config() {
-                for (var key in default_config) "auth" !== key && (config_config[key] = default_config[key], 
+                for (var key in default_config) "auth" !== key && (config_config[key] = default_config[key],
                 $("#".concat(key)).val(default_config[key]));
             },
             show_help: function show_help() {
@@ -2088,7 +2088,7 @@
         function auth_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0,
                 "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
             }
         }
@@ -2099,7 +2099,7 @@
                 }(this, Auth), this.auth_clicked = !1;
             }
             return function auth_createClass(Constructor, protoProps, staticProps) {
-                return protoProps && auth_defineProperties(Constructor.prototype, protoProps), staticProps && auth_defineProperties(Constructor, staticProps), 
+                return protoProps && auth_defineProperties(Constructor.prototype, protoProps), staticProps && auth_defineProperties(Constructor, staticProps),
                 Object.defineProperty(Constructor, "prototype", {
                     writable: !1
                 }), Constructor;
@@ -2107,13 +2107,13 @@
                 key: "checkLoginStatus",
                 value: function checkLoginStatus() {
                     var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || 0 ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
-                    access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5) && (0, 
+                    access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5) && (0,
                     ajax.h)({
                         url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
                         type: "GET",
                         dataType: "json"
                     }).then((function(res) {
-                        res.code ? (message.v0.info("授权已过期，准备重新授权"), _this.reLogin()) : (store.set("auth_time", Date.now()), 
+                        res.code ? (message.v0.info("授权已过期，准备重新授权"), _this.reLogin()) : (store.set("auth_time", Date.now()),
                         (0, ajax.h)({
                             url: "".concat(config_config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
                             type: "GET",
@@ -2147,7 +2147,7 @@
             }, {
                 key: "reLogin",
                 value: function reLogin() {
-                    store.set("auth_id", ""), store.set("auth_sec", ""), store.set("access_key", ""), 
+                    store.set("auth_id", ""), store.set("auth_sec", ""), store.set("access_key", ""),
                     store.set("auth_time", "0"), this.loginAuto();
                 }
             }, {
@@ -2172,8 +2172,8 @@
                                     type: "GET",
                                     dataType: "json"
                                 }).then((function(res) {
-                                    res.code ? message.v0.warning("授权失败") : (message.v0.success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
-                                    store.set("auth_sec", res.auth_sec)), store.set("access_key", new URL(auth_url).searchParams.get("access_key")), 
+                                    res.code ? message.v0.warning("授权失败") : (message.v0.success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id),
+                                    store.set("auth_sec", res.auth_sec)), store.set("access_key", new URL(auth_url).searchParams.get("access_key")),
                                     store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
                                 }));
                             }));
@@ -2193,8 +2193,8 @@
                             type: "GET",
                             dataType: "json"
                         }).then((function(res) {
-                            res.code ? message.v0.warning("取消失败") : (message.v0.success("取消成功"), store.set("auth_id", ""), 
-                            store.set("auth_sec", ""), store.set("auth_time", "0"), store.set("access_key", ""), 
+                            res.code ? message.v0.warning("取消失败") : (message.v0.success("取消成功"), store.set("auth_id", ""),
+                            store.set("auth_sec", ""), store.set("auth_time", "0"), store.set("access_key", ""),
                             $("#auth").val("0"), config_config.auth = "0");
                         })).finally((function() {
                             return _this3.auth_clicked = !1;
@@ -2214,8 +2214,8 @@
                                 type: "GET",
                                 dataType: "json"
                             }).then((function(res) {
-                                res.code ? message.v0.warning("授权失败") : (message.v0.success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
-                                store.set("auth_sec", res.auth_sec)), store.set("access_key", new URL(url).searchParams.get("access_key")), 
+                                res.code ? message.v0.warning("授权失败") : (message.v0.success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id),
+                                store.set("auth_sec", res.auth_sec)), store.set("access_key", new URL(url).searchParams.get("access_key")),
                                 store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
                             })).finally((function() {
                                 return _this4.auth_clicked = !1;
@@ -2295,7 +2295,7 @@
         function main_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
-                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+                descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0,
                 "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
             }
         }
@@ -2303,10 +2303,10 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.3", " ").concat("d9cf3e8", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.4", " ").concat("bc856c0", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
-                return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
+                return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps),
                 Object.defineProperty(Constructor, "prototype", {
                     writable: !1
                 }), Constructor;
@@ -2323,7 +2323,7 @@
                                     var item = toolbar_obj.find(".toolbar-left-item-wrap").eq(0).clone();
                                     item.attr("id", key);
                                     var svg = svg_map[key].replaceAll("#757575", "currentColor").replace("class", 'class="'.concat(item.find("svg").attr("class"), '"')), span = item.find("span").text(btn_list[key]), item_div = item.find("div").eq(0);
-                                    item_div.attr("title", btn_list[key]), item_div.removeClass("on"), item_div.children().remove(), 
+                                    item_div.attr("title", btn_list[key]), item_div.removeClass("on"), item_div.children().remove(),
                                     item_div.append(svg).append(span), left.append(item);
                                 } else {
                                     var more_map = btn_list[key], el = "" + '<div class="more">更多<div class="more-ops-list">\n                        <ul>'.concat(Object.keys(more_map).map((function(key) {
@@ -2344,7 +2344,7 @@
                     root_div.id = "bp_root", document.body.append(root_div), function initConfig(el) {
                         var options = '<option value="0">关闭</option>';
                         for (var k in hostMap) options += '<option value="'.concat(k, '">').concat(hostMap[k], "</option>");
-                        for (var _k in config = config.replace("{{host_key_options}}", options), options = '<option value="0">与播放器相同</option>', 
+                        for (var _k in config = config.replace("{{host_key_options}}", options), options = '<option value="0">与播放器相同</option>',
                         videoQualityMap) options += '<option value="'.concat(_k, '">').concat(videoQualityMap[_k], "</option>");
                         config = config.replace("{{video_quality_options}}", options), el && $(el)[0] ? $(el).append(config) : $("body").append(config);
                         var config_str = store.get("config_str");
@@ -2371,9 +2371,9 @@
                             var bp_aria2_window = window.bp_aria2_window;
                             bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
                         };
-                    }("#".concat(root_div.id)), (0, message.N5)("#".concat(root_div.id)), user.lazyInit(), 
-                    auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
-                    $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
+                    }("#".concat(root_div.id)), (0, message.N5)("#".concat(root_div.id)), user.lazyInit(),
+                    auth.initAuth(), auth.checkLoginStatus(), check.refresh(), $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'),
+                    $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'),
                     $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
                 }
             }, {
@@ -2390,31 +2390,31 @@
                         },
                         bilibili_parse: function bilibili_parse() {
                             user.lazyInit(!0);
-                            var vb = video.base().const[(type, aid, p, cid, epid)] = [ vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid() ], q = video.get_quality().q;
+                            var vb = video.base(), _ref = [ vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid() ], type = _ref[0], aid = _ref[1], p = _ref[2], cid = _ref[3], epid = _ref[4], q = video.get_quality().q;
                             api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
-                            var _ref = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref[0], auth_sec = _ref[1];
-                            if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
-                            api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"), 
-                            $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message.v0.info("开始请求"), 
+                            var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
+                            if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)),
+                            api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"),
+                            $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message.v0.info("开始请求"),
                             api.get_url((function(res) {
                                 if (res && !res.code) {
                                     var _url, _url_;
-                                    if (message.v0.success("请求成功"), res.times && message.v0.info("剩余请求次数：".concat(res.times)), 
+                                    if (message.v0.success("请求成功"), res.times && message.v0.info("剩余请求次数：".concat(res.times)),
                                     res.url) _url = res.url.replace("http://", "https://"), _url_ = "#"; else {
                                         if (!res.video || !res.audio) return void message.v0.warning("数据错误");
                                         _url = res.video.replace("http://", "https://"), _url_ = res.audio.replace("http://", "https://");
                                     }
-                                    $("#video_url").attr("href", _url), $("#video_url").attr("download", vb.filename() + Download.url_format(_url)), 
-                                    $("#video_download").show(), "#" !== _url_ && ($("#video_url_2").attr("href", _url_), 
-                                    $("#video_url_2").attr("download", vb.filename() + "_audio.mp4"), $("#video_download_2").show()), 
-                                    (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_), 
+                                    $("#video_url").attr("href", _url), $("#video_url").attr("download", vb.filename() + Download.url_format(_url)),
+                                    $("#video_download").show(), "#" !== _url_ && ($("#video_url_2").attr("href", _url_),
+                                    $("#video_url_2").attr("download", vb.filename() + "_audio.mp4"), $("#video_download_2").show()),
+                                    (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_),
                                     "1" === config_config.auto_download && $("#video_download").click();
                                 }
                             })); else {
                                 message.v0.miaow();
                                 var url = $("#video_url").attr("href"), url_2 = $("#video_url_2").attr("href");
-                                url && "#" !== url && ($("#video_download").show(), "dash" === config_config.format && $("#video_download_2").show(), 
-                                (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2), 
+                                url && "#" !== url && ($("#video_download").show(), "dash" === config_config.format && $("#video_download_2").show(),
+                                (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2),
                                 "1" === config_config.auto_download && $("#video_download").click());
                             }
                         },
@@ -2435,14 +2435,14 @@
                         video_download: function video_download() {
                             var type = config_config.download_type;
                             if ("web" === type) $("#video_url")[0].click(); else if ("a" === type) {
-                                var _ref2 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href"), $("#video_url").attr("download"), $("#video_url_2").attr("download") ], video_url_2 = _ref2[1], file_name = _ref2[2], file_name_2 = _ref2[3], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref2[0], '" download="').concat(file_name, '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" download="').concat(file_name_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
+                                var _ref3 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href"), $("#video_url").attr("download"), $("#video_url_2").attr("download") ], video_url_2 = _ref3[1], file_name = _ref3[2], file_name_2 = _ref3[3], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref3[0], '" download="').concat(file_name, '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" download="').concat(file_name_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
                                 message._p.alert(msg);
                             } else if ("aria" === type) {
-                                var _ref3 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref3[0], _video_url_ = _ref3[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref5 = _slicedToArray({
+                                var _ref4 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref4[0], _video_url_ = _ref4[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref6 = _slicedToArray({
                                     min: [ 1, 5 ],
                                     mid: [ 16, 8 ],
                                     max: [ 32, 16 ]
-                                }[config_config.aria2c_connection_level] || [ 1, 5 ], 2), url_max_connection = _ref5[0], server_max_connection = _ref5[1], aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection), _map = [ 'aria2c "'.concat(_video_url, '" --out "').concat(_file_name, '"'), 'aria2c "'.concat(_video_url_, '" --out "').concat(_file_name_, '"') ].map((function(code) {
+                                }[config_config.aria2c_connection_level] || [ 1, 5 ], 2), url_max_connection = _ref6[0], server_max_connection = _ref6[1], aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection), _map = [ 'aria2c "'.concat(_video_url, '" --out "').concat(_file_name, '"'), 'aria2c "'.concat(_video_url_, '" --out "').concat(_file_name_, '"') ].map((function(code) {
                                     return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
                                 })), _map2 = _slicedToArray(_map, 2), code = _map2[0], code_2 = _map2[1], _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
                                 !window.bp_clip_btn && (window.bp_clip_btn = function(id) {
@@ -2461,8 +2461,8 @@
                             }
                         }
                     };
-                    window.bpd = evt, Object.entries(evt).forEach((function(_ref6) {
-                        var _ref7 = _slicedToArray(_ref6, 2), k = _ref7[0], v = _ref7[1];
+                    window.bpd = evt, Object.entries(evt).forEach((function(_ref7) {
+                        var _ref8 = _slicedToArray(_ref7, 2), k = _ref8[0], v = _ref8[1];
                         return $("body").on("click", "#".concat(k), v);
                     })), $("body").on("click", "a.router-link-active", (function() {
                         this !== $('li[class="on"]').find("a")[0] && check.refresh();
@@ -2491,7 +2491,7 @@
         }(), main = Main;
         window.bp_fun_locked || (window.bp_fun_locked = !0, null == location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) ? $(".error-text")[0] || setTimeout((function() {
             (new main).run();
-        }), 3e3) : location.href.match("access_key") && window !== window.parent && (window.stop(), 
+        }), 3e3) : location.href.match("access_key") && window !== window.parent && (window.stop(),
         window.parent.postMessage("bilibili-parse-login-credentials: " + location.href, "*")));
     }();
 })();
