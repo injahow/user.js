@@ -1290,7 +1290,7 @@ var Cheese = /*#__PURE__*/function (_VideoBase4) {
 
 
 
-function video_type() {
+function type() {
   var routerMap = {
     video: '/video/',
     list: '/list/',
@@ -1309,7 +1309,7 @@ function video_type() {
 }
 
 function base() {
-  var _type = video_type();
+  var _type = type();
 
   if (_type === 'video') {
     var state = window.__INITIAL_STATE__;
@@ -1410,7 +1410,7 @@ function get_quality() {
   var _q = 0,
       _q_max = 0;
 
-  var _type = video_type();
+  var _type = type();
 
   if (_type === 'cheese') {
     var q = $('div.edu-player-quality-item.active span').text();
@@ -1445,7 +1445,7 @@ function get_quality_support() {
   var list,
       quality_list = [];
 
-  var _type = video_type();
+  var _type = type();
 
   if (_type === 'cheese') {
     list = $('div.edu-player-quality-item span');
@@ -1475,7 +1475,7 @@ function get_quality_support() {
 }
 
 var video = {
-  type: video_type,
+  type: type,
   base: base,
   get_quality: get_quality,
   get_quality_support: get_quality_support
@@ -3251,7 +3251,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.3", " ").concat("d9cf3e8", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.4", " ").concat("bc856c0", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3297,15 +3297,21 @@ var Main = /*#__PURE__*/function () {
         bilibili_parse: function bilibili_parse() {
           user.lazyInit(true); // init
 
-          var vb = video.base().const[(type, aid, p, cid, epid)] = [vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid()];
+          var vb = video.base();
+          var _ref = [vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid()],
+              type = _ref[0],
+              aid = _ref[1],
+              p = _ref[2],
+              cid = _ref[3],
+              epid = _ref[4];
 
           var _video$get_quality = video.get_quality(),
               q = _video$get_quality.q;
 
           api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
-          var _ref = [store.get('auth_id'), store.get('auth_sec')],
-              auth_id = _ref[0],
-              auth_sec = _ref[1];
+          var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+              auth_id = _ref2[0],
+              auth_sec = _ref2[1];
 
           if (config_config.auth === '1' && auth_id && auth_sec) {
             api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
@@ -3404,17 +3410,17 @@ var Main = /*#__PURE__*/function () {
           if (type === 'web') {
             $('#video_url')[0].click();
           } else if (type === 'a') {
-            var _ref2 = [$('#video_url').attr('href'), $('#video_url_2').attr('href'), $('#video_url').attr('download'), $('#video_url_2').attr('download')],
-                video_url = _ref2[0],
-                video_url_2 = _ref2[1],
-                file_name = _ref2[2],
-                file_name_2 = _ref2[3];
+            var _ref3 = [$('#video_url').attr('href'), $('#video_url_2').attr('href'), $('#video_url').attr('download'), $('#video_url_2').attr('download')],
+                video_url = _ref3[0],
+                video_url_2 = _ref3[1],
+                file_name = _ref3[2],
+                file_name_2 = _ref3[3];
             var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" download=\"").concat(file_name, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" download=\"").concat(file_name_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
             message.MessageBox.alert(msg);
           } else if (type === 'aria') {
-            var _ref3 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
-                _video_url = _ref3[0],
-                _video_url_ = _ref3[1];
+            var _ref4 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
+                _video_url = _ref4[0],
+                _video_url_ = _ref4[1];
             var video_title = video.base().filename();
 
             var _file_name = video_title + Download.url_format(_video_url),
@@ -3422,14 +3428,14 @@ var Main = /*#__PURE__*/function () {
 
             var aria2c_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
 
-            var _ref4 = {
+            var _ref5 = {
               min: [1, 5],
               mid: [16, 8],
               max: [32, 16]
             }[config_config.aria2c_connection_level] || [1, 5],
-                _ref5 = _slicedToArray(_ref4, 2),
-                url_max_connection = _ref5[0],
-                server_max_connection = _ref5[1];
+                _ref6 = _slicedToArray(_ref5, 2),
+                url_max_connection = _ref6[0],
+                server_max_connection = _ref6[1];
 
             var aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection);
 
@@ -3476,10 +3482,10 @@ var Main = /*#__PURE__*/function () {
       }; // api & click
 
       window.bpd = evt;
-      Object.entries(evt).forEach(function (_ref6) {
-        var _ref7 = _slicedToArray(_ref6, 2),
-            k = _ref7[0],
-            v = _ref7[1];
+      Object.entries(evt).forEach(function (_ref7) {
+        var _ref8 = _slicedToArray(_ref7, 2),
+            k = _ref8[0],
+            v = _ref8[1];
 
         return $('body').on('click', "#".concat(k), v);
       }); // part of check
