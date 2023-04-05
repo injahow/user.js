@@ -62,7 +62,7 @@ class Main {
             },
             bilibili_parse() {
                 user.lazyInit(true) // init
-                const vb = video.base().
+                const vb = video.base()
                 const [type, aid, p, cid, epid] = [
                     vb.type(),
                     vb.aid(),
