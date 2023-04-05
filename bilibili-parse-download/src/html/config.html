@@ -15,7 +15,7 @@
       <select id="request_type">
         <option value="auto">自动判断</option>
         <option value="local">本地请求</option>
-        <option value="online">远程请求</option>
+        <option value="remote">远程请求</option>
       </select><br />
       <small>注意：普通使用请勿修改；默认使用混合请求</small>
     </div>
@@ -43,7 +43,7 @@
       </select>&nbsp;&nbsp;&nbsp;&nbsp;
       <label>AriaNg地址：</label>
       <input id="ariang_host" style="width: 30%" /><br />
-      <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small>
+      <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small>
     </div>
     <div style="margin: 2% 0">
       <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />
@@ -55,11 +55,14 @@
     </div>
     <div style="margin: 2% 0">
       <label>Aria参数：</label>
-      最大连接数：<select id="aria2c_connection_level">
+      <label>最大连接数：</label>
+      <select id="aria2c_connection_level">
         <option value="min">1</option>
         <option value="mid">8</option>
         <option value="max">16</option>
-      </select><br />
+      </select>&nbsp;&nbsp;&nbsp;&nbsp;
+      <label>附加参数：</label>
+      <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width: 20%" /><br />
       <small>说明：用于配置Aria命令下载方式的参数</small>
     </div>
     <div style="margin: 2% 0">

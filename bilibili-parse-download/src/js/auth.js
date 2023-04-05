@@ -15,7 +15,7 @@ class Auth {
             store.get('auth_id'),
             store.get('auth_sec'),
             store.get('access_key'),
-            store.get('auth_time') || '0',
+            store.get('auth_time') || 0,
         ]
 
         if (!access_key) return
@@ -60,7 +60,7 @@ class Auth {
             xhrFields: { withCredentials: true },
             type: 'GET',
             dataType: 'json'
-        }).then(resolve).finally(_ => this.auth_clicked = false)
+        }).then(resolve).finally(() => this.auth_clicked = false)
     }
 
     login(auto = '1') {
@@ -105,8 +105,8 @@ class Auth {
                 MessageBox.alert(msg, () => {
                     const auth_url = $('#auth_url').val()
                     const [auth_id, auth_sec] = [
-                        store.get('auth_id') || '',
-                        store.get('auth_sec') || '',
+                        store.get('auth_id'),
+                        store.get('auth_sec'),
                     ]
                     ajax({
                         url: auth_url.replace(
@@ -168,7 +168,7 @@ class Auth {
             } else {
                 Message.warning('取消失败')
             }
-        }).finally(_ => this.auth_clicked = false)
+        }).finally(() => this.auth_clicked = false)
 
     }
 
@@ -202,7 +202,7 @@ class Auth {
                     } else {
                         Message.warning('授权失败')
                     }
-                }).finally(_ => this.auth_clicked = false)
+                }).finally(() => this.auth_clicked = false)
             }
         })
     }

@@ -65,26 +65,26 @@ function initMessage(el) {
 
 function messageBox(ctx, type) {
   if (type === 'confirm') {
-    $('div.message-box-btn button[name="cancel"]').show();
+    $('.message-box-btn button[name="cancel"]').show();
   } else if (type === 'alert') {
-    $('div.message-box-btn button[name="cancel"]').hide();
+    $('.message-box-btn button[name="cancel"]').hide();
   }
 
   if (ctx.html) {
-    $('div#message_box_context').html("<div style=\"font-size:18px\">".concat(ctx.html, "</div>"));
+    $('#message_box_context').html("<div style=\"font-size:18px\">".concat(ctx.html, "</div>"));
   } else {
-    $('div#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>');
+    $('#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>');
   }
 
   ui_scroll.scroll.hide();
   $('#message_box').show();
-  $('div#message_box').animate({
+  $('#message_box').animate({
     'opacity': '1'
   }, 300);
 
-  $('div.message-box-btn button[name="affirm"]')[0].onclick = function () {
-    $('div#message_box').hide();
-    $('div#message_box').css('opacity', 0);
+  $('.message-box-btn button[name="affirm"]')[0].onclick = function () {
+    $('#message_box').hide();
+    $('#message_box').css('opacity', 0);
     ui_scroll.scroll.show();
 
     if (ctx.callback && ctx.callback.affirm) {
@@ -92,9 +92,9 @@ function messageBox(ctx, type) {
     }
   };
 
-  $('div.message-box-btn button[name="cancel"]')[0].onclick = function () {
-    $('div#message_box').hide();
-    $('div#message_box').css('opacity', 0);
+  $('.message-box-btn button[name="cancel"]')[0].onclick = function () {
+    $('#message_box').hide();
+    $('#message_box').css('opacity', 0);
     ui_scroll.scroll.show();
 
     if (ctx.callback && ctx.callback.cancel) {
@@ -112,8 +112,8 @@ function message_message(html, type) {
 }
 
 function messageEnQueue(message, id) {
-  $('div.message-bg').append(message);
-  $("div#message_".concat(id)).animate({
+  $('.message-bg').append(message);
+  $("#message_".concat(id)).animate({
     'margin-top': '+=70px',
     'opacity': '1'
   }, 300);
@@ -145,7 +145,7 @@ var Message = {
   info: function info(html) {
     return message_message(html, 'info');
   },
-  miaow: function miaow(_) {
+  miaow: function miaow() {
     return message_message('(^・ω・^)~喵喵喵~', 'info');
   }
 };
@@ -527,7 +527,7 @@ var User = /*#__PURE__*/function () {
   _createClass(User, [{
     key: "needReplace",
     value: function needReplace() {
-      return !this.is_login || !this.vip_status && video.base().need_vip();
+      return !this.is_login || !this.vip_status && video.base().needVip();
     }
   }, {
     key: "isVIP",
@@ -643,7 +643,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
   }
 
   var vb = video.base();
-  var _ref = [vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type],
+  var _ref = [vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type()],
       aid = _ref[0],
       bvid = _ref[1],
       cid = _ref[2],
@@ -652,7 +652,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
       type = _ref[5]; // 参数预处理
 
   var format = video_format || config_config.format;
-  if (request_type === 'auto' && user.needReplace()) request_type = 'online';
+  if (request_type === 'auto' && user.needReplace()) request_type = 'remote';
 
   var url_replace_cdn = function url_replace_cdn(url) {
     if (config_config.host_key !== '0') {
@@ -700,7 +700,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
         auth_id = _ref2[0],
         auth_sec = _ref2[1];
 
-    if (config_config.auth === '1' && auth_id && auth_sec) {
+    if (auth_id && auth_sec) {
       base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
       !!page && (base_api += '&s');
     }
@@ -716,9 +716,9 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
     if (!data) {
       if (request_type === 'auto') {
-        get_url_base(page, quality, video_format, success, error, 'online');
+        get_url_base(page, quality, video_format, success, error, 'remote');
         return;
-      } // online
+      } // remote
 
 
       res.url && (res.url = url_replace_cdn(res.url));
@@ -800,8 +800,8 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
 function _get_subtitle(p, callback) {
   var to_blob_url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  var video_base = video.base();
-  var _ref3 = [video_base.aid(p), video_base.cid(p), video_base.epid(p)],
+  var vb = video.base();
+  var _ref3 = [vb.aid(p), vb.cid(p), vb.epid(p)],
       aid = _ref3[0],
       cid = _ref3[1],
       epid = _ref3[2];
@@ -927,21 +927,45 @@ function video_base_defineProperties(target, props) { for (var i = 0; i < props.
 
 function video_base_createClass(Constructor, protoProps, staticProps) { if (protoProps) video_base_defineProperties(Constructor.prototype, protoProps); if (staticProps) video_base_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
+var clazzMap = {};
+
 var VideoBase = /*#__PURE__*/function () {
-  function VideoBase(type, main_title, state) {
+  function VideoBase(video_type, main_title, state) {
     video_base_classCallCheck(this, VideoBase);
 
-    this.type = type || '?';
+    if (!(this.constructor.name in clazzMap)) {
+      clazzMap[this.constructor.name] = this.constructor;
+    }
+
+    this.video_type = video_type || 'video';
     this.main_title = main_title || '';
     this.state = state; // ! state.p
 
-    this.page = state && state.p || 1;
+    this.page = state && parseInt(state.p) || 1;
   }
 
   video_base_createClass(VideoBase, [{
+    key: "getVideo",
+    value: function getVideo(p) {
+      var _this = this;
+
+      var clazz = clazzMap[this.constructor.name];
+      return Object.fromEntries(Object.getOwnPropertyNames(VideoBase.prototype).filter(function (name) {
+        return !['constructor', 'getVideo'].includes(name);
+      }).map(function (key) {
+        return [key, clazz.prototype[key].call(_this, p)];
+      }));
+    }
+  }, {
+    key: "type",
+    value: function type() {
+      return this.video_type;
+    }
+  }, {
     key: "p",
     value: function p(_p) {
-      return _p && _p <= this.total() ? _p : this.page;
+      _p = parseInt(_p) || 0;
+      return _p > 0 && _p <= this.total() ? _p : this.page;
     }
   }, {
     key: "id",
@@ -984,18 +1008,18 @@ var VideoBase = /*#__PURE__*/function () {
       return '';
     }
   }, {
-    key: "need_vip",
-    value: function need_vip() {
+    key: "needVip",
+    value: function needVip() {
       return false;
     }
   }, {
-    key: "vip_need_pay",
-    value: function vip_need_pay() {
+    key: "vipNeedPay",
+    value: function vipNeedPay() {
       return false;
     }
   }, {
-    key: "is_limited",
-    value: function is_limited() {
+    key: "isLimited",
+    value: function isLimited() {
       return false;
     }
   }]);
@@ -1008,10 +1032,10 @@ var Video = /*#__PURE__*/function (_VideoBase) {
 
   var _super = _createSuper(Video);
 
-  function Video(type, main_title, state) {
+  function Video(main_title, state) {
     video_base_classCallCheck(this, Video);
 
-    return _super.call(this, type, main_title, state);
+    return _super.call(this, 'video', main_title, state);
   }
 
   video_base_createClass(Video, [{
@@ -1045,8 +1069,7 @@ var Video = /*#__PURE__*/function (_VideoBase) {
   }, {
     key: "cid",
     value: function cid(p) {
-      var id = this.id(p);
-      return this.state.videoData.pages[id].cid;
+      return this.state.videoData.pages[this.id(p)].cid;
     }
   }]);
 
@@ -1058,17 +1081,17 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
 
   var _super2 = _createSuper(VideoList);
 
-  function VideoList(type, main_title, state) {
-    var _this;
+  function VideoList(main_title, state) {
+    var _this2;
 
     video_base_classCallCheck(this, VideoList);
 
-    _this = _super2.call(this, type, main_title, state);
-    _this.video = new Video(type, state.videoData.title, state);
-    _this.resourceList = state.resourceList || [];
+    _this2 = _super2.call(this, 'video', main_title, state);
+    _this2.video = new Video(state.videoData.title, state);
+    _this2.resourceList = state.resourceList || [];
     var video_list = [];
 
-    var _iterator = video_base_createForOfIteratorHelper(_this.resourceList),
+    var _iterator = video_base_createForOfIteratorHelper(_this2.resourceList),
         _step;
 
     try {
@@ -1092,8 +1115,8 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
       _iterator.f();
     }
 
-    _this.video_list = video_list;
-    return _this;
+    _this2.video_list = video_list;
+    return _this2;
   }
 
   video_base_createClass(VideoList, [{
@@ -1142,15 +1165,15 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
 
   var _super3 = _createSuper(Bangumi);
 
-  function Bangumi(type, main_title, state) {
-    var _this2;
+  function Bangumi(main_title, state) {
+    var _this3;
 
     video_base_classCallCheck(this, Bangumi);
 
-    _this2 = _super3.call(this, type, main_title, state);
-    _this2.epList = state.epList;
-    _this2.mediaInfo = state.mediaInfo;
-    return _this2;
+    _this3 = _super3.call(this, 'bangumi', main_title, state);
+    _this3.epList = state.epList;
+    _this3.mediaInfo = state.mediaInfo;
+    return _this3;
   }
 
   video_base_createClass(Bangumi, [{
@@ -1191,18 +1214,18 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
       return this.epList[this.id(p)].id;
     }
   }, {
-    key: "need_vip",
-    value: function need_vip(p) {
+    key: "needVip",
+    value: function needVip(p) {
       return this.epList[this.id(p)].badge === '会员';
     }
   }, {
-    key: "vip_need_pay",
-    value: function vip_need_pay(p) {
+    key: "vipNeedPay",
+    value: function vipNeedPay(p) {
       return this.epList[this.id(p)].badge === '付费';
     }
   }, {
-    key: "is_limited",
-    value: function is_limited() {
+    key: "isLimited",
+    value: function isLimited() {
       return !!this.mediaInfo.user_status.area_limit;
     }
   }]);
@@ -1215,14 +1238,14 @@ var Cheese = /*#__PURE__*/function (_VideoBase4) {
 
   var _super4 = _createSuper(Cheese);
 
-  function Cheese(type, main_title, state) {
-    var _this3;
+  function Cheese(main_title, state) {
+    var _this4;
 
     video_base_classCallCheck(this, Cheese);
 
-    _this3 = _super4.call(this, type, main_title, state);
-    _this3.episodes = state.episodes;
-    return _this3;
+    _this4 = _super4.call(this, 'cheese', main_title, state);
+    _this4.episodes = state.episodes;
+    return _this4;
   }
 
   video_base_createClass(Cheese, [{
@@ -1266,15 +1289,16 @@ var Cheese = /*#__PURE__*/function (_VideoBase4) {
 
 
 
-var routerMap = {
-  video: '/video/',
-  list: '/list/',
-  bangumi: '/bangumi/play/',
-  // ss / ep
-  cheese: '/cheese/play/'
-};
 
-function type() {
+function video_type() {
+  var routerMap = {
+    video: '/video/',
+    list: '/list/',
+    bangumi: '/bangumi/play/',
+    // ss / ep
+    cheese: '/cheese/play/'
+  };
+
   for (var key in routerMap) {
     if (location.pathname.startsWith(routerMap[key])) {
       return key;
@@ -1285,24 +1309,24 @@ function type() {
 }
 
 function base() {
-  var _type = type();
+  var _type = video_type();
 
   if (_type === 'video') {
     var state = window.__INITIAL_STATE__;
     var main_title = state.videoData && state.videoData.title;
-    return new Video(_type, main_title, state);
+    return new Video(main_title, state);
   } else if (_type === 'list') {
     var _state = window.__INITIAL_STATE__;
 
     var _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + '-' + _state.mediaListInfo.title;
 
-    return new VideoList('video', _main_title, _state);
+    return new VideoList(_main_title, _state);
   } else if (_type === 'bangumi') {
     if (!!window.__INITIAL_STATE__) {
       // todo
       var _state3 = window.__INITIAL_STATE__;
       var _main_title3 = _state3.mediaInfo.season_title;
-      return new Bangumi(_type, _main_title3, _state3);
+      return new Bangumi(_main_title3, _state3);
     }
 
     var queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries;
@@ -1333,7 +1357,7 @@ function base() {
       epList: episodes,
       mediaInfo: mediaInfo
     };
-    return new Bangumi(_type, _main_title2, _state2);
+    return new Bangumi(_main_title2, _state2);
   } else if (_type === 'cheese') {
     var sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1];
 
@@ -1366,10 +1390,10 @@ function base() {
       p: _id2 + 1,
       episodes: _episodes
     };
-    return new Cheese(_type, _main_title4, _state4);
+    return new Cheese(_main_title4, _state4);
   } else {
     // error
-    return new VideoBase(_type);
+    return new VideoBase();
   }
 }
 
@@ -1386,7 +1410,7 @@ function get_quality() {
   var _q = 0,
       _q_max = 0;
 
-  var _type = type();
+  var _type = video_type();
 
   if (_type === 'cheese') {
     var q = $('div.edu-player-quality-item.active span').text();
@@ -1421,7 +1445,7 @@ function get_quality_support() {
   var list,
       quality_list = [];
 
-  var _type = type();
+  var _type = video_type();
 
   if (_type === 'cheese') {
     list = $('div.edu-player-quality-item span');
@@ -1451,7 +1475,7 @@ function get_quality_support() {
 }
 
 var video = {
-  type: type,
+  type: video_type,
   base: base,
   get_quality: get_quality,
   get_quality_support: get_quality_support
@@ -1916,97 +1940,101 @@ function download_all() {
     }
   });
 
-  function download_videos(videos, i, video_urls) {
+  function download_videos(video_tasks, i, videos) {
     // 递归请求下载
-    if (!videos.length) {
+    if (!video_tasks.length) {
       return;
     }
 
-    if (i < videos.length) {
-      var _video = videos[i];
-
-      var _msg = "\u7B2C".concat(i + 1, "\uFF08").concat(i + 1, "/").concat(videos.length, "\uFF09\u4E2A\u89C6\u9891");
-
-      message.MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
-
-      var success = function success(res) {
-        if (!res.code) {
-          message.Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
-          message.MessageBox.alert("".concat(_msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
-          var _ref3 = [res.url, rpc_type(), res.video, res.audio],
-              url = _ref3[0],
-              type = _ref3[1],
-              video_url = _ref3[2],
-              audio_url = _ref3[3];
-
-          if (type === 'post') {
-            if (_video.format === 'dash') {
-              // 处理dash
-              video_urls.push({
-                url: video_url,
-                filename: _video.filename + '_video' + format(video_url),
-                rpc_dir: _video.rpc_dir
-              });
-              video_urls.push({
-                url: audio_url,
-                filename: _video.filename + '_audio' + format(audio_url),
-                rpc_dir: _video.rpc_dir
-              });
-            } else {
-              video_urls.push({
-                url: url,
-                filename: _video.filename + format(url),
-                rpc_dir: _video.rpc_dir
-              });
-            }
-
-            if (video_urls.length > 3) {
-              download_rpc_all(video_urls);
-              video_urls.length = 0;
-            }
-          } else if (type === 'ariang') {
-            if (_video.format === 'dash') {
-              // 处理dash
-              download_rpc_ariang_one({
-                url: video_url,
-                filename: _video.filename + '_video' + format(video_url)
-              });
-              download_rpc_ariang_one({
-                url: audio_url,
-                filename: _video.filename + '_audio' + format(audio_url)
-              });
-            } else {
-              download_rpc_ariang_one({
-                url: url,
-                filename: _video.filename + format(url)
-              });
-            }
-          }
-        }
-
-        setTimeout(function () {
-          download_videos(videos, ++i, video_urls);
-        }, 4000);
-      };
-
-      var error = function error() {
-        download_videos(videos, ++i, video_urls);
-      };
-
-      api.get_urls(_video.p, _video.q, _video.format, success, error);
-    } else {
+    if (i >= video_tasks.length) {
       message.MessageBox.alert('视频地址请求完成！');
 
       if (rpc_type() === 'post') {
-        if (video_urls.length > 0) {
-          download_rpc_all(video_urls);
-          video_urls.length = 0;
+        if (videos.length > 0) {
+          download_rpc_all(videos);
+          videos.length = 0;
         }
       } // one by one -> null
 
+
+      return;
     }
+
+    var task = video_tasks[i];
+    var msg = "\u7B2C".concat(i + 1, "\uFF08").concat(i + 1, "/").concat(video_tasks.length, "\uFF09\u4E2A\u89C6\u9891");
+    message.MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
+
+    var success = function success(res) {
+      setTimeout(function () {
+        download_videos(video_tasks, ++i, videos);
+      }, 4000);
+
+      if (res.code) {
+        return;
+      }
+
+      message.Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
+      message.MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
+      var _ref3 = [res.url, rpc_type(), res.video, res.audio],
+          url = _ref3[0],
+          type = _ref3[1],
+          video_url = _ref3[2],
+          audio_url = _ref3[3];
+
+      if (type === 'post') {
+        if (task.format === 'dash') {
+          // 处理dash
+          videos.push({
+            url: video_url,
+            filename: task.filename + format(video_url),
+            rpc_dir: task.rpc_dir
+          }, {
+            url: audio_url,
+            filename: task.filename + '.m4a',
+            rpc_dir: task.rpc_dir
+          });
+        } else {
+          videos.push({
+            url: url,
+            filename: task.filename + format(url),
+            rpc_dir: task.rpc_dir
+          });
+        }
+
+        if (videos.length > 3) {
+          download_rpc_all(videos);
+          videos.length = 0;
+        }
+      } else if (type === 'ariang') {
+        if (task.format === 'dash') {
+          // 处理dash
+          download_rpc_ariang({
+            url: video_url,
+            filename: task.filename + format(video_url)
+          }, {
+            url: audio_url,
+            filename: task.filename + '.m4a'
+          });
+        } else {
+          download_rpc_ariang({
+            url: url,
+            filename: task.filename + format(url)
+          });
+        }
+      }
+    };
+
+    var error = function error() {
+      download_videos(video_tasks, ++i, videos);
+    };
+
+    api.get_urls(task.p, task.q, task.format, success, error);
   }
 }
+/**
+ * rpc
+ */
+
 
 function get_rpc_post(data) {
   // [...{ url, filename, rpc_dir }]
@@ -2051,6 +2079,11 @@ function get_rpc_post(data) {
 
 var download_rpc_clicked = false;
 
+function download_rpc_one(video) {
+  // post
+  download_rpc_all([video]);
+}
+
 function download_rpc_all(videos) {
   // post
   if (download_rpc_clicked) {
@@ -2068,9 +2101,9 @@ function download_rpc_all(videos) {
     } else {
       message.Message.warning('请检查RPC参数');
     }
-  }).catch(function (_) {
+  }).catch(function () {
     message.Message.error('请检查RPC服务配置');
-  }).finally(function (_) {
+  }).finally(function () {
     return download_rpc_clicked = false;
   });
   message.Message.info('发送RPC下载请求');
@@ -2080,10 +2113,10 @@ function download_rpc(url, filename) {
   var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'post';
 
   if (type === 'post') {
-    download_rpc_all([{
+    download_rpc_one({
       url: url,
       filename: filename
-    }]);
+    });
   } else if (type === 'ariang') {
     var bp_aria2_window = window.bp_aria2_window;
     var time = 100;
@@ -2095,12 +2128,11 @@ function download_rpc(url, filename) {
 
     setTimeout(function () {
       var bp_aria2_window = window.bp_aria2_window;
-      var aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
-      var task_hash = "#!/new/task?url=".concat(window.btoa(url), "&out=").concat(encodeURIComponent(filename), "&").concat(aria2_header);
+      var task_hash = '#!/new/task?' + ["url=".concat(window.btoa(url)), "out=".concat(encodeURIComponent(filename)), "header=User-Agent:".concat(window.navigator.userAgent), "header=Referer:".concat(window.location.href)].join('&');
 
       if (bp_aria2_window && !bp_aria2_window.closed) {
         bp_aria2_window.location.href = config_config.ariang_host + task_hash;
-        message.Message.success('RPC请求发送成功');
+        message.Message.success('发送RPC请求');
       } else {
         message.Message.warning('AriaNG页面未打开');
       }
@@ -2119,7 +2151,7 @@ function open_ariang(rpc) {
   a.click();
 }
 
-function download_rpc_ariang_one(video) {
+function download_rpc_ariang_send(video) {
   var bp_aria2_window = window.bp_aria2_window;
   var time = 100;
 
@@ -2141,6 +2173,30 @@ function download_rpc_ariang_one(video) {
     }
   }, time);
 }
+
+function download_rpc_ariang() {
+  for (var _len = arguments.length, videos = new Array(_len), _key = 0; _key < _len; _key++) {
+    videos[_key] = arguments[_key];
+  }
+
+  if (videos.length == 0) {
+    return;
+  }
+
+  if (videos.length == 1 && videos[0] instanceof Array) {
+    download_rpc_ariang.apply(void 0, _toConsumableArray(videos[0]));
+    return;
+  }
+
+  download_rpc_ariang_send(videos.pop());
+  setTimeout(function () {
+    download_rpc_ariang.apply(void 0, videos);
+  }, 100);
+}
+/**
+ * blob
+ */
+
 
 var download_blob_clicked = false,
     need_show_progress = true;
@@ -2209,6 +2265,10 @@ function download_blob(url, filename) {
 
   message.Message.info('准备开始下载');
 }
+/**
+ * danmaku & subtitle
+ */
+
 
 function _download_danmaku_ass(cid, title) {
   var return_type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -2247,8 +2307,7 @@ function _download_danmaku_ass(cid, title) {
           color: parseInt(p[3]),
           text: item.text()
         }];
-      }).get();
-      danmaku_data.sort(function (a, b) {
+      }).get().sort(function (a, b) {
         return a.time - b.time;
       }); // 2.dialogue
 
@@ -2359,7 +2418,7 @@ function _download_danmaku_ass(cid, title) {
         callback(data);
       }
     }
-  }).catch(function (_) {
+  }).catch(function () {
     if (return_type === 'callback' && callback) {
       callback();
     }
@@ -2483,29 +2542,28 @@ function download_subtitle_vtt_zip(videos, zip) {
 function format(url) {
   if (!url) return '';
 
-  if (url.match('.flv')) {
+  if (url.match('.mp4|.m4s')) {
+    return '.mp4';
+  } else if (url.match('.flv')) {
     return '.flv';
-  } else if (url.match('.m4s')) {
-    return '.mp4';
-  } else if (url.match('.mp4')) {
-    return '.mp4';
   }
 
   return '.mp4';
 }
 
+function download(url, filename, type) {
+  filename = filename.replace(/[\/\\*|]+/g, '-').replace(/:/g, '：').replace(/\?/g, '？').replace(/"/g, '\'').replace(/</g, '《').replace(/>/g, '》');
+
+  if (type === 'blob') {
+    download_blob(url, filename);
+  } else if (type === 'rpc') {
+    download_rpc(url, filename, rpc_type());
+  }
+}
+
 var Download = {
   url_format: format,
-  download: function download(url, name, type) {
-    name = name.replace(/[\/\\*|]+/g, '-').replace(/:/g, '：').replace(/\?/g, '？').replace(/"/g, '\'').replace(/</g, '《').replace(/>/g, '》');
-    var filename = name + format(url);
-
-    if (type === 'blob') {
-      download_blob(url, filename);
-    } else if (type === 'rpc') {
-      download_rpc(url, filename, rpc_type());
-    }
-  },
+  download: download,
   download_all: download_all,
   download_danmaku_ass: download_danmaku_ass,
   download_subtitle_vtt: download_subtitle_vtt,
@@ -2513,7 +2571,7 @@ var Download = {
 };
 ;// CONCATENATED MODULE: ./src/html/config.html
 // Module
-var code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:30%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"online\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web浏览器</option> <option value=\"blob\">Blob请求</option> <option value=\"rpc\">RPC接口</option> <option value=\"aria\">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:30%\"/><br/> <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%\"/> | <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:20%\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>Aria参数：</label> 最大连接数：<select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:5%\"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:5%\"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a> </div> <br/> <div style=\"text-align:right\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ";
+var code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:30%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web浏览器</option> <option value=\"blob\">Blob请求</option> <option value=\"rpc\">RPC接口</option> <option value=\"aria\">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:30%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%\"/> | <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:20%\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>Aria参数：</label> <label>最大连接数：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:20%\"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:5%\"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:5%\"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a> </div> <br/> <div style=\"text-align:right\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ";
 // Exports
 /* harmony default export */ var config = (code);
 ;// CONCATENATED MODULE: ./src/js/ui/config.js
@@ -2539,6 +2597,7 @@ var config_config = {
   rpc_token: '',
   rpc_dir: '',
   aria2c_connection_level: 'min',
+  aria2c_addition_parameters: '',
   ariang_host: 'http://ariang.injahow.com/',
   auto_download: '0',
   video_quality: '0',
@@ -2795,7 +2854,7 @@ var Auth = /*#__PURE__*/function () {
     value: function checkLoginStatus() {
       var _this = this;
 
-      var _ref = [store.get('auth_id'), store.get('auth_sec'), store.get('access_key'), store.get('auth_time') || '0'],
+      var _ref = [store.get('auth_id'), store.get('auth_sec'), store.get('access_key'), store.get('auth_time') || 0],
           auth_id = _ref[0],
           auth_sec = _ref[1],
           access_key = _ref[2],
@@ -2850,7 +2909,7 @@ var Auth = /*#__PURE__*/function () {
         },
         type: 'GET',
         dataType: 'json'
-      }).then(resolve).finally(function (_) {
+      }).then(resolve).finally(function () {
         return _this2.auth_clicked = false;
       });
     }
@@ -2898,8 +2957,9 @@ var Auth = /*#__PURE__*/function () {
           var msg = '' + "\u8BF7\u70B9\u51FB<b><a href='".concat(res.data.confirm_uri, "' target='_blank'>\u6388\u6743\u5730\u5740</a></b>\n                    \u6253\u5F00\u4E00\u4E2A\u65B0\u7A97\u53E3\uFF0C\u6B63\u5E38\u60C5\u51B5\u65B0\u7A97\u53E3\u5E94\u8BE5\u663E\u793A\u4E00\u4E2A\u56FE\u7247\uFF0C\u8BF7\u5C06\u8BE5\u7A97\u53E3\u5730\u5740\u680F\u7684URL\u94FE\u63A5\u590D\u5236\u5230\u5F53\u524D\u6587\u672C\u6846\u4E2D<br/>\n                    <input id='auth_url' style='width:100%;' type='text' autocomplete='off'><br>\u7136\u540E\u70B9\u51FB\u786E\u5B9A\u5373\u53EF");
           message.MessageBox.alert(msg, function () {
             var auth_url = $('#auth_url').val();
-            var auth_id = store.get('auth_id') || '',
-                auth_sec = store.get('auth_sec') || '';
+            var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+                auth_id = _ref2[0],
+                auth_sec = _ref2[1];
             (0,ajax.ajax)({
               url: auth_url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
               type: 'GET',
@@ -2944,9 +3004,9 @@ var Auth = /*#__PURE__*/function () {
         return;
       }
 
-      var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
-          auth_id = _ref2[0],
-          auth_sec = _ref2[1];
+      var _ref3 = [store.get('auth_id'), store.get('auth_sec')],
+          auth_id = _ref3[0],
+          auth_sec = _ref3[1];
       (0,ajax.ajax)({
         url: "".concat(config_config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
         type: 'GET',
@@ -2963,7 +3023,7 @@ var Auth = /*#__PURE__*/function () {
         } else {
           message.Message.warning('取消失败');
         }
-      }).finally(function (_) {
+      }).finally(function () {
         return _this3.auth_clicked = false;
       });
     }
@@ -2978,9 +3038,9 @@ var Auth = /*#__PURE__*/function () {
         if (e.data.split(':')[0] === 'bilibili-parse-login-credentials') {
           $('iframe#auth_iframe').remove();
           var url = e.data.split(': ')[1];
-          var _ref3 = [store.get('auth_id'), store.get('auth_sec')],
-              auth_id = _ref3[0],
-              auth_sec = _ref3[1];
+          var _ref4 = [store.get('auth_id'), store.get('auth_sec')],
+              auth_id = _ref4[0],
+              auth_sec = _ref4[1];
           (0,ajax.ajax)({
             url: url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
             type: 'GET',
@@ -3001,7 +3061,7 @@ var Auth = /*#__PURE__*/function () {
             } else {
               message.Message.warning('授权失败');
             }
-          }).finally(function (_) {
+          }).finally(function () {
             return _this4.auth_clicked = false;
           });
         }
@@ -3155,6 +3215,18 @@ function initToolbar() {
 
 
 ;// CONCATENATED MODULE: ./src/js/main.js
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || main_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function main_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return main_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return main_arrayLikeToArray(o, minLen); }
+
+function main_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function main_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -3179,7 +3251,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.2", " ").concat("e06fd1d", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.3", " ").concat("d9cf3e8", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3206,7 +3278,7 @@ var Main = /*#__PURE__*/function () {
     value: function run() {
       this.init();
       var api_url, api_url_temp;
-      var e = {
+      var evt = {
         setting_btn: function setting_btn() {
           user.lazyInit(true); // init
           // set form by config
@@ -3222,126 +3294,18 @@ var Main = /*#__PURE__*/function () {
           }, 300);
           ui_scroll.scroll.hide();
         },
-        download_danmaku: function download_danmaku() {
-          var vb = video.base();
-          Download.download_danmaku_ass(vb.cid(), vb.filename());
-        },
-        download_subtitle: function download_subtitle() {
-          Download.download_subtitle_vtt(0, video.base().filename());
-        },
-        video_download_all: function video_download_all() {
-          user.lazyInit(true); // init
-
-          if (store.get('auth_id') && store.get('auth_sec')) {
-            if (config_config.download_type === 'rpc') {
-              Download.download_all();
-            } else {
-              message.MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
-                Download.download_all();
-              });
-            }
-          } else {
-            message.MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
-              auth.login();
-            });
-          }
-        },
-        video_download: function video_download() {
-          var type = config_config.download_type;
-
-          if (type === 'web') {
-            $('#video_url')[0].click();
-          } else if (type === 'a') {
-            var _ref = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
-                video_url = _ref[0],
-                video_url_2 = _ref[1];
-            var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
-            message.MessageBox.alert(msg);
-          } else if (type === 'aria') {
-            var _ref2 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
-                _video_url = _ref2[0],
-                _video_url_ = _ref2[1];
-            var video_title = video.base().filename();
-            var file_name, file_name_2;
-            file_name = video_title + Download.url_format(_video_url);
-            file_name_2 = video_title + '_audio.mp4';
-            var aria2_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
-            var url_max_connection = 1,
-                server_max_connection = 5;
-
-            switch (config_config.aria2c_connection_level) {
-              case "min":
-                url_max_connection = 1;
-                server_max_connection = 5;
-                break;
-
-              case "mid":
-                url_max_connection = 16;
-                server_max_connection = 8;
-                break;
-
-              case "max":
-                url_max_connection = 32;
-                server_max_connection = 16;
-                break;
-            }
-
-            var aria2c_max_concurrent_downloads = "--max-concurrent-downloads ".concat(url_max_connection);
-            var aria2c_max_connection_per_server = "--max-connection-per-server ".concat(server_max_connection);
-            var code = "aria2c \"".concat(_video_url, "\" --out \"").concat(file_name, "\" ").concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server),
-                code_2 = "aria2c \"".concat(_video_url_, "\" --out \"").concat(file_name_2, "\" ").concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server);
-
-            var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config_config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
-
-            !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
-              $("#".concat(id)).select();
-
-              if (document.execCommand('copy')) {
-                message.Message.success('复制成功');
-              } else {
-                message.Message.warning('复制失败');
-              }
-            });
-            message.MessageBox.alert(_msg);
-          } else {
-            var url = $('#video_url').attr('href');
-            var filename = video.base().filename() + (url.match('.m4s') ? '_video' : '');
-            Download.download(url, filename, type);
-          }
-        },
-        video_download_2: function video_download_2() {
-          var type = config_config.download_type;
-
-          if (type === 'web') {
-            $('#video_url_2')[0].click();
-          } else if (type === 'a') {
-            $('#video_download').click();
-          } else if (type === 'aria') {
-            $('#video_download').click();
-          } else {
-            var url = $('#video_url_2').attr('href');
-            var filename = video.base().filename() + '_audio';
-            Download.download(url, filename, type);
-          }
-        },
         bilibili_parse: function bilibili_parse() {
           user.lazyInit(true); // init
 
-          var vb = video.base();
-          var _ref3 = [vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid()],
-              type = _ref3[0],
-              aid = _ref3[1],
-              p = _ref3[2],
-              cid = _ref3[3],
-              epid = _ref3[4];
+          var vb = video.base().const[(type, aid, p, cid, epid)] = [vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid()];
 
           var _video$get_quality = video.get_quality(),
               q = _video$get_quality.q;
 
           api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
-          var _ref4 = [store.get('auth_id'), store.get('auth_sec')],
-              auth_id = _ref4[0],
-              auth_sec = _ref4[1];
+          var _ref = [store.get('auth_id'), store.get('auth_sec')],
+              auth_id = _ref[0],
+              auth_sec = _ref[1];
 
           if (config_config.auth === '1' && auth_id && auth_sec) {
             api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
@@ -3356,7 +3320,7 @@ var Main = /*#__PURE__*/function () {
               $('#video_download').show();
               config_config.format === 'dash' && $('#video_download_2').show();
 
-              if (user.needReplace() || vb.is_limited() || config_config.replace_force === '1') {
+              if (user.needReplace() || vb.isLimited() || config_config.replace_force === '1') {
                 !$('#bp_dplayer')[0] && player.replace_player(url, url_2);
               }
 
@@ -3391,14 +3355,16 @@ var Main = /*#__PURE__*/function () {
               }
 
               $('#video_url').attr('href', _url);
+              $('#video_url').attr('download', vb.filename() + Download.url_format(_url));
               $('#video_download').show();
 
               if (_url_ !== '#') {
                 $('#video_url_2').attr('href', _url_);
+                $('#video_url_2').attr('download', vb.filename() + '_audio.mp4');
                 $('#video_download_2').show();
               }
 
-              if (user.needReplace() || vb.is_limited() || config_config.replace_force === '1') {
+              if (user.needReplace() || vb.isLimited() || config_config.replace_force === '1') {
                 player.replace_player(_url, _url_);
               }
 
@@ -3407,17 +3373,116 @@ var Main = /*#__PURE__*/function () {
               }
             }
           });
+        },
+        download_danmaku: function download_danmaku() {
+          var vb = video.base();
+          Download.download_danmaku_ass(vb.cid(), vb.filename());
+        },
+        download_subtitle: function download_subtitle() {
+          Download.download_subtitle_vtt(0, video.base().filename());
+        },
+        video_download_all: function video_download_all() {
+          user.lazyInit(true); // init
+
+          if (store.get('auth_id') && store.get('auth_sec')) {
+            if (config_config.download_type === 'rpc') {
+              Download.download_all();
+            } else {
+              message.MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
+                Download.download_all();
+              });
+            }
+          } else {
+            message.MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
+              auth.login();
+            });
+          }
+        },
+        video_download: function video_download() {
+          var type = config_config.download_type;
+
+          if (type === 'web') {
+            $('#video_url')[0].click();
+          } else if (type === 'a') {
+            var _ref2 = [$('#video_url').attr('href'), $('#video_url_2').attr('href'), $('#video_url').attr('download'), $('#video_url_2').attr('download')],
+                video_url = _ref2[0],
+                video_url_2 = _ref2[1],
+                file_name = _ref2[2],
+                file_name_2 = _ref2[3];
+            var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" download=\"").concat(file_name, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" download=\"").concat(file_name_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
+            message.MessageBox.alert(msg);
+          } else if (type === 'aria') {
+            var _ref3 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
+                _video_url = _ref3[0],
+                _video_url_ = _ref3[1];
+            var video_title = video.base().filename();
+
+            var _file_name = video_title + Download.url_format(_video_url),
+                _file_name_ = video_title + '.m4a';
+
+            var aria2c_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
+
+            var _ref4 = {
+              min: [1, 5],
+              mid: [16, 8],
+              max: [32, 16]
+            }[config_config.aria2c_connection_level] || [1, 5],
+                _ref5 = _slicedToArray(_ref4, 2),
+                url_max_connection = _ref5[0],
+                server_max_connection = _ref5[1];
+
+            var aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection);
+
+            var _map = ["aria2c \"".concat(_video_url, "\" --out \"").concat(_file_name, "\""), "aria2c \"".concat(_video_url_, "\" --out \"").concat(_file_name_, "\"")].map(function (code) {
+              return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
+            }),
+                _map2 = _slicedToArray(_map, 2),
+                code = _map2[0],
+                code_2 = _map2[1];
+
+            var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config_config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
+
+            !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
+              $("#".concat(id)).select();
+
+              if (document.execCommand('copy')) {
+                message.Message.success('复制成功');
+              } else {
+                message.Message.warning('复制失败');
+              }
+            });
+            message.MessageBox.alert(_msg);
+          } else {
+            var url = $('#video_url').attr('href');
+            var filename = video.base().filename() + Download.url_format(url);
+            Download.download(url, filename, type);
+          }
+        },
+        video_download_2: function video_download_2() {
+          var type = config_config.download_type;
+
+          if (type === 'web') {
+            $('#video_url_2')[0].click();
+          } else if (type === 'a') {
+            $('#video_download').click();
+          } else if (type === 'aria') {
+            $('#video_download').click();
+          } else {
+            var url = $('#video_url_2').attr('href');
+            var filename = video.base().filename() + '.m4a';
+            Download.download(url, filename, type);
+          }
         }
       }; // api & click
 
-      window.bpd = e;
-      $('body').on('click', '#setting_btn', e.setting_btn);
-      $('body').on('click', '#download_danmaku', e.download_danmaku);
-      $('body').on('click', '#download_subtitle', e.download_subtitle);
-      $('body').on('click', '#video_download_all', e.video_download_all);
-      $('body').on('click', '#video_download', e.video_download);
-      $('body').on('click', '#video_download_2', e.video_download_2);
-      $('body').on('click', '#bilibili_parse', e.bilibili_parse); // part of check
+      window.bpd = evt;
+      Object.entries(evt).forEach(function (_ref6) {
+        var _ref7 = _slicedToArray(_ref6, 2),
+            k = _ref7[0],
+            v = _ref7[1];
+
+        return $('body').on('click', "#".concat(k), v);
+      }); // part of check
 
       $('body').on('click', 'a.router-link-active', function () {
         if (this !== $('li[class="on"]').find('a')[0]) {

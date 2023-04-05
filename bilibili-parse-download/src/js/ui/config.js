@@ -22,6 +22,7 @@ const config = {
     rpc_token: '',
     rpc_dir: '',
     aria2c_connection_level: 'min',
+    aria2c_addition_parameters: '',
     ariang_host: 'http://ariang.injahow.com/',
     auto_download: '0',
     video_quality: '0',
@@ -71,7 +72,7 @@ const videoQualityMap = {
 let help_clicked = false
 
 const config_functions = {
-    save_config: function () {
+    save_config() {
         let old_config
         try {
             old_config = JSON.parse(store.get('config_str'))
@@ -128,7 +129,7 @@ const config_functions = {
         $('#bp_config').css('opacity', 0)
         scroll.show()
     },
-    reset_config: function () {
+    reset_config() {
         for (const key in default_config) {
             if (key === 'auth') {
                 continue
@@ -137,7 +138,7 @@ const config_functions = {
             $(`#${key}`).val(default_config[key])
         }
     },
-    show_help: function () {
+    show_help() {
         if (help_clicked) {
             Message.miaow()
             return
@@ -156,16 +157,16 @@ const config_functions = {
             })
             .finally(() => (help_clicked = false))
     },
-    show_login: function () {
+    show_login() {
         auth.login('1')
     },
-    show_login_2: function () {
+    show_login_2() {
         auth.login('0')
     },
-    show_logout: function () {
+    show_logout() {
         auth.logout()
     },
-    show_login_help: function () {
+    show_login_help() {
         MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', () => {
             auth.login()
         })

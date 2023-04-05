@@ -1,16 +1,37 @@
 
+const clazzMap = {}
+
 class VideoBase {
 
-    constructor(type, main_title, state) {
-        this.type = type || '?'
+
+
+    constructor(video_type, main_title, state) {
+        if (!(this.constructor.name in clazzMap)) {
+            clazzMap[this.constructor.name] = this.constructor
+        }
+        this.video_type = video_type || 'video'
         this.main_title = main_title || ''
         this.state = state
         // ! state.p
-        this.page = state && state.p || 1
+        this.page = state && parseInt(state.p) || 1
+    }
+
+    getVideo(p) {
+        const clazz = clazzMap[this.constructor.name]
+        return Object.fromEntries(
+            Object.getOwnPropertyNames(VideoBase.prototype)
+                .filter(name => !['constructor', 'getVideo'].includes(name))
+                .map(key => [key, clazz.prototype[key].call(this, p)])
+        )
+    }
+
+    type() {
+        return this.video_type
     }
 
     p(p) {
-        return p && p <= this.total() ? p : this.page
+        p = parseInt(p) || 0
+        return p > 0 && p <= this.total() ? p : this.page
     }
 
     id(p) {
@@ -45,23 +66,23 @@ class VideoBase {
         return ''
     }
 
-    need_vip() {
+    needVip() {
         return false
     }
 
-    vip_need_pay() {
+    vipNeedPay() {
         return false
     }
 
-    is_limited() {
+    isLimited() {
         return false
     }
 }
 
 class Video extends VideoBase {
 
-    constructor(type, main_title, state) {
-        super(type, main_title, state)
+    constructor(main_title, state) {
+        super('video', main_title, state)
     }
 
     total() {
@@ -88,16 +109,15 @@ class Video extends VideoBase {
     }
 
     cid(p) {
-        const id = this.id(p)
-        return this.state.videoData.pages[id].cid
+        return this.state.videoData.pages[this.id(p)].cid
     }
 }
 
 class VideoList extends VideoBase {
 
-    constructor(type, main_title, state) {
-        super(type, main_title, state)
-        this.video = new Video(type, state.videoData.title, state)
+    constructor(main_title, state) {
+        super('video', main_title, state)
+        this.video = new Video(state.videoData.title, state)
         this.resourceList = state.resourceList || []
         const video_list = []
         for (const video of this.resourceList) {
@@ -153,8 +173,8 @@ class VideoList extends VideoBase {
 
 class Bangumi extends VideoBase {
 
-    constructor(type, main_title, state) {
-        super(type, main_title, state)
+    constructor(main_title, state) {
+        super('bangumi', main_title, state)
         this.epList = state.epList
         this.mediaInfo = state.mediaInfo
     }
@@ -189,23 +209,23 @@ class Bangumi extends VideoBase {
         return this.epList[this.id(p)].id
     }
 
-    need_vip(p) {
+    needVip(p) {
         return this.epList[this.id(p)].badge === '会员'
     }
 
-    vip_need_pay(p) {
+    vipNeedPay(p) {
         return this.epList[this.id(p)].badge === '付费'
     }
 
-    is_limited() {
+    isLimited() {
         return !!this.mediaInfo.user_status.area_limit
     }
 }
 
 class Cheese extends VideoBase {
 
-    constructor(type, main_title, state) {
-        super(type, main_title, state)
+    constructor(main_title, state) {
+        super('cheese', main_title, state)
         this.episodes = state.episodes
     }
 

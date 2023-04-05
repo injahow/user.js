@@ -12,7 +12,7 @@ class User {
     }
 
     needReplace() {
-        return !this.is_login || (!this.vip_status && video.base().need_vip())
+        return !this.is_login || (!this.vip_status && video.base().needVip())
     }
 
     isVIP() {

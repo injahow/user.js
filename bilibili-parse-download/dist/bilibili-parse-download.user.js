@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.4.2
+// @version       2.4.3
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -46,22 +46,22 @@
                 el && $(el)[0] ? $(el).append(message) : $("body").append(message);
             }
             function messageBox(ctx, type) {
-                "confirm" === type ? $('div.message-box-btn button[name="cancel"]').show() : "alert" === type && $('div.message-box-btn button[name="cancel"]').hide(), 
-                ctx.html ? $("div#message_box_context").html('<div style="font-size:18px">'.concat(ctx.html, "</div>")) : $("div#message_box_context").html('<div style="font-size:18px">╰(￣▽￣)╮</div>'), 
-                ui_scroll.A.hide(), $("#message_box").show(), $("div#message_box").animate({
+                "confirm" === type ? $('.message-box-btn button[name="cancel"]').show() : "alert" === type && $('.message-box-btn button[name="cancel"]').hide(), 
+                ctx.html ? $("#message_box_context").html('<div style="font-size:18px">'.concat(ctx.html, "</div>")) : $("#message_box_context").html('<div style="font-size:18px">╰(￣▽￣)╮</div>'), 
+                ui_scroll.A.hide(), $("#message_box").show(), $("#message_box").animate({
                     opacity: "1"
-                }, 300), $('div.message-box-btn button[name="affirm"]')[0].onclick = function() {
-                    $("div#message_box").hide(), $("div#message_box").css("opacity", 0), ui_scroll.A.show(), 
+                }, 300), $('.message-box-btn button[name="affirm"]')[0].onclick = function() {
+                    $("#message_box").hide(), $("#message_box").css("opacity", 0), ui_scroll.A.show(), 
                     ctx.callback && ctx.callback.affirm && ctx.callback.affirm();
-                }, $('div.message-box-btn button[name="cancel"]')[0].onclick = function() {
-                    $("div#message_box").hide(), $("div#message_box").css("opacity", 0), ui_scroll.A.show(), 
+                }, $('.message-box-btn button[name="cancel"]')[0].onclick = function() {
+                    $("#message_box").hide(), $("#message_box").css("opacity", 0), ui_scroll.A.show(), 
                     ctx.callback && ctx.callback.cancel && ctx.callback.cancel();
                 };
             }
             var id = 0;
             function message_message(html, type) {
                 (function messageEnQueue(message, id) {
-                    $("div.message-bg").append(message), $("div#message_".concat(id)).animate({
+                    $(".message-bg").append(message), $("#message_".concat(id)).animate({
                         "margin-top": "+=70px",
                         opacity: "1"
                     }, 300);
@@ -92,7 +92,7 @@
                 info: function info(html) {
                     return message_message(html, "info");
                 },
-                miaow: function miaow(_) {
+                miaow: function miaow() {
                     return message_message("(^・ω・^)~喵喵喵~", "info");
                 }
             }, MessageBox = {
@@ -660,7 +660,7 @@
             }(User, [ {
                 key: "needReplace",
                 value: function needReplace() {
-                    return !this.is_login || !this.vip_status && video.base().need_vip();
+                    return !this.is_login || !this.vip_status && video.base().needVip();
                 }
             }, {
                 key: "isVIP",
@@ -779,8 +779,8 @@
             } : function _error(err) {
                 return console.error(err);
             };
-            var vb = video.base(), _ref = [ vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type ], aid = _ref[0], bvid = _ref[1], cid = _ref[2], epid = _ref[3], q = _ref[4], type = _ref[5], format = video_format || config_config.format;
-            "auto" === request_type && user.needReplace() && (request_type = "online");
+            var vb = video.base(), _ref = [ vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type() ], aid = _ref[0], bvid = _ref[1], cid = _ref[2], epid = _ref[3], q = _ref[4], type = _ref[5], format = video_format || config_config.format;
+            "auto" === request_type && user.needReplace() && (request_type = "remote");
             var base_api, url_replace_cdn = function url_replace_cdn(url) {
                 if ("0" !== config_config.host_key) {
                     var url_tmp = url.split("/");
@@ -806,12 +806,12 @@
             } else {
                 base_api = config_config.base_api, base_api += "?av=".concat(aid, "&bv=").concat(bvid, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(format, "&otype=json");
                 var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
-                "1" === config_config.auth && auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec), 
+                auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec), 
                 page && (base_api += "&s"));
             }
             ajax_obj.url = base_api, (0, ajax.h)(ajax_obj).then((function(res) {
                 var data;
-                if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "online") : (res.url && (res.url = url_replace_cdn(res.url)), 
+                if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "remote") : (res.url && (res.url = url_replace_cdn(res.url)), 
                 res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)), 
                 void _success(res));
                 var resultConvertor = function resultConvertor(data, _success) {
@@ -859,7 +859,7 @@
             }));
         }
         function _get_subtitle(p, callback) {
-            var to_blob_url = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], video_base = video.base(), _ref3 = [ video_base.aid(p), video_base.cid(p), video_base.epid(p) ], aid = _ref3[0], cid = _ref3[1], epid = _ref3[2];
+            var to_blob_url = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], vb = video.base(), _ref3 = [ vb.aid(p), vb.cid(p), vb.epid(p) ], aid = _ref3[0], cid = _ref3[1], epid = _ref3[2];
             (0, ajax.h)({
                 url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
                 dataType: "json"
@@ -1046,15 +1046,31 @@
                 writable: !1
             }), Constructor;
         }
-        var VideoBase = function() {
-            function VideoBase(type, main_title, state) {
-                video_base_classCallCheck(this, VideoBase), this.type = type || "?", this.main_title = main_title || "", 
-                this.state = state, this.page = state && state.p || 1;
+        var clazzMap = {}, VideoBase = function() {
+            function VideoBase(video_type, main_title, state) {
+                video_base_classCallCheck(this, VideoBase), this.constructor.name in clazzMap || (clazzMap[this.constructor.name] = this.constructor), 
+                this.video_type = video_type || "video", this.main_title = main_title || "", this.state = state, 
+                this.page = state && parseInt(state.p) || 1;
             }
             return video_base_createClass(VideoBase, [ {
+                key: "getVideo",
+                value: function getVideo(p) {
+                    var _this = this, clazz = clazzMap[this.constructor.name];
+                    return Object.fromEntries(Object.getOwnPropertyNames(VideoBase.prototype).filter((function(name) {
+                        return ![ "constructor", "getVideo" ].includes(name);
+                    })).map((function(key) {
+                        return [ key, clazz.prototype[key].call(_this, p) ];
+                    })));
+                }
+            }, {
+                key: "type",
+                value: function type() {
+                    return this.video_type;
+                }
+            }, {
                 key: "p",
                 value: function p(_p) {
-                    return _p && _p <= this.total() ? _p : this.page;
+                    return (_p = parseInt(_p) || 0) > 0 && _p <= this.total() ? _p : this.page;
                 }
             }, {
                 key: "id",
@@ -1097,26 +1113,26 @@
                     return "";
                 }
             }, {
-                key: "need_vip",
-                value: function need_vip() {
+                key: "needVip",
+                value: function needVip() {
                     return !1;
                 }
             }, {
-                key: "vip_need_pay",
-                value: function vip_need_pay() {
+                key: "vipNeedPay",
+                value: function vipNeedPay() {
                     return !1;
                 }
             }, {
-                key: "is_limited",
-                value: function is_limited() {
+                key: "isLimited",
+                value: function isLimited() {
                     return !1;
                 }
             } ]), VideoBase;
         }(), Video = function(_VideoBase) {
             _inherits(Video, _VideoBase);
             var _super = _createSuper(Video);
-            function Video(type, main_title, state) {
-                return video_base_classCallCheck(this, Video), _super.call(this, type, main_title, state);
+            function Video(main_title, state) {
+                return video_base_classCallCheck(this, Video), _super.call(this, "video", main_title, state);
             }
             return video_base_createClass(Video, [ {
                 key: "total",
@@ -1148,18 +1164,17 @@
             }, {
                 key: "cid",
                 value: function cid(p) {
-                    var id = this.id(p);
-                    return this.state.videoData.pages[id].cid;
+                    return this.state.videoData.pages[this.id(p)].cid;
                 }
             } ]), Video;
         }(VideoBase), VideoList = function(_VideoBase2) {
             _inherits(VideoList, _VideoBase2);
             var _super2 = _createSuper(VideoList);
-            function VideoList(type, main_title, state) {
-                var _this;
-                video_base_classCallCheck(this, VideoList), (_this = _super2.call(this, type, main_title, state)).video = new Video(type, state.videoData.title, state), 
-                _this.resourceList = state.resourceList || [];
-                var _step, video_list = [], _iterator = video_base_createForOfIteratorHelper(_this.resourceList);
+            function VideoList(main_title, state) {
+                var _this2;
+                video_base_classCallCheck(this, VideoList), (_this2 = _super2.call(this, "video", main_title, state)).video = new Video(state.videoData.title, state), 
+                _this2.resourceList = state.resourceList || [];
+                var _step, video_list = [], _iterator = video_base_createForOfIteratorHelper(_this2.resourceList);
                 try {
                     for (_iterator.s(); !(_step = _iterator.n()).done; ) for (var video = _step.value, i = 0, length = video.pages && video.pages.length || 0; i < length; ) {
                         var _video = Object.assign({}, video);
@@ -1171,7 +1186,7 @@
                 } finally {
                     _iterator.f();
                 }
-                return _this.video_list = video_list, _this;
+                return _this2.video_list = video_list, _this2;
             }
             return video_base_createClass(VideoList, [ {
                 key: "total",
@@ -1209,10 +1224,10 @@
         }(VideoBase), Bangumi = function(_VideoBase3) {
             _inherits(Bangumi, _VideoBase3);
             var _super3 = _createSuper(Bangumi);
-            function Bangumi(type, main_title, state) {
-                var _this2;
-                return video_base_classCallCheck(this, Bangumi), (_this2 = _super3.call(this, type, main_title, state)).epList = state.epList, 
-                _this2.mediaInfo = state.mediaInfo, _this2;
+            function Bangumi(main_title, state) {
+                var _this3;
+                return video_base_classCallCheck(this, Bangumi), (_this3 = _super3.call(this, "bangumi", main_title, state)).epList = state.epList, 
+                _this3.mediaInfo = state.mediaInfo, _this3;
             }
             return video_base_createClass(Bangumi, [ {
                 key: "total",
@@ -1252,28 +1267,28 @@
                     return this.epList[this.id(p)].id;
                 }
             }, {
-                key: "need_vip",
-                value: function need_vip(p) {
+                key: "needVip",
+                value: function needVip(p) {
                     return "会员" === this.epList[this.id(p)].badge;
                 }
             }, {
-                key: "vip_need_pay",
-                value: function vip_need_pay(p) {
+                key: "vipNeedPay",
+                value: function vipNeedPay(p) {
                     return "付费" === this.epList[this.id(p)].badge;
                 }
             }, {
-                key: "is_limited",
-                value: function is_limited() {
+                key: "isLimited",
+                value: function isLimited() {
                     return !!this.mediaInfo.user_status.area_limit;
                 }
             } ]), Bangumi;
         }(VideoBase), Cheese = function(_VideoBase4) {
             _inherits(Cheese, _VideoBase4);
             var _super4 = _createSuper(Cheese);
-            function Cheese(type, main_title, state) {
-                var _this3;
-                return video_base_classCallCheck(this, Cheese), (_this3 = _super4.call(this, type, main_title, state)).episodes = state.episodes, 
-                _this3;
+            function Cheese(main_title, state) {
+                var _this4;
+                return video_base_classCallCheck(this, Cheese), (_this4 = _super4.call(this, "cheese", main_title, state)).episodes = state.episodes, 
+                _this4;
             }
             return video_base_createClass(Cheese, [ {
                 key: "total",
@@ -1306,13 +1321,14 @@
                     return this.episodes[this.id(p)].id;
                 }
             } ]), Cheese;
-        }(VideoBase), routerMap = {
-            video: "/video/",
-            list: "/list/",
-            bangumi: "/bangumi/play/",
-            cheese: "/cheese/play/"
-        };
-        function type() {
+        }(VideoBase);
+        function video_type() {
+            var routerMap = {
+                video: "/video/",
+                list: "/list/",
+                bangumi: "/bangumi/play/",
+                cheese: "/cheese/play/"
+            };
             for (var key in routerMap) if (location.pathname.startsWith(routerMap[key])) return key;
             return "?";
         }
@@ -1325,21 +1341,21 @@
             "自动": 32
         };
         var video = {
-            type: type,
+            type: video_type,
             base: function base() {
-                var _type = type();
+                var _type = video_type();
                 if ("video" === _type) {
                     var state = window.__INITIAL_STATE__, main_title = state.videoData && state.videoData.title;
-                    return new Video(_type, main_title, state);
+                    return new Video(main_title, state);
                 }
                 if ("list" === _type) {
                     var _state = window.__INITIAL_STATE__, _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + "-" + _state.mediaListInfo.title;
-                    return new VideoList("video", _main_title, _state);
+                    return new VideoList(_main_title, _state);
                 }
                 if ("bangumi" === _type) {
                     if (window.__INITIAL_STATE__) {
                         var _state3 = window.__INITIAL_STATE__, _main_title3 = _state3.mediaInfo.season_title;
-                        return new Bangumi(_type, _main_title3, _state3);
+                        return new Bangumi(_main_title3, _state3);
                     }
                     var epid, queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries, mediaInfo = queries[0].state.data.mediaInfo, historyEpId = queries[1].state.data.userInfo.history.epId, _main_title2 = mediaInfo.season_title, episodes = mediaInfo.episodes;
                     epid = location.pathname.startsWith("/bangumi/play/ss") ? parseInt(historyEpId) : (epid = location.pathname.match(/ep(\d+)/)) ? parseInt(epid[1]) : 0;
@@ -1347,7 +1363,7 @@
                         _id = i;
                         break;
                     }
-                    return new Bangumi(_type, _main_title2, {
+                    return new Bangumi(_main_title2, {
                         p: _id + 1,
                         epList: episodes,
                         mediaInfo: mediaInfo
@@ -1362,15 +1378,15 @@
                         break;
                     }
                     var _main_title4 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
-                    return new Cheese(_type, _main_title4, {
+                    return new Cheese(_main_title4, {
                         p: _id2 + 1,
                         episodes: _episodes
                     });
                 }
-                return new VideoBase(_type);
+                return new VideoBase;
             },
             get_quality: function get_quality() {
-                var _q = 0, _q_max = 0, _type = type();
+                var _q = 0, _q_max = 0, _type = video_type();
                 if ("cheese" === _type) {
                     var q = $("div.edu-player-quality-item.active span").text(), q_max = $($("div.edu-player-quality-item span").get(0)).text();
                     _q = q in q_map ? q_map[q] : 0, _q_max = q_max in q_map ? q_map[q_max] : 0;
@@ -1385,7 +1401,7 @@
                 };
             },
             get_quality_support: function get_quality_support() {
-                var list, quality_list = [], _type = type();
+                var list, quality_list = [], _type = video_type();
                 if ("cheese" === _type) (list = $("div.edu-player-quality-item span")).each((function() {
                     var k = $(this).text();
                     q_map[k] && quality_list.push(q_map[k]);
@@ -1634,6 +1650,9 @@
             return config_config.rpc_domain.match("https://") || config_config.rpc_domain.match(/localhost|127\.0\.0\.1/) ? "post" : "ariang";
         }
         var download_rpc_clicked = !1;
+        function download_rpc_one(video) {
+            download_rpc_all([ video ]);
+        }
         function download_rpc_all(videos) {
             if (download_rpc_clicked) message.v0.miaow(); else {
                 download_rpc_clicked = !0;
@@ -1667,9 +1686,9 @@
                     };
                 }(data)).then((function(res) {
                     res.length === data.length ? message.v0.success("RPC请求成功") : message.v0.warning("请检查RPC参数");
-                })).catch((function(_) {
+                })).catch((function() {
                     message.v0.error("请检查RPC服务配置");
-                })).finally((function(_) {
+                })).finally((function() {
                     return download_rpc_clicked = !1;
                 })), message.v0.info("发送RPC下载请求");
             }
@@ -1679,7 +1698,7 @@
             a.setAttribute("target", "_blank"), a.setAttribute("onclick", "window.bp_aria2_window=window.open('".concat(url, "');")), 
             a.click();
         }
-        function download_rpc_ariang_one(video) {
+        function download_rpc_ariang_send(video) {
             var bp_aria2_window = window.bp_aria2_window, time = 100;
             bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3), setTimeout((function() {
                 var bp_aria2_window = window.bp_aria2_window, aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
@@ -1688,6 +1707,13 @@
                     bp_aria2_window.location.href = config_config.ariang_host + task_hash, message.v0.success("RPC请求成功");
                 } else message.v0.warning("请检查RPC参数");
             }), time);
+        }
+        function download_rpc_ariang() {
+            for (var _len = arguments.length, videos = new Array(_len), _key = 0; _key < _len; _key++) videos[_key] = arguments[_key];
+            0 != videos.length && (1 == videos.length && videos[0] instanceof Array ? download_rpc_ariang.apply(void 0, _toConsumableArray(videos[0])) : (download_rpc_ariang_send(videos.pop()), 
+            setTimeout((function() {
+                download_rpc_ariang.apply(void 0, videos);
+            }), 100)));
         }
         var download_blob_clicked = !1, need_show_progress = !0;
         function download_blob(url, filename) {
@@ -1723,7 +1749,7 @@
             }).then((function(result) {
                 var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ""));
                 if (!result_dom || !result_dom.find("d")[0]) return "callback" === return_type && callback ? void callback() : void message.v0.warning("未发现弹幕");
-                var danmaku_data = result_dom.find("d").map((function(i, el) {
+                var _step2, danmaku_data = result_dom.find("d").map((function(i, el) {
                     var item = $(el), p = item.attr("p").split(","), type = 0;
                     return "4" === p[1] ? type = 2 : "5" === p[1] && (type = 1), [ {
                         time: parseFloat(p[0]),
@@ -1731,11 +1757,9 @@
                         color: parseInt(p[3]),
                         text: item.text()
                     } ];
-                })).get();
-                danmaku_data.sort((function(a, b) {
+                })).get().sort((function(a, b) {
                     return a.time - b.time;
-                }));
-                var _step2, dialogue = function dialogue(danmaku, scroll_id, fix_id) {
+                })), dialogue = function dialogue(danmaku, scroll_id, fix_id) {
                     var text = danmaku.text, time = danmaku.time, commands = [ 0 === danmaku.type ? function scrollCommand(top, left_a, left_b) {
                         return "\\move(".concat(left_a, ",").concat(top, ",").concat(left_b, ",").concat(top, ")");
                     }(50 * (1 + Math.floor(15 * Math.random())), 1920 + 50 * danmaku.text.length / 2, 0 - 50 * danmaku.text.length / 2) : function fixCommand(top, left) {
@@ -1774,7 +1798,7 @@
                     a.style.display = "none", a.href = blob_url, a.download = title + ".ass", a.click(), 
                     URL.revokeObjectURL(blob_url);
                 } else "callback" === return_type && callback && callback(data);
-            })).catch((function(_) {
+            })).catch((function() {
                 "callback" === return_type && callback && callback();
             }));
         }
@@ -1829,24 +1853,23 @@
             }
         }
         function format(url) {
-            return url ? url.match(".flv") ? ".flv" : (url.match(".m4s") || url.match(".mp4"), 
-            ".mp4") : "";
+            return url ? url.match(".mp4|.m4s") ? ".mp4" : url.match(".flv") ? ".flv" : ".mp4" : "";
         }
         var Download = {
             url_format: format,
-            download: function download(url, name, type) {
-                var filename = (name = name.replace(/[\/\\*|]+/g, "-").replace(/:/g, "：").replace(/\?/g, "？").replace(/"/g, "'").replace(/</g, "《").replace(/>/g, "》")) + format(url);
+            download: function download(url, filename, type) {
+                filename = filename.replace(/[\/\\*|]+/g, "-").replace(/:/g, "：").replace(/\?/g, "？").replace(/"/g, "'").replace(/</g, "《").replace(/>/g, "》"), 
                 "blob" === type ? download_blob(url, filename) : "rpc" === type && function download_rpc(url, filename) {
                     var type = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : "post";
-                    if ("post" === type) download_rpc_all([ {
+                    if ("post" === type) download_rpc_one({
                         url: url,
                         filename: filename
-                    } ]); else if ("ariang" === type) {
+                    }); else if ("ariang" === type) {
                         var bp_aria2_window = window.bp_aria2_window, time = 100;
                         bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3), setTimeout((function() {
-                            var bp_aria2_window = window.bp_aria2_window, aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href), task_hash = "#!/new/task?url=".concat(window.btoa(url), "&out=").concat(encodeURIComponent(filename), "&").concat(aria2_header);
+                            var bp_aria2_window = window.bp_aria2_window, task_hash = "#!/new/task?" + [ "url=".concat(window.btoa(url)), "out=".concat(encodeURIComponent(filename)), "header=User-Agent:".concat(window.navigator.userAgent), "header=Referer:".concat(window.location.href) ].join("&");
                             bp_aria2_window && !bp_aria2_window.closed ? (bp_aria2_window.location.href = config_config.ariang_host + task_hash, 
-                            message.v0.success("RPC请求发送成功")) : message.v0.warning("AriaNG页面未打开"), download_rpc_clicked = !1;
+                            message.v0.success("发送RPC请求")) : message.v0.warning("AriaNG页面未打开"), download_rpc_clicked = !1;
                         }), time);
                     }
                 }(url, filename, rpc_type());
@@ -1888,46 +1911,46 @@
                     _iterator.f();
                 }
                 var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="mp4" selected>MP4</option>\n                <option value="flv">FLV</option>\n                <option value="dash">DASH</option>\n            </select>\n            &nbsp;&nbsp;无法设置MP4清晰度\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video">视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <div style="margin:2% 0;">\n            <label>保存目录:</label>\n            <input id="dl_rpc_dir" placeholder="').concat(config_config.rpc_dir || "为空使用默认目录", '"/>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, '\n        </div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
-                function download_videos(videos, i, video_urls) {
-                    if (videos.length) if (i < videos.length) {
-                        var _video = videos[i], _msg = "第".concat(i + 1, "（").concat(i + 1, "/").concat(videos.length, "）个视频");
-                        message._p.alert("".concat(_msg, "：获取中..."));
-                        api.get_urls(_video.p, _video.q, _video.format, (function success(res) {
-                            if (!res.code) {
+                function download_videos(video_tasks, i, videos) {
+                    if (video_tasks.length) {
+                        if (i >= video_tasks.length) return message._p.alert("视频地址请求完成！"), void ("post" === rpc_type() && videos.length > 0 && (download_rpc_all(videos), 
+                        videos.length = 0));
+                        var task = video_tasks[i], msg = "第".concat(i + 1, "（").concat(i + 1, "/").concat(video_tasks.length, "）个视频");
+                        message._p.alert("".concat(msg, "：获取中..."));
+                        api.get_urls(task.p, task.q, task.format, (function success(res) {
+                            if (setTimeout((function() {
+                                download_videos(video_tasks, ++i, videos);
+                            }), 4e3), !res.code) {
                                 message.v0.success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
-                                message._p.alert("".concat(_msg, "：获取成功！"));
+                                message._p.alert("".concat(msg, "：获取成功！"));
                                 var _ref3 = [ res.url, rpc_type(), res.video, res.audio ], url = _ref3[0], type = _ref3[1], video_url = _ref3[2], audio_url = _ref3[3];
-                                "post" === type ? ("dash" === _video.format ? (video_urls.push({
+                                "post" === type ? ("dash" === task.format ? videos.push({
                                     url: video_url,
-                                    filename: _video.filename + "_video" + format(video_url),
-                                    rpc_dir: _video.rpc_dir
-                                }), video_urls.push({
+                                    filename: task.filename + format(video_url),
+                                    rpc_dir: task.rpc_dir
+                                }, {
                                     url: audio_url,
-                                    filename: _video.filename + "_audio" + format(audio_url),
-                                    rpc_dir: _video.rpc_dir
-                                })) : video_urls.push({
+                                    filename: task.filename + ".m4a",
+                                    rpc_dir: task.rpc_dir
+                                }) : videos.push({
                                     url: url,
-                                    filename: _video.filename + format(url),
-                                    rpc_dir: _video.rpc_dir
-                                }), video_urls.length > 3 && (download_rpc_all(video_urls), video_urls.length = 0)) : "ariang" === type && ("dash" === _video.format ? (download_rpc_ariang_one({
+                                    filename: task.filename + format(url),
+                                    rpc_dir: task.rpc_dir
+                                }), videos.length > 3 && (download_rpc_all(videos), videos.length = 0)) : "ariang" === type && ("dash" === task.format ? download_rpc_ariang({
                                     url: video_url,
-                                    filename: _video.filename + "_video" + format(video_url)
-                                }), download_rpc_ariang_one({
+                                    filename: task.filename + format(video_url)
+                                }, {
                                     url: audio_url,
-                                    filename: _video.filename + "_audio" + format(audio_url)
-                                })) : download_rpc_ariang_one({
+                                    filename: task.filename + ".m4a"
+                                }) : download_rpc_ariang({
                                     url: url,
-                                    filename: _video.filename + format(url)
+                                    filename: task.filename + format(url)
                                 }));
                             }
-                            setTimeout((function() {
-                                download_videos(videos, ++i, video_urls);
-                            }), 4e3);
                         }), (function error() {
-                            download_videos(videos, ++i, video_urls);
+                            download_videos(video_tasks, ++i, videos);
                         }));
-                    } else message._p.alert("视频地址请求完成！"), "post" === rpc_type() && video_urls.length > 0 && (download_rpc_all(video_urls), 
-                    video_urls.length = 0);
+                    }
                 }
                 message._p.confirm(msg, (function() {
                     for (var _ref2 = [ $("#dl_video").is(":checked"), $("#dl_subtitle").is(":checked"), $("#dl_danmaku").is(":checked"), $("#dl_format").val(), $("#dl_quality").val() || q, $("#dl_rpc_dir").val() ], dl_video = _ref2[0], dl_subtitle = _ref2[1], dl_danmaku = _ref2[2], dl_format = _ref2[3], dl_quality = _ref2[4], dl_rpc_dir = _ref2[5], videos = [], _i2 = 0; _i2 < total; _i2++) if ($("input#option_".concat(_i2)).is(":checked")) {
@@ -1950,7 +1973,7 @@
             download_danmaku_ass: download_danmaku_ass,
             download_subtitle_vtt: download_subtitle_vtt,
             open_ariang: open_ariang
-        }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="online">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：前两种方式不会设置文件名；非HTTPS或非本地的RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria参数：</label> 最大连接数：<select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">账号授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">手动授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ', config_config = {
+        }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria参数：</label> <label>最大连接数：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:20%"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">账号授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">手动授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ', config_config = {
             base_api: "https://api.injahow.cn/bparse/",
             request_type: "auto",
             format: "mp4",
@@ -1963,6 +1986,7 @@
             rpc_token: "",
             rpc_dir: "",
             aria2c_connection_level: "min",
+            aria2c_addition_parameters: "",
             ariang_host: "http://ariang.injahow.com/",
             auto_download: "0",
             video_quality: "0",
@@ -2082,7 +2106,7 @@
             }(Auth, [ {
                 key: "checkLoginStatus",
                 value: function checkLoginStatus() {
-                    var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || "0" ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
+                    var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || 0 ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
                     access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5) && (0, 
                     ajax.h)({
                         url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
@@ -2110,7 +2134,7 @@
                         },
                         type: "GET",
                         dataType: "json"
-                    }).then(resolve).finally((function(_) {
+                    }).then(resolve).finally((function() {
                         return _this2.auth_clicked = !1;
                     })));
                 }
@@ -2142,7 +2166,7 @@
                         if (res.data.has_login) {
                             var msg = "" + "请点击<b><a href='".concat(res.data.confirm_uri, "' target='_blank'>授权地址</a></b>\n                    打开一个新窗口，正常情况新窗口应该显示一个图片，请将该窗口地址栏的URL链接复制到当前文本框中<br/>\n                    <input id='auth_url' style='width:100%;' type='text' autocomplete='off'><br>然后点击确定即可");
                             message._p.alert(msg, (function() {
-                                var auth_url = $("#auth_url").val(), auth_id = store.get("auth_id") || "", auth_sec = store.get("auth_sec") || "";
+                                var auth_url = $("#auth_url").val(), _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
                                 (0, ajax.h)({
                                     url: auth_url.replace("https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?", "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
                                     type: "GET",
@@ -2163,7 +2187,7 @@
                 value: function logout() {
                     var _this3 = this;
                     if (store.get("auth_id")) if (this.auth_clicked) message.v0.miaow(); else {
-                        var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
+                        var _ref3 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref3[0], auth_sec = _ref3[1];
                         (0, ajax.h)({
                             url: "".concat(config_config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
                             type: "GET",
@@ -2172,7 +2196,7 @@
                             res.code ? message.v0.warning("取消失败") : (message.v0.success("取消成功"), store.set("auth_id", ""), 
                             store.set("auth_sec", ""), store.set("auth_time", "0"), store.set("access_key", ""), 
                             $("#auth").val("0"), config_config.auth = "0");
-                        })).finally((function(_) {
+                        })).finally((function() {
                             return _this3.auth_clicked = !1;
                         }));
                     } else message._p.alert("没有发现授权记录");
@@ -2184,7 +2208,7 @@
                     window.addEventListener("message", (function(e) {
                         if ("string" == typeof e.data && "bilibili-parse-login-credentials" === e.data.split(":")[0]) {
                             $("iframe#auth_iframe").remove();
-                            var url = e.data.split(": ")[1], _ref3 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref3[0], auth_sec = _ref3[1];
+                            var url = e.data.split(": ")[1], _ref4 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref4[0], auth_sec = _ref4[1];
                             (0, ajax.h)({
                                 url: url.replace("https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?", "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
                                 type: "GET",
@@ -2193,7 +2217,7 @@
                                 res.code ? message.v0.warning("授权失败") : (message.v0.success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
                                 store.set("auth_sec", res.auth_sec)), store.set("access_key", new URL(url).searchParams.get("access_key")), 
                                 store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
-                            })).finally((function(_) {
+                            })).finally((function() {
                                 return _this4.auth_clicked = !1;
                             }));
                         }
@@ -2233,6 +2257,41 @@
             })).join("");
             return "" + '<div class="'.concat(main_class_name, '">\n            ').concat(toolbar_elements, "\n            ").concat(more_style, "\n        </div>");
         }
+        function _slicedToArray(arr, i) {
+            return function _arrayWithHoles(arr) {
+                if (Array.isArray(arr)) return arr;
+            }(arr) || function _iterableToArrayLimit(arr, i) {
+                var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
+                if (null == _i) return;
+                var _s, _e, _arr = [], _n = !0, _d = !1;
+                try {
+                    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done) && (_arr.push(_s.value), !i || _arr.length !== i); _n = !0) ;
+                } catch (err) {
+                    _d = !0, _e = err;
+                } finally {
+                    try {
+                        _n || null == _i.return || _i.return();
+                    } finally {
+                        if (_d) throw _e;
+                    }
+                }
+                return _arr;
+            }(arr, i) || function main_unsupportedIterableToArray(o, minLen) {
+                if (!o) return;
+                if ("string" == typeof o) return main_arrayLikeToArray(o, minLen);
+                var n = Object.prototype.toString.call(o).slice(8, -1);
+                "Object" === n && o.constructor && (n = o.constructor.name);
+                if ("Map" === n || "Set" === n) return Array.from(o);
+                if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return main_arrayLikeToArray(o, minLen);
+            }(arr, i) || function _nonIterableRest() {
+                throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+            }();
+        }
+        function main_arrayLikeToArray(arr, len) {
+            (null == len || len > arr.length) && (len = arr.length);
+            for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+            return arr2;
+        }
         function main_defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
                 var descriptor = props[i];
@@ -2244,7 +2303,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.2", " ").concat("01288e2", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.3", " ").concat("d9cf3e8", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2322,12 +2381,42 @@
                 value: function run() {
                     var api_url, api_url_temp;
                     this.init();
-                    var e = {
+                    var evt = {
                         setting_btn: function setting_btn() {
                             for (var key in user.lazyInit(!0), config_config) $("#".concat(key)).val(config_config[key]);
                             $("#bp_config").show(), $("#bp_config").animate({
                                 opacity: "1"
                             }, 300), ui_scroll.A.hide();
+                        },
+                        bilibili_parse: function bilibili_parse() {
+                            user.lazyInit(!0);
+                            var vb = video.base().const[(type, aid, p, cid, epid)] = [ vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid() ], q = video.get_quality().q;
+                            api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
+                            var _ref = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref[0], auth_sec = _ref[1];
+                            if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
+                            api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"), 
+                            $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message.v0.info("开始请求"), 
+                            api.get_url((function(res) {
+                                if (res && !res.code) {
+                                    var _url, _url_;
+                                    if (message.v0.success("请求成功"), res.times && message.v0.info("剩余请求次数：".concat(res.times)), 
+                                    res.url) _url = res.url.replace("http://", "https://"), _url_ = "#"; else {
+                                        if (!res.video || !res.audio) return void message.v0.warning("数据错误");
+                                        _url = res.video.replace("http://", "https://"), _url_ = res.audio.replace("http://", "https://");
+                                    }
+                                    $("#video_url").attr("href", _url), $("#video_url").attr("download", vb.filename() + Download.url_format(_url)), 
+                                    $("#video_download").show(), "#" !== _url_ && ($("#video_url_2").attr("href", _url_), 
+                                    $("#video_url_2").attr("download", vb.filename() + "_audio.mp4"), $("#video_download_2").show()), 
+                                    (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_), 
+                                    "1" === config_config.auto_download && $("#video_download").click();
+                                }
+                            })); else {
+                                message.v0.miaow();
+                                var url = $("#video_url").attr("href"), url_2 = $("#video_url_2").attr("href");
+                                url && "#" !== url && ($("#video_download").show(), "dash" === config_config.format && $("#video_download_2").show(), 
+                                (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2), 
+                                "1" === config_config.auto_download && $("#video_download").click());
+                            }
                         },
                         download_danmaku: function download_danmaku() {
                             var vb = video.base();
@@ -2346,73 +2435,36 @@
                         video_download: function video_download() {
                             var type = config_config.download_type;
                             if ("web" === type) $("#video_url")[0].click(); else if ("a" === type) {
-                                var _ref = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], video_url_2 = _ref[1], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref[0], '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
+                                var _ref2 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href"), $("#video_url").attr("download"), $("#video_url_2").attr("download") ], video_url_2 = _ref2[1], file_name = _ref2[2], file_name_2 = _ref2[3], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref2[0], '" download="').concat(file_name, '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" download="').concat(file_name_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
                                 message._p.alert(msg);
                             } else if ("aria" === type) {
-                                var file_name, file_name_2, _ref2 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref2[0], _video_url_ = _ref2[1], video_title = video.base().filename();
-                                file_name = video_title + Download.url_format(_video_url), file_name_2 = video_title + "_audio.mp4";
-                                var aria2_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), url_max_connection = 1, server_max_connection = 5;
-                                switch (config_config.aria2c_connection_level) {
-                                  case "min":
-                                    url_max_connection = 1, server_max_connection = 5;
-                                    break;
-
-                                  case "mid":
-                                    url_max_connection = 16, server_max_connection = 8;
-                                    break;
-
-                                  case "max":
-                                    url_max_connection = 32, server_max_connection = 16;
-                                }
-                                var aria2c_max_concurrent_downloads = "--max-concurrent-downloads ".concat(url_max_connection), aria2c_max_connection_per_server = "--max-connection-per-server ".concat(server_max_connection), code = 'aria2c "'.concat(_video_url, '" --out "').concat(file_name, '" ').concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server), code_2 = 'aria2c "'.concat(_video_url_, '" --out "').concat(file_name_2, '" ').concat(aria2_header, " ").concat(aria2c_max_concurrent_downloads, " ").concat(aria2c_max_connection_per_server), _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
+                                var _ref3 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref3[0], _video_url_ = _ref3[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref5 = _slicedToArray({
+                                    min: [ 1, 5 ],
+                                    mid: [ 16, 8 ],
+                                    max: [ 32, 16 ]
+                                }[config_config.aria2c_connection_level] || [ 1, 5 ], 2), url_max_connection = _ref5[0], server_max_connection = _ref5[1], aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection), _map = [ 'aria2c "'.concat(_video_url, '" --out "').concat(_file_name, '"'), 'aria2c "'.concat(_video_url_, '" --out "').concat(_file_name_, '"') ].map((function(code) {
+                                    return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
+                                })), _map2 = _slicedToArray(_map, 2), code = _map2[0], code_2 = _map2[1], _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
                                 !window.bp_clip_btn && (window.bp_clip_btn = function(id) {
                                     $("#".concat(id)).select(), document.execCommand("copy") ? message.v0.success("复制成功") : message.v0.warning("复制失败");
                                 }), message._p.alert(_msg);
                             } else {
-                                var url = $("#video_url").attr("href"), filename = video.base().filename() + (url.match(".m4s") ? "_video" : "");
+                                var url = $("#video_url").attr("href"), filename = video.base().filename() + Download.url_format(url);
                                 Download.download(url, filename, type);
                             }
                         },
                         video_download_2: function video_download_2() {
                             var type = config_config.download_type;
                             if ("web" === type) $("#video_url_2")[0].click(); else if ("a" === type) $("#video_download").click(); else if ("aria" === type) $("#video_download").click(); else {
-                                var url = $("#video_url_2").attr("href"), filename = video.base().filename() + "_audio";
+                                var url = $("#video_url_2").attr("href"), filename = video.base().filename() + ".m4a";
                                 Download.download(url, filename, type);
-                            }
-                        },
-                        bilibili_parse: function bilibili_parse() {
-                            user.lazyInit(!0);
-                            var vb = video.base(), _ref3 = [ vb.type, vb.aid(), vb.p(), vb.cid(), vb.epid() ], type = _ref3[0], aid = _ref3[1], p = _ref3[2], cid = _ref3[3], epid = _ref3[4], q = video.get_quality().q;
-                            api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
-                            var _ref4 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref4[0], auth_sec = _ref4[1];
-                            if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
-                            api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"), 
-                            $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message.v0.info("开始请求"), 
-                            api.get_url((function(res) {
-                                if (res && !res.code) {
-                                    var _url, _url_;
-                                    if (message.v0.success("请求成功"), res.times && message.v0.info("剩余请求次数：".concat(res.times)), 
-                                    res.url) _url = res.url.replace("http://", "https://"), _url_ = "#"; else {
-                                        if (!res.video || !res.audio) return void message.v0.warning("数据错误");
-                                        _url = res.video.replace("http://", "https://"), _url_ = res.audio.replace("http://", "https://");
-                                    }
-                                    $("#video_url").attr("href", _url), $("#video_download").show(), "#" !== _url_ && ($("#video_url_2").attr("href", _url_), 
-                                    $("#video_download_2").show()), (user.needReplace() || vb.is_limited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_), 
-                                    "1" === config_config.auto_download && $("#video_download").click();
-                                }
-                            })); else {
-                                message.v0.miaow();
-                                var url = $("#video_url").attr("href"), url_2 = $("#video_url_2").attr("href");
-                                url && "#" !== url && ($("#video_download").show(), "dash" === config_config.format && $("#video_download_2").show(), 
-                                (user.needReplace() || vb.is_limited() || "1" === config_config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2), 
-                                "1" === config_config.auto_download && $("#video_download").click());
                             }
                         }
                     };
-                    window.bpd = e, $("body").on("click", "#setting_btn", e.setting_btn), $("body").on("click", "#download_danmaku", e.download_danmaku), 
-                    $("body").on("click", "#download_subtitle", e.download_subtitle), $("body").on("click", "#video_download_all", e.video_download_all), 
-                    $("body").on("click", "#video_download", e.video_download), $("body").on("click", "#video_download_2", e.video_download_2), 
-                    $("body").on("click", "#bilibili_parse", e.bilibili_parse), $("body").on("click", "a.router-link-active", (function() {
+                    window.bpd = evt, Object.entries(evt).forEach((function(_ref6) {
+                        var _ref7 = _slicedToArray(_ref6, 2), k = _ref7[0], v = _ref7[1];
+                        return $("body").on("click", "#".concat(k), v);
+                    })), $("body").on("click", "a.router-link-active", (function() {
                         this !== $('li[class="on"]').find("a")[0] && check.refresh();
                     })), $("body").on("click", "li.ep-item", (function() {
                         check.refresh();

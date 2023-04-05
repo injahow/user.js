@@ -3,14 +3,14 @@ import { user } from '../user'
 import { api } from './api'
 import { Bangumi, Cheese, Video, VideoBase, VideoList } from './video-base'
 
-const routerMap = {
-    video: '/video/',
-    list: '/list/',
-    bangumi: '/bangumi/play/', // ss / ep
-    cheese: '/cheese/play/'
-}
 
 function type() {
+    const routerMap = {
+        video: '/video/',
+        list: '/list/',
+        bangumi: '/bangumi/play/', // ss / ep
+        cheese: '/cheese/play/'
+    }
     for (const key in routerMap) {
         if (location.pathname.startsWith(routerMap[key])) {
             return key
@@ -25,18 +25,18 @@ function base() {
         const state = window.__INITIAL_STATE__
         const main_title = state.videoData && state.videoData.title
 
-        return new Video(_type, main_title, state)
+        return new Video(main_title, state)
     } else if (_type === 'list') {
         const state = window.__INITIAL_STATE__
         const main_title = state.mediaListInfo && (state.mediaListInfo.upper.name + '-' + state.mediaListInfo.title)
 
-        return new VideoList('video', main_title, state)
+        return new VideoList(main_title, state)
     } else if (_type === 'bangumi') {
 
         if (!!window.__INITIAL_STATE__) {  // todo
             const state = window.__INITIAL_STATE__
             const main_title = state.mediaInfo.season_title
-            return new Bangumi(_type, main_title, state)
+            return new Bangumi(main_title, state)
         }
 
         const queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries
@@ -67,8 +67,7 @@ function base() {
             mediaInfo: mediaInfo
         }
 
-        return new Bangumi(_type, main_title, state)
-
+        return new Bangumi(main_title, state)
     } else if (_type === 'cheese') {
 
         const sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1]
@@ -99,11 +98,10 @@ function base() {
             episodes
         }
 
-        return new Cheese(_type, main_title, state)
-
+        return new Cheese(main_title, state)
     } else { // error
 
-        return new VideoBase(_type)
+        return new VideoBase()
     }
 }
 

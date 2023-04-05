@@ -34,12 +34,12 @@ function get_url_base(page, quality, video_format, success, error, request_type)
         vb.cid(page),
         vb.epid(page),
         quality || video.get_quality().q,
-        vb.type
+        vb.type()
     ]
 
     // 参数预处理
     let format = video_format || config.format
-    if (request_type === 'auto' && user.needReplace()) request_type = 'online'
+    if (request_type === 'auto' && user.needReplace()) request_type = 'remote'
 
     const url_replace_cdn = url => {
         if (config.host_key !== '0') {
@@ -95,10 +95,10 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
         if (!data) {
             if (request_type === 'auto') {
-                get_url_base(page, quality, video_format, success, error, 'online')
+                get_url_base(page, quality, video_format, success, error, 'remote')
                 return
             }
-            // online
+            // remote
             res.url && (res.url = url_replace_cdn(res.url))
             res.video && (res.video = url_replace_cdn(res.video))
             res.audio && (res.audio = url_replace_cdn(res.audio))
@@ -233,13 +233,13 @@ function get_season(sid, epid) {
 }
 
 export const api = {
-    get_url: (success, error) => {
+    get_url(success, error) {
         const request_type = config.request_type
         const format = config.format
         const quality = parseInt(config.video_quality)
         get_url_base(0, quality, format, success, error, request_type)
     },
-    get_urls: (page, quality, format, success, error) => {
+    get_urls(page, quality, format, success, error) {
         const request_type = config.request_type
         get_url_base(page, quality, format, success, error, request_type)
     },

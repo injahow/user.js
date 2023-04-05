@@ -163,15 +163,13 @@ function download_all() {
             }
         }
 
-        if (dl_danmaku) {
-            // 下载弹幕
+        if (dl_danmaku) { // 下载弹幕
             if (videos.length === 1) {
                 download_danmaku_ass(videos[0].cid, videos[0].filename)
             } else {
                 download_danmaku_ass_zip([...videos], new JSZip())
             }
         }
-
     })
 
     $('#dl_quality').val(q)
@@ -185,98 +183,101 @@ function download_all() {
         }
     })
 
-    function download_videos(videos, i, video_urls) {
-        // 递归请求下载
-        if (!videos.length) {
+    function download_videos(video_tasks, i, videos) { // 递归请求下载
+
+        if (!video_tasks.length) {
             return
         }
-        if (i < videos.length) {
-            const video = videos[i]
-            const msg = `第${i + 1}（${i + 1}/${videos.length}）个视频`
-            MessageBox.alert(`${msg}：获取中...`)
 
-            const success = res => {
-                if (!res.code) {
-                    Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
-                    MessageBox.alert(`${msg}：获取成功！`)
-
-                    const [url, type, video_url, audio_url] = [
-                        res.url,
-                        rpc_type(),
-                        res.video,
-                        res.audio
-                    ]
-
-                    if (type === 'post') {
-
-                        if (video.format === 'dash') { // 处理dash
-                            video_urls.push({
-                                url: video_url,
-                                filename: video.filename + '_video' + format(video_url),
-                                rpc_dir: video.rpc_dir
-                            })
-                            video_urls.push({
-                                url: audio_url,
-                                filename: video.filename + '_audio' + format(audio_url),
-                                rpc_dir: video.rpc_dir
-                            })
-                        } else {
-                            video_urls.push({
-                                url: url,
-                                filename: video.filename + format(url),
-                                rpc_dir: video.rpc_dir
-                            })
-                        }
-
-                        if (video_urls.length > 3) {
-                            download_rpc_all(video_urls)
-                            video_urls.length = 0
-                        }
-                    } else if (type === 'ariang') {
-
-                        if (video.format === 'dash') { // 处理dash
-                            download_rpc_ariang_one({
-                                url: video_url,
-                                filename: video.filename + '_video' + format(video_url)
-                            })
-                            download_rpc_ariang_one({
-                                url: audio_url,
-                                filename: video.filename + '_audio' + format(audio_url)
-                            })
-                        } else {
-                            download_rpc_ariang_one({
-                                url: url,
-                                filename: video.filename + format(url)
-                            })
-                        }
-                    }
-                }
-
-                setTimeout(() => {
-                    download_videos(videos, ++i, video_urls)
-                }, 4000)
-            }
-
-            const error = () => {
-                download_videos(videos, ++i, video_urls)
-            }
-
-            api.get_urls(video.p, video.q, video.format, success, error)
-
-        } else {
-
+        if (i >= video_tasks.length) {
             MessageBox.alert('视频地址请求完成！')
             if (rpc_type() === 'post') {
-                if (video_urls.length > 0) {
-                    download_rpc_all(video_urls)
-                    video_urls.length = 0
+                if (videos.length > 0) {
+                    download_rpc_all(videos)
+                    videos.length = 0
                 }
             }
             // one by one -> null
+            return
         }
+
+        const task = video_tasks[i]
+        const msg = `第${i + 1}（${i + 1}/${video_tasks.length}）个视频`
+        MessageBox.alert(`${msg}：获取中...`)
+
+        const success = res => {
+
+            setTimeout(() => {
+                download_videos(video_tasks, ++i, videos)
+            }, 4000)
+
+            if (res.code) {
+                return
+            }
+
+            Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
+            MessageBox.alert(`${msg}：获取成功！`)
+
+            const [url, type, video_url, audio_url] = [
+                res.url,
+                rpc_type(),
+                res.video,
+                res.audio
+            ]
+
+            if (type === 'post') {
+                if (task.format === 'dash') { // 处理dash
+                    videos.push({
+                        url: video_url,
+                        filename: task.filename + format(video_url),
+                        rpc_dir: task.rpc_dir
+                    }, {
+                        url: audio_url,
+                        filename: task.filename + '.m4a',
+                        rpc_dir: task.rpc_dir
+                    })
+                } else {
+                    videos.push({
+                        url: url,
+                        filename: task.filename + format(url),
+                        rpc_dir: task.rpc_dir
+                    })
+                }
+
+                if (videos.length > 3) {
+                    download_rpc_all(videos)
+                    videos.length = 0
+                }
+            } else if (type === 'ariang') {
+
+                if (task.format === 'dash') { // 处理dash
+                    download_rpc_ariang({
+                        url: video_url,
+                        filename: task.filename + format(video_url)
+                    }, {
+                        url: audio_url,
+                        filename: task.filename + '.m4a'
+                    })
+                } else {
+                    download_rpc_ariang({
+                        url: url,
+                        filename: task.filename + format(url)
+                    })
+                }
+            }
+        }
+
+        const error = () => {
+            download_videos(video_tasks, ++i, videos)
+        }
+
+        api.get_urls(task.p, task.q, task.format, success, error)
     }
 }
 
+/**
+ * rpc
+ */
 function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
     if (!(data instanceof Array)) {
         data = data instanceof Object
@@ -318,6 +319,10 @@ function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
 
 let download_rpc_clicked = false
 
+function download_rpc_one(video) {  // post
+    download_rpc_all([video])
+}
+
 function download_rpc_all(videos) {  // post
     if (download_rpc_clicked) {
         Message.miaow()
@@ -331,15 +336,15 @@ function download_rpc_all(videos) {  // post
         } else {
             Message.warning('请检查RPC参数')
         }
-    }).catch(_ => {
+    }).catch(() => {
         Message.error('请检查RPC服务配置')
-    }).finally(_ => download_rpc_clicked = false)
+    }).finally(() => download_rpc_clicked = false)
     Message.info('发送RPC下载请求')
 }
 
 function download_rpc(url, filename, type = 'post') {
     if (type === 'post') {
-        download_rpc_all([{ url, filename }])
+        download_rpc_one({ url, filename })
     } else if (type === 'ariang') {
         const bp_aria2_window = window.bp_aria2_window
         let time = 100
@@ -349,11 +354,16 @@ function download_rpc(url, filename, type = 'post') {
         }
         setTimeout(() => {
             const bp_aria2_window = window.bp_aria2_window
-            const aria2_header = `header=User-Agent:${window.navigator.userAgent}&header=Referer:${window.location.href}`
-            const task_hash = `#!/new/task?url=${window.btoa(url)}&out=${encodeURIComponent(filename)}&${aria2_header}`
+            const task_hash = '#!/new/task?' + [
+                `url=${window.btoa(url)}`,
+                `out=${encodeURIComponent(filename)}`,
+                `header=User-Agent:${window.navigator.userAgent}`,
+                `header=Referer:${window.location.href}`
+            ].join('&')
+
             if (bp_aria2_window && !bp_aria2_window.closed) {
                 bp_aria2_window.location.href = config.ariang_host + task_hash
-                Message.success('RPC请求发送成功')
+                Message.success('发送RPC请求')
             } else {
                 Message.warning('AriaNG页面未打开')
             }
@@ -373,7 +383,7 @@ function open_ariang(rpc) {
     a.click()
 }
 
-function download_rpc_ariang_one(video) {
+function download_rpc_ariang_send(video) {
     const bp_aria2_window = window.bp_aria2_window
     let time = 100
     if (!bp_aria2_window || bp_aria2_window.closed) {
@@ -393,6 +403,25 @@ function download_rpc_ariang_one(video) {
     }, time)
 }
 
+function download_rpc_ariang(...videos) {
+    if (videos.length == 0) {
+        return
+    }
+
+    if (videos.length == 1 && videos[0] instanceof Array) {
+        download_rpc_ariang(...videos[0])
+        return
+    }
+
+    download_rpc_ariang_send(videos.pop())
+    setTimeout(() => {
+        download_rpc_ariang(...videos)
+    }, 100)
+}
+
+/**
+ * blob
+ */
 let download_blob_clicked = false, need_show_progress = true
 
 function show_progress({ total, loaded, percent }) {
@@ -450,6 +479,9 @@ function download_blob(url, filename) {
     Message.info('准备开始下载')
 }
 
+/**
+ * danmaku & subtitle
+ */
 function _download_danmaku_ass(cid, title, return_type = null, callback = null) { // todo: 暂时使用随机弹幕
     ajax({
         url: `https://api.bilibili.com/x/v1/dm/list.so?oid=${cid}`,
@@ -475,8 +507,7 @@ function _download_danmaku_ass(cid, title, return_type = null, callback = null) 
                     type = 1
                 }
                 return [{ time: parseFloat(p[0]), type: type, color: parseInt(p[3]), text: item.text() }]
-            }).get()
-            danmaku_data.sort((a, b) => a.time - b.time)
+            }).get().sort((a, b) => a.time - b.time)
             // 2.dialogue
             const dialogue = (danmaku, scroll_id, fix_id) => {
                 const encode = text => text.replace(/\{/g, '｛').replace(/\}/g, '｝').replace(/\r|\n/g, '')
@@ -566,7 +597,7 @@ function _download_danmaku_ass(cid, title, return_type = null, callback = null) 
                 callback(data)
             }
         }
-    }).catch(_ => {
+    }).catch(() => {
         if (return_type === 'callback' && callback) {
             callback()
         }
@@ -658,35 +689,33 @@ function download_subtitle_vtt_zip(videos, zip) {
     })
 }
 
-
 function format(url) {
     if (!url) return ''
-    if (url.match('.flv')) {
+    if (url.match('.mp4|.m4s')) {
+        return '.mp4'
+    } else if (url.match('.flv')) {
         return '.flv'
-    } else if (url.match('.m4s')) {
-        return '.mp4'
-    } else if (url.match('.mp4')) {
-        return '.mp4'
     }
     return '.mp4'
 }
 
+function download(url, filename, type) {
+    filename = filename.replace(/[\/\\*|]+/g, '-')
+        .replace(/:/g, '：')
+        .replace(/\?/g, '？')
+        .replace(/"/g, '\'')
+        .replace(/</g, '《')
+        .replace(/>/g, '》')
+    if (type === 'blob') {
+        download_blob(url, filename)
+    } else if (type === 'rpc') {
+        download_rpc(url, filename, rpc_type())
+    }
+}
+
 export const Download = {
     url_format: format,
-    download: (url, name, type) => {
-        name = name.replace(/[\/\\*|]+/g, '-')
-            .replace(/:/g, '：')
-            .replace(/\?/g, '？')
-            .replace(/"/g, '\'')
-            .replace(/</g, '《')
-            .replace(/>/g, '》')
-        const filename = name + format(url)
-        if (type === 'blob') {
-            download_blob(url, filename)
-        } else if (type === 'rpc') {
-            download_rpc(url, filename, rpc_type())
-        }
-    },
+    download,
     download_all,
     download_danmaku_ass,
     download_subtitle_vtt,
