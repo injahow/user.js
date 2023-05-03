@@ -3,8 +3,6 @@ const clazzMap = {}
 
 class VideoBase {
 
-
-
     constructor(video_type, main_title, state) {
         if (!(this.constructor.name in clazzMap)) {
             clazzMap[this.constructor.name] = this.constructor

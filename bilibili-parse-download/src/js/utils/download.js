@@ -193,7 +193,7 @@ function download_all() {
             MessageBox.alert('视频地址请求完成！')
             if (rpc_type() === 'post') {
                 if (videos.length > 0) {
-                    download_rpc_all(videos)
+                    download_rpc_post_all(videos)
                     videos.length = 0
                 }
             }
@@ -245,7 +245,7 @@ function download_all() {
                 }
 
                 if (videos.length > 3) {
-                    download_rpc_all(videos)
+                    download_rpc_post_all(videos)
                     videos.length = 0
                 }
             } else if (type === 'ariang') {
@@ -280,9 +280,7 @@ function download_all() {
  */
 function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
     if (!(data instanceof Array)) {
-        data = data instanceof Object
-            ? [data]
-            : [{ data }]
+        data = data instanceof Object ? [data] : []
     }
     const rpc = {
         domain: config.rpc_domain,
@@ -296,6 +294,7 @@ function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
         type: 'POST',
         dataType: 'json',
         data: JSON.stringify(data.map(({ url, filename, rpc_dir }) => {
+
             const param = {
                 out: filename,
                 header: [
@@ -303,6 +302,7 @@ function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
                     `Referer: ${window.location.href}`
                 ]
             }
+
             if (rpc_dir || rpc.dir) {
                 param.dir = rpc_dir || rpc.dir
             }
@@ -317,13 +317,21 @@ function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
     }
 }
 
-let download_rpc_clicked = false
-
-function download_rpc_one(video) {  // post
-    download_rpc_all([video])
+function download_rpc(url, filename, type = 'post') {
+    if (type === 'post') {
+        download_rpc_post({ url, filename })
+    } else if (type === 'ariang') {
+        download_rpc_ariang({ url, filename })
+    }
 }
 
-function download_rpc_all(videos) {  // post
+let download_rpc_clicked = false
+
+function download_rpc_post(video) {
+    download_rpc_post_all([video])
+}
+
+function download_rpc_post_all(videos) {
     if (download_rpc_clicked) {
         Message.miaow()
         return
@@ -340,36 +348,6 @@ function download_rpc_all(videos) {  // post
         Message.error('请检查RPC服务配置')
     }).finally(() => download_rpc_clicked = false)
     Message.info('发送RPC下载请求')
-}
-
-function download_rpc(url, filename, type = 'post') {
-    if (type === 'post') {
-        download_rpc_one({ url, filename })
-    } else if (type === 'ariang') {
-        const bp_aria2_window = window.bp_aria2_window
-        let time = 100
-        if (!bp_aria2_window || bp_aria2_window.closed) {
-            open_ariang()
-            time = 3000
-        }
-        setTimeout(() => {
-            const bp_aria2_window = window.bp_aria2_window
-            const task_hash = '#!/new/task?' + [
-                `url=${window.btoa(url)}`,
-                `out=${encodeURIComponent(filename)}`,
-                `header=User-Agent:${window.navigator.userAgent}`,
-                `header=Referer:${window.location.href}`
-            ].join('&')
-
-            if (bp_aria2_window && !bp_aria2_window.closed) {
-                bp_aria2_window.location.href = config.ariang_host + task_hash
-                Message.success('发送RPC请求')
-            } else {
-                Message.warning('AriaNG页面未打开')
-            }
-            download_rpc_clicked = false
-        }, time)
-    }
 }
 
 function open_ariang(rpc) {
@@ -392,14 +370,20 @@ function download_rpc_ariang_send(video) {
     }
     setTimeout(() => {
         const bp_aria2_window = window.bp_aria2_window
-        const aria2_header = `header=User-Agent:${window.navigator.userAgent}&header=Referer:${window.location.href}`
+        const task_hash = '#!/new/task?' + [
+            `url=${encodeURIComponent(window.btoa(video.url))}`,
+            `out=${encodeURIComponent(video.filename)}`,
+            `header=User-Agent:${window.navigator.userAgent}`,
+            `header=Referer:${window.location.href}`
+        ].join('&')
+
         if (bp_aria2_window && !bp_aria2_window.closed) {
-            const task_hash = `#!/new/task?url=${window.btoa(video.url)}&out=${encodeURIComponent(video.filename)}&${aria2_header}`
             bp_aria2_window.location.href = config.ariang_host + task_hash
-            Message.success('RPC请求成功')
+            Message.success('发送RPC请求')
         } else {
-            Message.warning('请检查RPC参数')
+            Message.warning('AriaNG页面未打开')
         }
+
     }, time)
 }
 

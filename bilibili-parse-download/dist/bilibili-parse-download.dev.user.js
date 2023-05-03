@@ -1951,7 +1951,7 @@ function download_all() {
 
       if (rpc_type() === 'post') {
         if (videos.length > 0) {
-          download_rpc_all(videos);
+          download_rpc_post_all(videos);
           videos.length = 0;
         }
       } // one by one -> null
@@ -2002,7 +2002,7 @@ function download_all() {
         }
 
         if (videos.length > 3) {
-          download_rpc_all(videos);
+          download_rpc_post_all(videos);
           videos.length = 0;
         }
       } else if (type === 'ariang') {
@@ -2039,9 +2039,7 @@ function download_all() {
 function get_rpc_post(data) {
   // [...{ url, filename, rpc_dir }]
   if (!(data instanceof Array)) {
-    data = data instanceof Object ? [data] : [{
-      data: data
-    }];
+    data = data instanceof Object ? [data] : [];
   }
 
   var rpc = {
@@ -2077,15 +2075,29 @@ function get_rpc_post(data) {
   };
 }
 
-var download_rpc_clicked = false;
+function download_rpc(url, filename) {
+  var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'post';
 
-function download_rpc_one(video) {
-  // post
-  download_rpc_all([video]);
+  if (type === 'post') {
+    download_rpc_post({
+      url: url,
+      filename: filename
+    });
+  } else if (type === 'ariang') {
+    download_rpc_ariang({
+      url: url,
+      filename: filename
+    });
+  }
 }
 
-function download_rpc_all(videos) {
-  // post
+var download_rpc_clicked = false;
+
+function download_rpc_post(video) {
+  download_rpc_post_all([video]);
+}
+
+function download_rpc_post_all(videos) {
   if (download_rpc_clicked) {
     message.Message.miaow();
     return;
@@ -2109,39 +2121,6 @@ function download_rpc_all(videos) {
   message.Message.info('发送RPC下载请求');
 }
 
-function download_rpc(url, filename) {
-  var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'post';
-
-  if (type === 'post') {
-    download_rpc_one({
-      url: url,
-      filename: filename
-    });
-  } else if (type === 'ariang') {
-    var bp_aria2_window = window.bp_aria2_window;
-    var time = 100;
-
-    if (!bp_aria2_window || bp_aria2_window.closed) {
-      open_ariang();
-      time = 3000;
-    }
-
-    setTimeout(function () {
-      var bp_aria2_window = window.bp_aria2_window;
-      var task_hash = '#!/new/task?' + ["url=".concat(window.btoa(url)), "out=".concat(encodeURIComponent(filename)), "header=User-Agent:".concat(window.navigator.userAgent), "header=Referer:".concat(window.location.href)].join('&');
-
-      if (bp_aria2_window && !bp_aria2_window.closed) {
-        bp_aria2_window.location.href = config_config.ariang_host + task_hash;
-        message.Message.success('发送RPC请求');
-      } else {
-        message.Message.warning('AriaNG页面未打开');
-      }
-
-      download_rpc_clicked = false;
-    }, time);
-  }
-}
-
 function open_ariang(rpc) {
   var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace('://', '/'), "/").concat(rpc.port, "/jsonrpc/").concat(window.btoa(rpc.token)) : '';
   var url = config_config.ariang_host + hash_tag;
@@ -2162,14 +2141,13 @@ function download_rpc_ariang_send(video) {
 
   setTimeout(function () {
     var bp_aria2_window = window.bp_aria2_window;
-    var aria2_header = "header=User-Agent:".concat(window.navigator.userAgent, "&header=Referer:").concat(window.location.href);
+    var task_hash = '#!/new/task?' + ["url=".concat(encodeURIComponent(window.btoa(video.url))), "out=".concat(encodeURIComponent(video.filename)), "header=User-Agent:".concat(window.navigator.userAgent), "header=Referer:".concat(window.location.href)].join('&');
 
     if (bp_aria2_window && !bp_aria2_window.closed) {
-      var task_hash = "#!/new/task?url=".concat(window.btoa(video.url), "&out=").concat(encodeURIComponent(video.filename), "&").concat(aria2_header);
       bp_aria2_window.location.href = config_config.ariang_host + task_hash;
-      message.Message.success('RPC请求成功');
+      message.Message.success('发送RPC请求');
     } else {
-      message.Message.warning('请检查RPC参数');
+      message.Message.warning('AriaNG页面未打开');
     }
   }, time);
 }
@@ -3251,7 +3229,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.4", " ").concat("bc856c0", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.4", " ").concat("a974c08", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
