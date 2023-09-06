@@ -1326,6 +1326,7 @@ function base() {
       // todo
       var _state3 = window.__INITIAL_STATE__;
       var _main_title3 = _state3.mediaInfo.season_title;
+      _state3.p = _state3.epInfo.i + 1;
       return new Bangumi(_main_title3, _state3);
     }
 
@@ -3229,7 +3230,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.4", " ").concat("a974c08", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.5", " ").concat("7878570", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

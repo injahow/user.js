@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.4.4
+// @version       2.4.5
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -1355,7 +1355,7 @@
                 if ("bangumi" === _type) {
                     if (window.__INITIAL_STATE__) {
                         var _state3 = window.__INITIAL_STATE__, _main_title3 = _state3.mediaInfo.season_title;
-                        return new Bangumi(_main_title3, _state3);
+                        return _state3.p = _state3.epInfo.i + 1, new Bangumi(_main_title3, _state3);
                     }
                     var epid, queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries, mediaInfo = queries[0].state.data.mediaInfo, historyEpId = queries[1].state.data.userInfo.history.epId, _main_title2 = mediaInfo.season_title, episodes = mediaInfo.episodes;
                     epid = location.pathname.startsWith("/bangumi/play/ss") ? parseInt(historyEpId) : (epid = location.pathname.match(/ep(\d+)/)) ? parseInt(epid[1]) : 0;
@@ -2295,7 +2295,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.4", " ").concat("a974c08", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.5", " ").concat("7878570", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

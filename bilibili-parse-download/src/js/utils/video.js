@@ -36,6 +36,7 @@ function base() {
         if (!!window.__INITIAL_STATE__) {  // todo
             const state = window.__INITIAL_STATE__
             const main_title = state.mediaInfo.season_title
+            state.p = state.epInfo.i + 1
             return new Bangumi(main_title, state)
         }
 
