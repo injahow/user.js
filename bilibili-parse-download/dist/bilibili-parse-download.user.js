@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.4.5
+// @version       2.4.6
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -1226,7 +1226,8 @@
             var _super3 = _createSuper(Bangumi);
             function Bangumi(main_title, state) {
                 var _this3;
-                return video_base_classCallCheck(this, Bangumi), (_this3 = _super3.call(this, "bangumi", main_title, state)).epList = state.epList, 
+                return video_base_classCallCheck(this, Bangumi), (_this3 = _super3.call(this, "bangumi", main_title, state)).epInfo = state.epInfo, 
+                _this3.epList = state.epList, _this3.epId = state.epId, _this3.epMap = state.epMap, 
                 _this3.mediaInfo = state.mediaInfo, _this3;
             }
             return video_base_createClass(Bangumi, [ {
@@ -1237,44 +1238,44 @@
             }, {
                 key: "title",
                 value: function title(p) {
-                    var ep = this.epList[this.id(p)];
+                    var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
                     return "".concat(ep.titleFormat, " ").concat(ep.long_title);
                 }
             }, {
                 key: "filename",
                 value: function filename(p) {
-                    var ep = this.epList[this.id(p)];
+                    var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
                     return "".concat(this.main_title, "：").concat(ep.titleFormat, " ").concat(ep.long_title).replace(/[\/\\:*?"<>|]+/g, "");
                 }
             }, {
                 key: "aid",
                 value: function aid(p) {
-                    return this.epList[this.id(p)].aid;
+                    return (p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo).aid;
                 }
             }, {
                 key: "bvid",
                 value: function bvid(p) {
-                    return this.epList[this.id(p)].bvid;
+                    return (p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo).bvid;
                 }
             }, {
                 key: "cid",
                 value: function cid(p) {
-                    return this.epList[this.id(p)].cid;
+                    return (p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo).cid;
                 }
             }, {
                 key: "epid",
                 value: function epid(p) {
-                    return this.epList[this.id(p)].id;
+                    return (p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo).id;
                 }
             }, {
                 key: "needVip",
                 value: function needVip(p) {
-                    return "会员" === this.epList[this.id(p)].badge;
+                    return "会员" === (p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo).badge;
                 }
             }, {
                 key: "vipNeedPay",
                 value: function vipNeedPay(p) {
-                    return "付费" === this.epList[this.id(p)].badge;
+                    return "付费" === (p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo).badge;
                 }
             }, {
                 key: "isLimited",
@@ -1357,7 +1358,7 @@
                         var _state3 = window.__INITIAL_STATE__, _main_title3 = _state3.mediaInfo.season_title;
                         return _state3.p = _state3.epInfo.i + 1, new Bangumi(_main_title3, _state3);
                     }
-                    var epid, queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries, mediaInfo = queries[0].state.data.mediaInfo, historyEpId = queries[1].state.data.userInfo.history.epId, _main_title2 = mediaInfo.season_title, episodes = mediaInfo.episodes;
+                    var epid, queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries, _queries$0$state$data = queries[0].state.data, mediaInfo = _queries$0$state$data.mediaInfo, epMap = _queries$0$state$data.epMap, historyEpId = queries[1].state.data.userInfo.history.epId, _main_title2 = mediaInfo.season_title, episodes = mediaInfo.episodes;
                     epid = location.pathname.startsWith("/bangumi/play/ss") ? parseInt(historyEpId) : (epid = location.pathname.match(/ep(\d+)/)) ? parseInt(epid[1]) : 0;
                     for (var _id = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
                         _id = i;
@@ -1365,8 +1366,10 @@
                     }
                     return new Bangumi(_main_title2, {
                         p: _id + 1,
+                        epId: epid,
                         epList: episodes,
-                        mediaInfo: mediaInfo
+                        mediaInfo: mediaInfo,
+                        epMap: epMap
                     });
                 }
                 if ("cheese" === _type) {
@@ -2088,7 +2091,7 @@
             function Auth() {
                 !function auth_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Auth), this.auth_clicked = !1;
+                }(this, Auth), this.auth_clicked = !1, this.auth_window = null;
             }
             return function auth_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && auth_defineProperties(Constructor.prototype, protoProps), staticProps && auth_defineProperties(Constructor, staticProps), 
@@ -2145,8 +2148,9 @@
             }, {
                 key: "loginAuto",
                 value: function loginAuto() {
+                    var _this3 = this;
                     this._login((function(res) {
-                        res.data.has_login ? $("body").append("<iframe id='auth_iframe' src='".concat(res.data.confirm_uri, "' style='display:none;'></iframe>")) : message._p.confirm("必须登录B站才能正常授权，是否登陆？", (function() {
+                        res.data.has_login ? _this3.auth_window = window.open(res.data.confirm_uri) : message._p.confirm("必须登录B站才能正常授权，是否登陆？", (function() {
                             location.href = "https://passport.bilibili.com/login";
                         }));
                     }));
@@ -2177,7 +2181,7 @@
             }, {
                 key: "logout",
                 value: function logout() {
-                    var _this3 = this;
+                    var _this4 = this;
                     if (store.get("auth_id")) if (this.auth_clicked) message.v0.miaow(); else {
                         var _ref3 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref3[0], auth_sec = _ref3[1];
                         (0, ajax.h)({
@@ -2189,17 +2193,18 @@
                             store.set("auth_sec", ""), store.set("auth_time", "0"), store.set("access_key", ""), 
                             $("#auth").val("0"), config_config.auth = "0");
                         })).finally((function() {
-                            return _this3.auth_clicked = !1;
+                            return _this4.auth_clicked = !1;
                         }));
                     } else message._p.alert("没有发现授权记录");
                 }
             }, {
                 key: "initAuth",
                 value: function initAuth() {
-                    var _this4 = this;
+                    var _this5 = this;
                     window.addEventListener("message", (function(e) {
                         if ("string" == typeof e.data && "bilibili-parse-login-credentials" === e.data.split(":")[0]) {
-                            $("iframe#auth_iframe").remove();
+                            _this5.auth_window && !_this5.auth_window.closed && (_this5.auth_window.close(), 
+                            _this5.auth_window = null);
                             var url = e.data.split(": ")[1], _ref4 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref4[0], auth_sec = _ref4[1];
                             (0, ajax.h)({
                                 url: url.replace("https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?", "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
@@ -2210,7 +2215,7 @@
                                 store.set("auth_sec", res.auth_sec)), store.set("access_key", new URL(url).searchParams.get("access_key")), 
                                 store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
                             })).finally((function() {
-                                return _this4.auth_clicked = !1;
+                                return _this5.auth_clicked = !1;
                             }));
                         }
                     }));
@@ -2295,7 +2300,7 @@
             function Main() {
                 !function main_classCallCheck(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.5", " ").concat("7878570", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+                }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.4.6", " ").concat("6764ccb", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
             }
             return function main_createClass(Constructor, protoProps, staticProps) {
                 return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2483,7 +2488,7 @@
         }(), main = Main;
         window.bp_fun_locked || (window.bp_fun_locked = !0, null == location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) ? $(".error-text")[0] || setTimeout((function() {
             (new main).run();
-        }), 3e3) : location.href.match("access_key") && window !== window.parent && (window.stop(), 
-        window.parent.postMessage("bilibili-parse-login-credentials: " + location.href, "*")));
+        }), 3e3) : location.href.match("access_key") && window !== window.opener && (window.stop(), 
+        window.opener.postMessage("bilibili-parse-login-credentials: " + location.href, "*")));
     }();
 })();

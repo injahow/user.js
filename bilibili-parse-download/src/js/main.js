@@ -5,12 +5,12 @@ import { store } from './store'
 import { config, initConfig } from './ui/config'
 import { initMessage, Message, MessageBox } from './ui/message'
 import { scroll } from './ui/scroll'
+import { initToolbar } from './ui/toolbar'
 import { user } from './user'
 import { api } from './utils/api'
 import { Download } from './utils/download'
 import { player } from './utils/player'
 import { video } from './utils/video'
-import { initToolbar } from './utils/toolbar';
 
 class Main {
 

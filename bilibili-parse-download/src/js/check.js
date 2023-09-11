@@ -26,7 +26,6 @@ class Check {
         } catch (err) {
             console.log(err)
         }
-
     }
 
 }

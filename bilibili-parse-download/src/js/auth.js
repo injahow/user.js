@@ -7,6 +7,7 @@ import { ajax } from './utils/ajax'
 class Auth {
     constructor() {
         this.auth_clicked = false
+        this.auth_window = null
     }
 
     checkLoginStatus() {
@@ -86,7 +87,7 @@ class Auth {
     loginAuto() {
         this._login(res => {
             if (res.data.has_login) {
-                $('body').append(`<iframe id='auth_iframe' src='${res.data.confirm_uri}' style='display:none;'></iframe>`)
+                this.auth_window = window.open(res.data.confirm_uri)
             } else {
                 MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', () => {
                     location.href = 'https://passport.bilibili.com/login'
@@ -177,7 +178,10 @@ class Auth {
         window.addEventListener('message', e => {
             if (typeof e.data !== 'string') return
             if (e.data.split(':')[0] === 'bilibili-parse-login-credentials') {
-                $('iframe#auth_iframe').remove()
+                if (this.auth_window && !this.auth_window.closed) {
+                    this.auth_window.close()
+                    this.auth_window = null
+                }
                 let url = e.data.split(': ')[1]
                 const [auth_id, auth_sec] = [
                     store.get('auth_id'),

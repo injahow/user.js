@@ -1171,7 +1171,10 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
     video_base_classCallCheck(this, Bangumi);
 
     _this3 = _super3.call(this, 'bangumi', main_title, state);
+    _this3.epInfo = state.epInfo;
     _this3.epList = state.epList;
+    _this3.epId = state.epId;
+    _this3.epMap = state.epMap;
     _this3.mediaInfo = state.mediaInfo;
     return _this3;
   }
@@ -1184,44 +1187,50 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
   }, {
     key: "title",
     value: function title(p) {
-      var ep = this.epList[this.id(p)];
+      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
       return "".concat(ep.titleFormat, " ").concat(ep.long_title);
     }
   }, {
     key: "filename",
     value: function filename(p) {
-      var ep = this.epList[this.id(p)];
+      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
       return "".concat(this.main_title, "\uFF1A").concat(ep.titleFormat, " ").concat(ep.long_title).replace(/[\/\\:*?"<>|]+/g, '');
     }
   }, {
     key: "aid",
     value: function aid(p) {
-      return this.epList[this.id(p)].aid;
+      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      return ep.aid;
     }
   }, {
     key: "bvid",
     value: function bvid(p) {
-      return this.epList[this.id(p)].bvid;
+      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      return ep.bvid;
     }
   }, {
     key: "cid",
     value: function cid(p) {
-      return this.epList[this.id(p)].cid;
+      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      return ep.cid;
     }
   }, {
     key: "epid",
     value: function epid(p) {
-      return this.epList[this.id(p)].id;
+      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      return ep.id;
     }
   }, {
     key: "needVip",
     value: function needVip(p) {
-      return this.epList[this.id(p)].badge === '会员';
+      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      return ep.badge === '会员';
     }
   }, {
     key: "vipNeedPay",
     value: function vipNeedPay(p) {
-      return this.epList[this.id(p)].badge === '付费';
+      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      return ep.badge === '付费';
     }
   }, {
     key: "isLimited",
@@ -1322,19 +1331,23 @@ function base() {
 
     return new VideoList(_main_title, _state);
   } else if (_type === 'bangumi') {
+    // ! state: {p, mediaInfo, epList, epId, epMap}
     if (!!window.__INITIAL_STATE__) {
-      // todo
+      // old
       var _state3 = window.__INITIAL_STATE__;
       var _main_title3 = _state3.mediaInfo.season_title;
       _state3.p = _state3.epInfo.i + 1;
       return new Bangumi(_main_title3, _state3);
-    }
+    } // new
+
 
     var queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries;
-    var mediaInfo = queries[0].state.data.mediaInfo;
+    var _queries$0$state$data = queries[0].state.data,
+        mediaInfo = _queries$0$state$data.mediaInfo,
+        epMap = _queries$0$state$data.epMap;
     var historyEpId = queries[1].state.data.userInfo.history.epId;
-    var _main_title2 = mediaInfo.season_title;
-    var episodes = mediaInfo.episodes;
+    var _main_title2 = mediaInfo.season_title,
+        episodes = mediaInfo.episodes;
     var epid;
 
     if (location.pathname.startsWith('/bangumi/play/ss')) {
@@ -1355,8 +1368,10 @@ function base() {
 
     var _state2 = {
       p: _id + 1,
+      epId: epid,
       epList: episodes,
-      mediaInfo: mediaInfo
+      mediaInfo: mediaInfo,
+      epMap: epMap
     };
     return new Bangumi(_main_title2, _state2);
   } else if (_type === 'cheese') {
@@ -2826,6 +2841,7 @@ var Auth = /*#__PURE__*/function () {
     auth_classCallCheck(this, Auth);
 
     this.auth_clicked = false;
+    this.auth_window = null;
   }
 
   auth_createClass(Auth, [{
@@ -2918,9 +2934,11 @@ var Auth = /*#__PURE__*/function () {
   }, {
     key: "loginAuto",
     value: function loginAuto() {
+      var _this3 = this;
+
       this._login(function (res) {
         if (res.data.has_login) {
-          $('body').append("<iframe id='auth_iframe' src='".concat(res.data.confirm_uri, "' style='display:none;'></iframe>"));
+          _this3.auth_window = window.open(res.data.confirm_uri);
         } else {
           message.MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', function () {
             location.href = 'https://passport.bilibili.com/login';
@@ -2971,7 +2989,7 @@ var Auth = /*#__PURE__*/function () {
   }, {
     key: "logout",
     value: function logout() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (!store.get('auth_id')) {
         message.MessageBox.alert('没有发现授权记录');
@@ -3003,19 +3021,24 @@ var Auth = /*#__PURE__*/function () {
           message.Message.warning('取消失败');
         }
       }).finally(function () {
-        return _this3.auth_clicked = false;
+        return _this4.auth_clicked = false;
       });
     }
   }, {
     key: "initAuth",
     value: function initAuth() {
-      var _this4 = this;
+      var _this5 = this;
 
       window.addEventListener('message', function (e) {
         if (typeof e.data !== 'string') return;
 
         if (e.data.split(':')[0] === 'bilibili-parse-login-credentials') {
-          $('iframe#auth_iframe').remove();
+          if (_this5.auth_window && !_this5.auth_window.closed) {
+            _this5.auth_window.close();
+
+            _this5.auth_window = null;
+          }
+
           var url = e.data.split(': ')[1];
           var _ref4 = [store.get('auth_id'), store.get('auth_sec')],
               auth_id = _ref4[0],
@@ -3041,7 +3064,7 @@ var Auth = /*#__PURE__*/function () {
               message.Message.warning('授权失败');
             }
           }).finally(function () {
-            return _this4.auth_clicked = false;
+            return _this5.auth_clicked = false;
           });
         }
       });
@@ -3072,7 +3095,7 @@ var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16
 var more_style_code = "<style>.more{float:right;padding:1px;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.more:hover .more-ops-list{display:block}.more-ops-list{display:none;position:absolute;width:80px;left:-15px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> ";
 // Exports
 /* harmony default export */ var more_style = (more_style_code);
-;// CONCATENATED MODULE: ./src/js/utils/toolbar.js
+;// CONCATENATED MODULE: ./src/js/ui/toolbar.js
 
 
 
@@ -3230,7 +3253,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.5", " ").concat("7878570", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.6", " ").concat("6764ccb", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3531,9 +3554,9 @@ var Main = /*#__PURE__*/function () {
 
   if (location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) != null) {
     // https://greasyfork.org/zh-CN/scripts/25718-%E8%A7%A3%E9%99%A4b%E7%AB%99%E5%8C%BA%E5%9F%9F%E9%99%90%E5%88%B6/code
-    if (location.href.match('access_key') && window !== window.parent) {
+    if (location.href.match('access_key') && window !== window.opener) {
       window.stop();
-      window.parent.postMessage('bilibili-parse-login-credentials: ' + location.href, '*');
+      window.opener.postMessage('bilibili-parse-login-credentials: ' + location.href, '*');
     }
 
     return;
