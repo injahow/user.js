@@ -32,19 +32,20 @@ function base() {
 
         return new VideoList(main_title, state)
     } else if (_type === 'bangumi') {
-
-        if (!!window.__INITIAL_STATE__) {  // todo
+        // ! state: {p, mediaInfo, epList, epId, epMap}
+        if (!!window.__INITIAL_STATE__) {
+            // old
             const state = window.__INITIAL_STATE__
             const main_title = state.mediaInfo.season_title
             state.p = state.epInfo.i + 1
+
             return new Bangumi(main_title, state)
         }
-
+        // new
         const queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries
-        const mediaInfo = queries[0].state.data.mediaInfo
+        const { mediaInfo, epMap } = queries[0].state.data
         const historyEpId = queries[1].state.data.userInfo.history.epId
-        const main_title = mediaInfo.season_title
-        const episodes = mediaInfo.episodes
+        const { season_title: main_title, episodes } = mediaInfo
 
         let epid
         if (location.pathname.startsWith('/bangumi/play/ss')) {
@@ -64,8 +65,10 @@ function base() {
 
         const state = {
             p: _id + 1,
+            epId: epid,
             epList: episodes,
-            mediaInfo: mediaInfo
+            mediaInfo: mediaInfo,
+            epMap: epMap
         }
 
         return new Bangumi(main_title, state)

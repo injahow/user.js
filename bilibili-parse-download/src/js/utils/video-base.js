@@ -173,7 +173,10 @@ class Bangumi extends VideoBase {
 
     constructor(main_title, state) {
         super('bangumi', main_title, state)
+        this.epInfo = state.epInfo
         this.epList = state.epList
+        this.epId = state.epId
+        this.epMap = state.epMap
         this.mediaInfo = state.mediaInfo
     }
 
@@ -182,37 +185,75 @@ class Bangumi extends VideoBase {
     }
 
     title(p) {
-        const ep = this.epList[this.id(p)]
+        let ep = p
+            ? this.epList[this.id(p)]
+            : this.epMap && this.epId
+                ? this.epMap[this.epId]
+                : this.epInfo
         return (`${ep.titleFormat} ${ep.long_title}`)
     }
 
     filename(p) {
-        const ep = this.epList[this.id(p)]
+        let ep = p
+            ? this.epList[this.id(p)]
+            : this.epMap && this.epId
+                ? this.epMap[this.epId]
+                : this.epInfo
         return (`${this.main_title}：${ep.titleFormat} ${ep.long_title}`).replace(/[\/\\:*?"<>|]+/g, '')
     }
 
     aid(p) {
-        return this.epList[this.id(p)].aid
+        let ep = p
+            ? this.epList[this.id(p)]
+            : this.epMap && this.epId
+                ? this.epMap[this.epId]
+                : this.epInfo
+        return ep.aid
     }
 
     bvid(p) {
-        return this.epList[this.id(p)].bvid
+        let ep = p
+            ? this.epList[this.id(p)]
+            : this.epMap && this.epId
+                ? this.epMap[this.epId]
+                : this.epInfo
+        return ep.bvid
     }
 
     cid(p) {
-        return this.epList[this.id(p)].cid
+        let ep = p
+            ? this.epList[this.id(p)]
+            : this.epMap && this.epId
+                ? this.epMap[this.epId]
+                : this.epInfo
+        return ep.cid
     }
 
     epid(p) {
-        return this.epList[this.id(p)].id
+        let ep = p
+            ? this.epList[this.id(p)]
+            : this.epMap && this.epId
+                ? this.epMap[this.epId]
+                : this.epInfo
+        return ep.id
     }
 
     needVip(p) {
-        return this.epList[this.id(p)].badge === '会员'
+        let ep = p
+            ? this.epList[this.id(p)]
+            : this.epMap && this.epId
+                ? this.epMap[this.epId]
+                : this.epInfo
+        return ep.badge === '会员'
     }
 
     vipNeedPay(p) {
-        return this.epList[this.id(p)].badge === '付费'
+        let ep = p
+            ? this.epList[this.id(p)]
+            : this.epMap && this.epId
+                ? this.epMap[this.epId]
+                : this.epInfo
+        return ep.badge === '付费'
     }
 
     isLimited() {
