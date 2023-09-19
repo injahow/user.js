@@ -3,7 +3,7 @@
     "==UserScript==",
     {
       "name": "bilibili视频下载(development)",
-      "namespace ": "https://github.com/injahow",
+      "namespace": "https://github.com/injahow",
       "version": "0.0.1",
       "description": "bilibili视频下载(development)",
       "author": "injahow",
