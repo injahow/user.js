@@ -71,7 +71,7 @@ class Auth {
             type: 'POST',
             data: this.makeAPIData({
                 appkey: this.TV_KEY,
-                csrf: window.getCookie('bili_jct'),
+                csrf: window.getCookie('bili_jct') || '',
                 local_id: '0',
                 ts: Date.now()
             }, this.TV_SEC)
@@ -118,7 +118,7 @@ class Auth {
                     data: this.makeAPIData({
                         appkey: this.TV_KEY,
                         auth_code: auth_code,
-                        csrf: window.getCookie('bili_jct'),
+                        csrf: window.getCookie('bili_jct') || '',
                         local_id: '0',
                         ts: Date.now().toString()
                     }, this.TV_SEC)
@@ -159,7 +159,7 @@ class Auth {
                     data: this.makeAPIData({
                         appkey: this.TV_KEY,
                         auth_code: auth_code,
-                        csrf: window.getCookie('bili_jct'),
+                        csrf: window.getCookie('bili_jct') || '',
                         local_id: '0',
                         ts: Date.now().toString()
                     }, this.TV_SEC)

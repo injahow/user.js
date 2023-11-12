@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.2
+// @version       2.5.3
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -2145,7 +2145,7 @@
                     type: "POST",
                     data: this.makeAPIData({
                         appkey: this.TV_KEY,
-                        csrf: window.getCookie("bili_jct"),
+                        csrf: window.getCookie("bili_jct") || "",
                         local_id: "0",
                         ts: Date.now()
                     }, this.TV_SEC)
@@ -2181,7 +2181,7 @@
                                 data: _this3.makeAPIData({
                                     appkey: _this3.TV_KEY,
                                     auth_code: auth_code,
-                                    csrf: window.getCookie("bili_jct"),
+                                    csrf: window.getCookie("bili_jct") || "",
                                     local_id: "0",
                                     ts: Date.now().toString()
                                 }, _this3.TV_SEC)
@@ -2210,7 +2210,7 @@
                                 data: _this4.makeAPIData({
                                     appkey: _this4.TV_KEY,
                                     auth_code: auth_code,
-                                    csrf: window.getCookie("bili_jct"),
+                                    csrf: window.getCookie("bili_jct") || "",
                                     local_id: "0",
                                     ts: Date.now().toString()
                                 }, _this4.TV_SEC)
@@ -2344,7 +2344,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.2", " ").concat("d17847d", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.3", " ").concat("801a337", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

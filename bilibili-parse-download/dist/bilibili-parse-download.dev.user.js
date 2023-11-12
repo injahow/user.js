@@ -2852,7 +2852,7 @@ var Auth = /*#__PURE__*/function () {
         type: 'POST',
         data: this.makeAPIData({
           appkey: this.TV_KEY,
-          csrf: window.getCookie('bili_jct'),
+          csrf: window.getCookie('bili_jct') || '',
           local_id: '0',
           ts: Date.now()
         }, this.TV_SEC)
@@ -2911,7 +2911,7 @@ var Auth = /*#__PURE__*/function () {
             data: _this3.makeAPIData({
               appkey: _this3.TV_KEY,
               auth_code: auth_code,
-              csrf: window.getCookie('bili_jct'),
+              csrf: window.getCookie('bili_jct') || '',
               local_id: '0',
               ts: Date.now().toString()
             }, _this3.TV_SEC)
@@ -2963,7 +2963,7 @@ var Auth = /*#__PURE__*/function () {
             data: _this4.makeAPIData({
               appkey: _this4.TV_KEY,
               auth_code: auth_code,
-              csrf: window.getCookie('bili_jct'),
+              csrf: window.getCookie('bili_jct') || '',
               local_id: '0',
               ts: Date.now().toString()
             }, _this4.TV_SEC)
@@ -3247,7 +3247,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.2", " ").concat("d17847d", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.3", " ").concat("801a337", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
