@@ -26,12 +26,17 @@ class RuntimeLib {
                             cache: true
                         })
                         if (this.anyResolved) return
-                        this.anyResolved = true
                         console.log(`[Runtime Library] Downloaded from ${url} , length = ${code.length}`);
-                        (function runEval() {
-                            return eval(code)
-                        }).bind(window)()
-                        resolve(getModule(window))
+                        try {
+                            (function runEval() {
+                                return window.eval(code)
+                            }).bind(window)()
+                        } catch (error) {
+                            // ignore js error
+                        } finally {
+                            this.anyResolved = true
+                            resolve(getModule(window))
+                        }
                     } catch (err) {
                         if (this.anyResolved) return
                         errs.push({ url, err })
@@ -47,12 +52,12 @@ class RuntimeLib {
 }
 
 const cdn_map = {
-    jsdelivr: (name, ver, filename) =>
-        `https://cdn.jsdelivr.net/npm/${name}@${ver}/dist/${filename}`,
     cloudflare: (name, ver, filename) =>
         `https://cdnjs.cloudflare.com/ajax/libs/${name}/${ver}/${filename}`,
     bootcdn: (name, ver, filename) =>
         `https://cdn.bootcdn.net/ajax/libs/${name}/${ver}/${filename}`,
+    jsdelivr: (name, ver, filename) =>
+        `https://cdn.jsdelivr.net/npm/${name}@${ver}/${filename}`,
     staticfile: (name, ver, filename) =>
         `https://cdn.staticfile.org/${name}/${ver}/${filename}`
 }
@@ -75,3 +80,7 @@ export let flvjs
 init('flv.js', '1.6.2', 'flv.min.js', w => flvjs = w.flvjs)
 export let DPlayer
 init('dplayer', '1.26.0', 'DPlayer.min.js', w => DPlayer = w.DPlayer)
+export let QRCode
+init('qrcodejs', '1.0.0', 'qrcode.min.js', w => QRCode = w.QRCode)
+export let md5
+init('blueimp-md5', '2.19.0', 'js/md5.min.js', w => md5 = w.md5)

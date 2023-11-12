@@ -2,12 +2,15 @@ import { config } from './ui/config'
 import { store } from './store'
 import { Message, MessageBox } from './ui/message'
 import { user } from './user'
-import { ajax } from './utils/ajax'
+import { _ajax, ajax } from './utils/ajax'
+import { QRCode, md5 } from './utils/runtime-lib'
 
 class Auth {
     constructor() {
         this.auth_clicked = false
         this.auth_window = null
+        this.TV_KEY = '4409e2ce8ffd12b8'
+        this.TV_SEC = '59b43e04ad6965f34319062b478f83dd'
     }
 
     checkLoginStatus() {
@@ -22,7 +25,7 @@ class Auth {
         if (!access_key) return
 
         if (user.is_login && (config.base_api !== store.get('pre_base_api') ||
-            Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
+            Date.now() - parseInt(auth_time) > 24 * 3600 * 1e4)) {
             // check key
             ajax({
                 url: `https://passport.bilibili.com/api/oauth?access_key=${access_key}`,
@@ -35,7 +38,7 @@ class Auth {
                 } else {
                     store.set('auth_time', Date.now())
                     ajax({
-                        url: `${config.base_api}/auth/v2/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}&access_key=${access_key}`,
+                        url: `${config.base_api}/auth/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}&access_key=${access_key}`,
                         type: 'GET',
                         dataType: 'json'
                     }).then(res => {
@@ -50,6 +53,13 @@ class Auth {
         store.set('pre_base_api', config.base_api)
     }
 
+    makeAPIData(param, sec) {
+        return {
+            ...param,
+            sign: md5(`${Object.entries(param).map(e => `${e[0]}=${e[1]}`).join('&')}${sec}`)
+        }
+    }
+
     _login(resolve) {
         if (this.auth_clicked) {
             Message.miaow()
@@ -57,17 +67,20 @@ class Auth {
         }
         this.auth_clicked = true
         ajax({
-            url: 'https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=https%3A%2F%2Fwww.mcbbs.net%2Ftemplate%2Fmcbbs%2Fimage%2Fspecial_photo_bg.png&sign=04224646d1fea004e79606d3b038c84a',
-            xhrFields: { withCredentials: true },
-            type: 'GET',
-            dataType: 'json'
-        }).then(resolve).finally(() => this.auth_clicked = false)
+            url: 'https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code',
+            type: 'POST',
+            data: this.makeAPIData({
+                appkey: this.TV_KEY,
+                local_id: '0',
+                ts: Date.now()
+            }, this.TV_SEC)
+        }).then(resolve)
     }
 
-    login(auto = '1') {
-        const do_login = auto === '1' // 绑定 this
-            ? this.loginAuto.bind(this)
-            : this.loginManual.bind(this)
+    login(useApp = '1') {
+        const do_login = useApp === '1' // 绑定 this
+            ? this.loginApp.bind(this)
+            : this.loginWeb.bind(this)
 
         if (store.get('auth_id')) {
             MessageBox.confirm('发现授权记录，是否重新授权？', do_login)
@@ -77,66 +90,80 @@ class Auth {
     }
 
     reLogin() {
-        store.set('auth_id', '')
-        store.set('auth_sec', '')
-        store.set('access_key', '')
+        this.logout()
         store.set('auth_time', '0')
-        this.loginAuto()
+        this.loginApp()
     }
 
-    loginAuto() {
+    loginWeb() {
         this._login(res => {
-            if (res.data.has_login) {
-                this.auth_window = window.open(res.data.confirm_uri)
-            } else {
-                MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', () => {
-                    location.href = 'https://passport.bilibili.com/login'
-                })
+            if (!res || res.code) {
+                return
             }
+            const { url, auth_code } = res.data
+            this.auth_window = window.open(url)
+            const timer = setInterval(() => {
+                if (!this.auth_window || this.auth_window.closed) {
+                    clearInterval(timer)
+                }
+                _ajax({
+                    url: `https://passport.bilibili.com/x/passport-tv-login/qrcode/poll`,
+                    type: 'POST',
+                    data: this.makeAPIData({
+                        appkey: this.TV_KEY,
+                        auth_code: auth_code,
+                        local_id: '0',
+                        ts: Date.now().toString()
+                    }, this.TV_SEC)
+                }).then(res => {
+                    if (!res.code && res.data) {
+                        console.log('login success')
+                        this.doAuth(res.data.token_info)
+                        this.auth_window.close()
+                    } else if (res.code === 86038) {
+                        this.auth_window.close()
+                    }
+                })
+            }, 3000)
         })
     }
 
-    loginManual() {
+    loginApp() {
         this._login(res => {
-            if (res.data.has_login) {
-                const msg = '' +
-                    `请点击<b><a href='${res.data.confirm_uri}' target='_blank'>授权地址</a></b>
-                    打开一个新窗口，正常情况新窗口应该显示一个图片，请将该窗口地址栏的URL链接复制到当前文本框中<br/>
-                    <input id='auth_url' style='width:100%;' type='text' autocomplete='off'><br>然后点击确定即可`
-                MessageBox.alert(msg, () => {
-                    const auth_url = $('#auth_url').val()
-                    const [auth_id, auth_sec] = [
-                        store.get('auth_id'),
-                        store.get('auth_sec'),
-                    ]
-                    ajax({
-                        url: auth_url.replace(
-                            'https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?',
-                            `${config.base_api}/auth/v2/?act=login&auth_id=${auth_id}&auth_sec=${auth_sec}&`
-                        ),
-                        type: 'GET',
-                        dataType: 'json',
-                    }).then(res => {
-                        if (!res.code) {
-                            Message.success('授权成功')
-                            if (res.auth_id && res.auth_sec) {
-                                store.set('auth_id', res.auth_id)
-                                store.set('auth_sec', res.auth_sec)
-                            }
-                            store.set('access_key', new URL(auth_url).searchParams.get('access_key'))
-                            store.set('auth_time', Date.now())
-                            $('#auth').val('1')
-                            config.auth = '1'
-                        } else {
-                            Message.warning('授权失败')
-                        }
-                    })
-                })
-            } else {
-                MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', () => {
-                    location.href = 'https://passport.bilibili.com/login'
-                })
+            if (!res || res.code) {
+                return
             }
+            const { url, auth_code } = res.data
+            let isLogin = 0
+            const box = MessageBox.alert('<p>请使用<a href="https://app.bilibili.com/" target="_blank">哔哩哔哩客户端</a>扫码登录</p><div id="login_qrcode"></div>', () => {
+                if (!isLogin) {
+                    Message.warning('登陆失败！')
+                }
+                clearInterval(timer)
+                this.auth_clicked = false
+            })
+            new QRCode(document.getElementById('login_qrcode'), url)
+            const timer = setInterval(() => {
+                _ajax({
+                    url: `https://passport.bilibili.com/x/passport-tv-login/qrcode/poll`,
+                    type: 'POST',
+                    data: this.makeAPIData({
+                        appkey: this.TV_KEY,
+                        auth_code: auth_code,
+                        local_id: '0',
+                        ts: Date.now().toString()
+                    }, this.TV_SEC)
+                }).then(res => {
+                    if (!res.code && res.data) {
+                        console.log('login success')
+                        isLogin = 1
+                        this.doAuth(res.data.token_info)
+                        box.affirm()
+                    } else if (res.code === 86038) {
+                        box.affirm()
+                    }
+                })
+            }, 3000)
         })
     }
 
@@ -154,12 +181,12 @@ class Auth {
             store.get('auth_sec')
         ]
         ajax({
-            url: `${config.base_api}/auth/v2/?act=logout&auth_id=${auth_id}&auth_sec=${auth_sec}`,
+            url: `${config.base_api}/auth/?act=logout&auth_id=${auth_id}&auth_sec=${auth_sec}`,
             type: 'GET',
             dataType: 'json',
         }).then(res => {
             if (!res.code) {
-                Message.success('取消成功')
+                Message.success('注销成功')
                 store.set('auth_id', '')
                 store.set('auth_sec', '')
                 store.set('auth_time', '0')
@@ -167,48 +194,45 @@ class Auth {
                 $('#auth').val('0')
                 config.auth = '0'
             } else {
-                Message.warning('取消失败')
+                Message.warning('注销失败')
             }
         }).finally(() => this.auth_clicked = false)
 
     }
 
-    initAuth() {
+    doAuth(param) {
+        if (this.auth_window && !this.auth_window.closed) {
+            this.auth_window.close()
+            this.auth_window = null
+        }
+        const [auth_id, auth_sec] = [
+            store.get('auth_id'),
+            store.get('auth_sec')
+        ]
 
-        window.addEventListener('message', e => {
-            if (typeof e.data !== 'string') return
-            if (e.data.split(':')[0] === 'bilibili-parse-login-credentials') {
-                if (this.auth_window && !this.auth_window.closed) {
-                    this.auth_window.close()
-                    this.auth_window = null
+        ajax({
+            url: `${config.base_api}/auth/?act=login&${Object.entries({
+                auth_id: auth_id,
+                auth_sec: auth_sec,
+                ...param
+            }).map(e => `${e[0]}=${e[1]}`).join('&')}`,
+            type: 'GET',
+            dataType: 'json',
+        }).then(res => {
+            if (!res.code) {
+                Message.success('授权成功')
+                if (res.auth_id && res.auth_sec) {
+                    store.set('auth_id', res.auth_id)
+                    store.set('auth_sec', res.auth_sec)
                 }
-                let url = e.data.split(': ')[1]
-                const [auth_id, auth_sec] = [
-                    store.get('auth_id'),
-                    store.get('auth_sec')
-                ]
-                ajax({
-                    url: url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?',
-                        `${config.base_api}/auth/v2/?act=login&auth_id=${auth_id}&auth_sec=${auth_sec}&`),
-                    type: 'GET',
-                    dataType: 'json',
-                }).then(res => {
-                    if (!res.code) {
-                        Message.success('授权成功')
-                        if (res.auth_id && res.auth_sec) {
-                            store.set('auth_id', res.auth_id)
-                            store.set('auth_sec', res.auth_sec)
-                        }
-                        store.set('access_key', new URL(url).searchParams.get('access_key'))
-                        store.set('auth_time', Date.now())
-                        $('#auth').val('1')
-                        config.auth = '1'
-                    } else {
-                        Message.warning('授权失败')
-                    }
-                }).finally(() => this.auth_clicked = false)
+                store.set('access_key', param.access_token)
+                store.set('auth_time', Date.now())
+                $('#auth').val('1')
+                config.auth = '1'
+            } else {
+                Message.warning('授权失败')
             }
-        })
+        }).finally(() => this.auth_clicked = false)
     }
 }
 

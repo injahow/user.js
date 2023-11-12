@@ -167,7 +167,7 @@ const config_functions = {
         auth.logout()
     },
     show_login_help() {
-        MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', () => {
+        MessageBox.confirm('进行授权之后在远程请求时拥有用户账号原有的权限，例如能够获取用户已经付费或承包的番剧，是否需要授权？', () => {
             auth.login()
         })
     }
@@ -208,7 +208,7 @@ function initConfig(el) {
             console.log('初始化脚本配置')
         }
     }
-    config.auth = store.get('auth_id') ? '1' : '0'
+    config.auth = store.get('auth_id') && store.get('auth_sec') ? '1' : '0'
     store.set('config_str', JSON.stringify(config))
     // 函数绑定
     for (const key in config) {

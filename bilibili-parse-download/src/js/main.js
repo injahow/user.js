@@ -31,7 +31,6 @@ class Main {
         initMessage(`#${root_div.id}`)
 
         user.lazyInit()
-        auth.initAuth()
         auth.checkLoginStatus()
         check.refresh()
 

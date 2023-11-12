@@ -25,463 +25,10 @@
 // @[ source codes in local repo ]
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
-
-/***/ "./src/js/ui/message.js":
-/*!******************************************!*\
-  !*** ./src/js/ui/message.js + 1 modules ***!
-  \******************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-// ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "Message": function() { return /* binding */ Message; },
-  "MessageBox": function() { return /* binding */ MessageBox; },
-  "initMessage": function() { return /* binding */ initMessage; }
-});
-
-// EXTERNAL MODULE: ./src/js/ui/scroll.js
-var ui_scroll = __webpack_require__("./src/js/ui/scroll.js");
-;// CONCATENATED MODULE: ./src/html/message.html
-// Module
-var code = "<div class=\"message-bg\"></div> <div id=\"message_box\"> <div class=\"message-box-mark\"></div> <div class=\"message-box-bg\"> <span style=\"font-size:20px\"><b>提示：</b></span> <div id=\"message_box_context\" style=\"margin:2% 0\">...</div><br/><br/> <div class=\"message-box-btn\"> <button name=\"affirm\">确定</button> <button name=\"cancel\">取消</button> </div> </div> </div> <style>.message-bg{position:fixed;float:right;right:0;top:2%;z-index:30000}.message{margin-bottom:15px;padding:2% 2%;width:300px;display:flex;margin-top:-70px;opacity:0}.message-success{background-color:#dfd;border-left:6px solid #4caf50}.message-error{background-color:#fdd;border-left:6px solid #f44336}.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de}.message-warning{background-color:#ffc;border-left:6px solid #ffeb3b}.message-context{font-size:21px;word-wrap:break-word;word-break:break-all}.message-context p{margin:0}#message_box{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:20000}.message-box-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;z-index:20001}.message-box-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:20000}.message-box-btn{text-align:right}.message-box-btn button{margin:0 5px;width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}.message-box-btn button:hover{background:#59f}</style> ";
-// Exports
-/* harmony default export */ var message = (code);
-;// CONCATENATED MODULE: ./src/js/ui/message.js
-
-
-
-function initMessage(el) {
-  if (el && !!$(el)[0]) {
-    $(el).append(message);
-    return;
-  }
-
-  $('body').append(message);
-}
-
-function messageBox(ctx, type) {
-  if (type === 'confirm') {
-    $('.message-box-btn button[name="cancel"]').show();
-  } else if (type === 'alert') {
-    $('.message-box-btn button[name="cancel"]').hide();
-  }
-
-  if (ctx.html) {
-    $('#message_box_context').html("<div style=\"font-size:18px\">".concat(ctx.html, "</div>"));
-  } else {
-    $('#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>');
-  }
-
-  ui_scroll.scroll.hide();
-  $('#message_box').show();
-  $('#message_box').animate({
-    'opacity': '1'
-  }, 300);
-
-  $('.message-box-btn button[name="affirm"]')[0].onclick = function () {
-    $('#message_box').hide();
-    $('#message_box').css('opacity', 0);
-    ui_scroll.scroll.show();
-
-    if (ctx.callback && ctx.callback.affirm) {
-      ctx.callback.affirm();
-    }
-  };
-
-  $('.message-box-btn button[name="cancel"]')[0].onclick = function () {
-    $('#message_box').hide();
-    $('#message_box').css('opacity', 0);
-    ui_scroll.scroll.show();
-
-    if (ctx.callback && ctx.callback.cancel) {
-      ctx.callback.cancel();
-    }
-  };
-}
-
-var id = 0;
-
-function message_message(html, type) {
-  id += 1;
-  messageEnQueue("<div id=\"message_".concat(id, "\" class=\"message message-").concat(type, "\"><div class=\"message-context\"><p><strong>").concat(type, "\uFF1A</strong></p><p>").concat(html, "</p></div></div>"), id);
-  messageDeQueue(id, 3);
-}
-
-function messageEnQueue(message, id) {
-  $('.message-bg').append(message);
-  $("#message_".concat(id)).animate({
-    'margin-top': '+=70px',
-    'opacity': '1'
-  }, 300);
-}
-
-function messageDeQueue(id) {
-  var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
-  setTimeout(function () {
-    var e = "div#message_".concat(id);
-    $(e).animate({
-      'margin-top': '-=70px',
-      'opacity': '0'
-    }, 300, function () {
-      $(e).remove();
-    });
-  }, time * 1000);
-}
-
-var Message = {
-  success: function success(html) {
-    return message_message(html, 'success');
-  },
-  warning: function warning(html) {
-    return message_message(html, 'warning');
-  },
-  error: function error(html) {
-    return message_message(html, 'error');
-  },
-  info: function info(html) {
-    return message_message(html, 'info');
-  },
-  miaow: function miaow() {
-    return message_message('(^・ω・^)~喵喵喵~', 'info');
-  }
-};
-var MessageBox = {
-  alert: function alert(html, affirm) {
-    return messageBox({
-      html: html,
-      callback: {
-        affirm: affirm
-      }
-    }, 'alert');
-  },
-  confirm: function confirm(html, affirm, cancel) {
-    return messageBox({
-      html: html,
-      callback: {
-        affirm: affirm,
-        cancel: cancel
-      }
-    }, 'confirm');
-  }
-};
-
-
-/***/ }),
-
-/***/ "./src/js/ui/scroll.js":
-/*!*****************************!*\
-  !*** ./src/js/ui/scroll.js ***!
-  \*****************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "scroll": function() { return /* binding */ scroll; }
-/* harmony export */ });
-function show_scroll() {
-  if ($('div#bp_config').is(':hidden') && $('div#message_box').is(':hidden')) {
-    $('body').css('overflow', 'auto');
-  }
-}
-
-function hide_scroll() {
-  $('body').css('overflow', 'hidden');
-}
-
-var scroll = {
-  show: show_scroll,
-  hide: hide_scroll
-};
-
-/***/ }),
-
-/***/ "./src/js/utils/ajax.js":
-/*!******************************!*\
-  !*** ./src/js/utils/ajax.js ***!
-  \******************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "_ajax": function() { return /* binding */ _ajax; },
-/* harmony export */   "ajax": function() { return /* binding */ ajax; }
-/* harmony export */ });
-/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ui/message */ "./src/js/ui/message.js");
-
-
-function ajax(obj) {
-  return new Promise(function (resolve, reject) {
-    // set obj.success & obj.success
-    obj.success = function (res) {
-      if (res && res.code) {
-        _ui_message__WEBPACK_IMPORTED_MODULE_0__.Message.warning("".concat(res.message || "CODE:".concat(res.code))); // todo
-      }
-
-      resolve(res);
-    };
-
-    obj.error = function (err) {
-      _ui_message__WEBPACK_IMPORTED_MODULE_0__.Message.error('网络异常');
-      reject(err);
-    };
-
-    $.ajax(obj);
-  });
-}
-
-function _ajax(obj) {
-  return new Promise(function (resolve, reject) {
-    // set obj.success & obj.success
-    obj.success || (obj.success = function (res) {
-      resolve(res);
-    });
-    obj.error || (obj.error = function (err) {
-      reject(err);
-    });
-    $.ajax(obj);
-  });
-}
-
-
-
-/***/ }),
-
-/***/ "./src/js/utils/runtime-lib.js":
-/*!*************************************!*\
-  !*** ./src/js/utils/runtime-lib.js ***!
-  \*************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DPlayer": function() { return /* binding */ DPlayer; },
-/* harmony export */   "JSZip": function() { return /* binding */ JSZip; },
-/* harmony export */   "flvjs": function() { return /* binding */ flvjs; }
-/* harmony export */ });
-/* harmony import */ var _ajax__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ajax */ "./src/js/utils/ajax.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
-
-var RuntimeLib = /*#__PURE__*/function () {
-  function RuntimeLib(config) {
-    _classCallCheck(this, RuntimeLib);
-
-    this.config = config;
-    this.moduleAsync;
-    this.anyResolved = false;
-  }
-
-  _createClass(RuntimeLib, [{
-    key: "getModulePromise",
-    value: function getModulePromise() {
-      var _this = this;
-
-      var _this$config = this.config,
-          urls = _this$config.urls,
-          getModule = _this$config.getModule;
-      var errs = [];
-      return new Promise(function (resolve, reject) {
-        var i = 0;
-        urls.forEach(function (url) {
-          // 延时并发
-          setTimeout( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-            var code;
-            return _regeneratorRuntime().wrap(function _callee$(_context) {
-              while (1) {
-                switch (_context.prev = _context.next) {
-                  case 0:
-                    _context.prev = 0;
-
-                    if (!_this.anyResolved) {
-                      _context.next = 3;
-                      break;
-                    }
-
-                    return _context.abrupt("return");
-
-                  case 3:
-                    console.log("[Runtime Library] Start download from ".concat(url));
-                    _context.next = 6;
-                    return (0,_ajax__WEBPACK_IMPORTED_MODULE_0__._ajax)({
-                      url: url,
-                      type: 'GET',
-                      dataType: 'text',
-                      cache: true
-                    });
-
-                  case 6:
-                    code = _context.sent;
-
-                    if (!_this.anyResolved) {
-                      _context.next = 9;
-                      break;
-                    }
-
-                    return _context.abrupt("return");
-
-                  case 9:
-                    _this.anyResolved = true;
-                    console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length));
-                    (function runEval() {
-                      return eval(code);
-                    }).bind(window)();
-                    resolve(getModule(window));
-                    _context.next = 21;
-                    break;
-
-                  case 15:
-                    _context.prev = 15;
-                    _context.t0 = _context["catch"](0);
-
-                    if (!_this.anyResolved) {
-                      _context.next = 19;
-                      break;
-                    }
-
-                    return _context.abrupt("return");
-
-                  case 19:
-                    errs.push({
-                      url: url,
-                      err: _context.t0
-                    });
-
-                    if (--i === 0) {
-                      console.error(errs);
-                      reject(errs);
-                    }
-
-                  case 21:
-                  case "end":
-                    return _context.stop();
-                }
-              }
-            }, _callee, null, [[0, 15]]);
-          })), i++ * 1000);
-        });
-      });
-    }
-  }]);
-
-  return RuntimeLib;
-}();
-
-var cdn_map = {
-  jsdelivr: function jsdelivr(name, ver, filename) {
-    return "https://cdn.jsdelivr.net/npm/".concat(name, "@").concat(ver, "/dist/").concat(filename);
-  },
-  cloudflare: function cloudflare(name, ver, filename) {
-    return "https://cdnjs.cloudflare.com/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
-  },
-  bootcdn: function bootcdn(name, ver, filename) {
-    return "https://cdn.bootcdn.net/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
-  },
-  staticfile: function staticfile(name, ver, filename) {
-    return "https://cdn.staticfile.org/".concat(name, "/").concat(ver, "/").concat(filename);
-  }
-};
-
-var urls = function urls(_ref2) {
-  var name = _ref2.name,
-      ver = _ref2.ver,
-      filename = _ref2.filename,
-      cdn_keys = _ref2.cdn_keys;
-  cdn_keys = cdn_keys ? cdn_keys.filter(function (key) {
-    return key in cdn_map;
-  }) : Object.keys(cdn_map);
-  return cdn_keys.map(function (k) {
-    return cdn_map[k](name, ver, filename);
-  });
-};
-
-var init = function init(name, ver, filename, getModule) {
-  new RuntimeLib({
-    urls: urls({
-      name: name,
-      ver: ver,
-      filename: filename
-    }),
-    getModule: getModule
-  }).getModulePromise().then(null);
-}; // 伪同步
-
-
-var JSZip;
-init('jszip', '3.10.0', 'jszip.min.js', function (w) {
-  return JSZip = w.JSZip;
-});
-var flvjs;
-init('flv.js', '1.6.2', 'flv.min.js', function (w) {
-  return flvjs = w.flvjs;
-});
-var DPlayer;
-init('dplayer', '1.26.0', 'DPlayer.min.js', function (w) {
-  return DPlayer = w.DPlayer;
-});
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
+/******/ 	// The require scope
+/******/ 	var __webpack_require__ = {};
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	!function() {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = function(exports, definition) {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	!function() {
-/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
-/******/ 	}();
-/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	!function() {
 /******/ 		// define __esModule on exports
@@ -495,10 +42,8 @@ init('dplayer', '1.26.0', 'DPlayer.min.js', function (w) {
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-!function() {
 /*!**************************************!*\
-  !*** ./src/js/index.js + 17 modules ***!
+  !*** ./src/js/index.js + 22 modules ***!
   \**************************************/
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
@@ -599,10 +144,185 @@ var Store = /*#__PURE__*/function () {
 }();
 
 var store = new Store();
-// EXTERNAL MODULE: ./src/js/ui/message.js + 1 modules
-var message = __webpack_require__("./src/js/ui/message.js");
-// EXTERNAL MODULE: ./src/js/utils/ajax.js
-var ajax = __webpack_require__("./src/js/utils/ajax.js");
+;// CONCATENATED MODULE: ./src/js/ui/scroll.js
+function show_scroll() {
+  if ($('div#bp_config').is(':hidden') && $('div#message_box').is(':hidden')) {
+    $('body').css('overflow', 'auto');
+  }
+}
+
+function hide_scroll() {
+  $('body').css('overflow', 'hidden');
+}
+
+var scroll_scroll = {
+  show: show_scroll,
+  hide: hide_scroll
+};
+;// CONCATENATED MODULE: ./src/html/message.html
+// Module
+var code = "<div class=\"message-bg\"></div> <div id=\"message_box\"> <div class=\"message-box-mark\"></div> <div class=\"message-box-bg\"> <span style=\"font-size:20px\"><b>提示：</b></span> <div id=\"message_box_context\" style=\"margin:2% 0\">...</div><br/><br/> <div class=\"message-box-btn\"> <button name=\"affirm\">确定</button> <button name=\"cancel\">取消</button> </div> </div> </div> <style>.message-bg{position:fixed;float:right;right:0;top:2%;z-index:30000}.message{margin-bottom:15px;padding:2% 2%;width:300px;display:flex;margin-top:-70px;opacity:0}.message-success{background-color:#dfd;border-left:6px solid #4caf50}.message-error{background-color:#fdd;border-left:6px solid #f44336}.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de}.message-warning{background-color:#ffc;border-left:6px solid #ffeb3b}.message-context{font-size:21px;word-wrap:break-word;word-break:break-all}.message-context p{margin:0}#message_box{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:20000}.message-box-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;z-index:20001}.message-box-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:20000}.message-box-btn{text-align:right}.message-box-btn button{margin:0 5px;width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}.message-box-btn button:hover{background:#59f}</style> ";
+// Exports
+/* harmony default export */ var message = (code);
+;// CONCATENATED MODULE: ./src/js/ui/message.js
+
+
+
+function initMessage(el) {
+  if (el && !!$(el)[0]) {
+    $(el).append(message);
+    return;
+  }
+
+  $('body').append(message);
+}
+
+function messageBox(ctx, type) {
+  if (type === 'confirm') {
+    $('.message-box-btn button[name="cancel"]').show();
+  } else if (type === 'alert') {
+    $('.message-box-btn button[name="cancel"]').hide();
+  }
+
+  if (ctx.html) {
+    $('#message_box_context').html("<div style=\"font-size:18px\">".concat(ctx.html, "</div>"));
+  } else {
+    $('#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>');
+  }
+
+  scroll_scroll.hide();
+  $('#message_box').show();
+  $('#message_box').animate({
+    'opacity': '1'
+  }, 300);
+  var option = {
+    affirm: function affirm() {
+      $('#message_box').hide();
+      $('#message_box').css('opacity', 0);
+      scroll_scroll.show();
+
+      if (ctx.callback && ctx.callback.affirm) {
+        ctx.callback.affirm();
+      }
+    },
+    cancel: function cancel() {
+      $('#message_box').hide();
+      $('#message_box').css('opacity', 0);
+      scroll_scroll.show();
+
+      if (ctx.callback && ctx.callback.cancel) {
+        ctx.callback.cancel();
+      }
+    }
+  };
+  $('.message-box-btn button[name="affirm"]')[0].onclick = option.affirm;
+  $('.message-box-btn button[name="cancel"]')[0].onclick = option.cancel;
+  return option;
+}
+
+var id = 0;
+
+function message_message(html, type) {
+  id += 1;
+  messageEnQueue("<div id=\"message_".concat(id, "\" class=\"message message-").concat(type, "\"><div class=\"message-context\"><p><strong>").concat(type, "\uFF1A</strong></p><p>").concat(html, "</p></div></div>"), id);
+  messageDeQueue(id, 3);
+}
+
+function messageEnQueue(message, id) {
+  $('.message-bg').append(message);
+  $("#message_".concat(id)).animate({
+    'margin-top': '+=70px',
+    'opacity': '1'
+  }, 300);
+}
+
+function messageDeQueue(id) {
+  var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
+  setTimeout(function () {
+    var e = "div#message_".concat(id);
+    $(e).animate({
+      'margin-top': '-=70px',
+      'opacity': '0'
+    }, 300, function () {
+      $(e).remove();
+    });
+  }, time * 1000);
+}
+
+var Message = {
+  success: function success(html) {
+    return message_message(html, 'success');
+  },
+  warning: function warning(html) {
+    return message_message(html, 'warning');
+  },
+  error: function error(html) {
+    return message_message(html, 'error');
+  },
+  info: function info(html) {
+    return message_message(html, 'info');
+  },
+  miaow: function miaow() {
+    return message_message('(^・ω・^)~喵喵喵~', 'info');
+  }
+};
+var MessageBox = {
+  alert: function alert(html, affirm) {
+    return messageBox({
+      html: html,
+      callback: {
+        affirm: affirm
+      }
+    }, 'alert');
+  },
+  confirm: function confirm(html, affirm, cancel) {
+    return messageBox({
+      html: html,
+      callback: {
+        affirm: affirm,
+        cancel: cancel
+      }
+    }, 'confirm');
+  }
+};
+
+;// CONCATENATED MODULE: ./src/js/utils/ajax.js
+
+
+function ajax(obj) {
+  return new Promise(function (resolve, reject) {
+    // set obj.success & obj.success
+    obj.success = function (res) {
+      if (res && res.code) {
+        Message.warning("".concat(res.message || "CODE:".concat(res.code))); // todo
+      }
+
+      resolve(res);
+    };
+
+    obj.error = function (err) {
+      Message.error('网络异常');
+      reject(err);
+    };
+
+    $.ajax(obj);
+  });
+}
+
+function _ajax(obj) {
+  return new Promise(function (resolve, reject) {
+    // set obj.success & obj.success
+    obj.success || (obj.success = function (res) {
+      resolve(res);
+    });
+    obj.error || (obj.error = function (err) {
+      reject(err);
+    });
+    $.ajax(obj);
+  });
+}
+
+
 ;// CONCATENATED MODULE: ./src/js/utils/api.js
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -633,7 +353,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
   if ('function' === typeof error) {
     _error = function _error(e) {
-      message.Message.error('请求失败');
+      Message.error('请求失败');
       error(e);
     };
   } else {
@@ -707,7 +427,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
   }
 
   ajax_obj.url = base_api;
-  (0,ajax.ajax)(ajax_obj).then(function (res) {
+  ajax(ajax_obj).then(function (res) {
     var data;
 
     if (!res.code) {
@@ -732,7 +452,7 @@ function get_url_base(page, quality, video_format, success, error, request_type)
 
     var resultConvertor = function resultConvertor(data, _success) {
       // 判断地址有效性
-      (0,ajax._ajax)({
+      _ajax({
         type: 'GET',
         url: data.url ? data.url : data.video,
         cache: false,
@@ -805,13 +525,13 @@ function _get_subtitle(p, callback) {
       aid = _ref3[0],
       cid = _ref3[1],
       epid = _ref3[2];
-  (0,ajax.ajax)({
+  ajax({
     url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
     dataType: 'json'
   }).then(function (res) {
     // todo
     if (!res.code && res.data.subtitle.subtitles[0]) {
-      (0,ajax.ajax)({
+      ajax({
         url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
         dataType: 'json'
       }).then(function (res) {
@@ -867,7 +587,7 @@ function get_season(sid, epid) {
     return;
   }
 
-  (0,ajax.ajax)({
+  ajax({
     url: "https://api.bilibili.com/pugv/view/web/season?season_id=".concat(sid || '', "&ep_id=").concat(epid || ''),
     xhrFields: {
       withCredentials: true
@@ -875,7 +595,7 @@ function get_season(sid, epid) {
     dataType: 'json'
   }).then(function (res) {
     if (res.code) {
-      message.Message.warning('获取剧集信息失败');
+      Message.warning('获取剧集信息失败');
       return;
     }
 
@@ -1496,8 +1216,193 @@ var video = {
   get_quality: get_quality,
   get_quality_support: get_quality_support
 };
-// EXTERNAL MODULE: ./src/js/utils/runtime-lib.js
-var runtime_lib = __webpack_require__("./src/js/utils/runtime-lib.js");
+;// CONCATENATED MODULE: ./src/js/utils/runtime-lib.js
+function runtime_lib_typeof(obj) { "@babel/helpers - typeof"; return runtime_lib_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, runtime_lib_typeof(obj); }
+
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == runtime_lib_typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function runtime_lib_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function runtime_lib_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function runtime_lib_createClass(Constructor, protoProps, staticProps) { if (protoProps) runtime_lib_defineProperties(Constructor.prototype, protoProps); if (staticProps) runtime_lib_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+var RuntimeLib = /*#__PURE__*/function () {
+  function RuntimeLib(config) {
+    runtime_lib_classCallCheck(this, RuntimeLib);
+
+    this.config = config;
+    this.moduleAsync;
+    this.anyResolved = false;
+  }
+
+  runtime_lib_createClass(RuntimeLib, [{
+    key: "getModulePromise",
+    value: function getModulePromise() {
+      var _this = this;
+
+      var _this$config = this.config,
+          urls = _this$config.urls,
+          getModule = _this$config.getModule;
+      var errs = [];
+      return new Promise(function (resolve, reject) {
+        var i = 0;
+        urls.forEach(function (url) {
+          // 延时并发
+          setTimeout( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+            var code;
+            return _regeneratorRuntime().wrap(function _callee$(_context) {
+              while (1) {
+                switch (_context.prev = _context.next) {
+                  case 0:
+                    _context.prev = 0;
+
+                    if (!_this.anyResolved) {
+                      _context.next = 3;
+                      break;
+                    }
+
+                    return _context.abrupt("return");
+
+                  case 3:
+                    console.log("[Runtime Library] Start download from ".concat(url));
+                    _context.next = 6;
+                    return _ajax({
+                      url: url,
+                      type: 'GET',
+                      dataType: 'text',
+                      cache: true
+                    });
+
+                  case 6:
+                    code = _context.sent;
+
+                    if (!_this.anyResolved) {
+                      _context.next = 9;
+                      break;
+                    }
+
+                    return _context.abrupt("return");
+
+                  case 9:
+                    console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length));
+
+                    try {
+                      (function runEval() {
+                        return window.eval(code);
+                      }).bind(window)();
+                    } catch (error) {// ignore js error
+                    } finally {
+                      _this.anyResolved = true;
+                      resolve(getModule(window));
+                    }
+
+                    _context.next = 19;
+                    break;
+
+                  case 13:
+                    _context.prev = 13;
+                    _context.t0 = _context["catch"](0);
+
+                    if (!_this.anyResolved) {
+                      _context.next = 17;
+                      break;
+                    }
+
+                    return _context.abrupt("return");
+
+                  case 17:
+                    errs.push({
+                      url: url,
+                      err: _context.t0
+                    });
+
+                    if (--i === 0) {
+                      console.error(errs);
+                      reject(errs);
+                    }
+
+                  case 19:
+                  case "end":
+                    return _context.stop();
+                }
+              }
+            }, _callee, null, [[0, 13]]);
+          })), i++ * 1000);
+        });
+      });
+    }
+  }]);
+
+  return RuntimeLib;
+}();
+
+var cdn_map = {
+  cloudflare: function cloudflare(name, ver, filename) {
+    return "https://cdnjs.cloudflare.com/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
+  },
+  bootcdn: function bootcdn(name, ver, filename) {
+    return "https://cdn.bootcdn.net/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
+  },
+  jsdelivr: function jsdelivr(name, ver, filename) {
+    return "https://cdn.jsdelivr.net/npm/".concat(name, "@").concat(ver, "/").concat(filename);
+  },
+  staticfile: function staticfile(name, ver, filename) {
+    return "https://cdn.staticfile.org/".concat(name, "/").concat(ver, "/").concat(filename);
+  }
+};
+
+var urls = function urls(_ref2) {
+  var name = _ref2.name,
+      ver = _ref2.ver,
+      filename = _ref2.filename,
+      cdn_keys = _ref2.cdn_keys;
+  cdn_keys = cdn_keys ? cdn_keys.filter(function (key) {
+    return key in cdn_map;
+  }) : Object.keys(cdn_map);
+  return cdn_keys.map(function (k) {
+    return cdn_map[k](name, ver, filename);
+  });
+};
+
+var init = function init(name, ver, filename, getModule) {
+  new RuntimeLib({
+    urls: urls({
+      name: name,
+      ver: ver,
+      filename: filename
+    }),
+    getModule: getModule
+  }).getModulePromise().then(null);
+}; // 伪同步
+
+
+var JSZip;
+init('jszip', '3.10.0', 'jszip.min.js', function (w) {
+  return JSZip = w.JSZip;
+});
+var flvjs;
+init('flv.js', '1.6.2', 'flv.min.js', function (w) {
+  return flvjs = w.flvjs;
+});
+var DPlayer;
+init('dplayer', '1.26.0', 'DPlayer.min.js', function (w) {
+  return DPlayer = w.DPlayer;
+});
+var QRCode;
+init('qrcodejs', '1.0.0', 'qrcode.min.js', function (w) {
+  return QRCode = w.QRCode;
+});
+var md5;
+init('blueimp-md5', '2.19.0', 'js/md5.min.js', function (w) {
+  return md5 = w.md5;
+});
 ;// CONCATENATED MODULE: ./src/js/utils/player.js
 
 
@@ -1522,7 +1427,7 @@ function request_danmaku(options, cid) {
     return;
   }
 
-  (0,ajax.ajax)({
+  ajax({
     url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(cid),
     dataType: 'text'
   }).then(function (result) {
@@ -1586,14 +1491,14 @@ function replace_player(url, url_2) {
     $(bili_player_id).before('<div id="bp_dplayer" style="width:100%;height:100%;z-index:1000;"></div>');
     $(bili_player_id).hide();
   } else {
-    message.MessageBox.alert('<div id="bp_dplayer" style="width:100%;height:100%;"></div>', function () {
+    MessageBox.alert('<div id="bp_dplayer" style="width:100%;height:100%;"></div>', function () {
       recover_player();
     });
   }
 
   var dplayer_init = function dplayer_init() {
     var subtitle_url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    window.bp_dplayer = new runtime_lib.DPlayer({
+    window.bp_dplayer = new DPlayer({
       container: $('#bp_dplayer')[0],
       mutex: false,
       volume: 1,
@@ -1630,7 +1535,7 @@ function replace_player(url, url_2) {
 
     if (url_2 && url_2 !== '#') {
       $('body').append('<div id="bp_dplayer_2" style="display:none;"></div>');
-      window.bp_dplayer_2 = new runtime_lib.DPlayer({
+      window.bp_dplayer_2 = new DPlayer({
         container: $('#bp_dplayer_2')[0],
         mutex: false,
         volume: 1,
@@ -1783,8 +1688,6 @@ var Check = /*#__PURE__*/function () {
 }();
 
 var check = new Check();
-// EXTERNAL MODULE: ./src/js/ui/scroll.js
-var ui_scroll = __webpack_require__("./src/js/ui/scroll.js");
 ;// CONCATENATED MODULE: ./src/js/utils/download.js
 function download_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = download_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -1896,7 +1799,7 @@ function download_all() {
   }
 
   var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"mp4\" selected>MP4</option>\n                <option value=\"flv\">FLV</option>\n                <option value=\"dash\">DASH</option>\n            </select>\n            &nbsp;&nbsp;\u65E0\u6CD5\u8BBE\u7F6EMP4\u6E05\u6670\u5EA6\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <label style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_video\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_video\">\u89C6\u9891</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_subtitle\" name=\"dl_option\">\n                <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            </label>\n            <label style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_danmaku\" name=\"dl_option\">\n                <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n            </label>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4FDD\u5B58\u76EE\u5F55:</label>\n            <input id=\"dl_rpc_dir\" placeholder=\"").concat(config_config.rpc_dir || '为空使用默认目录', "\"/>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
-  message.MessageBox.confirm(msg, function () {
+  MessageBox.confirm(msg, function () {
     // 获取参数
     var _ref2 = [$('#dl_video').is(':checked'), $('#dl_subtitle').is(':checked'), $('#dl_danmaku').is(':checked'), $('#dl_format').val(), $('#dl_quality').val() || q, $('#dl_rpc_dir').val()],
         dl_video = _ref2[0],
@@ -1933,7 +1836,7 @@ function download_all() {
       if (videos.length === 1) {
         download_subtitle_vtt(videos[0].p, videos[0].filename);
       } else {
-        download_subtitle_vtt_zip([].concat(videos), new runtime_lib.JSZip());
+        download_subtitle_vtt_zip([].concat(videos), new JSZip());
       }
     }
 
@@ -1942,7 +1845,7 @@ function download_all() {
       if (videos.length === 1) {
         download_danmaku_ass(videos[0].cid, videos[0].filename);
       } else {
-        download_danmaku_ass_zip([].concat(videos), new runtime_lib.JSZip());
+        download_danmaku_ass_zip([].concat(videos), new JSZip());
       }
     }
   });
@@ -1963,7 +1866,7 @@ function download_all() {
     }
 
     if (i >= video_tasks.length) {
-      message.MessageBox.alert('视频地址请求完成！');
+      MessageBox.alert('视频地址请求完成！');
 
       if (rpc_type() === 'post') {
         if (videos.length > 0) {
@@ -1978,7 +1881,7 @@ function download_all() {
 
     var task = video_tasks[i];
     var msg = "\u7B2C".concat(i + 1, "\uFF08").concat(i + 1, "/").concat(video_tasks.length, "\uFF09\u4E2A\u89C6\u9891");
-    message.MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
+    MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
 
     var success = function success(res) {
       setTimeout(function () {
@@ -1989,8 +1892,8 @@ function download_all() {
         return;
       }
 
-      message.Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
-      message.MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
+      Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
+      MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
       var _ref3 = [res.url, rpc_type(), res.video, res.audio],
           url = _ref3[0],
           type = _ref3[1],
@@ -2115,7 +2018,7 @@ function download_rpc_post(video) {
 
 function download_rpc_post_all(videos) {
   if (download_rpc_clicked) {
-    message.Message.miaow();
+    Message.miaow();
     return;
   }
 
@@ -2123,18 +2026,18 @@ function download_rpc_post_all(videos) {
 
   var data = _toConsumableArray(videos);
 
-  (0,ajax.ajax)(get_rpc_post(data)).then(function (res) {
+  ajax(get_rpc_post(data)).then(function (res) {
     if (res.length === data.length) {
-      message.Message.success('RPC请求成功');
+      Message.success('RPC请求成功');
     } else {
-      message.Message.warning('请检查RPC参数');
+      Message.warning('请检查RPC参数');
     }
   }).catch(function () {
-    message.Message.error('请检查RPC服务配置');
+    Message.error('请检查RPC服务配置');
   }).finally(function () {
     return download_rpc_clicked = false;
   });
-  message.Message.info('发送RPC下载请求');
+  Message.info('发送RPC下载请求');
 }
 
 function open_ariang(rpc) {
@@ -2161,9 +2064,9 @@ function download_rpc_ariang_send(video) {
 
     if (bp_aria2_window && !bp_aria2_window.closed) {
       bp_aria2_window.location.href = config_config.ariang_host + task_hash;
-      message.Message.success('发送RPC请求');
+      Message.success('发送RPC请求');
     } else {
-      message.Message.warning('AriaNG页面未打开');
+      Message.warning('AriaNG页面未打开');
     }
   }, time);
 }
@@ -2201,20 +2104,20 @@ function show_progress(_ref5) {
       percent = _ref5.percent;
 
   if (need_show_progress) {
-    message.MessageBox.alert("\u6587\u4EF6\u5927\u5C0F\uFF1A".concat(Math.floor(total / (1024 * 1024)), "MB(").concat(total, "Byte)<br/>") + "\u5DF2\u7ECF\u4E0B\u8F7D\uFF1A".concat(Math.floor(loaded / (1024 * 1024)), "MB(").concat(loaded, "Byte)<br/>") + "\u5F53\u524D\u8FDB\u5EA6\uFF1A".concat(percent, "%<br/>\u4E0B\u8F7D\u4E2D\u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF0C\u5237\u65B0\u6216\u79BB\u5F00\u9875\u9762\u4F1A\u5BFC\u81F4\u4E0B\u8F7D\u53D6\u6D88\uFF01<br/>\u518D\u6B21\u70B9\u51FB\u4E0B\u8F7D\u6309\u94AE\u53EF\u67E5\u770B\u4E0B\u8F7D\u8FDB\u5EA6\u3002"), function () {
+    MessageBox.alert("\u6587\u4EF6\u5927\u5C0F\uFF1A".concat(Math.floor(total / (1024 * 1024)), "MB(").concat(total, "Byte)<br/>") + "\u5DF2\u7ECF\u4E0B\u8F7D\uFF1A".concat(Math.floor(loaded / (1024 * 1024)), "MB(").concat(loaded, "Byte)<br/>") + "\u5F53\u524D\u8FDB\u5EA6\uFF1A".concat(percent, "%<br/>\u4E0B\u8F7D\u4E2D\u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF0C\u5237\u65B0\u6216\u79BB\u5F00\u9875\u9762\u4F1A\u5BFC\u81F4\u4E0B\u8F7D\u53D6\u6D88\uFF01<br/>\u518D\u6B21\u70B9\u51FB\u4E0B\u8F7D\u6309\u94AE\u53EF\u67E5\u770B\u4E0B\u8F7D\u8FDB\u5EA6\u3002"), function () {
       need_show_progress = false;
     });
   }
 
   if (total === loaded) {
-    message.MessageBox.alert('下载完成，请等待浏览器保存！');
+    MessageBox.alert('下载完成，请等待浏览器保存！');
     download_blob_clicked = false;
   }
 }
 
 function download_blob(url, filename) {
   if (download_blob_clicked) {
-    message.Message.miaow();
+    Message.miaow();
     need_show_progress = true;
     return;
   }
@@ -2257,7 +2160,7 @@ function download_blob(url, filename) {
   xhr.send();
   download_blob_clicked = true; // locked
 
-  message.Message.info('准备开始下载');
+  Message.info('准备开始下载');
 }
 /**
  * danmaku & subtitle
@@ -2268,7 +2171,7 @@ function _download_danmaku_ass(cid, title) {
   var return_type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   var callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
   // todo: 暂时使用随机弹幕
-  (0,ajax.ajax)({
+  ajax({
     url: "https://api.bilibili.com/x/v1/dm/list.so?oid=".concat(cid),
     dataType: 'text'
   }).then(function (result) {
@@ -2280,7 +2183,7 @@ function _download_danmaku_ass(cid, title) {
         return;
       }
 
-      message.Message.warning('未发现弹幕');
+      Message.warning('未发现弹幕');
       return;
     } else {
       // 1.json
@@ -2429,7 +2332,7 @@ function download_subtitle_vtt() {
 
   var download_subtitle = function download_subtitle(blob_url) {
     if (!blob_url) {
-      message.Message.warning('未发现字幕');
+      Message.warning('未发现字幕');
       return;
     }
 
@@ -2467,7 +2370,7 @@ function download_danmaku_ass_zip(videos, zip) {
 
   if (videos.length === 0) {
     if (Object.keys(zip.files).length === 0) {
-      message.Message.warning('未发现弹幕');
+      Message.warning('未发现弹幕');
       return;
     }
 
@@ -2506,7 +2409,7 @@ function download_subtitle_vtt_zip(videos, zip) {
 
   if (videos.length === 0) {
     if (Object.keys(zip.files).length === 0) {
-      message.Message.warning('未发现字幕');
+      Message.warning('未发现字幕');
       return;
     }
 
@@ -2565,9 +2468,9 @@ var Download = {
 };
 ;// CONCATENATED MODULE: ./src/html/config.html
 // Module
-var code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:30%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web浏览器</option> <option value=\"blob\">Blob请求</option> <option value=\"rpc\">RPC接口</option> <option value=\"aria\">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:30%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%\"/> | <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:20%\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>Aria参数：</label> <label>最大连接数：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:20%\"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:5%\"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:5%\"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">账号授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">手动授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a> </div> <br/> <div style=\"text-align:right\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ";
+var config_code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:30%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web浏览器</option> <option value=\"blob\">Blob请求</option> <option value=\"rpc\">RPC接口</option> <option value=\"aria\">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:30%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%\"/> | <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:20%\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>Aria参数：</label> <label>最大连接数：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:20%\"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:5%\"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:5%\"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">扫码授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">网页授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a> </div> <br/> <div style=\"text-align:right\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ";
 // Exports
-/* harmony default export */ var config = (code);
+/* harmony default export */ var config = (config_code);
 ;// CONCATENATED MODULE: ./src/js/ui/config.js
 
 
@@ -2668,7 +2571,7 @@ var config_functions = {
 
     if (config_config.rpc_domain !== old_config.rpc_domain) {
       if (!(config_config.rpc_domain.match('https://') || config_config.rpc_domain.match(/(localhost|127\.0\.0\.1)/))) {
-        message.MessageBox.alert('检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；' + '请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；' + '配置好后即可使用脚本进行远程下载，使用期间不用关闭AriaNg页面！', function () {
+        MessageBox.alert('检测到当前RPC不是localhost本地接口，即将跳转到AriaNg网页控制台页面；' + '请查看控制台RPC接口参数是否正确，第一次加载可能较慢请耐心等待；' + '配置好后即可使用脚本进行远程下载，使用期间不用关闭AriaNg页面！', function () {
           Download.open_ariang({
             domain: config_config.rpc_domain,
             port: config_config.rpc_port,
@@ -2692,7 +2595,7 @@ var config_functions = {
 
     $('#bp_config').hide();
     $('#bp_config').css('opacity', 0);
-    ui_scroll.scroll.show();
+    scroll_scroll.show();
   },
   reset_config: function reset_config() {
     for (var key in default_config) {
@@ -2706,19 +2609,19 @@ var config_functions = {
   },
   show_help: function show_help() {
     if (help_clicked) {
-      message.Message.miaow();
+      Message.miaow();
       return;
     }
 
     help_clicked = true;
-    (0,ajax.ajax)({
+    ajax({
       url: "".concat(config_config.base_api, "/auth/v2/?act=help"),
       dataType: 'text'
     }).then(function (res) {
       if (res) {
-        message.MessageBox.alert(res);
+        MessageBox.alert(res);
       } else {
-        message.Message.warning('获取失败');
+        Message.warning('获取失败');
       }
     }).finally(function () {
       return help_clicked = false;
@@ -2734,7 +2637,7 @@ var config_functions = {
     auth.logout();
   },
   show_login_help: function show_login_help() {
-    message.MessageBox.confirm('进行授权之后将能在远程请求时享有用户账号原有的权益，例如能够请求用户已经付费或承包的番剧，是否需要授权？', function () {
+    MessageBox.confirm('进行授权之后在远程请求时拥有用户账号原有的权限，例如能够获取用户已经付费或承包的番剧，是否需要授权？', function () {
       auth.login();
     });
   }
@@ -2782,7 +2685,7 @@ function initConfig(el) {
     }
   }
 
-  config_config.auth = store.get('auth_id') ? '1' : '0';
+  config_config.auth = store.get('auth_id') && store.get('auth_sec') ? '1' : '0';
   store.set('config_str', JSON.stringify(config_config)); // 函数绑定
 
   var _loop = function _loop(_key2) {
@@ -2824,11 +2727,18 @@ function initConfig(el) {
 
 
 ;// CONCATENATED MODULE: ./src/js/auth.js
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function auth_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function auth_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function auth_createClass(Constructor, protoProps, staticProps) { if (protoProps) auth_defineProperties(Constructor.prototype, protoProps); if (staticProps) auth_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
 
 
 
@@ -2842,6 +2752,8 @@ var Auth = /*#__PURE__*/function () {
 
     this.auth_clicked = false;
     this.auth_window = null;
+    this.TV_KEY = '4409e2ce8ffd12b8';
+    this.TV_SEC = '59b43e04ad6965f34319062b478f83dd';
   }
 
   auth_createClass(Auth, [{
@@ -2856,26 +2768,26 @@ var Auth = /*#__PURE__*/function () {
           auth_time = _ref[3];
       if (!access_key) return;
 
-      if (user.is_login && (config_config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 24 * 60 * 60 * 1000)) {
+      if (user.is_login && (config_config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 24 * 3600 * 1e4)) {
         // check key
-        (0,ajax.ajax)({
+        ajax({
           url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
           type: 'GET',
           dataType: 'json'
         }).then(function (res) {
           if (res.code) {
-            message.Message.info('授权已过期，准备重新授权');
+            Message.info('授权已过期，准备重新授权');
 
             _this.reLogin();
           } else {
             store.set('auth_time', Date.now());
-            (0,ajax.ajax)({
-              url: "".concat(config_config.base_api, "/auth/v2/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+            ajax({
+              url: "".concat(config_config.base_api, "/auth/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
               type: 'GET',
               dataType: 'json'
             }).then(function (res) {
               if (res.code) {
-                message.Message.info('检查失败，准备重新授权');
+                Message.info('检查失败，准备重新授权');
 
                 _this.reLogin();
               }
@@ -2887,36 +2799,42 @@ var Auth = /*#__PURE__*/function () {
       store.set('pre_base_api', config_config.base_api);
     }
   }, {
+    key: "makeAPIData",
+    value: function makeAPIData(param, sec) {
+      return _objectSpread(_objectSpread({}, param), {}, {
+        sign: md5("".concat(Object.entries(param).map(function (e) {
+          return "".concat(e[0], "=").concat(e[1]);
+        }).join('&')).concat(sec))
+      });
+    }
+  }, {
     key: "_login",
     value: function _login(resolve) {
-      var _this2 = this;
-
       if (this.auth_clicked) {
-        message.Message.miaow();
+        Message.miaow();
         return;
       }
 
       this.auth_clicked = true;
-      (0,ajax.ajax)({
-        url: 'https://passport.bilibili.com/login/app/third?appkey=27eb53fc9058f8c3&api=https%3A%2F%2Fwww.mcbbs.net%2Ftemplate%2Fmcbbs%2Fimage%2Fspecial_photo_bg.png&sign=04224646d1fea004e79606d3b038c84a',
-        xhrFields: {
-          withCredentials: true
-        },
-        type: 'GET',
-        dataType: 'json'
-      }).then(resolve).finally(function () {
-        return _this2.auth_clicked = false;
-      });
+      ajax({
+        url: 'https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code',
+        type: 'POST',
+        data: this.makeAPIData({
+          appkey: this.TV_KEY,
+          local_id: '0',
+          ts: Date.now()
+        }, this.TV_SEC)
+      }).then(resolve);
     }
   }, {
     key: "login",
     value: function login() {
-      var auto = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '1';
-      var do_login = auto === '1' // 绑定 this
-      ? this.loginAuto.bind(this) : this.loginManual.bind(this);
+      var useApp = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '1';
+      var do_login = useApp === '1' // 绑定 this
+      ? this.loginApp.bind(this) : this.loginWeb.bind(this);
 
       if (store.get('auth_id')) {
-        message.MessageBox.confirm('发现授权记录，是否重新授权？', do_login);
+        MessageBox.confirm('发现授权记录，是否重新授权？', do_login);
         return;
       }
 
@@ -2925,65 +2843,98 @@ var Auth = /*#__PURE__*/function () {
   }, {
     key: "reLogin",
     value: function reLogin() {
-      store.set('auth_id', '');
-      store.set('auth_sec', '');
-      store.set('access_key', '');
+      this.logout();
       store.set('auth_time', '0');
-      this.loginAuto();
+      this.loginApp();
     }
   }, {
-    key: "loginAuto",
-    value: function loginAuto() {
-      var _this3 = this;
+    key: "loginWeb",
+    value: function loginWeb() {
+      var _this2 = this;
 
       this._login(function (res) {
-        if (res.data.has_login) {
-          _this3.auth_window = window.open(res.data.confirm_uri);
-        } else {
-          message.MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', function () {
-            location.href = 'https://passport.bilibili.com/login';
-          });
+        if (!res || res.code) {
+          return;
         }
+
+        var _res$data = res.data,
+            url = _res$data.url,
+            auth_code = _res$data.auth_code;
+        _this2.auth_window = window.open(url);
+        var timer = setInterval(function () {
+          if (!_this2.auth_window || _this2.auth_window.closed) {
+            clearInterval(timer);
+          }
+
+          _ajax({
+            url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll",
+            type: 'POST',
+            data: _this2.makeAPIData({
+              appkey: _this2.TV_KEY,
+              auth_code: auth_code,
+              local_id: '0',
+              ts: Date.now().toString()
+            }, _this2.TV_SEC)
+          }).then(function (res) {
+            if (!res.code && res.data) {
+              console.log('login success');
+
+              _this2.doAuth(res.data.token_info);
+
+              _this2.auth_window.close();
+            } else if (res.code === 86038) {
+              _this2.auth_window.close();
+            }
+          });
+        }, 3000);
       });
     }
   }, {
-    key: "loginManual",
-    value: function loginManual() {
+    key: "loginApp",
+    value: function loginApp() {
+      var _this3 = this;
+
       this._login(function (res) {
-        if (res.data.has_login) {
-          var msg = '' + "\u8BF7\u70B9\u51FB<b><a href='".concat(res.data.confirm_uri, "' target='_blank'>\u6388\u6743\u5730\u5740</a></b>\n                    \u6253\u5F00\u4E00\u4E2A\u65B0\u7A97\u53E3\uFF0C\u6B63\u5E38\u60C5\u51B5\u65B0\u7A97\u53E3\u5E94\u8BE5\u663E\u793A\u4E00\u4E2A\u56FE\u7247\uFF0C\u8BF7\u5C06\u8BE5\u7A97\u53E3\u5730\u5740\u680F\u7684URL\u94FE\u63A5\u590D\u5236\u5230\u5F53\u524D\u6587\u672C\u6846\u4E2D<br/>\n                    <input id='auth_url' style='width:100%;' type='text' autocomplete='off'><br>\u7136\u540E\u70B9\u51FB\u786E\u5B9A\u5373\u53EF");
-          message.MessageBox.alert(msg, function () {
-            var auth_url = $('#auth_url').val();
-            var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
-                auth_id = _ref2[0],
-                auth_sec = _ref2[1];
-            (0,ajax.ajax)({
-              url: auth_url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
-              type: 'GET',
-              dataType: 'json'
-            }).then(function (res) {
-              if (!res.code) {
-                message.Message.success('授权成功');
-
-                if (res.auth_id && res.auth_sec) {
-                  store.set('auth_id', res.auth_id);
-                  store.set('auth_sec', res.auth_sec);
-                }
-
-                store.set('access_key', new URL(auth_url).searchParams.get('access_key'));
-                store.set('auth_time', Date.now());
-                $('#auth').val('1');
-                config_config.auth = '1';
-              } else {
-                message.Message.warning('授权失败');
-              }
-            });
-          });
-        } else {
-          message.MessageBox.confirm('必须登录B站才能正常授权，是否登陆？', function () {
-            location.href = 'https://passport.bilibili.com/login';
-          });
+        if (!res || res.code) {
+          return;
         }
+
+        var _res$data2 = res.data,
+            url = _res$data2.url,
+            auth_code = _res$data2.auth_code;
+        var isLogin = 0;
+        var box = MessageBox.alert('<p>请使用<a href="https://app.bilibili.com/" target="_blank">哔哩哔哩客户端</a>扫码登录</p><div id="login_qrcode"></div>', function () {
+          if (!isLogin) {
+            Message.warning('登陆失败！');
+          }
+
+          clearInterval(timer);
+          _this3.auth_clicked = false;
+        });
+        new QRCode(document.getElementById('login_qrcode'), url);
+        var timer = setInterval(function () {
+          _ajax({
+            url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll",
+            type: 'POST',
+            data: _this3.makeAPIData({
+              appkey: _this3.TV_KEY,
+              auth_code: auth_code,
+              local_id: '0',
+              ts: Date.now().toString()
+            }, _this3.TV_SEC)
+          }).then(function (res) {
+            if (!res.code && res.data) {
+              console.log('login success');
+              isLogin = 1;
+
+              _this3.doAuth(res.data.token_info);
+
+              box.affirm();
+            } else if (res.code === 86038) {
+              box.affirm();
+            }
+          });
+        }, 3000);
       });
     }
   }, {
@@ -2992,25 +2943,25 @@ var Auth = /*#__PURE__*/function () {
       var _this4 = this;
 
       if (!store.get('auth_id')) {
-        message.MessageBox.alert('没有发现授权记录');
+        MessageBox.alert('没有发现授权记录');
         return;
       }
 
       if (this.auth_clicked) {
-        message.Message.miaow();
+        Message.miaow();
         return;
       }
 
-      var _ref3 = [store.get('auth_id'), store.get('auth_sec')],
-          auth_id = _ref3[0],
-          auth_sec = _ref3[1];
-      (0,ajax.ajax)({
-        url: "".concat(config_config.base_api, "/auth/v2/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
+      var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+          auth_id = _ref2[0],
+          auth_sec = _ref2[1];
+      ajax({
+        url: "".concat(config_config.base_api, "/auth/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
         type: 'GET',
         dataType: 'json'
       }).then(function (res) {
         if (!res.code) {
-          message.Message.success('取消成功');
+          Message.success('注销成功');
           store.set('auth_id', '');
           store.set('auth_sec', '');
           store.set('auth_time', '0');
@@ -3018,55 +2969,52 @@ var Auth = /*#__PURE__*/function () {
           $('#auth').val('0');
           config_config.auth = '0';
         } else {
-          message.Message.warning('取消失败');
+          Message.warning('注销失败');
         }
       }).finally(function () {
         return _this4.auth_clicked = false;
       });
     }
   }, {
-    key: "initAuth",
-    value: function initAuth() {
+    key: "doAuth",
+    value: function doAuth(param) {
       var _this5 = this;
 
-      window.addEventListener('message', function (e) {
-        if (typeof e.data !== 'string') return;
+      if (this.auth_window && !this.auth_window.closed) {
+        this.auth_window.close();
+        this.auth_window = null;
+      }
 
-        if (e.data.split(':')[0] === 'bilibili-parse-login-credentials') {
-          if (_this5.auth_window && !_this5.auth_window.closed) {
-            _this5.auth_window.close();
+      var _ref3 = [store.get('auth_id'), store.get('auth_sec')],
+          auth_id = _ref3[0],
+          auth_sec = _ref3[1];
+      ajax({
+        url: "".concat(config_config.base_api, "/auth/?act=login&").concat(Object.entries(_objectSpread({
+          auth_id: auth_id,
+          auth_sec: auth_sec
+        }, param)).map(function (e) {
+          return "".concat(e[0], "=").concat(e[1]);
+        }).join('&')),
+        type: 'GET',
+        dataType: 'json'
+      }).then(function (res) {
+        if (!res.code) {
+          Message.success('授权成功');
 
-            _this5.auth_window = null;
+          if (res.auth_id && res.auth_sec) {
+            store.set('auth_id', res.auth_id);
+            store.set('auth_sec', res.auth_sec);
           }
 
-          var url = e.data.split(': ')[1];
-          var _ref4 = [store.get('auth_id'), store.get('auth_sec')],
-              auth_id = _ref4[0],
-              auth_sec = _ref4[1];
-          (0,ajax.ajax)({
-            url: url.replace('https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png?', "".concat(config_config.base_api, "/auth/v2/?act=login&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&")),
-            type: 'GET',
-            dataType: 'json'
-          }).then(function (res) {
-            if (!res.code) {
-              message.Message.success('授权成功');
-
-              if (res.auth_id && res.auth_sec) {
-                store.set('auth_id', res.auth_id);
-                store.set('auth_sec', res.auth_sec);
-              }
-
-              store.set('access_key', new URL(url).searchParams.get('access_key'));
-              store.set('auth_time', Date.now());
-              $('#auth').val('1');
-              config_config.auth = '1';
-            } else {
-              message.Message.warning('授权失败');
-            }
-          }).finally(function () {
-            return _this5.auth_clicked = false;
-          });
+          store.set('access_key', param.access_token);
+          store.set('auth_time', Date.now());
+          $('#auth').val('1');
+          config_config.auth = '1';
+        } else {
+          Message.warning('授权失败');
         }
+      }).finally(function () {
+        return _this5.auth_clicked = false;
       });
     }
   }]);
@@ -3253,7 +3201,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.4.6", " ").concat("6764ccb", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.0", " ").concat("8cb9f09", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3265,9 +3213,8 @@ var Main = /*#__PURE__*/function () {
       document.body.append(root_div); // initConfig
 
       initConfig("#".concat(root_div.id));
-      (0,message.initMessage)("#".concat(root_div.id));
+      initMessage("#".concat(root_div.id));
       user.lazyInit();
-      auth.initAuth();
       auth.checkLoginStatus();
       check.refresh();
       $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'); // for dom changed
@@ -3294,7 +3241,7 @@ var Main = /*#__PURE__*/function () {
           $("#bp_config").animate({
             'opacity': '1'
           }, 300);
-          ui_scroll.scroll.hide();
+          scroll_scroll.hide();
         },
         bilibili_parse: function bilibili_parse() {
           user.lazyInit(true); // init
@@ -3320,7 +3267,7 @@ var Main = /*#__PURE__*/function () {
           }
 
           if (api_url === api_url_temp && config_config.request_type !== 'local') {
-            message.Message.miaow();
+            Message.miaow();
             var url = $('#video_url').attr('href');
             var url_2 = $('#video_url_2').attr('href');
 
@@ -3343,11 +3290,11 @@ var Main = /*#__PURE__*/function () {
           $('#video_url').attr('href', '#');
           $('#video_url_2').attr('href', '#');
           api_url_temp = api_url;
-          message.Message.info('开始请求');
+          Message.info('开始请求');
           api.get_url(function (res) {
             if (res && !res.code) {
-              message.Message.success('请求成功');
-              res.times && message.Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
+              Message.success('请求成功');
+              res.times && Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
 
               var _url, _url_;
 
@@ -3358,7 +3305,7 @@ var Main = /*#__PURE__*/function () {
                 _url = res.video.replace('http://', 'https://');
                 _url_ = res.audio.replace('http://', 'https://');
               } else {
-                message.Message.warning('数据错误');
+                Message.warning('数据错误');
                 return;
               }
 
@@ -3396,12 +3343,12 @@ var Main = /*#__PURE__*/function () {
             if (config_config.download_type === 'rpc') {
               Download.download_all();
             } else {
-              message.MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
+              MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
                 Download.download_all();
               });
             }
           } else {
-            message.MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
+            MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
               auth.login();
             });
           }
@@ -3418,7 +3365,7 @@ var Main = /*#__PURE__*/function () {
                 file_name = _ref3[2],
                 file_name_2 = _ref3[3];
             var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" download=\"").concat(file_name, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" download=\"").concat(file_name_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
-            message.MessageBox.alert(msg);
+            MessageBox.alert(msg);
           } else if (type === 'aria') {
             var _ref4 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
                 _video_url = _ref4[0],
@@ -3454,12 +3401,12 @@ var Main = /*#__PURE__*/function () {
               $("#".concat(id)).select();
 
               if (document.execCommand('copy')) {
-                message.Message.success('复制成功');
+                Message.success('复制成功');
               } else {
-                message.Message.warning('复制失败');
+                Message.warning('复制失败');
               }
             });
-            message.MessageBox.alert(_msg);
+            MessageBox.alert(_msg);
           } else {
             var url = $('#video_url').attr('href');
             var filename = video.base().filename() + Download.url_format(url);
@@ -3571,6 +3518,5 @@ var Main = /*#__PURE__*/function () {
     new main().run();
   }, 3000);
 })();
-}();
 /******/ })()
 ;

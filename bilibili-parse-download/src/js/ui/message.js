@@ -26,22 +26,30 @@ function messageBox(ctx, type) {
     $('#message_box').animate({
         'opacity': '1'
     }, 300)
-    $('.message-box-btn button[name="affirm"]')[0].onclick = () => {
-        $('#message_box').hide()
-        $('#message_box').css('opacity', 0)
-        scroll.show()
-        if (ctx.callback && ctx.callback.affirm) {
-            ctx.callback.affirm()
+
+    const option = {
+        affirm: () => {
+            $('#message_box').hide()
+            $('#message_box').css('opacity', 0)
+            scroll.show()
+            if (ctx.callback && ctx.callback.affirm) {
+                ctx.callback.affirm()
+            }
+        },
+        cancel: () => {
+            $('#message_box').hide()
+            $('#message_box').css('opacity', 0)
+            scroll.show()
+            if (ctx.callback && ctx.callback.cancel) {
+                ctx.callback.cancel()
+            }
         }
     }
-    $('.message-box-btn button[name="cancel"]')[0].onclick = () => {
-        $('#message_box').hide()
-        $('#message_box').css('opacity', 0)
-        scroll.show()
-        if (ctx.callback && ctx.callback.cancel) {
-            ctx.callback.cancel()
-        }
-    }
+
+    $('.message-box-btn button[name="affirm"]')[0].onclick = option.affirm
+    $('.message-box-btn button[name="cancel"]')[0].onclick = option.cancel
+
+    return option
 }
 
 let id = 0
