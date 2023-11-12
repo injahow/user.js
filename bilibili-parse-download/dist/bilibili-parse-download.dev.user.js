@@ -43,7 +43,7 @@
 /************************************************************************/
 var __webpack_exports__ = {};
 /*!**************************************!*\
-  !*** ./src/js/index.js + 22 modules ***!
+  !*** ./src/js/index.js + 23 modules ***!
   \**************************************/
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
@@ -2755,6 +2755,22 @@ function initConfig(el) {
 }
 
 
+;// CONCATENATED MODULE: ./src/js/utils/cookie.js
+function getCookie(cookieName) {
+  var cookieList = document.cookie.split(';');
+
+  for (var i = 0; i < cookieList.length; ++i) {
+    var arr = cookieList[i].split('=');
+
+    if (cookieName === arr[0].trim()) {
+      return arr[1];
+    }
+  }
+
+  return null;
+}
+
+
 ;// CONCATENATED MODULE: ./src/js/auth.js
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
@@ -2767,6 +2783,7 @@ function auth_classCallCheck(instance, Constructor) { if (!(instance instanceof 
 function auth_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function auth_createClass(Constructor, protoProps, staticProps) { if (protoProps) auth_defineProperties(Constructor.prototype, protoProps); if (staticProps) auth_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
 
 
 
@@ -2832,7 +2849,7 @@ var Auth = /*#__PURE__*/function () {
     value: function makeAPIData(param, sec) {
       return _objectSpread(_objectSpread({}, param), {}, {
         sign: md5("".concat(Object.entries(param).map(function (e) {
-          return "".concat(e[0], "=").concat(e[1]);
+          return "".concat(e[0], "=").concat(e[1] || '');
         }).join('&')).concat(sec))
       });
     }
@@ -2852,7 +2869,7 @@ var Auth = /*#__PURE__*/function () {
         type: 'POST',
         data: this.makeAPIData({
           appkey: this.TV_KEY,
-          csrf: window.getCookie('bili_jct') || '',
+          csrf: getCookie('bili_jct'),
           local_id: '0',
           ts: Date.now()
         }, this.TV_SEC)
@@ -2911,7 +2928,7 @@ var Auth = /*#__PURE__*/function () {
             data: _this3.makeAPIData({
               appkey: _this3.TV_KEY,
               auth_code: auth_code,
-              csrf: window.getCookie('bili_jct') || '',
+              csrf: getCookie('bili_jct'),
               local_id: '0',
               ts: Date.now().toString()
             }, _this3.TV_SEC)
@@ -2963,7 +2980,7 @@ var Auth = /*#__PURE__*/function () {
             data: _this4.makeAPIData({
               appkey: _this4.TV_KEY,
               auth_code: auth_code,
-              csrf: window.getCookie('bili_jct') || '',
+              csrf: getCookie('bili_jct'),
               local_id: '0',
               ts: Date.now().toString()
             }, _this4.TV_SEC)
@@ -3247,7 +3264,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.3", " ").concat("801a337", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.4", " ").concat("f05ab3a", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
