@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.0
+// @version       2.5.1
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -2096,15 +2096,19 @@
         }, {
             key: "_login",
             value: function _login(resolve) {
+                var _this2 = this;
                 this.auth_clicked ? Message_miaow() : (this.auth_clicked = !0, ajax({
                     url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code",
                     type: "POST",
                     data: this.makeAPIData({
                         appkey: this.TV_KEY,
+                        csrf: window.getCookie("bili_jct"),
                         local_id: "0",
                         ts: Date.now()
                     }, this.TV_SEC)
-                }).then(resolve));
+                }).then(resolve).catch((function() {
+                    return _this2.auth_clicked = !1;
+                })));
             }
         }, {
             key: "login",
@@ -2118,39 +2122,13 @@
                 this.logout(), store.set("auth_time", "0"), this.loginApp();
             }
         }, {
-            key: "loginWeb",
-            value: function loginWeb() {
-                var _this2 = this;
-                this._login((function(res) {
-                    if (res && !res.code) {
-                        var _res$data = res.data, url = _res$data.url, auth_code = _res$data.auth_code;
-                        _this2.auth_window = window.open(url);
-                        var timer = setInterval((function() {
-                            _this2.auth_window && !_this2.auth_window.closed || clearInterval(timer), _ajax({
-                                url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll",
-                                type: "POST",
-                                data: _this2.makeAPIData({
-                                    appkey: _this2.TV_KEY,
-                                    auth_code: auth_code,
-                                    local_id: "0",
-                                    ts: Date.now().toString()
-                                }, _this2.TV_SEC)
-                            }).then((function(res) {
-                                !res.code && res.data ? (console.log("login success"), _this2.doAuth(res.data.token_info), 
-                                _this2.auth_window.close()) : 86038 === res.code && _this2.auth_window.close();
-                            }));
-                        }), 3e3);
-                    }
-                }));
-            }
-        }, {
             key: "loginApp",
             value: function loginApp() {
                 var _this3 = this;
                 this._login((function(res) {
                     if (res && !res.code) {
-                        var _res$data2 = res.data, url = _res$data2.url, auth_code = _res$data2.auth_code, isLogin = 0, box = MessageBox_alert('<p>请使用<a href="https://app.bilibili.com/" target="_blank">哔哩哔哩客户端</a>扫码登录</p><div id="login_qrcode"></div>', (function() {
-                            isLogin || Message_warning("登陆失败！"), clearInterval(timer), _this3.auth_clicked = !1;
+                        var _res$data = res.data, url = _res$data.url, auth_code = _res$data.auth_code, is_login = 0, box = MessageBox_alert('<p>请使用<a href="https://app.bilibili.com/" target="_blank">哔哩哔哩客户端</a>扫码登录</p><div id="login_qrcode"></div>', (function() {
+                            is_login || Message_info("登陆失败！"), clearInterval(timer), _this3.auth_clicked = !1;
                         }));
                         new QRCode(document.getElementById("login_qrcode"), url);
                         var timer = setInterval((function() {
@@ -2160,12 +2138,42 @@
                                 data: _this3.makeAPIData({
                                     appkey: _this3.TV_KEY,
                                     auth_code: auth_code,
+                                    csrf: window.getCookie("bili_jct"),
                                     local_id: "0",
                                     ts: Date.now().toString()
                                 }, _this3.TV_SEC)
                             }).then((function(res) {
-                                !res.code && res.data ? (console.log("login success"), isLogin = 1, _this3.doAuth(res.data.token_info), 
+                                !res.code && res.data ? (console.log("login success"), is_login = 1, _this3.doAuth(res.data.token_info), 
                                 box.affirm()) : 86038 === res.code && box.affirm();
+                            }));
+                        }), 3e3);
+                    }
+                }));
+            }
+        }, {
+            key: "loginWeb",
+            value: function loginWeb() {
+                var _this4 = this;
+                this._login((function(res) {
+                    if (res && !res.code) {
+                        var _res$data2 = res.data, url = _res$data2.url, auth_code = _res$data2.auth_code;
+                        _this4.auth_window = window.open(url);
+                        var is_login = 0, timer = setInterval((function() {
+                            if (!_this4.auth_window || _this4.auth_window.closed) return clearInterval(timer), 
+                            _this4.auth_clicked = !1, void (is_login || Message_info("登陆失败！"));
+                            _ajax({
+                                url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll",
+                                type: "POST",
+                                data: _this4.makeAPIData({
+                                    appkey: _this4.TV_KEY,
+                                    auth_code: auth_code,
+                                    csrf: window.getCookie("bili_jct"),
+                                    local_id: "0",
+                                    ts: Date.now().toString()
+                                }, _this4.TV_SEC)
+                            }).then((function(res) {
+                                !res.code && res.data ? (console.log("login success"), _this4.doAuth(res.data.token_info), 
+                                is_login = 1, _this4.auth_window.close()) : 86038 === res.code && _this4.auth_window.close();
                             }));
                         }), 3e3);
                     }
@@ -2174,7 +2182,7 @@
         }, {
             key: "logout",
             value: function logout() {
-                var _this4 = this;
+                var _this5 = this;
                 if (store.get("auth_id")) if (this.auth_clicked) Message_miaow(); else {
                     var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
                     ajax({
@@ -2186,14 +2194,14 @@
                         store.set("auth_sec", ""), store.set("auth_time", "0"), store.set("access_key", ""), 
                         $("#auth").val("0"), config_config.auth = "0");
                     })).finally((function() {
-                        return _this4.auth_clicked = !1;
+                        return _this5.auth_clicked = !1;
                     }));
                 } else MessageBox_alert("没有发现授权记录");
             }
         }, {
             key: "doAuth",
             value: function doAuth(param) {
-                var _this5 = this;
+                var _this6 = this;
                 this.auth_window && !this.auth_window.closed && (this.auth_window.close(), this.auth_window = null);
                 var _ref3 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref3[0], auth_sec = _ref3[1];
                 ajax({
@@ -2210,7 +2218,7 @@
                     store.set("auth_sec", res.auth_sec)), store.set("access_key", param.access_token), 
                     store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
                 })).finally((function() {
-                    return _this5.auth_clicked = !1;
+                    return _this6.auth_clicked = !1;
                 }));
             }
         } ]), Auth;
@@ -2293,7 +2301,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.0", " ").concat("8cb9f09", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.1", " ").concat("4faff97", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

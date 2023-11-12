@@ -2810,6 +2810,8 @@ var Auth = /*#__PURE__*/function () {
   }, {
     key: "_login",
     value: function _login(resolve) {
+      var _this2 = this;
+
       if (this.auth_clicked) {
         Message.miaow();
         return;
@@ -2821,10 +2823,13 @@ var Auth = /*#__PURE__*/function () {
         type: 'POST',
         data: this.makeAPIData({
           appkey: this.TV_KEY,
+          csrf: window.getCookie('bili_jct'),
           local_id: '0',
           ts: Date.now()
         }, this.TV_SEC)
-      }).then(resolve);
+      }).then(resolve).catch(function () {
+        return _this2.auth_clicked = false;
+      });
     }
   }, {
     key: "login",
@@ -2848,48 +2853,6 @@ var Auth = /*#__PURE__*/function () {
       this.loginApp();
     }
   }, {
-    key: "loginWeb",
-    value: function loginWeb() {
-      var _this2 = this;
-
-      this._login(function (res) {
-        if (!res || res.code) {
-          return;
-        }
-
-        var _res$data = res.data,
-            url = _res$data.url,
-            auth_code = _res$data.auth_code;
-        _this2.auth_window = window.open(url);
-        var timer = setInterval(function () {
-          if (!_this2.auth_window || _this2.auth_window.closed) {
-            clearInterval(timer);
-          }
-
-          _ajax({
-            url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll",
-            type: 'POST',
-            data: _this2.makeAPIData({
-              appkey: _this2.TV_KEY,
-              auth_code: auth_code,
-              local_id: '0',
-              ts: Date.now().toString()
-            }, _this2.TV_SEC)
-          }).then(function (res) {
-            if (!res.code && res.data) {
-              console.log('login success');
-
-              _this2.doAuth(res.data.token_info);
-
-              _this2.auth_window.close();
-            } else if (res.code === 86038) {
-              _this2.auth_window.close();
-            }
-          });
-        }, 3000);
-      });
-    }
-  }, {
     key: "loginApp",
     value: function loginApp() {
       var _this3 = this;
@@ -2899,13 +2862,13 @@ var Auth = /*#__PURE__*/function () {
           return;
         }
 
-        var _res$data2 = res.data,
-            url = _res$data2.url,
-            auth_code = _res$data2.auth_code;
-        var isLogin = 0;
+        var _res$data = res.data,
+            url = _res$data.url,
+            auth_code = _res$data.auth_code;
+        var is_login = 0;
         var box = MessageBox.alert('<p>请使用<a href="https://app.bilibili.com/" target="_blank">哔哩哔哩客户端</a>扫码登录</p><div id="login_qrcode"></div>', function () {
-          if (!isLogin) {
-            Message.warning('登陆失败！');
+          if (!is_login) {
+            Message.info('登陆失败！');
           }
 
           clearInterval(timer);
@@ -2919,13 +2882,14 @@ var Auth = /*#__PURE__*/function () {
             data: _this3.makeAPIData({
               appkey: _this3.TV_KEY,
               auth_code: auth_code,
+              csrf: window.getCookie('bili_jct'),
               local_id: '0',
               ts: Date.now().toString()
             }, _this3.TV_SEC)
           }).then(function (res) {
             if (!res.code && res.data) {
               console.log('login success');
-              isLogin = 1;
+              is_login = 1;
 
               _this3.doAuth(res.data.token_info);
 
@@ -2938,9 +2902,62 @@ var Auth = /*#__PURE__*/function () {
       });
     }
   }, {
+    key: "loginWeb",
+    value: function loginWeb() {
+      var _this4 = this;
+
+      this._login(function (res) {
+        if (!res || res.code) {
+          return;
+        }
+
+        var _res$data2 = res.data,
+            url = _res$data2.url,
+            auth_code = _res$data2.auth_code;
+        _this4.auth_window = window.open(url);
+        var is_login = 0;
+        var timer = setInterval(function () {
+          if (!_this4.auth_window || _this4.auth_window.closed) {
+            clearInterval(timer);
+            _this4.auth_clicked = false;
+
+            if (!is_login) {
+              Message.info('登陆失败！');
+            }
+
+            return;
+          }
+
+          _ajax({
+            url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll",
+            type: 'POST',
+            data: _this4.makeAPIData({
+              appkey: _this4.TV_KEY,
+              auth_code: auth_code,
+              csrf: window.getCookie('bili_jct'),
+              local_id: '0',
+              ts: Date.now().toString()
+            }, _this4.TV_SEC)
+          }).then(function (res) {
+            if (!res.code && res.data) {
+              console.log('login success');
+
+              _this4.doAuth(res.data.token_info);
+
+              is_login = 1;
+
+              _this4.auth_window.close();
+            } else if (res.code === 86038) {
+              _this4.auth_window.close();
+            }
+          });
+        }, 3000);
+      });
+    }
+  }, {
     key: "logout",
     value: function logout() {
-      var _this4 = this;
+      var _this5 = this;
 
       if (!store.get('auth_id')) {
         MessageBox.alert('没有发现授权记录');
@@ -2972,13 +2989,13 @@ var Auth = /*#__PURE__*/function () {
           Message.warning('注销失败');
         }
       }).finally(function () {
-        return _this4.auth_clicked = false;
+        return _this5.auth_clicked = false;
       });
     }
   }, {
     key: "doAuth",
     value: function doAuth(param) {
-      var _this5 = this;
+      var _this6 = this;
 
       if (this.auth_window && !this.auth_window.closed) {
         this.auth_window.close();
@@ -3014,7 +3031,7 @@ var Auth = /*#__PURE__*/function () {
           Message.warning('授权失败');
         }
       }).finally(function () {
-        return _this5.auth_clicked = false;
+        return _this6.auth_clicked = false;
       });
     }
   }]);
@@ -3201,7 +3218,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.0", " ").concat("8cb9f09", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.1", " ").concat("4faff97", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

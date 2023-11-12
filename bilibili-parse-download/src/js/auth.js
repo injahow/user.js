@@ -71,10 +71,11 @@ class Auth {
             type: 'POST',
             data: this.makeAPIData({
                 appkey: this.TV_KEY,
+                csrf: window.getCookie('bili_jct'),
                 local_id: '0',
                 ts: Date.now()
             }, this.TV_SEC)
-        }).then(resolve)
+        }).then(resolve).catch(() => this.auth_clicked = false)
     }
 
     login(useApp = '1') {
@@ -95,49 +96,16 @@ class Auth {
         this.loginApp()
     }
 
-    loginWeb() {
-        this._login(res => {
-            if (!res || res.code) {
-                return
-            }
-            const { url, auth_code } = res.data
-            this.auth_window = window.open(url)
-            const timer = setInterval(() => {
-                if (!this.auth_window || this.auth_window.closed) {
-                    clearInterval(timer)
-                }
-                _ajax({
-                    url: `https://passport.bilibili.com/x/passport-tv-login/qrcode/poll`,
-                    type: 'POST',
-                    data: this.makeAPIData({
-                        appkey: this.TV_KEY,
-                        auth_code: auth_code,
-                        local_id: '0',
-                        ts: Date.now().toString()
-                    }, this.TV_SEC)
-                }).then(res => {
-                    if (!res.code && res.data) {
-                        console.log('login success')
-                        this.doAuth(res.data.token_info)
-                        this.auth_window.close()
-                    } else if (res.code === 86038) {
-                        this.auth_window.close()
-                    }
-                })
-            }, 3000)
-        })
-    }
-
     loginApp() {
         this._login(res => {
             if (!res || res.code) {
                 return
             }
             const { url, auth_code } = res.data
-            let isLogin = 0
+            let is_login = 0
             const box = MessageBox.alert('<p>请使用<a href="https://app.bilibili.com/" target="_blank">哔哩哔哩客户端</a>扫码登录</p><div id="login_qrcode"></div>', () => {
-                if (!isLogin) {
-                    Message.warning('登陆失败！')
+                if (!is_login) {
+                    Message.info('登陆失败！')
                 }
                 clearInterval(timer)
                 this.auth_clicked = false
@@ -150,13 +118,14 @@ class Auth {
                     data: this.makeAPIData({
                         appkey: this.TV_KEY,
                         auth_code: auth_code,
+                        csrf: window.getCookie('bili_jct'),
                         local_id: '0',
                         ts: Date.now().toString()
                     }, this.TV_SEC)
                 }).then(res => {
                     if (!res.code && res.data) {
                         console.log('login success')
-                        isLogin = 1
+                        is_login = 1
                         this.doAuth(res.data.token_info)
                         box.affirm()
                     } else if (res.code === 86038) {
@@ -166,6 +135,48 @@ class Auth {
             }, 3000)
         })
     }
+
+    loginWeb() {
+        this._login(res => {
+            if (!res || res.code) {
+                return
+            }
+            const { url, auth_code } = res.data
+            this.auth_window = window.open(url)
+            let is_login = 0
+            const timer = setInterval(() => {
+                if (!this.auth_window || this.auth_window.closed) {
+                    clearInterval(timer)
+                    this.auth_clicked = false
+                    if (!is_login) {
+                        Message.info('登陆失败！')
+                    }
+                    return
+                }
+                _ajax({
+                    url: `https://passport.bilibili.com/x/passport-tv-login/qrcode/poll`,
+                    type: 'POST',
+                    data: this.makeAPIData({
+                        appkey: this.TV_KEY,
+                        auth_code: auth_code,
+                        csrf: window.getCookie('bili_jct'),
+                        local_id: '0',
+                        ts: Date.now().toString()
+                    }, this.TV_SEC)
+                }).then(res => {
+                    if (!res.code && res.data) {
+                        console.log('login success')
+                        this.doAuth(res.data.token_info)
+                        is_login = 1
+                        this.auth_window.close()
+                    } else if (res.code === 86038) {
+                        this.auth_window.close()
+                    }
+                })
+            }, 3000)
+        })
+    }
+
 
     logout() {
         if (!store.get('auth_id')) {
