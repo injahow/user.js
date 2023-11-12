@@ -1014,6 +1014,18 @@ var Cheese = /*#__PURE__*/function (_VideoBase4) {
 
 
 ;// CONCATENATED MODULE: ./src/js/utils/video.js
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || video_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function video_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return video_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_arrayLikeToArray(o, minLen); }
+
+function video_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 
 
 
@@ -1058,20 +1070,37 @@ function base() {
       var _main_title3 = _state3.mediaInfo.season_title;
       _state3.p = _state3.epInfo.i + 1;
       return new Bangumi(_main_title3, _state3);
-    } // new
+    } // new // todo
 
 
     var queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries;
-    var _queries$0$state$data = queries[0].state.data,
+    var _queries$0$state$data = queries[0].state.data.seasonInfo,
         mediaInfo = _queries$0$state$data.mediaInfo,
-        epMap = _queries$0$state$data.epMap;
-    var historyEpId = queries[1].state.data.userInfo.history.epId;
+        sectionsMap = _queries$0$state$data.sectionsMap;
+    var historyEpId = queries[0].state.data.userInfo.userInfo.history.epId;
     var _main_title2 = mediaInfo.season_title,
         episodes = mediaInfo.episodes;
+    var epMap = {};
+    episodes.forEach(function (epInfo) {
+      epMap[epInfo.id] = epInfo;
+    });
+    Object.entries(sectionsMap).forEach(function (_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          sid = _ref2[0],
+          sectionInfo = _ref2[1];
+
+      sectionInfo.epList.forEach(function (epInfo) {
+        epMap[epInfo.id] = epInfo;
+      });
+    });
     var epid;
 
     if (location.pathname.startsWith('/bangumi/play/ss')) {
       epid = parseInt(historyEpId);
+
+      if (epid < 0) {
+        epid = episodes[0].id;
+      }
     } else {
       epid = location.pathname.match(/ep(\d+)/);
       epid = epid ? parseInt(epid[1]) : 0;
@@ -1113,9 +1142,9 @@ function base() {
     var _episodes = window.bp_episodes;
     var _id2 = 0;
 
-    for (var _i = 0; _i < _episodes.length; _i++) {
-      if (_episodes[_i].id == _epid) {
-        _id2 = _i;
+    for (var _i2 = 0; _i2 < _episodes.length; _i2++) {
+      if (_episodes[_i2].id == _epid) {
+        _id2 = _i2;
         break;
       }
     }
@@ -3182,17 +3211,17 @@ function initToolbar() {
 
 
 ;// CONCATENATED MODULE: ./src/js/main.js
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || main_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function main_slicedToArray(arr, i) { return main_arrayWithHoles(arr) || main_iterableToArrayLimit(arr, i) || main_unsupportedIterableToArray(arr, i) || main_nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function main_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
 function main_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return main_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return main_arrayLikeToArray(o, minLen); }
 
 function main_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function main_iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function main_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3218,7 +3247,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.1", " ").concat("4faff97", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.2", " ").concat("d17847d", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3399,7 +3428,7 @@ var Main = /*#__PURE__*/function () {
               mid: [16, 8],
               max: [32, 16]
             }[config_config.aria2c_connection_level] || [1, 5],
-                _ref6 = _slicedToArray(_ref5, 2),
+                _ref6 = main_slicedToArray(_ref5, 2),
                 url_max_connection = _ref6[0],
                 server_max_connection = _ref6[1];
 
@@ -3408,7 +3437,7 @@ var Main = /*#__PURE__*/function () {
             var _map = ["aria2c \"".concat(_video_url, "\" --out \"").concat(_file_name, "\""), "aria2c \"".concat(_video_url_, "\" --out \"").concat(_file_name_, "\"")].map(function (code) {
               return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
             }),
-                _map2 = _slicedToArray(_map, 2),
+                _map2 = main_slicedToArray(_map, 2),
                 code = _map2[0],
                 code_2 = _map2[1];
 
@@ -3449,7 +3478,7 @@ var Main = /*#__PURE__*/function () {
 
       window.bpd = evt;
       Object.entries(evt).forEach(function (_ref7) {
-        var _ref8 = _slicedToArray(_ref7, 2),
+        var _ref8 = main_slicedToArray(_ref7, 2),
             k = _ref8[0],
             v = _ref8[1];
 

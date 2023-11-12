@@ -41,15 +41,28 @@ function base() {
 
             return new Bangumi(main_title, state)
         }
-        // new
+        // new // todo
         const queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries
-        const { mediaInfo, epMap } = queries[0].state.data
-        const historyEpId = queries[1].state.data.userInfo.history.epId
+        const { mediaInfo, sectionsMap } = queries[0].state.data.seasonInfo
+        const historyEpId = queries[0].state.data.userInfo.userInfo.history.epId
         const { season_title: main_title, episodes } = mediaInfo
+
+        const epMap = {}
+        episodes.forEach(epInfo => {
+            epMap[epInfo.id] = epInfo
+        })
+        Object.entries(sectionsMap).forEach(([sid, sectionInfo]) => {
+            sectionInfo.epList.forEach(epInfo => {
+                epMap[epInfo.id] = epInfo
+            })
+        })
 
         let epid
         if (location.pathname.startsWith('/bangumi/play/ss')) {
             epid = parseInt(historyEpId)
+            if (epid < 0) {
+                epid = episodes[0].id
+            }
         } else {
             epid = location.pathname.match(/ep(\d+)/)
             epid = epid ? parseInt(epid[1]) : 0

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.1
+// @version       2.5.2
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -806,6 +806,41 @@
             }
         } ]), Cheese;
     }(VideoBase);
+    function _slicedToArray(arr, i) {
+        return function _arrayWithHoles(arr) {
+            if (Array.isArray(arr)) return arr;
+        }(arr) || function _iterableToArrayLimit(arr, i) {
+            var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
+            if (null == _i) return;
+            var _s, _e, _arr = [], _n = !0, _d = !1;
+            try {
+                for (_i = _i.call(arr); !(_n = (_s = _i.next()).done) && (_arr.push(_s.value), !i || _arr.length !== i); _n = !0) ;
+            } catch (err) {
+                _d = !0, _e = err;
+            } finally {
+                try {
+                    _n || null == _i.return || _i.return();
+                } finally {
+                    if (_d) throw _e;
+                }
+            }
+            return _arr;
+        }(arr, i) || function video_unsupportedIterableToArray(o, minLen) {
+            if (!o) return;
+            if ("string" == typeof o) return video_arrayLikeToArray(o, minLen);
+            var n = Object.prototype.toString.call(o).slice(8, -1);
+            "Object" === n && o.constructor && (n = o.constructor.name);
+            if ("Map" === n || "Set" === n) return Array.from(o);
+            if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_arrayLikeToArray(o, minLen);
+        }(arr, i) || function _nonIterableRest() {
+            throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+        }();
+    }
+    function video_arrayLikeToArray(arr, len) {
+        (null == len || len > arr.length) && (len = arr.length);
+        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+        return arr2;
+    }
     function type() {
         var routerMap = {
             video: "/video/",
@@ -841,8 +876,16 @@
                     var _state3 = window.__INITIAL_STATE__, _main_title3 = _state3.mediaInfo.season_title;
                     return _state3.p = _state3.epInfo.i + 1, new Bangumi(_main_title3, _state3);
                 }
-                var epid, queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries, _queries$0$state$data = queries[0].state.data, mediaInfo = _queries$0$state$data.mediaInfo, epMap = _queries$0$state$data.epMap, historyEpId = queries[1].state.data.userInfo.history.epId, _main_title2 = mediaInfo.season_title, episodes = mediaInfo.episodes;
-                epid = location.pathname.startsWith("/bangumi/play/ss") ? parseInt(historyEpId) : (epid = location.pathname.match(/ep(\d+)/)) ? parseInt(epid[1]) : 0;
+                var epid, queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries, _queries$0$state$data = queries[0].state.data.seasonInfo, mediaInfo = _queries$0$state$data.mediaInfo, sectionsMap = _queries$0$state$data.sectionsMap, historyEpId = queries[0].state.data.userInfo.userInfo.history.epId, _main_title2 = mediaInfo.season_title, episodes = mediaInfo.episodes, epMap = {};
+                episodes.forEach((function(epInfo) {
+                    epMap[epInfo.id] = epInfo;
+                })), Object.entries(sectionsMap).forEach((function(_ref) {
+                    var _ref2 = _slicedToArray(_ref, 2);
+                    _ref2[0];
+                    _ref2[1].epList.forEach((function(epInfo) {
+                        epMap[epInfo.id] = epInfo;
+                    }));
+                })), location.pathname.startsWith("/bangumi/play/ss") ? (epid = parseInt(historyEpId)) < 0 && (epid = episodes[0].id) : epid = (epid = location.pathname.match(/ep(\d+)/)) ? parseInt(epid[1]) : 0;
                 for (var _id = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
                     _id = i;
                     break;
@@ -859,8 +902,8 @@
                 var _epid, sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
                 sid || (_epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
                 window.bp_episodes || (window.bp_episodes = [], api.get_season(sid, _epid));
-                for (var _episodes = window.bp_episodes, _id2 = 0, _i = 0; _i < _episodes.length; _i++) if (_episodes[_i].id == _epid) {
-                    _id2 = _i;
+                for (var _episodes = window.bp_episodes, _id2 = 0, _i2 = 0; _i2 < _episodes.length; _i2++) if (_episodes[_i2].id == _epid) {
+                    _id2 = _i2;
                     break;
                 }
                 var _main_title4 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
@@ -2255,10 +2298,10 @@
         })).join("");
         return "" + '<div class="'.concat(main_class_name, '">\n            ').concat(toolbar_elements, "\n            ").concat(more_style, "\n        </div>");
     }
-    function _slicedToArray(arr, i) {
-        return function _arrayWithHoles(arr) {
+    function main_slicedToArray(arr, i) {
+        return function main_arrayWithHoles(arr) {
             if (Array.isArray(arr)) return arr;
-        }(arr) || function _iterableToArrayLimit(arr, i) {
+        }(arr) || function main_iterableToArrayLimit(arr, i) {
             var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
             if (null == _i) return;
             var _s, _e, _arr = [], _n = !0, _d = !1;
@@ -2281,7 +2324,7 @@
             "Object" === n && o.constructor && (n = o.constructor.name);
             if ("Map" === n || "Set" === n) return Array.from(o);
             if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return main_arrayLikeToArray(o, minLen);
-        }(arr, i) || function _nonIterableRest() {
+        }(arr, i) || function main_nonIterableRest() {
             throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
         }();
     }
@@ -2301,7 +2344,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.1", " ").concat("4faff97", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.2", " ").concat("d17847d", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2439,13 +2482,13 @@
                             var _ref3 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href"), $("#video_url").attr("download"), $("#video_url_2").attr("download") ], video_url_2 = _ref3[1], file_name = _ref3[2], file_name_2 = _ref3[3], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref3[0], '" download="').concat(file_name, '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" download="').concat(file_name_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
                             MessageBox_alert(msg);
                         } else if ("aria" === type) {
-                            var _ref4 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref4[0], _video_url_ = _ref4[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref6 = _slicedToArray({
+                            var _ref4 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref4[0], _video_url_ = _ref4[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref6 = main_slicedToArray({
                                 min: [ 1, 5 ],
                                 mid: [ 16, 8 ],
                                 max: [ 32, 16 ]
                             }[config_config.aria2c_connection_level] || [ 1, 5 ], 2), url_max_connection = _ref6[0], server_max_connection = _ref6[1], aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection), _map = [ 'aria2c "'.concat(_video_url, '" --out "').concat(_file_name, '"'), 'aria2c "'.concat(_video_url_, '" --out "').concat(_file_name_, '"') ].map((function(code) {
                                 return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
-                            })), _map2 = _slicedToArray(_map, 2), code = _map2[0], code_2 = _map2[1], _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
+                            })), _map2 = main_slicedToArray(_map, 2), code = _map2[0], code_2 = _map2[1], _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
                             !window.bp_clip_btn && (window.bp_clip_btn = function(id) {
                                 $("#".concat(id)).select(), document.execCommand("copy") ? Message_success("复制成功") : Message_warning("复制失败");
                             }), MessageBox_alert(_msg);
@@ -2463,7 +2506,7 @@
                     }
                 };
                 window.bpd = evt, Object.entries(evt).forEach((function(_ref7) {
-                    var _ref8 = _slicedToArray(_ref7, 2), k = _ref8[0], v = _ref8[1];
+                    var _ref8 = main_slicedToArray(_ref7, 2), k = _ref8[0], v = _ref8[1];
                     return $("body").on("click", "#".concat(k), v);
                 })), $("body").on("click", "a.router-link-active", (function() {
                     this !== $('li[class="on"]').find("a")[0] && check.refresh();
