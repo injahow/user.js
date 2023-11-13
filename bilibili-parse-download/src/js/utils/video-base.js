@@ -180,6 +180,71 @@ class Bangumi extends VideoBase {
         this.mediaInfo = state.mediaInfo
     }
 
+    static build() {
+        // ! state: {p, mediaInfo, epList, epId, epMap}
+        if (!!window.__INITIAL_STATE__) {
+            // old
+            const state = window.__INITIAL_STATE__
+            const main_title = state.mediaInfo.season_title
+            state.p = state.epInfo.i + 1
+
+            return new Bangumi(main_title, state)
+        }
+
+        // new
+        const queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries
+        let mediaInfo, historyEpId, epMap
+        try { // todo
+            mediaInfo = queries[0].state.data.mediaInfo
+            epMap = queries[0].state.data.epMap
+            historyEpId = queries[1].state.data.userInfo.history.epId
+        } catch (e) {
+            mediaInfo = queries[0].state.data.seasonInfo.mediaInfo
+            const { sectionsMap } = queries[0].state.data.seasonInfo
+            epMap = {}
+            mediaInfo.episodes.forEach(epInfo => {
+                epMap[epInfo.id] = epInfo
+            })
+            Object.entries(sectionsMap).forEach(([sid, sectionInfo]) => {
+                sectionInfo.epList.forEach(epInfo => {
+                    epMap[epInfo.id] = epInfo
+                })
+            })
+            historyEpId = queries[0].state.data.userInfo.userInfo.history.epId
+        }
+
+        const { season_title: main_title, episodes } = mediaInfo
+
+        let epid
+        if (location.pathname.startsWith('/bangumi/play/ss')) {
+            epid = parseInt(historyEpId)
+            if (epid < 0) {
+                epid = episodes[0].id
+            }
+        } else {
+            epid = location.pathname.match(/ep(\d+)/)
+            epid = epid ? parseInt(epid[1]) : episodes[0].id
+        }
+
+        let _id = 0
+        for (let i = 0; i < episodes.length; i++) {
+            if (episodes[i].id == epid) {
+                _id = i
+                break
+            }
+        }
+
+        const state = {
+            p: _id + 1,
+            epId: epid,
+            epList: episodes,
+            mediaInfo: mediaInfo,
+            epMap: epMap
+        }
+
+        return new Bangumi(main_title, state)
+    }
+
     total() {
         return this.epList.length
     }

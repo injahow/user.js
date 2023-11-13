@@ -32,59 +32,8 @@ function base() {
 
         return new VideoList(main_title, state)
     } else if (_type === 'bangumi') {
-        // ! state: {p, mediaInfo, epList, epId, epMap}
-        if (!!window.__INITIAL_STATE__) {
-            // old
-            const state = window.__INITIAL_STATE__
-            const main_title = state.mediaInfo.season_title
-            state.p = state.epInfo.i + 1
 
-            return new Bangumi(main_title, state)
-        }
-        // new // todo
-        const queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries
-        const { mediaInfo, sectionsMap } = queries[0].state.data.seasonInfo
-        const historyEpId = queries[0].state.data.userInfo.userInfo.history.epId
-        const { season_title: main_title, episodes } = mediaInfo
-
-        const epMap = {}
-        episodes.forEach(epInfo => {
-            epMap[epInfo.id] = epInfo
-        })
-        Object.entries(sectionsMap).forEach(([sid, sectionInfo]) => {
-            sectionInfo.epList.forEach(epInfo => {
-                epMap[epInfo.id] = epInfo
-            })
-        })
-
-        let epid
-        if (location.pathname.startsWith('/bangumi/play/ss')) {
-            epid = parseInt(historyEpId)
-            if (epid < 0) {
-                epid = episodes[0].id
-            }
-        } else {
-            epid = location.pathname.match(/ep(\d+)/)
-            epid = epid ? parseInt(epid[1]) : 0
-        }
-
-        let _id = 0
-        for (let i = 0; i < episodes.length; i++) {
-            if (episodes[i].id == epid) {
-                _id = i
-                break
-            }
-        }
-
-        const state = {
-            p: _id + 1,
-            epId: epid,
-            epList: episodes,
-            mediaInfo: mediaInfo,
-            epMap: epMap
-        }
-
-        return new Bangumi(main_title, state)
+        return Bangumi.build()
     } else if (_type === 'cheese') {
 
         const sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1]

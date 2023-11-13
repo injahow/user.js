@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.4
+// @version       2.5.5
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -405,57 +405,35 @@
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         }, _typeof(obj);
     }
-    function video_base_createForOfIteratorHelper(o, allowArrayLike) {
-        var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
-        if (!it) {
-            if (Array.isArray(o) || (it = function video_base_unsupportedIterableToArray(o, minLen) {
-                if (!o) return;
-                if ("string" == typeof o) return video_base_arrayLikeToArray(o, minLen);
-                var n = Object.prototype.toString.call(o).slice(8, -1);
-                "Object" === n && o.constructor && (n = o.constructor.name);
-                if ("Map" === n || "Set" === n) return Array.from(o);
-                if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_base_arrayLikeToArray(o, minLen);
-            }(o)) || allowArrayLike && o && "number" == typeof o.length) {
-                it && (o = it);
-                var i = 0, F = function F() {};
-                return {
-                    s: F,
-                    n: function n() {
-                        return i >= o.length ? {
-                            done: !0
-                        } : {
-                            done: !1,
-                            value: o[i++]
-                        };
-                    },
-                    e: function e(_e) {
-                        throw _e;
-                    },
-                    f: F
-                };
-            }
-            throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-        }
-        var err, normalCompletion = !0, didErr = !1;
-        return {
-            s: function s() {
-                it = it.call(o);
-            },
-            n: function n() {
-                var step = it.next();
-                return normalCompletion = step.done, step;
-            },
-            e: function e(_e2) {
-                didErr = !0, err = _e2;
-            },
-            f: function f() {
+    function _slicedToArray(arr, i) {
+        return function _arrayWithHoles(arr) {
+            if (Array.isArray(arr)) return arr;
+        }(arr) || function _iterableToArrayLimit(arr, i) {
+            var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
+            if (null == _i) return;
+            var _s, _e, _arr = [], _n = !0, _d = !1;
+            try {
+                for (_i = _i.call(arr); !(_n = (_s = _i.next()).done) && (_arr.push(_s.value), !i || _arr.length !== i); _n = !0) ;
+            } catch (err) {
+                _d = !0, _e = err;
+            } finally {
                 try {
-                    normalCompletion || null == it.return || it.return();
+                    _n || null == _i.return || _i.return();
                 } finally {
-                    if (didErr) throw err;
+                    if (_d) throw _e;
                 }
             }
-        };
+            return _arr;
+        }(arr, i) || video_base_unsupportedIterableToArray(arr, i) || function _nonIterableRest() {
+            throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+        }();
+    }
+    function video_base_unsupportedIterableToArray(o, minLen) {
+        if (o) {
+            if ("string" == typeof o) return video_base_arrayLikeToArray(o, minLen);
+            var n = Object.prototype.toString.call(o).slice(8, -1);
+            return "Object" === n && o.constructor && (n = o.constructor.name), "Map" === n || "Set" === n ? Array.from(o) : "Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n) ? video_base_arrayLikeToArray(o, minLen) : void 0;
+        }
     }
     function video_base_arrayLikeToArray(arr, len) {
         (null == len || len > arr.length) && (len = arr.length);
@@ -657,7 +635,51 @@
             var _this2;
             video_base_classCallCheck(this, VideoList), (_this2 = _super2.call(this, "video", main_title, state)).video = new Video(state.videoData.title, state), 
             _this2.resourceList = state.resourceList || [];
-            var _step, video_list = [], _iterator = video_base_createForOfIteratorHelper(_this2.resourceList);
+            var _step, video_list = [], _iterator = function video_base_createForOfIteratorHelper(o, allowArrayLike) {
+                var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
+                if (!it) {
+                    if (Array.isArray(o) || (it = video_base_unsupportedIterableToArray(o)) || allowArrayLike && o && "number" == typeof o.length) {
+                        it && (o = it);
+                        var i = 0, F = function F() {};
+                        return {
+                            s: F,
+                            n: function n() {
+                                return i >= o.length ? {
+                                    done: !0
+                                } : {
+                                    done: !1,
+                                    value: o[i++]
+                                };
+                            },
+                            e: function e(_e2) {
+                                throw _e2;
+                            },
+                            f: F
+                        };
+                    }
+                    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+                }
+                var err, normalCompletion = !0, didErr = !1;
+                return {
+                    s: function s() {
+                        it = it.call(o);
+                    },
+                    n: function n() {
+                        var step = it.next();
+                        return normalCompletion = step.done, step;
+                    },
+                    e: function e(_e3) {
+                        didErr = !0, err = _e3;
+                    },
+                    f: function f() {
+                        try {
+                            normalCompletion || null == it.return || it.return();
+                        } finally {
+                            if (didErr) throw err;
+                        }
+                    }
+                };
+            }(_this2.resourceList);
             try {
                 for (_iterator.s(); !(_step = _iterator.n()).done; ) for (var video = _step.value, i = 0, length = video.pages && video.pages.length || 0; i < length; ) {
                     var _video = Object.assign({}, video);
@@ -765,6 +787,44 @@
             value: function isLimited() {
                 return !!this.mediaInfo.user_status.area_limit;
             }
+        } ], [ {
+            key: "build",
+            value: function build() {
+                if (window.__INITIAL_STATE__) {
+                    var _state = window.__INITIAL_STATE__, _main_title = _state.mediaInfo.season_title;
+                    return _state.p = _state.epInfo.i + 1, new Bangumi(_main_title, _state);
+                }
+                var mediaInfo, historyEpId, epMap, queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries;
+                try {
+                    mediaInfo = queries[0].state.data.mediaInfo, epMap = queries[0].state.data.epMap, 
+                    historyEpId = queries[1].state.data.userInfo.history.epId;
+                } catch (e) {
+                    mediaInfo = queries[0].state.data.seasonInfo.mediaInfo;
+                    var sectionsMap = queries[0].state.data.seasonInfo.sectionsMap;
+                    epMap = {}, mediaInfo.episodes.forEach((function(epInfo) {
+                        epMap[epInfo.id] = epInfo;
+                    })), Object.entries(sectionsMap).forEach((function(_ref) {
+                        var _ref2 = _slicedToArray(_ref, 2);
+                        _ref2[0];
+                        _ref2[1].epList.forEach((function(epInfo) {
+                            epMap[epInfo.id] = epInfo;
+                        }));
+                    })), historyEpId = queries[0].state.data.userInfo.userInfo.history.epId;
+                }
+                var epid, _mediaInfo = mediaInfo, main_title = _mediaInfo.season_title, episodes = _mediaInfo.episodes;
+                location.pathname.startsWith("/bangumi/play/ss") ? (epid = parseInt(historyEpId)) < 0 && (epid = episodes[0].id) : epid = (epid = location.pathname.match(/ep(\d+)/)) ? parseInt(epid[1]) : episodes[0].id;
+                for (var _id = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
+                    _id = i;
+                    break;
+                }
+                return new Bangumi(main_title, {
+                    p: _id + 1,
+                    epId: epid,
+                    epList: episodes,
+                    mediaInfo: mediaInfo,
+                    epMap: epMap
+                });
+            }
         } ]), Bangumi;
     }(VideoBase), Cheese = function(_VideoBase4) {
         _inherits(Cheese, _VideoBase4);
@@ -806,41 +866,6 @@
             }
         } ]), Cheese;
     }(VideoBase);
-    function _slicedToArray(arr, i) {
-        return function _arrayWithHoles(arr) {
-            if (Array.isArray(arr)) return arr;
-        }(arr) || function _iterableToArrayLimit(arr, i) {
-            var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
-            if (null == _i) return;
-            var _s, _e, _arr = [], _n = !0, _d = !1;
-            try {
-                for (_i = _i.call(arr); !(_n = (_s = _i.next()).done) && (_arr.push(_s.value), !i || _arr.length !== i); _n = !0) ;
-            } catch (err) {
-                _d = !0, _e = err;
-            } finally {
-                try {
-                    _n || null == _i.return || _i.return();
-                } finally {
-                    if (_d) throw _e;
-                }
-            }
-            return _arr;
-        }(arr, i) || function video_unsupportedIterableToArray(o, minLen) {
-            if (!o) return;
-            if ("string" == typeof o) return video_arrayLikeToArray(o, minLen);
-            var n = Object.prototype.toString.call(o).slice(8, -1);
-            "Object" === n && o.constructor && (n = o.constructor.name);
-            if ("Map" === n || "Set" === n) return Array.from(o);
-            if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_arrayLikeToArray(o, minLen);
-        }(arr, i) || function _nonIterableRest() {
-            throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-        }();
-    }
-    function video_arrayLikeToArray(arr, len) {
-        (null == len || len > arr.length) && (len = arr.length);
-        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-        return arr2;
-    }
     function type() {
         var routerMap = {
             video: "/video/",
@@ -871,45 +896,19 @@
                 var _state = window.__INITIAL_STATE__, _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + "-" + _state.mediaListInfo.title;
                 return new VideoList(_main_title, _state);
             }
-            if ("bangumi" === _type) {
-                if (window.__INITIAL_STATE__) {
-                    var _state3 = window.__INITIAL_STATE__, _main_title3 = _state3.mediaInfo.season_title;
-                    return _state3.p = _state3.epInfo.i + 1, new Bangumi(_main_title3, _state3);
-                }
-                var epid, queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries, _queries$0$state$data = queries[0].state.data.seasonInfo, mediaInfo = _queries$0$state$data.mediaInfo, sectionsMap = _queries$0$state$data.sectionsMap, historyEpId = queries[0].state.data.userInfo.userInfo.history.epId, _main_title2 = mediaInfo.season_title, episodes = mediaInfo.episodes, epMap = {};
-                episodes.forEach((function(epInfo) {
-                    epMap[epInfo.id] = epInfo;
-                })), Object.entries(sectionsMap).forEach((function(_ref) {
-                    var _ref2 = _slicedToArray(_ref, 2);
-                    _ref2[0];
-                    _ref2[1].epList.forEach((function(epInfo) {
-                        epMap[epInfo.id] = epInfo;
-                    }));
-                })), location.pathname.startsWith("/bangumi/play/ss") ? (epid = parseInt(historyEpId)) < 0 && (epid = episodes[0].id) : epid = (epid = location.pathname.match(/ep(\d+)/)) ? parseInt(epid[1]) : 0;
-                for (var _id = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
+            if ("bangumi" === _type) return Bangumi.build();
+            if ("cheese" === _type) {
+                var epid, sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
+                sid || (epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
+                window.bp_episodes || (window.bp_episodes = [], api.get_season(sid, epid));
+                for (var episodes = window.bp_episodes, _id = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
                     _id = i;
                     break;
                 }
-                return new Bangumi(_main_title2, {
+                var _main_title2 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
+                return new Cheese(_main_title2, {
                     p: _id + 1,
-                    epId: epid,
-                    epList: episodes,
-                    mediaInfo: mediaInfo,
-                    epMap: epMap
-                });
-            }
-            if ("cheese" === _type) {
-                var _epid, sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
-                sid || (_epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
-                window.bp_episodes || (window.bp_episodes = [], api.get_season(sid, _epid));
-                for (var _episodes = window.bp_episodes, _id2 = 0, _i2 = 0; _i2 < _episodes.length; _i2++) if (_episodes[_i2].id == _epid) {
-                    _id2 = _i2;
-                    break;
-                }
-                var _main_title4 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
-                return new Cheese(_main_title4, {
-                    p: _id2 + 1,
-                    episodes: _episodes
+                    episodes: episodes
                 });
             }
             return new VideoBase;
@@ -2139,7 +2138,7 @@
             value: function makeAPIData(param, sec) {
                 return _objectSpread(_objectSpread({}, param), {}, {
                     sign: md5("".concat(Object.entries(param).map((function(e) {
-                        return "".concat(e[0], "=").concat(e[1] || "");
+                        return "".concat(e[0], "=").concat(e[1]);
                     })).join("&")).concat(sec))
                 });
             }
@@ -2152,7 +2151,7 @@
                     type: "POST",
                     data: this.makeAPIData({
                         appkey: this.TV_KEY,
-                        csrf: getCookie("bili_jct"),
+                        csrf: getCookie("bili_jct") || "",
                         local_id: "0",
                         ts: Date.now()
                     }, this.TV_SEC)
@@ -2188,7 +2187,7 @@
                                 data: _this3.makeAPIData({
                                     appkey: _this3.TV_KEY,
                                     auth_code: auth_code,
-                                    csrf: getCookie("bili_jct"),
+                                    csrf: getCookie("bili_jct") || "",
                                     local_id: "0",
                                     ts: Date.now().toString()
                                 }, _this3.TV_SEC)
@@ -2217,7 +2216,7 @@
                                 data: _this4.makeAPIData({
                                     appkey: _this4.TV_KEY,
                                     auth_code: auth_code,
-                                    csrf: getCookie("bili_jct"),
+                                    csrf: getCookie("bili_jct") || "",
                                     local_id: "0",
                                     ts: Date.now().toString()
                                 }, _this4.TV_SEC)
@@ -2351,7 +2350,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.4", " ").concat("f05ab3a", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.5", " ").concat("e23d4cd", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

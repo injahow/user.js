@@ -57,7 +57,7 @@ class Auth {
     makeAPIData(param, sec) {
         return {
             ...param,
-            sign: md5(`${Object.entries(param).map(e => `${e[0]}=${e[1] || ''}`).join('&')}${sec}`)
+            sign: md5(`${Object.entries(param).map(e => `${e[0]}=${e[1]}`).join('&')}${sec}`)
         }
     }
 
@@ -72,7 +72,7 @@ class Auth {
             type: 'POST',
             data: this.makeAPIData({
                 appkey: this.TV_KEY,
-                csrf: getCookie('bili_jct'),
+                csrf: getCookie('bili_jct') || '',
                 local_id: '0',
                 ts: Date.now()
             }, this.TV_SEC)
@@ -119,7 +119,7 @@ class Auth {
                     data: this.makeAPIData({
                         appkey: this.TV_KEY,
                         auth_code: auth_code,
-                        csrf: getCookie('bili_jct'),
+                        csrf: getCookie('bili_jct') || '',
                         local_id: '0',
                         ts: Date.now().toString()
                     }, this.TV_SEC)
@@ -160,7 +160,7 @@ class Auth {
                     data: this.makeAPIData({
                         appkey: this.TV_KEY,
                         auth_code: auth_code,
-                        csrf: getCookie('bili_jct'),
+                        csrf: getCookie('bili_jct') || '',
                         local_id: '0',
                         ts: Date.now().toString()
                     }, this.TV_SEC)

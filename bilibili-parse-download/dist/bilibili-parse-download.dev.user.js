@@ -621,7 +621,15 @@ var api = {
 ;// CONCATENATED MODULE: ./src/js/utils/video-base.js
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-function video_base_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = video_base_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || video_base_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function video_base_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = video_base_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function video_base_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return video_base_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_base_arrayLikeToArray(o, minLen); }
 
@@ -957,6 +965,80 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
     value: function isLimited() {
       return !!this.mediaInfo.user_status.area_limit;
     }
+  }], [{
+    key: "build",
+    value: function build() {
+      // ! state: {p, mediaInfo, epList, epId, epMap}
+      if (!!window.__INITIAL_STATE__) {
+        // old
+        var _state = window.__INITIAL_STATE__;
+        var _main_title = _state.mediaInfo.season_title;
+        _state.p = _state.epInfo.i + 1;
+        return new Bangumi(_main_title, _state);
+      } // new
+
+
+      var queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries;
+      var mediaInfo, historyEpId, epMap;
+
+      try {
+        // todo
+        mediaInfo = queries[0].state.data.mediaInfo;
+        epMap = queries[0].state.data.epMap;
+        historyEpId = queries[1].state.data.userInfo.history.epId;
+      } catch (e) {
+        mediaInfo = queries[0].state.data.seasonInfo.mediaInfo;
+        var sectionsMap = queries[0].state.data.seasonInfo.sectionsMap;
+        epMap = {};
+        mediaInfo.episodes.forEach(function (epInfo) {
+          epMap[epInfo.id] = epInfo;
+        });
+        Object.entries(sectionsMap).forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+              sid = _ref2[0],
+              sectionInfo = _ref2[1];
+
+          sectionInfo.epList.forEach(function (epInfo) {
+            epMap[epInfo.id] = epInfo;
+          });
+        });
+        historyEpId = queries[0].state.data.userInfo.userInfo.history.epId;
+      }
+
+      var _mediaInfo = mediaInfo,
+          main_title = _mediaInfo.season_title,
+          episodes = _mediaInfo.episodes;
+      var epid;
+
+      if (location.pathname.startsWith('/bangumi/play/ss')) {
+        epid = parseInt(historyEpId);
+
+        if (epid < 0) {
+          epid = episodes[0].id;
+        }
+      } else {
+        epid = location.pathname.match(/ep(\d+)/);
+        epid = epid ? parseInt(epid[1]) : episodes[0].id;
+      }
+
+      var _id = 0;
+
+      for (var i = 0; i < episodes.length; i++) {
+        if (episodes[i].id == epid) {
+          _id = i;
+          break;
+        }
+      }
+
+      var state = {
+        p: _id + 1,
+        epId: epid,
+        epList: episodes,
+        mediaInfo: mediaInfo,
+        epMap: epMap
+      };
+      return new Bangumi(main_title, state);
+    }
   }]);
 
   return Bangumi;
@@ -1014,18 +1096,6 @@ var Cheese = /*#__PURE__*/function (_VideoBase4) {
 
 
 ;// CONCATENATED MODULE: ./src/js/utils/video.js
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || video_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function video_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return video_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_arrayLikeToArray(o, minLen); }
-
-function video_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
 
 
 
@@ -1063,49 +1133,23 @@ function base() {
 
     return new VideoList(_main_title, _state);
   } else if (_type === 'bangumi') {
-    // ! state: {p, mediaInfo, epList, epId, epMap}
-    if (!!window.__INITIAL_STATE__) {
-      // old
-      var _state3 = window.__INITIAL_STATE__;
-      var _main_title3 = _state3.mediaInfo.season_title;
-      _state3.p = _state3.epInfo.i + 1;
-      return new Bangumi(_main_title3, _state3);
-    } // new // todo
-
-
-    var queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries;
-    var _queries$0$state$data = queries[0].state.data.seasonInfo,
-        mediaInfo = _queries$0$state$data.mediaInfo,
-        sectionsMap = _queries$0$state$data.sectionsMap;
-    var historyEpId = queries[0].state.data.userInfo.userInfo.history.epId;
-    var _main_title2 = mediaInfo.season_title,
-        episodes = mediaInfo.episodes;
-    var epMap = {};
-    episodes.forEach(function (epInfo) {
-      epMap[epInfo.id] = epInfo;
-    });
-    Object.entries(sectionsMap).forEach(function (_ref) {
-      var _ref2 = _slicedToArray(_ref, 2),
-          sid = _ref2[0],
-          sectionInfo = _ref2[1];
-
-      sectionInfo.epList.forEach(function (epInfo) {
-        epMap[epInfo.id] = epInfo;
-      });
-    });
+    return Bangumi.build();
+  } else if (_type === 'cheese') {
+    var sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1];
     var epid;
 
-    if (location.pathname.startsWith('/bangumi/play/ss')) {
-      epid = parseInt(historyEpId);
-
-      if (epid < 0) {
-        epid = episodes[0].id;
-      }
-    } else {
-      epid = location.pathname.match(/ep(\d+)/);
-      epid = epid ? parseInt(epid[1]) : 0;
+    if (!sid) {
+      epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1];
     }
 
+    if (!window.bp_episodes) {
+      // todo
+      window.bp_episodes = []; // ref check
+
+      api.get_season(sid, epid);
+    }
+
+    var episodes = window.bp_episodes;
     var _id = 0;
 
     for (var i = 0; i < episodes.length; i++) {
@@ -1115,47 +1159,13 @@ function base() {
       }
     }
 
+    var _main_title2 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+
     var _state2 = {
       p: _id + 1,
-      epId: epid,
-      epList: episodes,
-      mediaInfo: mediaInfo,
-      epMap: epMap
+      episodes: episodes
     };
-    return new Bangumi(_main_title2, _state2);
-  } else if (_type === 'cheese') {
-    var sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1];
-
-    var _epid;
-
-    if (!sid) {
-      _epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1];
-    }
-
-    if (!window.bp_episodes) {
-      // todo
-      window.bp_episodes = []; // ref check
-
-      api.get_season(sid, _epid);
-    }
-
-    var _episodes = window.bp_episodes;
-    var _id2 = 0;
-
-    for (var _i2 = 0; _i2 < _episodes.length; _i2++) {
-      if (_episodes[_i2].id == _epid) {
-        _id2 = _i2;
-        break;
-      }
-    }
-
-    var _main_title4 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
-
-    var _state4 = {
-      p: _id2 + 1,
-      episodes: _episodes
-    };
-    return new Cheese(_main_title4, _state4);
+    return new Cheese(_main_title2, _state2);
   } else {
     // error
     return new VideoBase();
@@ -2849,7 +2859,7 @@ var Auth = /*#__PURE__*/function () {
     value: function makeAPIData(param, sec) {
       return _objectSpread(_objectSpread({}, param), {}, {
         sign: md5("".concat(Object.entries(param).map(function (e) {
-          return "".concat(e[0], "=").concat(e[1] || '');
+          return "".concat(e[0], "=").concat(e[1]);
         }).join('&')).concat(sec))
       });
     }
@@ -2869,7 +2879,7 @@ var Auth = /*#__PURE__*/function () {
         type: 'POST',
         data: this.makeAPIData({
           appkey: this.TV_KEY,
-          csrf: getCookie('bili_jct'),
+          csrf: getCookie('bili_jct') || '',
           local_id: '0',
           ts: Date.now()
         }, this.TV_SEC)
@@ -2928,7 +2938,7 @@ var Auth = /*#__PURE__*/function () {
             data: _this3.makeAPIData({
               appkey: _this3.TV_KEY,
               auth_code: auth_code,
-              csrf: getCookie('bili_jct'),
+              csrf: getCookie('bili_jct') || '',
               local_id: '0',
               ts: Date.now().toString()
             }, _this3.TV_SEC)
@@ -2980,7 +2990,7 @@ var Auth = /*#__PURE__*/function () {
             data: _this4.makeAPIData({
               appkey: _this4.TV_KEY,
               auth_code: auth_code,
-              csrf: getCookie('bili_jct'),
+              csrf: getCookie('bili_jct') || '',
               local_id: '0',
               ts: Date.now().toString()
             }, _this4.TV_SEC)
@@ -3264,7 +3274,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.4", " ").concat("f05ab3a", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.5", " ").concat("e23d4cd", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
