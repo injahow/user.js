@@ -26,7 +26,7 @@ class Auth {
         if (!access_key) return
 
         if (user.is_login && (config.base_api !== store.get('pre_base_api') ||
-            Date.now() - parseInt(auth_time) > 24 * 3600 * 1e4)) {
+            Date.now() - parseInt(auth_time) > 72 * 3600 * 1e3)) {
             // check key
             ajax({
                 url: `https://passport.bilibili.com/api/oauth?access_key=${access_key}`,
@@ -173,7 +173,7 @@ class Auth {
                     } else if (res.code === 86038) {
                         this.auth_window.close()
                     }
-                })
+                }).catch(() => this.auth_window.close())
             }, 3000)
         })
     }
@@ -217,15 +217,11 @@ class Auth {
             this.auth_window.close()
             this.auth_window = null
         }
-        const [auth_id, auth_sec] = [
-            store.get('auth_id'),
-            store.get('auth_sec')
-        ]
 
         ajax({
             url: `${config.base_api}/auth/?act=login&${Object.entries({
-                auth_id: auth_id,
-                auth_sec: auth_sec,
+                auth_id: store.get('auth_id'),
+                auth_sec: store.get('auth_sec'),
                 ...param
             }).map(e => `${e[0]}=${e[1]}`).join('&')}`,
             type: 'GET',

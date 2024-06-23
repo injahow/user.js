@@ -2824,7 +2824,7 @@ var Auth = /*#__PURE__*/function () {
           auth_time = _ref[3];
       if (!access_key) return;
 
-      if (user.is_login && (config_config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 24 * 3600 * 1e4)) {
+      if (user.is_login && (config_config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 72 * 3600 * 1e3)) {
         // check key
         ajax({
           url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
@@ -3006,6 +3006,8 @@ var Auth = /*#__PURE__*/function () {
             } else if (res.code === 86038) {
               _this4.auth_window.close();
             }
+          }).catch(function () {
+            return _this4.auth_window.close();
           });
         }, 3000);
       });
@@ -3058,13 +3060,10 @@ var Auth = /*#__PURE__*/function () {
         this.auth_window = null;
       }
 
-      var _ref3 = [store.get('auth_id'), store.get('auth_sec')],
-          auth_id = _ref3[0],
-          auth_sec = _ref3[1];
       ajax({
         url: "".concat(config_config.base_api, "/auth/?act=login&").concat(Object.entries(_objectSpread({
-          auth_id: auth_id,
-          auth_sec: auth_sec
+          auth_id: store.get('auth_id'),
+          auth_sec: store.get('auth_sec')
         }, param)).map(function (e) {
           return "".concat(e[0], "=").concat(e[1]);
         }).join('&')),
@@ -3274,7 +3273,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.5", " ").concat("e23d4cd", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.6", " ").concat("b7225b5", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3570,18 +3569,7 @@ var Main = /*#__PURE__*/function () {
   'use strict';
 
   if (window.bp_fun_locked) return;
-  window.bp_fun_locked = true;
-
-  if (location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) != null) {
-    // https://greasyfork.org/zh-CN/scripts/25718-%E8%A7%A3%E9%99%A4b%E7%AB%99%E5%8C%BA%E5%9F%9F%E9%99%90%E5%88%B6/code
-    if (location.href.match('access_key') && window !== window.opener) {
-      window.stop();
-      window.opener.postMessage('bilibili-parse-login-credentials: ' + location.href, '*');
-    }
-
-    return;
-  } // error page
-
+  window.bp_fun_locked = true; // error page
 
   if ($('.error-text')[0]) {
     return;
@@ -3589,7 +3577,7 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     new main().run();
-  }, 3000);
+  }, 6000);
 })();
 /******/ })()
 ;

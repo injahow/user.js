@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.5
+// @version       2.5.6
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -2118,7 +2118,7 @@
             key: "checkLoginStatus",
             value: function checkLoginStatus() {
                 var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || 0 ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
-                access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e6) && ajax({
+                access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 2592e5) && ajax({
                     url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
                     type: "GET",
                     dataType: "json"
@@ -2223,6 +2223,8 @@
                             }).then((function(res) {
                                 !res.code && res.data ? (console.log("login success"), _this4.doAuth(res.data.token_info), 
                                 is_login = 1, _this4.auth_window.close()) : 86038 === res.code && _this4.auth_window.close();
+                            })).catch((function() {
+                                return _this4.auth_window.close();
                             }));
                         }), 3e3);
                     }
@@ -2251,12 +2253,11 @@
             key: "doAuth",
             value: function doAuth(param) {
                 var _this6 = this;
-                this.auth_window && !this.auth_window.closed && (this.auth_window.close(), this.auth_window = null);
-                var _ref3 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref3[0], auth_sec = _ref3[1];
+                this.auth_window && !this.auth_window.closed && (this.auth_window.close(), this.auth_window = null), 
                 ajax({
                     url: "".concat(config_config.base_api, "/auth/?act=login&").concat(Object.entries(_objectSpread({
-                        auth_id: auth_id,
-                        auth_sec: auth_sec
+                        auth_id: store.get("auth_id"),
+                        auth_sec: store.get("auth_sec")
                     }, param)).map((function(e) {
                         return "".concat(e[0], "=").concat(e[1]);
                     })).join("&")),
@@ -2350,7 +2351,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.5", " ").concat("e23d4cd", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.6", " ").concat("b7225b5", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2539,8 +2540,7 @@
             }
         } ]), Main;
     }(), main = Main;
-    window.bp_fun_locked || (window.bp_fun_locked = !0, null == location.href.match(/^https:\/\/www\.mcbbs\.net\/template\/mcbbs\/image\/special_photo_bg\.png/) ? $(".error-text")[0] || setTimeout((function() {
+    window.bp_fun_locked || (window.bp_fun_locked = !0, $(".error-text")[0] || setTimeout((function() {
         (new main).run();
-    }), 3e3) : location.href.match("access_key") && window !== window.opener && (window.stop(), 
-    window.opener.postMessage("bilibili-parse-login-credentials: " + location.href, "*")));
+    }), 6e3));
 }();
