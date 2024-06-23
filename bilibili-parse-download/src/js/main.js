@@ -35,8 +35,8 @@ class Main {
         check.refresh()
 
         $(`#${root_div.id}`).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">') // for dom changed
-        $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
-        $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>')
+        $(`#${root_div.id}`).append('<a id="video_url" style="display:none;" target="_blank" href="#"></a>')
+        $(`#${root_div.id}`).append('<a id="video_url_2" style="display:none;" target="_blank" href="#"></a>')
 
     }
 

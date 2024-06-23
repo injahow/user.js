@@ -2351,7 +2351,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.6", " ").concat("b7225b5", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.6", " ").concat("64a3233", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2424,8 +2424,8 @@
                     el && $(el)[0] ? $(el).append(message) : $("body").append(message);
                 }("#".concat(root_div.id)), user.lazyInit(), auth.checkLoginStatus(), check.refresh(), 
                 $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
-                $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
-                $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
+                $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" href="#"></a>'), 
+                $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" href="#"></a>');
             }
         }, {
             key: "run",
