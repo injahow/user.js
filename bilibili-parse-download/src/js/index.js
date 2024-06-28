@@ -14,6 +14,6 @@ import Main from './main'
 
     setTimeout(() => {
         new Main().run()
-    }, 6000)
+    }, 5000)
 
 })()

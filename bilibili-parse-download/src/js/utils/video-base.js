@@ -1,3 +1,5 @@
+import CacheFactory from "./cache"
+import { _ajax } from "./ajax"
 
 const clazzMap = {}
 
@@ -177,60 +179,98 @@ class Bangumi extends VideoBase {
         this.epList = state.epList
         this.epId = state.epId
         this.epMap = state.epMap
-        this.mediaInfo = state.mediaInfo
+        // this.mediaInfo = state.mediaInfo
     }
 
     static build() {
-        // ! state: {p, mediaInfo, epList, epId, epMap}
-        if (!!window.__INITIAL_STATE__) {
-            // old
-            const state = window.__INITIAL_STATE__
-            const main_title = state.mediaInfo.season_title
-            state.p = state.epInfo.i + 1
+        // ! state: {p, mediaInfo, epList, epId, epMap, epInfo}
+        const bangumiCache = CacheFactory.get('Bangumi')
 
-            return new Bangumi(main_title, state)
+        if (location.href == bangumiCache.get('href') && !!bangumiCache.get('build')) {
+            return bangumiCache.get('build')
         }
+        bangumiCache.set('build', null)
 
-        // new
-        const queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries
-        let mediaInfo, historyEpId, epMap
-        try { // todo
-            mediaInfo = queries[0].state.data.mediaInfo
-            epMap = queries[0].state.data.epMap
-            historyEpId = queries[1].state.data.userInfo.history.epId
-        } catch (e) {
-            mediaInfo = queries[0].state.data.seasonInfo.mediaInfo
-            const { sectionsMap } = queries[0].state.data.seasonInfo
-            epMap = {}
-            mediaInfo.episodes.forEach(epInfo => {
-                epMap[epInfo.id] = epInfo
-            })
-            Object.entries(sectionsMap).forEach(([sid, sectionInfo]) => {
-                sectionInfo.epList.forEach(epInfo => {
-                    epMap[epInfo.id] = epInfo
-                })
-            })
-            historyEpId = queries[0].state.data.userInfo.userInfo.history.epId
-        }
-
-        const { season_title: main_title, episodes } = mediaInfo
-
-        let epid
-        if (location.pathname.startsWith('/bangumi/play/ss')) {
-            epid = parseInt(historyEpId)
-            if (epid < 0) {
-                epid = episodes[0].id
-            }
-        } else {
+        let main_title, sid, epid, epMap = {}
+        const pathname = location.pathname.toLowerCase()
+        if (pathname.startsWith('/bangumi/play/ss')) {
+            sid = location.pathname.match(/ss(\d+)/)
+            sid = parseInt(sid[1])
+        } else if (pathname.startsWith('/bangumi/play/ep')) {
             epid = location.pathname.match(/ep(\d+)/)
-            epid = epid ? parseInt(epid[1]) : episodes[0].id
+            epid = parseInt(epid[1])
         }
+
+        sid = sid || ''
+        epid = epid || ''
+
+        try {
+            console.log('location sid:', sid, 'epid:', epid)
+            const page_data = JSON.parse($('.toolbar').attr('mr-show'))
+            main_title = page_data.msg.title
+            sid = sid || page_data.msg.season_id
+            epid = epid || page_data.msg.ep_id
+            console.log('mr-show get sid:', sid, 'epid:', epid)
+        } catch {
+            console.warn('mr-show get err')
+        }
+
+        if (sid != bangumiCache.get('sid')) {
+            bangumiCache.set('sid', sid)
+            bangumiCache.set('epid', '')
+            bangumiCache.set('hasData', false)
+        }
+
+        if (!!sid && !epid) {
+            _ajax({
+                url: `https://api.bilibili.com/pgc/player/web/v2/playurl?support_multi_audio=true&qn=80&fnver=0&fnval=4048&fourk=1&gaia_source=&from_client=BROWSER&is_main_page=true&need_fragment=true&season_id=${sid}&isGaiaAvoided=false&voice_balance=1&drm_tech_type=2`,
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+            }).then(res => {
+                if (res && !res.code) {
+                    bangumiCache.set('epid', res.result.view_info.report.ep_id)
+                }
+            })
+        }
+
+        if (bangumiCache.get('lock')) {
+            throw 'bangumiCache request waiting !'
+        }
+        bangumiCache.set('lock', true)
+        _ajax({
+            type: 'GET',
+            url: `https://api.bilibili.com/pgc/view/web/ep/list?season_id=${sid}&ep_id=${epid}`,
+            dataType: 'json',
+            cache: true
+        }).then(res => {
+            if (res && !res.code) {
+                bangumiCache.set('hasData', true)
+                bangumiCache.set('episodes', res.result.episodes)
+            }
+        }).finally(() => {
+            bangumiCache.set('lock', false)
+        })
+
+        bangumiCache.set('href', location.href)
+
+        if (!epid && !bangumiCache.get('epid')) {
+            throw 'epid not found !'
+        }
+
+        if (!bangumiCache.get('hasData')) {
+            throw 'bangumiCache no data !'
+        }
+
+        const episodes = bangumiCache.get('episodes')
+        epid = epid || bangumiCache.get('epid')
 
         let _id = 0
         for (let i = 0; i < episodes.length; i++) {
+            epMap[episodes[i].id] = episodes[i]
             if (episodes[i].id == epid) {
                 _id = i
-                break
             }
         }
 
@@ -238,91 +278,86 @@ class Bangumi extends VideoBase {
             p: _id + 1,
             epId: epid,
             epList: episodes,
-            mediaInfo: mediaInfo,
-            epMap: epMap
+            epMap,
+            epInfo: epMap[epid]
         }
 
-        return new Bangumi(main_title, state)
+        const bangumi = new Bangumi(main_title, state)
+        bangumiCache.set('build', bangumi)
+
+        return bangumi
     }
 
     total() {
         return this.epList.length
     }
 
-    title(p) {
-        let ep = p
+    getEpisode(p) {
+        return p
             ? this.epList[this.id(p)]
-            : this.epMap && this.epId
-                ? this.epMap[this.epId]
-                : this.epInfo
-        return (`${ep.titleFormat} ${ep.long_title}`)
+            : this.epMap[this.epId] || this.epInfo || {}
+    }
+
+    getTotalPadLen() {
+        let n = this.total(), len = 1
+        while (n >= 1) {
+            n = n / 10
+            len++
+        }
+        return len
+    }
+
+    title(p) {
+        p = p || 1
+        const ep = this.getEpisode(p)
+
+        return `${this.main_title} EP${('' + p).padStart(this.getTotalPadLen(), '0')} ${ep.long_title}`
     }
 
     filename(p) {
-        let ep = p
-            ? this.epList[this.id(p)]
-            : this.epMap && this.epId
-                ? this.epMap[this.epId]
-                : this.epInfo
-        return (`${this.main_title}：${ep.titleFormat} ${ep.long_title}`).replace(/[\/\\:*?"<>|]+/g, '')
+        p = p || 1
+        return this.title(p).replace(/[\/\\:*?"<>|]+/g, '')
     }
 
     aid(p) {
-        let ep = p
-            ? this.epList[this.id(p)]
-            : this.epMap && this.epId
-                ? this.epMap[this.epId]
-                : this.epInfo
+        const ep = this.getEpisode(p)
+
         return ep.aid
     }
 
     bvid(p) {
-        let ep = p
-            ? this.epList[this.id(p)]
-            : this.epMap && this.epId
-                ? this.epMap[this.epId]
-                : this.epInfo
+        const ep = this.getEpisode(p)
+
         return ep.bvid
     }
 
     cid(p) {
-        let ep = p
-            ? this.epList[this.id(p)]
-            : this.epMap && this.epId
-                ? this.epMap[this.epId]
-                : this.epInfo
+        const ep = this.getEpisode(p)
+
         return ep.cid
     }
 
     epid(p) {
-        let ep = p
-            ? this.epList[this.id(p)]
-            : this.epMap && this.epId
-                ? this.epMap[this.epId]
-                : this.epInfo
+        const ep = this.getEpisode(p)
+
         return ep.id
     }
 
     needVip(p) {
-        let ep = p
-            ? this.epList[this.id(p)]
-            : this.epMap && this.epId
-                ? this.epMap[this.epId]
-                : this.epInfo
+        const ep = this.getEpisode(p)
+
         return ep.badge === '会员'
     }
 
     vipNeedPay(p) {
-        let ep = p
-            ? this.epList[this.id(p)]
-            : this.epMap && this.epId
-                ? this.epMap[this.epId]
-                : this.epInfo
+        const ep = this.getEpisode(p)
+
         return ep.badge === '付费'
     }
 
     isLimited() {
-        return !!this.mediaInfo.user_status.area_limit
+        // todo
+        return false
     }
 }
 
@@ -342,7 +377,7 @@ class Cheese extends VideoBase {
     }
 
     filename(p) {
-        return (`${this.main_title} P${this.p(p)} ${this.title(p)}`).replace(/[\/\\:*?"<>|]+/g, '')
+        return (`${this.main_title} EP${this.p(p)} ${this.title(p)}`).replace(/[\/\\:*?"<>|]+/g, '')
     }
 
     aid(p) {

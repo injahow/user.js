@@ -43,7 +43,7 @@
 /************************************************************************/
 var __webpack_exports__ = {};
 /*!**************************************!*\
-  !*** ./src/js/index.js + 23 modules ***!
+  !*** ./src/js/index.js + 24 modules ***!
   \**************************************/
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
@@ -618,18 +618,82 @@ var api = {
   get_subtitle_data: get_subtitle_data,
   get_season: get_season
 };
+;// CONCATENATED MODULE: ./src/js/utils/cache.js
+function cache_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function cache_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function cache_createClass(Constructor, protoProps, staticProps) { if (protoProps) cache_defineProperties(Constructor.prototype, protoProps); if (staticProps) cache_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var CacheFactory = /*#__PURE__*/function () {
+  function CacheFactory() {
+    cache_classCallCheck(this, CacheFactory);
+  }
+
+  cache_createClass(CacheFactory, null, [{
+    key: "set",
+    value: function set(name, cache) {
+      CacheFactory.map[name] = cache;
+    }
+  }, {
+    key: "get",
+    value: function get() {
+      var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
+      var cache = CacheFactory.map[name];
+
+      if (cache instanceof Cache) {
+        return cache;
+      }
+
+      return new Cache(name);
+    }
+  }]);
+
+  return CacheFactory;
+}();
+
+_defineProperty(CacheFactory, "map", {});
+
+var Cache = /*#__PURE__*/function () {
+  function Cache() {
+    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
+
+    cache_classCallCheck(this, Cache);
+
+    CacheFactory.set(name, this);
+    this.value = {};
+  }
+
+  cache_createClass(Cache, [{
+    key: "get",
+    value: function get() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      return this.value[key];
+    }
+  }, {
+    key: "set",
+    value: function set() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var value = arguments.length > 1 ? arguments[1] : undefined;
+      this.value[key] = value;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.value = {};
+    }
+  }]);
+
+  return Cache;
+}();
+
+/* harmony default export */ var cache = (CacheFactory);
 ;// CONCATENATED MODULE: ./src/js/utils/video-base.js
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || video_base_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function video_base_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = video_base_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function video_base_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = video_base_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function video_base_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return video_base_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_base_arrayLikeToArray(o, minLen); }
 
@@ -654,6 +718,8 @@ function video_base_classCallCheck(instance, Constructor) { if (!(instance insta
 function video_base_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function video_base_createClass(Constructor, protoProps, staticProps) { if (protoProps) video_base_defineProperties(Constructor.prototype, protoProps); if (staticProps) video_base_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
 
 var clazzMap = {};
 
@@ -902,8 +968,8 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
     _this3.epInfo = state.epInfo;
     _this3.epList = state.epList;
     _this3.epId = state.epId;
-    _this3.epMap = state.epMap;
-    _this3.mediaInfo = state.mediaInfo;
+    _this3.epMap = state.epMap; // this.mediaInfo = state.mediaInfo
+
     return _this3;
   }
 
@@ -913,120 +979,176 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
       return this.epList.length;
     }
   }, {
+    key: "getEpisode",
+    value: function getEpisode(p) {
+      return p ? this.epList[this.id(p)] : this.epMap[this.epId] || this.epInfo || {};
+    }
+  }, {
+    key: "getTotalPadLen",
+    value: function getTotalPadLen() {
+      var n = this.total(),
+          len = 1;
+
+      while (n >= 1) {
+        n = n / 10;
+        len++;
+      }
+
+      return len;
+    }
+  }, {
     key: "title",
     value: function title(p) {
-      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
-      return "".concat(ep.titleFormat, " ").concat(ep.long_title);
+      p = p || 1;
+      var ep = this.getEpisode(p);
+      return "".concat(this.main_title, " EP").concat(('' + p).padStart(this.getTotalPadLen(), '0'), " ").concat(ep.long_title);
     }
   }, {
     key: "filename",
     value: function filename(p) {
-      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
-      return "".concat(this.main_title, "\uFF1A").concat(ep.titleFormat, " ").concat(ep.long_title).replace(/[\/\\:*?"<>|]+/g, '');
+      p = p || 1;
+      return this.title(p).replace(/[\/\\:*?"<>|]+/g, '');
     }
   }, {
     key: "aid",
     value: function aid(p) {
-      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      var ep = this.getEpisode(p);
       return ep.aid;
     }
   }, {
     key: "bvid",
     value: function bvid(p) {
-      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      var ep = this.getEpisode(p);
       return ep.bvid;
     }
   }, {
     key: "cid",
     value: function cid(p) {
-      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      var ep = this.getEpisode(p);
       return ep.cid;
     }
   }, {
     key: "epid",
     value: function epid(p) {
-      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      var ep = this.getEpisode(p);
       return ep.id;
     }
   }, {
     key: "needVip",
     value: function needVip(p) {
-      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      var ep = this.getEpisode(p);
       return ep.badge === '会员';
     }
   }, {
     key: "vipNeedPay",
     value: function vipNeedPay(p) {
-      var ep = p ? this.epList[this.id(p)] : this.epMap && this.epId ? this.epMap[this.epId] : this.epInfo;
+      var ep = this.getEpisode(p);
       return ep.badge === '付费';
     }
   }, {
     key: "isLimited",
     value: function isLimited() {
-      return !!this.mediaInfo.user_status.area_limit;
+      // todo
+      return false;
     }
   }], [{
     key: "build",
     value: function build() {
-      // ! state: {p, mediaInfo, epList, epId, epMap}
-      if (!!window.__INITIAL_STATE__) {
-        // old
-        var _state = window.__INITIAL_STATE__;
-        var _main_title = _state.mediaInfo.season_title;
-        _state.p = _state.epInfo.i + 1;
-        return new Bangumi(_main_title, _state);
-      } // new
+      // ! state: {p, mediaInfo, epList, epId, epMap, epInfo}
+      var bangumiCache = cache.get('Bangumi');
 
+      if (location.href == bangumiCache.get('href') && !!bangumiCache.get('build')) {
+        return bangumiCache.get('build');
+      }
 
-      var queries = window.__NEXT_DATA__.props.pageProps.dehydratedState.queries;
-      var mediaInfo, historyEpId, epMap;
+      bangumiCache.set('build', null);
+      var main_title,
+          sid,
+          epid,
+          epMap = {};
+      var pathname = location.pathname.toLowerCase();
+
+      if (pathname.startsWith('/bangumi/play/ss')) {
+        sid = location.pathname.match(/ss(\d+)/);
+        sid = parseInt(sid[1]);
+      } else if (pathname.startsWith('/bangumi/play/ep')) {
+        epid = location.pathname.match(/ep(\d+)/);
+        epid = parseInt(epid[1]);
+      }
+
+      sid = sid || '';
+      epid = epid || '';
 
       try {
-        // todo
-        mediaInfo = queries[0].state.data.mediaInfo;
-        epMap = queries[0].state.data.epMap;
-        historyEpId = queries[1].state.data.userInfo.history.epId;
-      } catch (e) {
-        mediaInfo = queries[0].state.data.seasonInfo.mediaInfo;
-        var sectionsMap = queries[0].state.data.seasonInfo.sectionsMap;
-        epMap = {};
-        mediaInfo.episodes.forEach(function (epInfo) {
-          epMap[epInfo.id] = epInfo;
-        });
-        Object.entries(sectionsMap).forEach(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 2),
-              sid = _ref2[0],
-              sectionInfo = _ref2[1];
-
-          sectionInfo.epList.forEach(function (epInfo) {
-            epMap[epInfo.id] = epInfo;
-          });
-        });
-        historyEpId = queries[0].state.data.userInfo.userInfo.history.epId;
+        console.log('location sid:', sid, 'epid:', epid);
+        var page_data = JSON.parse($('.toolbar').attr('mr-show'));
+        main_title = page_data.msg.title;
+        sid = sid || page_data.msg.season_id;
+        epid = epid || page_data.msg.ep_id;
+        console.log('mr-show get sid:', sid, 'epid:', epid);
+      } catch (_unused) {
+        console.warn('mr-show get err');
       }
 
-      var _mediaInfo = mediaInfo,
-          main_title = _mediaInfo.season_title,
-          episodes = _mediaInfo.episodes;
-      var epid;
+      if (sid != bangumiCache.get('sid')) {
+        bangumiCache.set('sid', sid);
+        bangumiCache.set('epid', '');
+        bangumiCache.set('hasData', false);
+      }
 
-      if (location.pathname.startsWith('/bangumi/play/ss')) {
-        epid = parseInt(historyEpId);
+      if (!!sid && !epid) {
+        _ajax({
+          url: "https://api.bilibili.com/pgc/player/web/v2/playurl?support_multi_audio=true&qn=80&fnver=0&fnval=4048&fourk=1&gaia_source=&from_client=BROWSER&is_main_page=true&need_fragment=true&season_id=".concat(sid, "&isGaiaAvoided=false&voice_balance=1&drm_tech_type=2"),
+          dataType: 'json',
+          xhrFields: {
+            withCredentials: true
+          }
+        }).then(function (res) {
+          if (res && !res.code) {
+            bangumiCache.set('epid', res.result.view_info.report.ep_id);
+          }
+        });
+      }
 
-        if (epid < 0) {
-          epid = episodes[0].id;
+      if (bangumiCache.get('lock')) {
+        throw 'bangumiCache request waiting !';
+      }
+
+      bangumiCache.set('lock', true);
+
+      _ajax({
+        type: 'GET',
+        url: "https://api.bilibili.com/pgc/view/web/ep/list?season_id=".concat(sid, "&ep_id=").concat(epid),
+        dataType: 'json',
+        cache: true
+      }).then(function (res) {
+        if (res && !res.code) {
+          bangumiCache.set('hasData', true);
+          bangumiCache.set('episodes', res.result.episodes);
         }
-      } else {
-        epid = location.pathname.match(/ep(\d+)/);
-        epid = epid ? parseInt(epid[1]) : episodes[0].id;
+      }).finally(function () {
+        bangumiCache.set('lock', false);
+      });
+
+      bangumiCache.set('href', location.href);
+
+      if (!epid && !bangumiCache.get('epid')) {
+        throw 'epid not found !';
       }
 
+      if (!bangumiCache.get('hasData')) {
+        throw 'bangumiCache no data !';
+      }
+
+      var episodes = bangumiCache.get('episodes');
+      epid = epid || bangumiCache.get('epid');
       var _id = 0;
 
       for (var i = 0; i < episodes.length; i++) {
+        epMap[episodes[i].id] = episodes[i];
+
         if (episodes[i].id == epid) {
           _id = i;
-          break;
         }
       }
 
@@ -1034,10 +1156,12 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
         p: _id + 1,
         epId: epid,
         epList: episodes,
-        mediaInfo: mediaInfo,
-        epMap: epMap
+        epMap: epMap,
+        epInfo: epMap[epid]
       };
-      return new Bangumi(main_title, state);
+      var bangumi = new Bangumi(main_title, state);
+      bangumiCache.set('build', bangumi);
+      return bangumi;
     }
   }]);
 
@@ -1072,7 +1196,7 @@ var Cheese = /*#__PURE__*/function (_VideoBase4) {
   }, {
     key: "filename",
     value: function filename(p) {
-      return "".concat(this.main_title, " P").concat(this.p(p), " ").concat(this.title(p)).replace(/[\/\\:*?"<>|]+/g, '');
+      return "".concat(this.main_title, " EP").concat(this.p(p), " ").concat(this.title(p)).replace(/[\/\\:*?"<>|]+/g, '');
     }
   }, {
     key: "aid",
@@ -1166,10 +1290,9 @@ function base() {
       episodes: episodes
     };
     return new Cheese(_main_title2, _state2);
-  } else {
-    // error
-    return new VideoBase();
   }
+
+  return new VideoBase();
 }
 
 var q_map = {
@@ -1692,25 +1815,34 @@ function check_createClass(Constructor, protoProps, staticProps) { if (protoProp
 
 
 
+
 var Check = /*#__PURE__*/function () {
   function Check() {
     check_classCallCheck(this, Check);
 
+    this.href = '';
     this.aid = '';
     this.cid = '';
     this.q = '';
     this.epid = '';
+    this.lock = false;
   }
 
   check_createClass(Check, [{
     key: "refresh",
     value: function refresh() {
+      if (this.lock) {
+        return;
+      }
+
+      this.lock = true;
       console.log('refresh...');
       $('#video_download').hide();
       $('#video_download_2').hide();
       player.recover_player(); // 更新check
 
       try {
+        this.href = location.href;
         var vb = video.base();
         this.aid = vb.aid();
         this.cid = vb.cid();
@@ -1719,6 +1851,8 @@ var Check = /*#__PURE__*/function () {
         window.bp_episodes = null; // todo
       } catch (err) {
         console.log(err);
+      } finally {
+        this.lock = false;
       }
     }
   }]);
@@ -2784,9 +2918,9 @@ function getCookie(cookieName) {
 ;// CONCATENATED MODULE: ./src/js/auth.js
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { auth_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function auth_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function auth_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3237,17 +3371,17 @@ function initToolbar() {
 
 
 ;// CONCATENATED MODULE: ./src/js/main.js
-function main_slicedToArray(arr, i) { return main_arrayWithHoles(arr) || main_iterableToArrayLimit(arr, i) || main_unsupportedIterableToArray(arr, i) || main_nonIterableRest(); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || main_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function main_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
 function main_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return main_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return main_arrayLikeToArray(o, minLen); }
 
 function main_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function main_iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function main_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3273,7 +3407,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.6", " ").concat("64a3233", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.7", " ").concat("49d7a14", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3454,7 +3588,7 @@ var Main = /*#__PURE__*/function () {
               mid: [16, 8],
               max: [32, 16]
             }[config_config.aria2c_connection_level] || [1, 5],
-                _ref6 = main_slicedToArray(_ref5, 2),
+                _ref6 = _slicedToArray(_ref5, 2),
                 url_max_connection = _ref6[0],
                 server_max_connection = _ref6[1];
 
@@ -3463,7 +3597,7 @@ var Main = /*#__PURE__*/function () {
             var _map = ["aria2c \"".concat(_video_url, "\" --out \"").concat(_file_name, "\""), "aria2c \"".concat(_video_url_, "\" --out \"").concat(_file_name_, "\"")].map(function (code) {
               return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
             }),
-                _map2 = main_slicedToArray(_map, 2),
+                _map2 = _slicedToArray(_map, 2),
                 code = _map2[0],
                 code_2 = _map2[1];
 
@@ -3504,7 +3638,7 @@ var Main = /*#__PURE__*/function () {
 
       window.bpd = evt;
       Object.entries(evt).forEach(function (_ref7) {
-        var _ref8 = main_slicedToArray(_ref7, 2),
+        var _ref8 = _slicedToArray(_ref7, 2),
             k = _ref8[0],
             v = _ref8[1];
 
@@ -3529,25 +3663,20 @@ var Main = /*#__PURE__*/function () {
 
       $('body').on('click', 'li.bui-select-item', function () {
         check.refresh();
-      });
-      setInterval(function () {
-        if (check.q !== video.get_quality().q) {
-          check.refresh();
-        } else if (video.type() === 'cheese') {
-          // epid for cheese
-          if (check.epid !== video.base().epid()) {
-            check.refresh();
-          }
-        }
-      }, 1000); // 监听aid
+      }); // 监听aid
 
       $('body').on('click', '.rec-list', function () {
         check.refresh();
       });
       $('body').on('click', '.bilibili-player-ending-panel-box-videos', function () {
         check.refresh();
-      }); // 定时检查 aid 和 cid
+      }); // 定时检查
 
+      setInterval(function () {
+        if (check.href !== location.href) {
+          check.refresh();
+        }
+      }, 1000);
       setInterval(function () {
         var vb = video.base();
 
@@ -3577,7 +3706,7 @@ var Main = /*#__PURE__*/function () {
 
   setTimeout(function () {
     new main().run();
-  }, 6000);
+  }, 5000);
 })();
 /******/ })()
 ;

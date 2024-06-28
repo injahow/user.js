@@ -65,10 +65,9 @@ function base() {
         }
 
         return new Cheese(main_title, state)
-    } else { // error
-
-        return new VideoBase()
     }
+
+    return new VideoBase()
 }
 
 const q_map = {
@@ -142,7 +141,8 @@ function get_quality_support() {
 }
 
 export const video = {
-    type, base,
+    type,
+    base,
     get_quality,
     get_quality_support
 }

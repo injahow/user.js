@@ -253,16 +253,6 @@ class Main {
         $('body').on('click', 'li.bui-select-item', () => {
             check.refresh()
         })
-        setInterval(() => {
-            if (check.q !== video.get_quality().q) {
-                check.refresh()
-            } else if (video.type() === 'cheese') {
-                // epid for cheese
-                if (check.epid !== video.base().epid()) {
-                    check.refresh()
-                }
-            }
-        }, 1000)
         // 监听aid
         $('body').on('click', '.rec-list', () => {
             check.refresh()
@@ -270,7 +260,12 @@ class Main {
         $('body').on('click', '.bilibili-player-ending-panel-box-videos', () => {
             check.refresh()
         })
-        // 定时检查 aid 和 cid
+        // 定时检查
+        setInterval(() => {
+            if (check.href !== location.href) {
+                check.refresh()
+            }
+        }, 1000)
         setInterval(() => {
             const vb = video.base()
             if (check.aid !== vb.aid() || check.cid !== vb.cid()) {
