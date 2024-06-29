@@ -30,7 +30,6 @@ class Check {
             this.cid = vb.cid()
             this.epid = vb.epid()
             this.q = video.get_quality().q
-            window.bp_episodes = null // todo
         } catch (err) {
             console.log(err)
         } finally{

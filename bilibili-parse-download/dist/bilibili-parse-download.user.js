@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.9
+// @version       2.5.10
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -194,6 +194,71 @@
             }), $.ajax(obj);
         }));
     }
+    function cache_classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+    }
+    function cache_defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+            var descriptor = props[i];
+            descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+            "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+        }
+    }
+    function cache_createClass(Constructor, protoProps, staticProps) {
+        return protoProps && cache_defineProperties(Constructor.prototype, protoProps), 
+        staticProps && cache_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
+            writable: !1
+        }), Constructor;
+    }
+    var CacheFactory = function() {
+        function CacheFactory() {
+            cache_classCallCheck(this, CacheFactory);
+        }
+        return cache_createClass(CacheFactory, null, [ {
+            key: "set",
+            value: function set(name, cache) {
+                CacheFactory.map[name] = cache;
+            }
+        }, {
+            key: "get",
+            value: function get() {
+                var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default", cache = CacheFactory.map[name];
+                return cache instanceof Cache ? cache : new Cache(name);
+            }
+        } ]), CacheFactory;
+    }();
+    !function _defineProperty(obj, key, value) {
+        return key in obj ? Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0
+        }) : obj[key] = value, obj;
+    }(CacheFactory, "map", {});
+    var Cache = function() {
+        function Cache() {
+            var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default";
+            cache_classCallCheck(this, Cache), CacheFactory.set(name, this), this.value = {};
+        }
+        return cache_createClass(Cache, [ {
+            key: "get",
+            value: function get() {
+                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
+                return this.value[key];
+            }
+        }, {
+            key: "set",
+            value: function set() {
+                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", value = arguments.length > 1 ? arguments[1] : void 0;
+                this.value[key] = value;
+            }
+        }, {
+            key: "clear",
+            value: function clear() {
+                this.value = {};
+            }
+        } ]), Cache;
+    }(), cache = CacheFactory;
     function _createForOfIteratorHelper(o, allowArrayLike) {
         var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
         if (!it) {
@@ -394,75 +459,12 @@
                 },
                 dataType: "json"
             }).then((function(res) {
-                res.code ? Message_warning("获取剧集信息失败") : window.bp_episodes = res.data.episodes || null;
+                res.code ? Message_warning("获取剧集信息失败") : cache.get("Cheese").set("episodes", res.data.episodes);
+            })).finally((function() {
+                cache.get("Cheese").set("lock", !1);
             })) : console.log("get_season error");
         }
     };
-    function cache_classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-    }
-    function cache_defineProperties(target, props) {
-        for (var i = 0; i < props.length; i++) {
-            var descriptor = props[i];
-            descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
-            "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
-        }
-    }
-    function cache_createClass(Constructor, protoProps, staticProps) {
-        return protoProps && cache_defineProperties(Constructor.prototype, protoProps), 
-        staticProps && cache_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
-            writable: !1
-        }), Constructor;
-    }
-    var CacheFactory = function() {
-        function CacheFactory() {
-            cache_classCallCheck(this, CacheFactory);
-        }
-        return cache_createClass(CacheFactory, null, [ {
-            key: "set",
-            value: function set(name, cache) {
-                CacheFactory.map[name] = cache;
-            }
-        }, {
-            key: "get",
-            value: function get() {
-                var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default", cache = CacheFactory.map[name];
-                return cache instanceof Cache ? cache : new Cache(name);
-            }
-        } ]), CacheFactory;
-    }();
-    !function _defineProperty(obj, key, value) {
-        return key in obj ? Object.defineProperty(obj, key, {
-            value: value,
-            enumerable: !0,
-            configurable: !0,
-            writable: !0
-        }) : obj[key] = value, obj;
-    }(CacheFactory, "map", {});
-    var Cache = function() {
-        function Cache() {
-            var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default";
-            cache_classCallCheck(this, Cache), CacheFactory.set(name, this), this.value = {};
-        }
-        return cache_createClass(Cache, [ {
-            key: "get",
-            value: function get() {
-                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
-                return this.value[key];
-            }
-        }, {
-            key: "set",
-            value: function set() {
-                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", value = arguments.length > 1 ? arguments[1] : void 0;
-                this.value[key] = value;
-            }
-        }, {
-            key: "clear",
-            value: function clear() {
-                this.value = {};
-            }
-        } ]), Cache;
-    }(), cache = CacheFactory;
     function _typeof(obj) {
         return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
@@ -934,27 +936,36 @@
                 var _step2, isEpMap = {}, _iterator2 = video_base_createForOfIteratorHelper(episodes);
                 try {
                     for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
-                        var _ep = _step2.value;
-                        0 == _ep.badge_type && (isEpMap[_ep.id] = !0);
+                        var ep = _step2.value;
+                        0 == ep.badge_type && (isEpMap[ep.id] = !0);
                     }
                 } catch (err) {
                     _iterator2.e(err);
                 } finally {
                     _iterator2.f();
                 }
-                var section = bangumiCache.get("section");
-                if (section && section.length > 0 && section[0].episodes) {
-                    var _step3, _iterator3 = video_base_createForOfIteratorHelper(section[0].episodes);
-                    try {
-                        for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
-                            var ep = _step3.value;
-                            episodes.push(ep);
+                var _step3, _iterator3 = video_base_createForOfIteratorHelper(bangumiCache.get("section") || []);
+                try {
+                    for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
+                        var item = _step3.value;
+                        if (item.episodes) {
+                            var _step4, _iterator4 = video_base_createForOfIteratorHelper(item.episodes);
+                            try {
+                                for (_iterator4.s(); !(_step4 = _iterator4.n()).done; ) {
+                                    var _ep = _step4.value;
+                                    episodes.push(_ep);
+                                }
+                            } catch (err) {
+                                _iterator4.e(err);
+                            } finally {
+                                _iterator4.f();
+                            }
                         }
-                    } catch (err) {
-                        _iterator3.e(err);
-                    } finally {
-                        _iterator3.f();
                     }
+                } catch (err) {
+                    _iterator3.e(err);
+                } finally {
+                    _iterator3.f();
                 }
                 epid = epid || bangumiCache.get("epid");
                 for (var _id = 0, i = 0; i < episodes.length; i++) 1 == episodes[i].badge_type && (episodes[i].title += "预告"), 
@@ -1047,13 +1058,27 @@
             }
             if ("bangumi" === _type) return Bangumi.build();
             if ("cheese" === _type) {
-                var epid, sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
-                sid || (epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
-                window.bp_episodes || (window.bp_episodes = [], api.get_season(sid, epid));
-                for (var episodes = window.bp_episodes, _id = 0, i = 0; i < episodes.length; i++) if (episodes[i].id == epid) {
-                    _id = i;
-                    break;
+                var epid, cheeseCache = cache.get("Cheese"), sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
+                if (sid || (epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
+                epid || (epid = parseInt($(".bpx-state-active").eq(0).attr("data-episodeid"))), 
+                sid && sid != cheeseCache.get("sid") && (cheeseCache.set("sid", sid), cheeseCache.set("episodes", null)), 
+                !cheeseCache.get("episodes")) {
+                    if (cheeseCache.get("lock")) throw "cheese request waiting !";
+                    cheeseCache.set("lock", !0), api.get_season(sid, epid);
                 }
+                var episodes = cheeseCache.get("episodes");
+                if (!episodes) throw "cheese has not data !";
+                for (var _id = -1, i = 0; i < episodes.length; i++) {
+                    if (!epid) {
+                        epid = episodes[i].id, _id = 0;
+                        break;
+                    }
+                    if (episodes[i].id == epid) {
+                        _id = i;
+                        break;
+                    }
+                }
+                if (_id < 0) throw cheeseCache.set("episodes", null), "episodes need reload !";
                 var _main_title3 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
                 return new Cheese(_main_title3, {
                     p: _id + 1,
@@ -1706,8 +1731,7 @@
                     try {
                         this.href = location.href;
                         var vb = video.base();
-                        this.aid = vb.aid(), this.cid = vb.cid(), this.epid = vb.epid(), this.q = video.get_quality().q, 
-                        window.bp_episodes = null;
+                        this.aid = vb.aid(), this.cid = vb.cid(), this.epid = vb.epid(), this.q = video.get_quality().q;
                     } catch (err) {
                         console.log(err);
                     } finally {
@@ -2273,20 +2297,26 @@
             key: "checkLoginStatus",
             value: function checkLoginStatus() {
                 var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || 0 ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
-                access_key && (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 2592e5) && ajax({
-                    url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
-                    type: "GET",
-                    dataType: "json"
-                }).then((function(res) {
-                    res.code ? (Message_info("授权已过期，准备重新授权"), _this.reLogin()) : (store.set("auth_time", Date.now()), 
-                    ajax({
-                        url: "".concat(config_config.base_api, "/auth/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
-                        type: "GET",
-                        dataType: "json"
-                    }).then((function(res) {
-                        res.code && (Message_info("检查失败，准备重新授权"), _this.reLogin());
-                    })));
-                })), store.set("pre_base_api", config_config.base_api));
+                if (auth_id || auth_sec) {
+                    if (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 2592e5)) {
+                        if (!access_key) return Message_info("授权已失效"), void this.reLogin();
+                        ajax({
+                            url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
+                            type: "GET",
+                            dataType: "json"
+                        }).then((function(res) {
+                            if (res.code) return Message_info("授权已过期，准备重新授权"), void _this.reLogin();
+                            store.set("auth_time", Date.now()), ajax({
+                                url: "".concat(config_config.base_api, "/auth/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+                                type: "GET",
+                                dataType: "json"
+                            }).then((function(res) {
+                                res.code && (Message_info("检查失败，准备重新授权"), _this.reLogin());
+                            }));
+                        }));
+                    }
+                    store.set("pre_base_api", config_config.base_api);
+                }
             }
         }, {
             key: "makeAPIData",
@@ -2444,22 +2474,6 @@
         video_download_2: download_svg,
         video_download_all: download_svg
     };
-    function make_toolbar_bangumi(main_class_name, sub_class_names) {
-        var toolbar_elements = Object.keys(btn_list).map((function(key) {
-            if ("more" === key) {
-                var more_map = btn_list[key];
-                return "" + '<div class="more">更多<div class="more-ops-list">\n                    <ul>'.concat(Object.keys(more_map).map((function(key) {
-                    return function more_element(id, name) {
-                        return '<li><span id="'.concat(id, '">').concat(name, "</span></li>");
-                    }(key, more_map[key]);
-                })).join(""), "</ul>\n                </div>");
-            }
-            return function list_element(id, class_names, svg, name) {
-                return "" + '<div id="'.concat(id, '" mr-show="" class="').concat(class_names[0], '">\n                <span class="').concat(class_names[1], '">\n                    ').concat(svg, '\n                </span>\n                <span class="').concat(class_names[2], '">').concat(name, "</span>\n            </div>");
-            }(key, sub_class_names, svg_map[key], btn_list[key]);
-        })).join("");
-        return "" + '<div class="'.concat(main_class_name, '">\n            ').concat(toolbar_elements, "\n            ").concat(more_style, "\n        </div>");
-    }
     function showVideoToolbar(toolbar_id) {
         var toolbar_obj = $("#".concat(toolbar_id)), toolbar_obj_2 = toolbar_obj.clone();
         toolbar_obj_2.attr("id", "".concat(toolbar_id, "_2"));
@@ -2490,7 +2504,7 @@
             Object.keys(btn_list).map((function(key) {
                 if ("more" !== key) {
                     var item = toolbar_obj.find(".video-toolbar-content_item").eq(0).clone();
-                    item.attr("id", key), item.find("content-item_icon");
+                    item.attr("id", key);
                     var svg = svg_map[key].replaceAll("#757575", "currentColor"), item_icon = item.find(".content-item_icon").eq(0);
                     item_icon.removeClass("ic_like"), item_icon.html(svg), item.html(""), item.append(item_icon), 
                     item.append(btn_list[key]), left.append(item);
@@ -2504,12 +2518,39 @@
                     }));
                 }
             })), toolbar_obj.after(toolbar_obj_2);
-        }("videoToolbar"); else if ($(".player-left-components")[0]) {
-            var toolbar_obj = $(".player-left-components").children().eq(0), toolbar_class = toolbar_obj.attr("class"), span_class = toolbar_obj.children().eq(0).attr("class"), span_class_svg = toolbar_obj.children().eq(0).children().eq(0).attr("class"), span_class_text = toolbar_obj.children().eq(0).children().eq(1).attr("class");
-            toolbar_obj.after(make_toolbar_bangumi(toolbar_class, [ span_class, span_class_svg, span_class_text ]));
-        } else if ($(".edu-play-left")[0]) {
-            var _toolbar_obj = $(".edu-play-left").children().eq(1), _toolbar_class = _toolbar_obj.attr("class"), _span_class = _toolbar_obj.children().eq(0).attr("class"), _span_class_svg = _toolbar_obj.children().eq(0).children().eq(0).attr("class"), _span_class_text = _toolbar_obj.children().eq(0).children().eq(1).attr("class");
-            _toolbar_obj.after(make_toolbar_bangumi(_toolbar_class, [ _span_class, _span_class_svg, _span_class_text ]));
+        }("videoToolbar"); else if ($(".toolbar")[0]) !function showBangumiToolbar(toolbar_class) {
+            var toolbar_obj = $(".".concat(toolbar_class)).eq(0), toolbar_obj_2 = toolbar_obj.clone(), left = toolbar_obj_2.find(".toolbar-left"), right = toolbar_obj_2.find(".toolbar-right");
+            left.children().remove(), right.children().remove(), Object.keys(btn_list).map((function(key) {
+                if ("more" !== key) {
+                    var item = toolbar_obj.find(".toolbar-left").children().eq(0).clone();
+                    item.attr("id", key), item.attr("title", btn_list[key]);
+                    var svg = svg_map[key].replaceAll("#757575", "currentColor").replace("class", 'class="'.concat(item.find("svg").attr("class"), '"')), span = item.find("span").text(btn_list[key]);
+                    item.children().remove(), item.append(svg).append(span), left.append(item);
+                } else {
+                    var more_map = btn_list[key], el = "" + '<div class="more">更多<div class="more-ops-list">\n                    <ul>'.concat(Object.keys(more_map).map((function(key) {
+                        return '<li><span id="'.concat(key, '">').concat(more_map[key], "</span></li>");
+                    })).join(""), "</ul>\n                </div>");
+                    right.append(el + more_style);
+                }
+            })), toolbar_obj.after(toolbar_obj_2);
+        }("toolbar"); else if ($(".edu-play-left")[0]) {
+            var toolbar_obj = $(".edu-play-left").children().eq(1), toolbar_class = toolbar_obj.attr("class"), span_class = toolbar_obj.children().eq(0).attr("class"), span_class_svg = toolbar_obj.children().eq(0).children().eq(0).attr("class"), span_class_text = toolbar_obj.children().eq(0).children().eq(1).attr("class");
+            toolbar_obj.after(function make_toolbar_bangumi(main_class_name, sub_class_names) {
+                var toolbar_elements = Object.keys(btn_list).map((function(key) {
+                    if ("more" === key) {
+                        var more_map = btn_list[key];
+                        return "" + '<div class="more">更多<div class="more-ops-list">\n                    <ul>'.concat(Object.keys(more_map).map((function(key) {
+                            return function more_element(id, name) {
+                                return '<li><span id="'.concat(id, '">').concat(name, "</span></li>");
+                            }(key, more_map[key]);
+                        })).join(""), "</ul>\n                </div>");
+                    }
+                    return function list_element(id, class_names, svg, name) {
+                        return "" + '<div id="'.concat(id, '" mr-show="" class="').concat(class_names[0], '">\n                <span class="').concat(class_names[1], '">\n                    ').concat(svg, '\n                </span>\n                <span class="').concat(class_names[2], '">').concat(name, "</span>\n            </div>");
+                    }(key, sub_class_names, svg_map[key], btn_list[key]);
+                })).join("");
+                return "" + '<div class="'.concat(main_class_name, '">\n            ').concat(toolbar_elements, "\n            ").concat(more_style, "\n        </div>");
+            }(toolbar_class, [ span_class, span_class_svg, span_class_text ]));
         } else $("#toolbar_module")[0] && $("#toolbar_module").after('<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true"> <div id="setting_btn" class="like-info"> <i class="iconfont icon-add"></i><span>脚本设置</span> </div> <div id="bilibili_parse" class="like-info"> <i class="iconfont icon-customer-serv"></i><span>请求地址</span> </div> <div id="video_download" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载视频</span> </div> <div id="video_download_2" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载音频</span> </div> <div id="video_download_all" class="like-info"> <i class="iconfont icon-download"></i><span>批量下载</span> </div> <div class="more">更多<div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:"";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ');
     }
     function _slicedToArray(arr, i) {
@@ -2558,7 +2599,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.9", " ").concat("45226e5", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.10", " ").concat("aa47c1f", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

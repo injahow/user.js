@@ -5,6 +5,7 @@ import { Message } from '../ui/message'
 import { user } from '../user'
 import { ajax, _ajax } from './ajax'
 import { video } from './video'
+import CacheFactory from './cache'
 
 function get_url_base(page, quality, video_format, success, error, request_type) {
 
@@ -228,7 +229,9 @@ function get_season(sid, epid) {
             Message.warning('获取剧集信息失败')
             return
         }
-        window.bp_episodes = res.data.episodes || null
+        CacheFactory.get('Cheese').set('episodes', res.data.episodes)
+    }).finally(() => {
+        CacheFactory.get('Cheese').set('lock', false)
     })
 }
 

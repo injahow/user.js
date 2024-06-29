@@ -133,7 +133,6 @@ function showFestivalToolbar(toolbar_id) {
         }
         const item = toolbar_obj.find('.video-toolbar-content_item').eq(0).clone()
         item.attr('id', key)
-        item.find('content-item_icon')
         const svg = svg_map[key].replaceAll('#757575', 'currentColor')
         const item_icon = item.find('.content-item_icon').eq(0)
         item_icon.removeClass('ic_like')
@@ -147,6 +146,38 @@ function showFestivalToolbar(toolbar_id) {
     toolbar_obj.after(toolbar_obj_2)
 }
 
+function showBangumiToolbar(toolbar_class) {
+    const toolbar_obj = $(`.${toolbar_class}`).eq(0)
+    const toolbar_obj_2 = toolbar_obj.clone()
+    const left = toolbar_obj_2.find('.toolbar-left')
+    const right = toolbar_obj_2.find('.toolbar-right')
+    left.children().remove()
+    right.children().remove()
+    Object.keys(btn_list).map(key => {
+        if (key === 'more') {
+            const more_map = btn_list[key]
+            const el = '' +
+                `<div class="more">更多<div class="more-ops-list">
+                    <ul>${Object.keys(more_map).map(key => `<li><span id="${key}">${more_map[key]}</span></li>`).join('')}</ul>
+                </div>`
+            right.append(el + more_style)
+            return
+        }
+        const item = toolbar_obj.find('.toolbar-left').children().eq(0).clone()
+        item.attr('id', key)
+        item.attr('title', btn_list[key])
+        const svg = svg_map[key]
+            .replaceAll('#757575', 'currentColor')
+            .replace('class', `class="${item.find('svg').attr('class')}"`)
+        const span = item.find('span').text(btn_list[key])
+        item.children().remove()
+        item.append(svg).append(span)
+        left.append(item)
+        return
+    })
+    toolbar_obj.after(toolbar_obj_2)
+}
+
 function initToolbar() {
     if (!!$('#arc_toolbar_report')[0]) { // video
         showVideoToolbar('arc_toolbar_report')
@@ -154,13 +185,8 @@ function initToolbar() {
         showVideoToolbar('playlistToolbar')
     } else if (!!$('#videoToolbar')[0]) { // festival
         showFestivalToolbar('videoToolbar')
-    } else if (!!$('.player-left-components')[0]) {  // bungumi test
-        const toolbar_obj = $('.player-left-components').children().eq(0)
-        const toolbar_class = toolbar_obj.attr('class')
-        const span_class = toolbar_obj.children().eq(0).attr('class')
-        const span_class_svg = toolbar_obj.children().eq(0).children().eq(0).attr('class')
-        const span_class_text = toolbar_obj.children().eq(0).children().eq(1).attr('class')
-        toolbar_obj.after(make_toolbar_bangumi(toolbar_class, [span_class, span_class_svg, span_class_text]))
+    } else if (!!$('.toolbar')[0]) {  // bungumi
+        showBangumiToolbar('toolbar')
     } else if (!!$('.edu-play-left')[0]) {  // cheese test
         // todo
         const toolbar_obj = $('.edu-play-left').children().eq(1)

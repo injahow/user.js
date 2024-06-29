@@ -323,12 +323,85 @@ function _ajax(obj) {
 }
 
 
+;// CONCATENATED MODULE: ./src/js/utils/cache.js
+function cache_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function cache_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function cache_createClass(Constructor, protoProps, staticProps) { if (protoProps) cache_defineProperties(Constructor.prototype, protoProps); if (staticProps) cache_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var CacheFactory = /*#__PURE__*/function () {
+  function CacheFactory() {
+    cache_classCallCheck(this, CacheFactory);
+  }
+
+  cache_createClass(CacheFactory, null, [{
+    key: "set",
+    value: function set(name, cache) {
+      CacheFactory.map[name] = cache;
+    }
+  }, {
+    key: "get",
+    value: function get() {
+      var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
+      var cache = CacheFactory.map[name];
+
+      if (cache instanceof Cache) {
+        return cache;
+      }
+
+      return new Cache(name);
+    }
+  }]);
+
+  return CacheFactory;
+}();
+
+_defineProperty(CacheFactory, "map", {});
+
+var Cache = /*#__PURE__*/function () {
+  function Cache() {
+    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
+
+    cache_classCallCheck(this, Cache);
+
+    CacheFactory.set(name, this);
+    this.value = {};
+  }
+
+  cache_createClass(Cache, [{
+    key: "get",
+    value: function get() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      return this.value[key];
+    }
+  }, {
+    key: "set",
+    value: function set() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var value = arguments.length > 1 ? arguments[1] : undefined;
+      this.value[key] = value;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.value = {};
+    }
+  }]);
+
+  return Cache;
+}();
+
+/* harmony default export */ var cache = (CacheFactory);
 ;// CONCATENATED MODULE: ./src/js/utils/api.js
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 
@@ -599,7 +672,9 @@ function get_season(sid, epid) {
       return;
     }
 
-    window.bp_episodes = res.data.episodes || null;
+    cache.get('Cheese').set('episodes', res.data.episodes);
+  }).finally(function () {
+    cache.get('Cheese').set('lock', false);
   });
 }
 
@@ -618,78 +693,6 @@ var api = {
   get_subtitle_data: get_subtitle_data,
   get_season: get_season
 };
-;// CONCATENATED MODULE: ./src/js/utils/cache.js
-function cache_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function cache_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function cache_createClass(Constructor, protoProps, staticProps) { if (protoProps) cache_defineProperties(Constructor.prototype, protoProps); if (staticProps) cache_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var CacheFactory = /*#__PURE__*/function () {
-  function CacheFactory() {
-    cache_classCallCheck(this, CacheFactory);
-  }
-
-  cache_createClass(CacheFactory, null, [{
-    key: "set",
-    value: function set(name, cache) {
-      CacheFactory.map[name] = cache;
-    }
-  }, {
-    key: "get",
-    value: function get() {
-      var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
-      var cache = CacheFactory.map[name];
-
-      if (cache instanceof Cache) {
-        return cache;
-      }
-
-      return new Cache(name);
-    }
-  }]);
-
-  return CacheFactory;
-}();
-
-_defineProperty(CacheFactory, "map", {});
-
-var Cache = /*#__PURE__*/function () {
-  function Cache() {
-    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
-
-    cache_classCallCheck(this, Cache);
-
-    CacheFactory.set(name, this);
-    this.value = {};
-  }
-
-  cache_createClass(Cache, [{
-    key: "get",
-    value: function get() {
-      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      return this.value[key];
-    }
-  }, {
-    key: "set",
-    value: function set() {
-      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      var value = arguments.length > 1 ? arguments[1] : undefined;
-      this.value[key] = value;
-    }
-  }, {
-    key: "clear",
-    value: function clear() {
-      this.value = {};
-    }
-  }]);
-
-  return Cache;
-}();
-
-/* harmony default export */ var cache = (CacheFactory);
 ;// CONCATENATED MODULE: ./src/js/utils/video-base.js
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
@@ -1228,10 +1231,10 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
 
       try {
         for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var _ep = _step2.value;
+          var ep = _step2.value;
 
-          if (_ep.badge_type == 0) {
-            isEpMap[_ep.id] = true;
+          if (ep.badge_type == 0) {
+            isEpMap[ep.id] = true;
           }
         }
       } catch (err) {
@@ -1240,22 +1243,37 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
         _iterator2.f();
       }
 
-      var section = bangumiCache.get('section');
+      var section = bangumiCache.get('section') || [];
 
-      if (section && section.length > 0 && section[0].episodes) {
-        var _iterator3 = video_base_createForOfIteratorHelper(section[0].episodes),
-            _step3;
+      var _iterator3 = video_base_createForOfIteratorHelper(section),
+          _step3;
 
-        try {
-          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-            var ep = _step3.value;
-            episodes.push(ep);
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var item = _step3.value;
+
+          if (!item.episodes) {
+            continue;
           }
-        } catch (err) {
-          _iterator3.e(err);
-        } finally {
-          _iterator3.f();
+
+          var _iterator4 = video_base_createForOfIteratorHelper(item.episodes),
+              _step4;
+
+          try {
+            for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+              var _ep = _step4.value;
+              episodes.push(_ep);
+            }
+          } catch (err) {
+            _iterator4.e(err);
+          } finally {
+            _iterator4.f();
+          }
         }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
       }
 
       epid = epid || bangumiCache.get('epid');
@@ -1347,6 +1365,7 @@ var Cheese = /*#__PURE__*/function (_VideoBase5) {
 
 
 
+
 function type() {
   var routerMap = {
     video: '/video/',
@@ -1386,6 +1405,8 @@ function base() {
   } else if (_type === 'bangumi') {
     return Bangumi.build();
   } else if (_type === 'cheese') {
+    // todo
+    var cheeseCache = cache.get('Cheese');
     var sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1];
     var epid;
 
@@ -1393,21 +1414,48 @@ function base() {
       epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1];
     }
 
-    if (!window.bp_episodes) {
-      // todo
-      window.bp_episodes = []; // ref check
+    if (!epid) {
+      epid = parseInt($('.bpx-state-active').eq(0).attr('data-episodeid'));
+    }
 
+    if (!!sid && sid != cheeseCache.get('sid')) {
+      cheeseCache.set('sid', sid);
+      cheeseCache.set('episodes', null);
+    }
+
+    if (!cheeseCache.get('episodes')) {
+      if (cheeseCache.get('lock')) {
+        throw 'cheese request waiting !';
+      }
+
+      cheeseCache.set('lock', true);
       api.get_season(sid, epid);
     }
 
-    var episodes = window.bp_episodes;
-    var _id = 0;
+    var episodes = cheeseCache.get('episodes');
+
+    if (!episodes) {
+      throw 'cheese has not data !';
+    }
+
+    var _id = -1;
 
     for (var i = 0; i < episodes.length; i++) {
+      if (!epid) {
+        epid = episodes[i].id;
+        _id = 0;
+        break;
+      }
+
       if (episodes[i].id == epid) {
         _id = i;
         break;
       }
+    }
+
+    if (_id < 0) {
+      cheeseCache.set('episodes', null);
+      throw 'episodes need reload !';
     }
 
     var _main_title3 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
@@ -1975,7 +2023,6 @@ var Check = /*#__PURE__*/function () {
         this.cid = vb.cid();
         this.epid = vb.epid();
         this.q = video.get_quality().q;
-        window.bp_episodes = null; // todo
       } catch (err) {
         console.log(err);
       } finally {
@@ -3083,10 +3130,15 @@ var Auth = /*#__PURE__*/function () {
           auth_sec = _ref[1],
           access_key = _ref[2],
           auth_time = _ref[3];
-      if (!access_key) return;
+      if (!auth_id && !auth_sec) return;
 
       if (user.is_login && (config_config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 72 * 3600 * 1e3)) {
-        // check key
+        if (!access_key) {
+          Message.info('授权已失效');
+          this.reLogin();
+          return;
+        }
+
         ajax({
           url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
           type: 'GET',
@@ -3096,20 +3148,22 @@ var Auth = /*#__PURE__*/function () {
             Message.info('授权已过期，准备重新授权');
 
             _this.reLogin();
-          } else {
-            store.set('auth_time', Date.now());
-            ajax({
-              url: "".concat(config_config.base_api, "/auth/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
-              type: 'GET',
-              dataType: 'json'
-            }).then(function (res) {
-              if (res.code) {
-                Message.info('检查失败，准备重新授权');
 
-                _this.reLogin();
-              }
-            });
+            return;
           }
+
+          store.set('auth_time', Date.now());
+          ajax({
+            url: "".concat(config_config.base_api, "/auth/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+            type: 'GET',
+            dataType: 'json'
+          }).then(function (res) {
+            if (res.code) {
+              Message.info('检查失败，准备重新授权');
+
+              _this.reLogin();
+            }
+          });
         });
       }
 
@@ -3475,7 +3529,6 @@ function showFestivalToolbar(toolbar_id) {
 
     var item = toolbar_obj.find('.video-toolbar-content_item').eq(0).clone();
     item.attr('id', key);
-    item.find('content-item_icon');
     var svg = svg_map[key].replaceAll('#757575', 'currentColor');
     var item_icon = item.find('.content-item_icon').eq(0);
     item_icon.removeClass('ic_like');
@@ -3483,6 +3536,36 @@ function showFestivalToolbar(toolbar_id) {
     item.html('');
     item.append(item_icon);
     item.append(btn_list[key]);
+    left.append(item);
+    return;
+  });
+  toolbar_obj.after(toolbar_obj_2);
+}
+
+function showBangumiToolbar(toolbar_class) {
+  var toolbar_obj = $(".".concat(toolbar_class)).eq(0);
+  var toolbar_obj_2 = toolbar_obj.clone();
+  var left = toolbar_obj_2.find('.toolbar-left');
+  var right = toolbar_obj_2.find('.toolbar-right');
+  left.children().remove();
+  right.children().remove();
+  Object.keys(btn_list).map(function (key) {
+    if (key === 'more') {
+      var more_map = btn_list[key];
+      var el = '' + "<div class=\"more\">\u66F4\u591A<div class=\"more-ops-list\">\n                    <ul>".concat(Object.keys(more_map).map(function (key) {
+        return "<li><span id=\"".concat(key, "\">").concat(more_map[key], "</span></li>");
+      }).join(''), "</ul>\n                </div>");
+      right.append(el + more_style);
+      return;
+    }
+
+    var item = toolbar_obj.find('.toolbar-left').children().eq(0).clone();
+    item.attr('id', key);
+    item.attr('title', btn_list[key]);
+    var svg = svg_map[key].replaceAll('#757575', 'currentColor').replace('class', "class=\"".concat(item.find('svg').attr('class'), "\""));
+    var span = item.find('span').text(btn_list[key]);
+    item.children().remove();
+    item.append(svg).append(span);
     left.append(item);
     return;
   });
@@ -3499,28 +3582,18 @@ function initToolbar() {
   } else if (!!$('#videoToolbar')[0]) {
     // festival
     showFestivalToolbar('videoToolbar');
-  } else if (!!$('.player-left-components')[0]) {
-    // bungumi test
-    var toolbar_obj = $('.player-left-components').children().eq(0);
+  } else if (!!$('.toolbar')[0]) {
+    // bungumi
+    showBangumiToolbar('toolbar');
+  } else if (!!$('.edu-play-left')[0]) {
+    // cheese test
+    // todo
+    var toolbar_obj = $('.edu-play-left').children().eq(1);
     var toolbar_class = toolbar_obj.attr('class');
     var span_class = toolbar_obj.children().eq(0).attr('class');
     var span_class_svg = toolbar_obj.children().eq(0).children().eq(0).attr('class');
     var span_class_text = toolbar_obj.children().eq(0).children().eq(1).attr('class');
     toolbar_obj.after(make_toolbar_bangumi(toolbar_class, [span_class, span_class_svg, span_class_text]));
-  } else if (!!$('.edu-play-left')[0]) {
-    // cheese test
-    // todo
-    var _toolbar_obj = $('.edu-play-left').children().eq(1);
-
-    var _toolbar_class = _toolbar_obj.attr('class');
-
-    var _span_class = _toolbar_obj.children().eq(0).attr('class');
-
-    var _span_class_svg = _toolbar_obj.children().eq(0).children().eq(0).attr('class');
-
-    var _span_class_text = _toolbar_obj.children().eq(0).children().eq(1).attr('class');
-
-    _toolbar_obj.after(make_toolbar_bangumi(_toolbar_class, [_span_class, _span_class_svg, _span_class_text]));
   } else if (!!$('#toolbar_module')[0]) {
     // ! fix
     $('#toolbar_module').after(toolbar);
@@ -3565,7 +3638,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.9", " ").concat("45226e5", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.10", " ").concat("aa47c1f", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

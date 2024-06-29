@@ -20,14 +20,18 @@ class Auth {
             store.get('auth_id'),
             store.get('auth_sec'),
             store.get('access_key'),
-            store.get('auth_time') || 0,
+            store.get('auth_time') || 0
         ]
 
-        if (!access_key) return
+        if (!auth_id && !auth_sec) return
 
         if (user.is_login && (config.base_api !== store.get('pre_base_api') ||
             Date.now() - parseInt(auth_time) > 72 * 3600 * 1e3)) {
-            // check key
+            if (!access_key) {
+                Message.info('授权已失效')
+                this.reLogin()
+                return
+            }
             ajax({
                 url: `https://passport.bilibili.com/api/oauth?access_key=${access_key}`,
                 type: 'GET',
@@ -36,19 +40,19 @@ class Auth {
                 if (res.code) {
                     Message.info('授权已过期，准备重新授权')
                     this.reLogin()
-                } else {
-                    store.set('auth_time', Date.now())
-                    ajax({
-                        url: `${config.base_api}/auth/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}&access_key=${access_key}`,
-                        type: 'GET',
-                        dataType: 'json'
-                    }).then(res => {
-                        if (res.code) {
-                            Message.info('检查失败，准备重新授权')
-                            this.reLogin()
-                        }
-                    })
+                    return
                 }
+                store.set('auth_time', Date.now())
+                ajax({
+                    url: `${config.base_api}/auth/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}&access_key=${access_key}`,
+                    type: 'GET',
+                    dataType: 'json'
+                }).then(res => {
+                    if (res.code) {
+                        Message.info('检查失败，准备重新授权')
+                        this.reLogin()
+                    }
+                })
             })
         }
         store.set('pre_base_api', config.base_api)

@@ -326,9 +326,12 @@ class Bangumi extends VideoBase {
             }
         }
 
-        const section = bangumiCache.get('section')
-        if (section && section.length > 0 && section[0].episodes) {
-            for (const ep of section[0].episodes) {
+        const section = bangumiCache.get('section') || []
+        for (const item of section) {
+            if (!item.episodes) {
+                continue
+            }
+            for (const ep of item.episodes) {
                 episodes.push(ep)
             }
         }
