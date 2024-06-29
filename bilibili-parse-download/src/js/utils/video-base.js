@@ -228,6 +228,7 @@ class Bangumi extends VideoBase {
         this.epList = state.epList
         this.epId = state.epId
         this.epMap = state.epMap
+        this.isEpMap = state.isEpMap
         // this.mediaInfo = state.mediaInfo
     }
 
@@ -297,6 +298,7 @@ class Bangumi extends VideoBase {
             if (res && !res.code) {
                 bangumiCache.set('hasData', true)
                 bangumiCache.set('episodes', res.result.episodes)
+                bangumiCache.set('section', res.result.section || [])
             }
         }).finally(() => {
             bangumiCache.set('lock', false)
@@ -312,13 +314,31 @@ class Bangumi extends VideoBase {
             throw 'bangumiCache no data !'
         }
 
-        const episodes = bangumiCache.get('episodes')
+        const episodes = bangumiCache.get('episodes') || []
+        episodes.sort((a, b) => {
+            return a.badge_type - b.badge_type
+        })
+
+        const isEpMap = {}
+        for (const ep of episodes) {
+            if (ep.badge_type == 0) {
+                isEpMap[ep.id] = true
+            }
+        }
+
+        const section = bangumiCache.get('section')
+        if (section && section.length > 0 && section[0].episodes) {
+            for (const ep of section[0].episodes) {
+                episodes.push(ep)
+            }
+        }
+
         epid = epid || bangumiCache.get('epid')
 
         let _id = 0
         for (let i = 0; i < episodes.length; i++) {
-            if (episodes[i].badge_type == 1) { // 跳过预告
-                continue
+            if (episodes[i].badge_type == 1) {
+                episodes[i].title += '预告'
             }
             epMap[episodes[i].id] = episodes[i]
             if (episodes[i].id == epid) {
@@ -330,6 +350,7 @@ class Bangumi extends VideoBase {
             p: _id + 1,
             epId: epid,
             epList: episodes,
+            isEpMap,
             epMap,
             epInfo: epMap[epid]
         }
@@ -362,8 +383,19 @@ class Bangumi extends VideoBase {
     title(p) {
         p = p || 1
         const ep = this.getEpisode(p)
+        let title
+        if (this.isEpMap[ep.id]) {
+            title = `${this.main_title} EP${('' + p).padStart(this.getTotalPadLen(), '0')} ${ep.long_title}`
+        } else { // title long_title 可能不准确
+            title = ep.share_copy.split('》', 2)
+            if (title.length > 1) {
+                title = `${this.main_title} ${title[1]}`
+            } else {
+                title = `${this.main_title} ${ep.title} ${ep.long_title}`
+            }
+        }
 
-        return `${this.main_title} EP${('' + p).padStart(this.getTotalPadLen(), '0')} ${ep.long_title}`
+        return title.replaceAll('undefined', '').trim()
     }
 
     filename(p) {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.8
+// @version       2.5.9
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -820,7 +820,7 @@
             var _this4;
             return video_base_classCallCheck(this, Bangumi), (_this4 = _super4.call(this, "bangumi", main_title, state)).epInfo = state.epInfo, 
             _this4.epList = state.epList, _this4.epId = state.epId, _this4.epMap = state.epMap, 
-            _this4;
+            _this4.isEpMap = state.isEpMap, _this4;
         }
         return video_base_createClass(Bangumi, [ {
             key: "total",
@@ -842,8 +842,10 @@
             key: "title",
             value: function title(p) {
                 p = p || 1;
-                var ep = this.getEpisode(p);
-                return "".concat(this.main_title, " EP").concat(("" + p).padStart(this.getTotalPadLen(), "0"), " ").concat(ep.long_title);
+                var title, ep = this.getEpisode(p);
+                return this.isEpMap[ep.id] ? title = "".concat(this.main_title, " EP").concat(("" + p).padStart(this.getTotalPadLen(), "0"), " ").concat(ep.long_title) : (title = ep.share_copy.split("》", 2), 
+                title = title.length > 1 ? "".concat(this.main_title, " ").concat(title[1]) : "".concat(this.main_title, " ").concat(ep.title, " ").concat(ep.long_title)), 
+                title.replaceAll("undefined", "").trim();
             }
         }, {
             key: "filename",
@@ -919,19 +921,49 @@
                     dataType: "json",
                     cache: !0
                 }).then((function(res) {
-                    res && !res.code && (bangumiCache.set("hasData", !0), bangumiCache.set("episodes", res.result.episodes));
+                    res && !res.code && (bangumiCache.set("hasData", !0), bangumiCache.set("episodes", res.result.episodes), 
+                    bangumiCache.set("section", res.result.section || []));
                 })).finally((function() {
                     bangumiCache.set("lock", !1);
                 })), bangumiCache.set("href", location.href), !epid && !bangumiCache.get("epid")) throw "epid not found !";
                 if (!bangumiCache.get("hasData")) throw "bangumiCache no data !";
-                var episodes = bangumiCache.get("episodes");
+                var episodes = bangumiCache.get("episodes") || [];
+                episodes.sort((function(a, b) {
+                    return a.badge_type - b.badge_type;
+                }));
+                var _step2, isEpMap = {}, _iterator2 = video_base_createForOfIteratorHelper(episodes);
+                try {
+                    for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+                        var _ep = _step2.value;
+                        0 == _ep.badge_type && (isEpMap[_ep.id] = !0);
+                    }
+                } catch (err) {
+                    _iterator2.e(err);
+                } finally {
+                    _iterator2.f();
+                }
+                var section = bangumiCache.get("section");
+                if (section && section.length > 0 && section[0].episodes) {
+                    var _step3, _iterator3 = video_base_createForOfIteratorHelper(section[0].episodes);
+                    try {
+                        for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
+                            var ep = _step3.value;
+                            episodes.push(ep);
+                        }
+                    } catch (err) {
+                        _iterator3.e(err);
+                    } finally {
+                        _iterator3.f();
+                    }
+                }
                 epid = epid || bangumiCache.get("epid");
-                for (var _id = 0, i = 0; i < episodes.length; i++) 1 != episodes[i].badge_type && (epMap[episodes[i].id] = episodes[i], 
-                episodes[i].id == epid && (_id = i));
+                for (var _id = 0, i = 0; i < episodes.length; i++) 1 == episodes[i].badge_type && (episodes[i].title += "预告"), 
+                epMap[episodes[i].id] = episodes[i], episodes[i].id == epid && (_id = i);
                 var bangumi = new Bangumi(main_title, {
                     p: _id + 1,
                     epId: epid,
                     epList: episodes,
+                    isEpMap: isEpMap,
                     epMap: epMap,
                     epInfo: epMap[epid]
                 });
@@ -2526,7 +2558,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.8", " ").concat("86621d4", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.9", " ").concat("45226e5", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

@@ -1028,7 +1028,8 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
     _this4.epInfo = state.epInfo;
     _this4.epList = state.epList;
     _this4.epId = state.epId;
-    _this4.epMap = state.epMap; // this.mediaInfo = state.mediaInfo
+    _this4.epMap = state.epMap;
+    _this4.isEpMap = state.isEpMap; // this.mediaInfo = state.mediaInfo
 
     return _this4;
   }
@@ -1061,7 +1062,22 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
     value: function title(p) {
       p = p || 1;
       var ep = this.getEpisode(p);
-      return "".concat(this.main_title, " EP").concat(('' + p).padStart(this.getTotalPadLen(), '0'), " ").concat(ep.long_title);
+      var title;
+
+      if (this.isEpMap[ep.id]) {
+        title = "".concat(this.main_title, " EP").concat(('' + p).padStart(this.getTotalPadLen(), '0'), " ").concat(ep.long_title);
+      } else {
+        // title long_title 可能不准确
+        title = ep.share_copy.split('》', 2);
+
+        if (title.length > 1) {
+          title = "".concat(this.main_title, " ").concat(title[1]);
+        } else {
+          title = "".concat(this.main_title, " ").concat(ep.title, " ").concat(ep.long_title);
+        }
+      }
+
+      return title.replaceAll('undefined', '').trim();
     }
   }, {
     key: "filename",
@@ -1185,6 +1201,7 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
         if (res && !res.code) {
           bangumiCache.set('hasData', true);
           bangumiCache.set('episodes', res.result.episodes);
+          bangumiCache.set('section', res.result.section || []);
         }
       }).finally(function () {
         bangumiCache.set('lock', false);
@@ -1200,14 +1217,53 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
         throw 'bangumiCache no data !';
       }
 
-      var episodes = bangumiCache.get('episodes');
+      var episodes = bangumiCache.get('episodes') || [];
+      episodes.sort(function (a, b) {
+        return a.badge_type - b.badge_type;
+      });
+      var isEpMap = {};
+
+      var _iterator2 = video_base_createForOfIteratorHelper(episodes),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var _ep = _step2.value;
+
+          if (_ep.badge_type == 0) {
+            isEpMap[_ep.id] = true;
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      var section = bangumiCache.get('section');
+
+      if (section && section.length > 0 && section[0].episodes) {
+        var _iterator3 = video_base_createForOfIteratorHelper(section[0].episodes),
+            _step3;
+
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var ep = _step3.value;
+            episodes.push(ep);
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
+      }
+
       epid = epid || bangumiCache.get('epid');
       var _id = 0;
 
       for (var i = 0; i < episodes.length; i++) {
         if (episodes[i].badge_type == 1) {
-          // 跳过预告
-          continue;
+          episodes[i].title += '预告';
         }
 
         epMap[episodes[i].id] = episodes[i];
@@ -1221,6 +1277,7 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
         p: _id + 1,
         epId: epid,
         epList: episodes,
+        isEpMap: isEpMap,
         epMap: epMap,
         epInfo: epMap[epid]
       };
@@ -3508,7 +3565,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.8", " ").concat("86621d4", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.9", " ").concat("45226e5", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
