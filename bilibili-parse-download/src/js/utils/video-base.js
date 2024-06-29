@@ -83,32 +83,69 @@ class Video extends VideoBase {
 
     constructor(main_title, state) {
         super('video', main_title, state)
+        const sections = state.sections || []
+        this.video_list = [] // todo
+        if (!sections.length > 0) {
+            return
+        }
+        // ? 集合视频 pageSize = 1
+        let new_page = 1, i = 1
+        for (const section of sections) {
+            const eplist = section.episodes || []
+            for (const ep of eplist) {
+                this.video_list.push(ep)
+                if (state.videoData.bvid == ep.bvid) {
+                    new_page = i
+                }
+                i++
+            }
+        }
+        // 处理集合p
+        this.page = new_page
     }
 
     total() {
+        if (this.video_list.length > 0) {
+            return this.video_list.length
+        }
         return this.state.videoData.pages.length
     }
 
     title(p) {
         const id = this.id(p)
+        if (this.video_list.length > 0) {
+            return this.video_list[id].title
+        }
         return this.state.videoData.pages[id].part
     }
 
     filename(p) {
+        if (this.video_list.length > 0) {
+            return this.title(p).replace(/[\/\\:*?"<>|]+/g, '')
+        }
         const id = this.id(p)
         const title = this.main_title + (this.total() > 1 ? ` P${id + 1} ${this.state.videoData.pages[id].part || ''}` : '')
         return title.replace(/[\/\\:*?"<>|]+/g, '')
     }
 
     aid(p) {
+        if (this.video_list.length > 0) {
+            return this.video_list[this.id(p)].aid
+        }
         return this.state.videoData.aid
     }
 
     bvid(p) {
+        if (this.video_list.length > 0) {
+            return this.video_list[this.id(p)].bvid
+        }
         return this.state.videoData.bvid
     }
 
     cid(p) {
+        if (this.video_list.length > 0) {
+            return this.video_list[this.id(p)].cid
+        }
         return this.state.videoData.pages[this.id(p)].cid
     }
 }

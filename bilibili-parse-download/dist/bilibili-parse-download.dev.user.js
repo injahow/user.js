@@ -830,25 +830,89 @@ var Video = /*#__PURE__*/function (_VideoBase) {
   var _super = _createSuper(Video);
 
   function Video(main_title, state) {
+    var _this2;
+
     video_base_classCallCheck(this, Video);
 
-    return _super.call(this, 'video', main_title, state);
+    _this2 = _super.call(this, 'video', main_title, state);
+    var sections = state.sections || [];
+    _this2.video_list = []; // todo
+
+    if (!sections.length > 0) {
+      return _possibleConstructorReturn(_this2);
+    } // ? 集合视频 pageSize = 1
+
+
+    var new_page = 1,
+        i = 1;
+
+    var _iterator = video_base_createForOfIteratorHelper(sections),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var section = _step.value;
+        var eplist = section.episodes || [];
+
+        var _iterator2 = video_base_createForOfIteratorHelper(eplist),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var ep = _step2.value;
+
+            _this2.video_list.push(ep);
+
+            if (state.videoData.bvid == ep.bvid) {
+              new_page = i;
+            }
+
+            i++;
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      } // 处理集合p
+
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    _this2.page = new_page;
+    return _this2;
   }
 
   video_base_createClass(Video, [{
     key: "total",
     value: function total() {
+      if (this.video_list.length > 0) {
+        return this.video_list.length;
+      }
+
       return this.state.videoData.pages.length;
     }
   }, {
     key: "title",
     value: function title(p) {
       var id = this.id(p);
+
+      if (this.video_list.length > 0) {
+        return this.video_list[id].title;
+      }
+
       return this.state.videoData.pages[id].part;
     }
   }, {
     key: "filename",
     value: function filename(p) {
+      if (this.video_list.length > 0) {
+        return this.title(p).replace(/[\/\\:*?"<>|]+/g, '');
+      }
+
       var id = this.id(p);
       var title = this.main_title + (this.total() > 1 ? " P".concat(id + 1, " ").concat(this.state.videoData.pages[id].part || '') : '');
       return title.replace(/[\/\\:*?"<>|]+/g, '');
@@ -856,16 +920,28 @@ var Video = /*#__PURE__*/function (_VideoBase) {
   }, {
     key: "aid",
     value: function aid(p) {
+      if (this.video_list.length > 0) {
+        return this.video_list[this.id(p)].aid;
+      }
+
       return this.state.videoData.aid;
     }
   }, {
     key: "bvid",
     value: function bvid(p) {
+      if (this.video_list.length > 0) {
+        return this.video_list[this.id(p)].bvid;
+      }
+
       return this.state.videoData.bvid;
     }
   }, {
     key: "cid",
     value: function cid(p) {
+      if (this.video_list.length > 0) {
+        return this.video_list[this.id(p)].cid;
+      }
+
       return this.state.videoData.pages[this.id(p)].cid;
     }
   }]);
@@ -879,21 +955,21 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
   var _super2 = _createSuper(VideoList);
 
   function VideoList(main_title, state) {
-    var _this2;
+    var _this3;
 
     video_base_classCallCheck(this, VideoList);
 
-    _this2 = _super2.call(this, 'video', main_title, state);
-    _this2.video = new Video(state.videoData.title, state);
-    _this2.resourceList = state.resourceList || [];
+    _this3 = _super2.call(this, 'video', main_title, state);
+    _this3.video = new Video(state.videoData.title, state);
+    _this3.resourceList = state.resourceList || [];
     var video_list = [];
 
-    var _iterator = video_base_createForOfIteratorHelper(_this2.resourceList),
-        _step;
+    var _iterator3 = video_base_createForOfIteratorHelper(_this3.resourceList),
+        _step3;
 
     try {
-      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-        var video = _step.value;
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        var video = _step3.value;
         var i = 0,
             length = video.pages && video.pages.length || 0;
 
@@ -907,13 +983,13 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
         }
       }
     } catch (err) {
-      _iterator.e(err);
+      _iterator3.e(err);
     } finally {
-      _iterator.f();
+      _iterator3.f();
     }
 
-    _this2.video_list = video_list;
-    return _this2;
+    _this3.video_list = video_list;
+    return _this3;
   }
 
   video_base_createClass(VideoList, [{
@@ -963,14 +1039,14 @@ var VideoFestival = /*#__PURE__*/function (_VideoBase3) {
   var _super3 = _createSuper(VideoFestival);
 
   function VideoFestival(main_title, state) {
-    var _this3;
+    var _this4;
 
     video_base_classCallCheck(this, VideoFestival);
 
-    _this3 = _super3.call(this, 'video', main_title, state);
-    _this3.video_info = state.videoInfo;
-    _this3.video_list = state.sectionEpisodes || [];
-    return _this3;
+    _this4 = _super3.call(this, 'video', main_title, state);
+    _this4.video_info = state.videoInfo;
+    _this4.video_list = state.sectionEpisodes || [];
+    return _this4;
   }
 
   video_base_createClass(VideoFestival, [{
@@ -1023,18 +1099,18 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
   var _super4 = _createSuper(Bangumi);
 
   function Bangumi(main_title, state) {
-    var _this4;
+    var _this5;
 
     video_base_classCallCheck(this, Bangumi);
 
-    _this4 = _super4.call(this, 'bangumi', main_title, state);
-    _this4.epInfo = state.epInfo;
-    _this4.epList = state.epList;
-    _this4.epId = state.epId;
-    _this4.epMap = state.epMap;
-    _this4.isEpMap = state.isEpMap; // this.mediaInfo = state.mediaInfo
+    _this5 = _super4.call(this, 'bangumi', main_title, state);
+    _this5.epInfo = state.epInfo;
+    _this5.epList = state.epList;
+    _this5.epId = state.epId;
+    _this5.epMap = state.epMap;
+    _this5.isEpMap = state.isEpMap; // this.mediaInfo = state.mediaInfo
 
-    return _this4;
+    return _this5;
   }
 
   video_base_createClass(Bangumi, [{
@@ -1226,54 +1302,54 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
       });
       var isEpMap = {};
 
-      var _iterator2 = video_base_createForOfIteratorHelper(episodes),
-          _step2;
+      var _iterator4 = video_base_createForOfIteratorHelper(episodes),
+          _step4;
 
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var ep = _step2.value;
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var ep = _step4.value;
 
           if (ep.badge_type == 0) {
             isEpMap[ep.id] = true;
           }
         }
       } catch (err) {
-        _iterator2.e(err);
+        _iterator4.e(err);
       } finally {
-        _iterator2.f();
+        _iterator4.f();
       }
 
       var section = bangumiCache.get('section') || [];
 
-      var _iterator3 = video_base_createForOfIteratorHelper(section),
-          _step3;
+      var _iterator5 = video_base_createForOfIteratorHelper(section),
+          _step5;
 
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var item = _step3.value;
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var item = _step5.value;
 
           if (!item.episodes) {
             continue;
           }
 
-          var _iterator4 = video_base_createForOfIteratorHelper(item.episodes),
-              _step4;
+          var _iterator6 = video_base_createForOfIteratorHelper(item.episodes),
+              _step6;
 
           try {
-            for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-              var _ep = _step4.value;
+            for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+              var _ep = _step6.value;
               episodes.push(_ep);
             }
           } catch (err) {
-            _iterator4.e(err);
+            _iterator6.e(err);
           } finally {
-            _iterator4.f();
+            _iterator6.f();
           }
         }
       } catch (err) {
-        _iterator3.e(err);
+        _iterator5.e(err);
       } finally {
-        _iterator3.f();
+        _iterator5.f();
       }
 
       epid = epid || bangumiCache.get('epid');
@@ -1314,13 +1390,13 @@ var Cheese = /*#__PURE__*/function (_VideoBase5) {
   var _super5 = _createSuper(Cheese);
 
   function Cheese(main_title, state) {
-    var _this5;
+    var _this6;
 
     video_base_classCallCheck(this, Cheese);
 
-    _this5 = _super5.call(this, 'cheese', main_title, state);
-    _this5.episodes = state.episodes;
-    return _this5;
+    _this6 = _super5.call(this, 'cheese', main_title, state);
+    _this6.episodes = state.episodes;
+    return _this6;
   }
 
   video_base_createClass(Cheese, [{
@@ -3638,7 +3714,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.10", " ").concat("aa47c1f", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.11", " ").concat("730279c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
