@@ -1,13 +1,14 @@
 import { videoQualityMap } from '../ui/config'
 import { user } from '../user'
 import { api } from './api'
-import { Bangumi, Cheese, Video, VideoBase, VideoList } from './video-base'
+import { Bangumi, Cheese, Video, VideoBase, VideoFestival, VideoList } from './video-base'
 
 
 function type() {
     const routerMap = {
         video: '/video/',
         list: '/list/',
+        festival: '/festival/',
         bangumi: '/bangumi/play/', // ss / ep
         cheese: '/cheese/play/'
     }
@@ -31,6 +32,11 @@ function base() {
         const main_title = state.mediaListInfo && (state.mediaListInfo.upper.name + '-' + state.mediaListInfo.title)
 
         return new VideoList(main_title, state)
+    } else if (_type === 'festival') {
+        const state = window.__INITIAL_STATE__
+        const main_title = state.title
+
+        return new VideoFestival(main_title, state)
     } else if (_type === 'bangumi') {
 
         return Bangumi.build()

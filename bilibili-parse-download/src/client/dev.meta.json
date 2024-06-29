@@ -11,17 +11,17 @@
       "license": "MIT",
       "source": "https://github.com/injahow/user.js",
       "supportURL": "https://github.com/injahow/user.js/issues",
-      "downloadURL": "https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js",
-      "updateURL": "https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js",
+      "downloadURL": "https://update.greasyfork.org/scripts/413228/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js",
+      "updateURL": "https://update.greasyfork.org/scripts/413228/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.meta.js",
       "match": [
         "*://www.bilibili.com/video/av*",
         "*://www.bilibili.com/video/BV*",
         "*://www.bilibili.com/list/*",
+        "*://www.bilibili.com/festival/*",
         "*://www.bilibili.com/bangumi/play/ep*",
         "*://www.bilibili.com/bangumi/play/ss*",
         "*://www.bilibili.com/cheese/play/ep*",
-        "*://www.bilibili.com/cheese/play/ss*",
-        "https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*"
+        "*://www.bilibili.com/cheese/play/ss*"
       ],
       "require": ["https://static.hdslb.com/js/jquery.min.js"],
       "icon": "https://static.hdslb.com/images/favicon.ico",

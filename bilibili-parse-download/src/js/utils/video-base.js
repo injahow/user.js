@@ -171,6 +171,55 @@ class VideoList extends VideoBase {
     }
 }
 
+class VideoFestival extends VideoBase {
+
+    constructor(main_title, state) {
+        super('video', main_title, state)
+        this.video_info = state.videoInfo
+        this.video_list = state.sectionEpisodes || []
+    }
+
+    total() {
+        return this.video_list.length
+    }
+
+    title(p) {
+        return !p
+            ? this.video_info.title
+            : this.video_list[this.id(p)].title
+    }
+
+    filename(p) {
+        let title
+        if (!p) {
+            title = this.video_info.title
+        } else {
+            const id = this.id(p)
+            title = this.main_title + (this.total() > 1 ? ` P${id + 1} ${this.video_list[id].title}` : '')
+        }
+        return title.replace(/[\/\\:*?"<>|]+/g, '')
+    }
+
+    aid(p) {
+        return !p
+            ? this.video_info.aid
+            : this.video_list[this.id(p)].id
+    }
+
+    bvid(p) {
+        return !p
+            ? this.video_info.bvid
+            : this.video_list[this.id(p)].bvid
+    }
+
+    cid(p) {
+        return !p
+            ? this.video_info.cid
+            : this.video_list[this.id(p)].cid
+    }
+
+}
+
 class Bangumi extends VideoBase {
 
     constructor(main_title, state) {
@@ -268,6 +317,9 @@ class Bangumi extends VideoBase {
 
         let _id = 0
         for (let i = 0; i < episodes.length; i++) {
+            if (episodes[i].badge_type == 1) { // 跳过预告
+                continue
+            }
             epMap[episodes[i].id] = episodes[i]
             if (episodes[i].id == epid) {
                 _id = i
@@ -397,6 +449,7 @@ export {
     VideoBase,
     Video,
     VideoList,
+    VideoFestival,
     Bangumi,
     Cheese
 }

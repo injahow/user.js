@@ -1,6 +1,4 @@
-import arc_toolbar_html from '@/html/arc_toolbar.html'
 import toolbar_html from '@/html/toolbar.html'
-import video_toolbar_html from '@/html/video_toolbar.html'
 import more_style from '@/html/more_style.html'
 
 const btn_list = {
@@ -73,46 +71,89 @@ function make_toolbar_bangumi(main_class_name, sub_class_names) {  // class-3
         </div>`
 }
 
-function initToolbar() {
-    if (!!$('#arc_toolbar_report')[0]) {
-        $('#arc_toolbar_report').after(arc_toolbar_html)
-    } else if (!!$('#toolbar_module')[0]) { // ! fix
-        $('#toolbar_module').after(toolbar_html)
-    } else if (!!$('div.video-toolbar')[0]) {
-        $('div.video-toolbar').after(video_toolbar_html)
-    } else if (!!$('#playlistToolbar')[0]) {  // list
-        const toolbar_obj = $('#playlistToolbar')
-        const toolbar_obj_2 = toolbar_obj.clone()
-        toolbar_obj_2.attr('id', 'playlistToolbar_2')
-        const left = toolbar_obj_2.find('.video-toolbar-left')
-        const right = toolbar_obj_2.find('.video-toolbar-right')
-        left.children().remove()
-        right.children().remove()
-        Object.keys(btn_list).map(key => {
-            if (key === 'more') {
-                const more_map = btn_list[key]
-                const el = '' +
-                    `<div class="more">更多<div class="more-ops-list">
-                        <ul>${Object.keys(more_map).map(key => `<li><span id="${key}">${more_map[key]}</span></li>`).join('')}</ul>
-                    </div>`
-                right.append(el + more_style)
-                return
-            }
-            const item = toolbar_obj.find('.toolbar-left-item-wrap').eq(0).clone()
-            item.attr('id', key)
-            const svg = svg_map[key]
-                .replaceAll('#757575', 'currentColor')
-                .replace('class', `class="${item.find('svg').attr('class')}"`)
-            const span = item.find('span').text(btn_list[key])
-            const item_div = item.find('div').eq(0)
-            item_div.attr('title', btn_list[key])
-            item_div.removeClass('on')
-            item_div.children().remove()
-            item_div.append(svg).append(span)
-            left.append(item)
+function showVideoToolbar(toolbar_id) {
+    const toolbar_obj = $(`#${toolbar_id}`)
+    const toolbar_obj_2 = toolbar_obj.clone()
+    toolbar_obj_2.attr('id', `${toolbar_id}_2`)
+    const left = toolbar_obj_2.find('.video-toolbar-left')
+    const right = toolbar_obj_2.find('.video-toolbar-right')
+    left.children().remove()
+    right.children().remove()
+    Object.keys(btn_list).map(key => {
+        if (key === 'more') {
+            const more_map = btn_list[key]
+            const el = '' +
+                `<div class="more">更多<div class="more-ops-list">
+                    <ul>${Object.keys(more_map).map(key => `<li><span id="${key}">${more_map[key]}</span></li>`).join('')}</ul>
+                </div>`
+            right.append(el + more_style)
             return
-        })
-        toolbar_obj.after(toolbar_obj_2)
+        }
+        const item = toolbar_obj.find('.toolbar-left-item-wrap').eq(0).clone()
+        item.attr('id', key)
+        const svg = svg_map[key]
+            .replaceAll('#757575', 'currentColor')
+            .replace('class', `class="${item.find('svg').attr('class')}"`)
+        const span = item.find('span').text(btn_list[key])
+        const item_div = item.find('div').eq(0)
+        item_div.attr('title', btn_list[key])
+        item_div.removeClass('on')
+        item_div.children().remove()
+        item_div.append(svg).append(span)
+        left.append(item)
+        return
+    })
+    toolbar_obj.after(toolbar_obj_2)
+}
+
+function showFestivalToolbar(toolbar_id) {
+    const toolbar_obj = $(`#${toolbar_id}`)
+    const toolbar_obj_2 = toolbar_obj.clone()
+    toolbar_obj_2.attr('id', `${toolbar_id}_2`)
+    const left = toolbar_obj_2.find('.video-toolbar-content_left')
+    const right = toolbar_obj_2.find('.video-toolbar-content_right')
+    toolbar_obj_2.find('.video-toobar_title').remove()
+    left.children().remove()
+    const watchlater = right.find('.watchlater').clone()
+    right.children().remove()
+    right.append(watchlater)
+    toolbar_obj_2.find('.video-desc-wrapper').remove()
+    Object.keys(btn_list).map(key => {
+        if (key === 'more') {
+            const list = watchlater.find('.more-list')
+            const list_li = list.children().eq(0)
+            list.children().remove()
+            const more_map = btn_list[key]
+            Object.keys(more_map).map(key => {
+                const li = list_li.clone()
+                li.html(`<span id="${key}">${more_map[key]}</span>`)
+                list.append(li)
+            })
+            return
+        }
+        const item = toolbar_obj.find('.video-toolbar-content_item').eq(0).clone()
+        item.attr('id', key)
+        item.find('content-item_icon')
+        const svg = svg_map[key].replaceAll('#757575', 'currentColor')
+        const item_icon = item.find('.content-item_icon').eq(0)
+        item_icon.removeClass('ic_like')
+        item_icon.html(svg)
+        item.html('')
+        item.append(item_icon)
+        item.append(btn_list[key])
+        left.append(item)
+        return
+    })
+    toolbar_obj.after(toolbar_obj_2)
+}
+
+function initToolbar() {
+    if (!!$('#arc_toolbar_report')[0]) { // video
+        showVideoToolbar('arc_toolbar_report')
+    } else if (!!$('#playlistToolbar')[0]) {  // list
+        showVideoToolbar('playlistToolbar')
+    } else if (!!$('#videoToolbar')[0]) { // festival
+        showFestivalToolbar('videoToolbar')
     } else if (!!$('.player-left-components')[0]) {  // bungumi test
         const toolbar_obj = $('.player-left-components').children().eq(0)
         const toolbar_class = toolbar_obj.attr('class')
@@ -128,6 +169,8 @@ function initToolbar() {
         const span_class_svg = toolbar_obj.children().eq(0).children().eq(0).attr('class')
         const span_class_text = toolbar_obj.children().eq(0).children().eq(1).attr('class')
         toolbar_obj.after(make_toolbar_bangumi(toolbar_class, [span_class, span_class_svg, span_class_text]))
+    } else if (!!$('#toolbar_module')[0]) { // ! fix
+        $('#toolbar_module').after(toolbar_html)
     }
 }
 

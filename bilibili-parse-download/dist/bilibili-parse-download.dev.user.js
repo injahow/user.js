@@ -8,16 +8,16 @@
 // @license       MIT
 // @source        https://github.com/injahow/user.js
 // @supportURL    https://github.com/injahow/user.js/issues
-// @downloadURL   https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js
-// @updateURL     https://greasyfork.org/scripts/413228-bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD/code/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js
+// @downloadURL   https://update.greasyfork.org/scripts/413228/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js
+// @updateURL     https://update.greasyfork.org/scripts/413228/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.meta.js
 // @match         *://www.bilibili.com/video/av*
 // @match         *://www.bilibili.com/video/BV*
 // @match         *://www.bilibili.com/list/*
+// @match         *://www.bilibili.com/festival/*
 // @match         *://www.bilibili.com/bangumi/play/ep*
 // @match         *://www.bilibili.com/bangumi/play/ss*
 // @match         *://www.bilibili.com/cheese/play/ep*
 // @match         *://www.bilibili.com/cheese/play/ss*
-// @match         https://www.mcbbs.net/template/mcbbs/image/special_photo_bg.png*
 // @require       https://static.hdslb.com/js/jquery.min.js
 // @icon          https://static.hdslb.com/images/favicon.ico
 // @grant         none
@@ -43,7 +43,7 @@
 /************************************************************************/
 var __webpack_exports__ = {};
 /*!**************************************!*\
-  !*** ./src/js/index.js + 24 modules ***!
+  !*** ./src/js/index.js + 22 modules ***!
   \**************************************/
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
@@ -954,23 +954,83 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
   return VideoList;
 }(VideoBase);
 
-var Bangumi = /*#__PURE__*/function (_VideoBase3) {
-  _inherits(Bangumi, _VideoBase3);
+var VideoFestival = /*#__PURE__*/function (_VideoBase3) {
+  _inherits(VideoFestival, _VideoBase3);
 
-  var _super3 = _createSuper(Bangumi);
+  var _super3 = _createSuper(VideoFestival);
+
+  function VideoFestival(main_title, state) {
+    var _this3;
+
+    video_base_classCallCheck(this, VideoFestival);
+
+    _this3 = _super3.call(this, 'video', main_title, state);
+    _this3.video_info = state.videoInfo;
+    _this3.video_list = state.sectionEpisodes || [];
+    return _this3;
+  }
+
+  video_base_createClass(VideoFestival, [{
+    key: "total",
+    value: function total() {
+      return this.video_list.length;
+    }
+  }, {
+    key: "title",
+    value: function title(p) {
+      return !p ? this.video_info.title : this.video_list[this.id(p)].title;
+    }
+  }, {
+    key: "filename",
+    value: function filename(p) {
+      var title;
+
+      if (!p) {
+        title = this.video_info.title;
+      } else {
+        var id = this.id(p);
+        title = this.main_title + (this.total() > 1 ? " P".concat(id + 1, " ").concat(this.video_list[id].title) : '');
+      }
+
+      return title.replace(/[\/\\:*?"<>|]+/g, '');
+    }
+  }, {
+    key: "aid",
+    value: function aid(p) {
+      return !p ? this.video_info.aid : this.video_list[this.id(p)].id;
+    }
+  }, {
+    key: "bvid",
+    value: function bvid(p) {
+      return !p ? this.video_info.bvid : this.video_list[this.id(p)].bvid;
+    }
+  }, {
+    key: "cid",
+    value: function cid(p) {
+      return !p ? this.video_info.cid : this.video_list[this.id(p)].cid;
+    }
+  }]);
+
+  return VideoFestival;
+}(VideoBase);
+
+var Bangumi = /*#__PURE__*/function (_VideoBase4) {
+  _inherits(Bangumi, _VideoBase4);
+
+  var _super4 = _createSuper(Bangumi);
 
   function Bangumi(main_title, state) {
-    var _this3;
+    var _this4;
 
     video_base_classCallCheck(this, Bangumi);
 
-    _this3 = _super3.call(this, 'bangumi', main_title, state);
-    _this3.epInfo = state.epInfo;
-    _this3.epList = state.epList;
-    _this3.epId = state.epId;
-    _this3.epMap = state.epMap; // this.mediaInfo = state.mediaInfo
+    _this4 = _super4.call(this, 'bangumi', main_title, state);
+    _this4.epInfo = state.epInfo;
+    _this4.epList = state.epList;
+    _this4.epId = state.epId;
+    _this4.epMap = state.epMap; // this.mediaInfo = state.mediaInfo
 
-    return _this3;
+    return _this4;
   }
 
   video_base_createClass(Bangumi, [{
@@ -1145,6 +1205,11 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
       var _id = 0;
 
       for (var i = 0; i < episodes.length; i++) {
+        if (episodes[i].badge_type == 1) {
+          // 跳过预告
+          continue;
+        }
+
         epMap[episodes[i].id] = episodes[i];
 
         if (episodes[i].id == epid) {
@@ -1168,19 +1233,19 @@ var Bangumi = /*#__PURE__*/function (_VideoBase3) {
   return Bangumi;
 }(VideoBase);
 
-var Cheese = /*#__PURE__*/function (_VideoBase4) {
-  _inherits(Cheese, _VideoBase4);
+var Cheese = /*#__PURE__*/function (_VideoBase5) {
+  _inherits(Cheese, _VideoBase5);
 
-  var _super4 = _createSuper(Cheese);
+  var _super5 = _createSuper(Cheese);
 
   function Cheese(main_title, state) {
-    var _this4;
+    var _this5;
 
     video_base_classCallCheck(this, Cheese);
 
-    _this4 = _super4.call(this, 'cheese', main_title, state);
-    _this4.episodes = state.episodes;
-    return _this4;
+    _this5 = _super5.call(this, 'cheese', main_title, state);
+    _this5.episodes = state.episodes;
+    return _this5;
   }
 
   video_base_createClass(Cheese, [{
@@ -1229,6 +1294,7 @@ function type() {
   var routerMap = {
     video: '/video/',
     list: '/list/',
+    festival: '/festival/',
     bangumi: '/bangumi/play/',
     // ss / ep
     cheese: '/cheese/play/'
@@ -1256,6 +1322,10 @@ function base() {
     var _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + '-' + _state.mediaListInfo.title;
 
     return new VideoList(_main_title, _state);
+  } else if (_type === 'festival') {
+    var _state2 = window.__INITIAL_STATE__;
+    var _main_title2 = _state2.title;
+    return new VideoFestival(_main_title2, _state2);
   } else if (_type === 'bangumi') {
     return Bangumi.build();
   } else if (_type === 'cheese') {
@@ -1283,13 +1353,13 @@ function base() {
       }
     }
 
-    var _main_title2 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+    var _main_title3 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
 
-    var _state2 = {
+    var _state3 = {
       p: _id + 1,
       episodes: episodes
     };
-    return new Cheese(_main_title2, _state2);
+    return new Cheese(_main_title3, _state3);
   }
 
   return new VideoBase();
@@ -3229,29 +3299,17 @@ var Auth = /*#__PURE__*/function () {
 }();
 
 var auth = new Auth();
-;// CONCATENATED MODULE: ./src/html/arc_toolbar.html
-// Module
-var arc_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px\" class=\"video-toolbar report-wrap-module report-scroll-module\" scrollshow=\"true\"> <div class=\"ops\"> <span id=\"setting_btn\"> <i class=\"van-icon-general_addto_s\"></i>脚本设置 </span> <span id=\"bilibili_parse\"> <i class=\"van-icon-floatwindow_custome\"></i>请求地址 </span> <span id=\"video_download\" style=\"display:none\"> <i class=\"van-icon-download\"></i>下载视频 </span> <span id=\"video_download_2\" style=\"display:none\"> <i class=\"van-icon-download\"></i>下载音频 </span> <span id=\"video_download_all\"> <i class=\"van-icon-download\"></i>批量下载 </span> </div> <div class=\"more\"> <i class=\"van-icon-general_moreactions\"></i> <div class=\"more-ops-list\"> <ul> <li><span id=\"download_danmaku\">下载弹幕</span></li> <li><span id=\"download_subtitle\">下载字幕</span></li> </ul> </div> </div> </div> ";
-// Exports
-/* harmony default export */ var arc_toolbar = (arc_toolbar_code);
 ;// CONCATENATED MODULE: ./src/html/toolbar.html
 // Module
 var toolbar_code = "<div id=\"toolbar_module_2\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\" scrollshow=\"true\"> <div id=\"setting_btn\" class=\"like-info\"> <i class=\"iconfont icon-add\"></i><span>脚本设置</span> </div> <div id=\"bilibili_parse\" class=\"like-info\"> <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span> </div> <div id=\"video_download\" class=\"like-info\" style=\"display:none\"> <i class=\"iconfont icon-download\"></i><span>下载视频</span> </div> <div id=\"video_download_2\" class=\"like-info\" style=\"display:none\"> <i class=\"iconfont icon-download\"></i><span>下载音频</span> </div> <div id=\"video_download_all\" class=\"like-info\"> <i class=\"iconfont icon-download\"></i><span>批量下载</span> </div> <div class=\"more\">更多<div class=\"more-ops-list\"> <ul> <li><span id=\"download_danmaku\">下载弹幕</span></li> <li><span id=\"download_subtitle\">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:\"\";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ";
 // Exports
 /* harmony default export */ var toolbar = (toolbar_code);
-;// CONCATENATED MODULE: ./src/html/video_toolbar.html
-// Module
-var video_toolbar_code = "<div id=\"arc_toolbar_report_2\" style=\"margin-top:16px\" class=\"video-toolbar report-wrap-module report-scroll-module\" scrollshow=\"true\"> <div class=\"ops\"> <span id=\"setting_btn\"> <i class=\"van-icon-general_addto_s\"></i>脚本设置 </span> <span id=\"bilibili_parse\"> <i class=\"van-icon-floatwindow_custome\"></i>请求地址 </span> <span id=\"video_download\" style=\"display:none\"> <i class=\"van-icon-download\"></i>下载视频 </span> <span id=\"video_download_2\" style=\"display:none\"> <i class=\"van-icon-download\"></i>下载音频 </span> <span id=\"video_download_all\"> <i class=\"van-icon-download\"></i>批量下载 </span> </div> <div class=\"more\"> <i class=\"van-icon-general_moreactions\"></i> <div class=\"more-ops-list\"> <ul class=\"more-ops-list-box\"> <li class=\"more-ops-list-box-li\"> <span id=\"download_danmaku\">下载弹幕</span> </li> <li class=\"more-ops-list-box-li\"> <span id=\"download_subtitle\">下载字幕</span> </li> </ul> </div> </div> </div> ";
-// Exports
-/* harmony default export */ var video_toolbar = (video_toolbar_code);
 ;// CONCATENATED MODULE: ./src/html/more_style.html
 // Module
 var more_style_code = "<style>.more{float:right;padding:1px;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.more:hover .more-ops-list{display:block}.more-ops-list{display:none;position:absolute;width:80px;left:-15px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> ";
 // Exports
 /* harmony default export */ var more_style = (more_style_code);
 ;// CONCATENATED MODULE: ./src/js/ui/toolbar.js
-
-
 
 
 var btn_list = {
@@ -3299,73 +3357,116 @@ function make_toolbar_bangumi(main_class_name, sub_class_names) {
   return '' + "<div class=\"".concat(main_class_name, "\">\n            ").concat(toolbar_elements, "\n            ").concat(more_style, "\n        </div>");
 }
 
+function showVideoToolbar(toolbar_id) {
+  var toolbar_obj = $("#".concat(toolbar_id));
+  var toolbar_obj_2 = toolbar_obj.clone();
+  toolbar_obj_2.attr('id', "".concat(toolbar_id, "_2"));
+  var left = toolbar_obj_2.find('.video-toolbar-left');
+  var right = toolbar_obj_2.find('.video-toolbar-right');
+  left.children().remove();
+  right.children().remove();
+  Object.keys(btn_list).map(function (key) {
+    if (key === 'more') {
+      var more_map = btn_list[key];
+      var el = '' + "<div class=\"more\">\u66F4\u591A<div class=\"more-ops-list\">\n                    <ul>".concat(Object.keys(more_map).map(function (key) {
+        return "<li><span id=\"".concat(key, "\">").concat(more_map[key], "</span></li>");
+      }).join(''), "</ul>\n                </div>");
+      right.append(el + more_style);
+      return;
+    }
+
+    var item = toolbar_obj.find('.toolbar-left-item-wrap').eq(0).clone();
+    item.attr('id', key);
+    var svg = svg_map[key].replaceAll('#757575', 'currentColor').replace('class', "class=\"".concat(item.find('svg').attr('class'), "\""));
+    var span = item.find('span').text(btn_list[key]);
+    var item_div = item.find('div').eq(0);
+    item_div.attr('title', btn_list[key]);
+    item_div.removeClass('on');
+    item_div.children().remove();
+    item_div.append(svg).append(span);
+    left.append(item);
+    return;
+  });
+  toolbar_obj.after(toolbar_obj_2);
+}
+
+function showFestivalToolbar(toolbar_id) {
+  var toolbar_obj = $("#".concat(toolbar_id));
+  var toolbar_obj_2 = toolbar_obj.clone();
+  toolbar_obj_2.attr('id', "".concat(toolbar_id, "_2"));
+  var left = toolbar_obj_2.find('.video-toolbar-content_left');
+  var right = toolbar_obj_2.find('.video-toolbar-content_right');
+  toolbar_obj_2.find('.video-toobar_title').remove();
+  left.children().remove();
+  var watchlater = right.find('.watchlater').clone();
+  right.children().remove();
+  right.append(watchlater);
+  toolbar_obj_2.find('.video-desc-wrapper').remove();
+  Object.keys(btn_list).map(function (key) {
+    if (key === 'more') {
+      var list = watchlater.find('.more-list');
+      var list_li = list.children().eq(0);
+      list.children().remove();
+      var more_map = btn_list[key];
+      Object.keys(more_map).map(function (key) {
+        var li = list_li.clone();
+        li.html("<span id=\"".concat(key, "\">").concat(more_map[key], "</span>"));
+        list.append(li);
+      });
+      return;
+    }
+
+    var item = toolbar_obj.find('.video-toolbar-content_item').eq(0).clone();
+    item.attr('id', key);
+    item.find('content-item_icon');
+    var svg = svg_map[key].replaceAll('#757575', 'currentColor');
+    var item_icon = item.find('.content-item_icon').eq(0);
+    item_icon.removeClass('ic_like');
+    item_icon.html(svg);
+    item.html('');
+    item.append(item_icon);
+    item.append(btn_list[key]);
+    left.append(item);
+    return;
+  });
+  toolbar_obj.after(toolbar_obj_2);
+}
+
 function initToolbar() {
   if (!!$('#arc_toolbar_report')[0]) {
-    $('#arc_toolbar_report').after(arc_toolbar);
-  } else if (!!$('#toolbar_module')[0]) {
-    // ! fix
-    $('#toolbar_module').after(toolbar);
-  } else if (!!$('div.video-toolbar')[0]) {
-    $('div.video-toolbar').after(video_toolbar);
+    // video
+    showVideoToolbar('arc_toolbar_report');
   } else if (!!$('#playlistToolbar')[0]) {
     // list
-    var toolbar_obj = $('#playlistToolbar');
-    var toolbar_obj_2 = toolbar_obj.clone();
-    toolbar_obj_2.attr('id', 'playlistToolbar_2');
-    var left = toolbar_obj_2.find('.video-toolbar-left');
-    var right = toolbar_obj_2.find('.video-toolbar-right');
-    left.children().remove();
-    right.children().remove();
-    Object.keys(btn_list).map(function (key) {
-      if (key === 'more') {
-        var more_map = btn_list[key];
-        var el = '' + "<div class=\"more\">\u66F4\u591A<div class=\"more-ops-list\">\n                        <ul>".concat(Object.keys(more_map).map(function (key) {
-          return "<li><span id=\"".concat(key, "\">").concat(more_map[key], "</span></li>");
-        }).join(''), "</ul>\n                    </div>");
-        right.append(el + more_style);
-        return;
-      }
-
-      var item = toolbar_obj.find('.toolbar-left-item-wrap').eq(0).clone();
-      item.attr('id', key);
-      var svg = svg_map[key].replaceAll('#757575', 'currentColor').replace('class', "class=\"".concat(item.find('svg').attr('class'), "\""));
-      var span = item.find('span').text(btn_list[key]);
-      var item_div = item.find('div').eq(0);
-      item_div.attr('title', btn_list[key]);
-      item_div.removeClass('on');
-      item_div.children().remove();
-      item_div.append(svg).append(span);
-      left.append(item);
-      return;
-    });
-    toolbar_obj.after(toolbar_obj_2);
+    showVideoToolbar('playlistToolbar');
+  } else if (!!$('#videoToolbar')[0]) {
+    // festival
+    showFestivalToolbar('videoToolbar');
   } else if (!!$('.player-left-components')[0]) {
     // bungumi test
-    var _toolbar_obj = $('.player-left-components').children().eq(0);
-
-    var toolbar_class = _toolbar_obj.attr('class');
-
-    var span_class = _toolbar_obj.children().eq(0).attr('class');
-
-    var span_class_svg = _toolbar_obj.children().eq(0).children().eq(0).attr('class');
-
-    var span_class_text = _toolbar_obj.children().eq(0).children().eq(1).attr('class');
-
-    _toolbar_obj.after(make_toolbar_bangumi(toolbar_class, [span_class, span_class_svg, span_class_text]));
+    var toolbar_obj = $('.player-left-components').children().eq(0);
+    var toolbar_class = toolbar_obj.attr('class');
+    var span_class = toolbar_obj.children().eq(0).attr('class');
+    var span_class_svg = toolbar_obj.children().eq(0).children().eq(0).attr('class');
+    var span_class_text = toolbar_obj.children().eq(0).children().eq(1).attr('class');
+    toolbar_obj.after(make_toolbar_bangumi(toolbar_class, [span_class, span_class_svg, span_class_text]));
   } else if (!!$('.edu-play-left')[0]) {
     // cheese test
     // todo
-    var _toolbar_obj2 = $('.edu-play-left').children().eq(1);
+    var _toolbar_obj = $('.edu-play-left').children().eq(1);
 
-    var _toolbar_class = _toolbar_obj2.attr('class');
+    var _toolbar_class = _toolbar_obj.attr('class');
 
-    var _span_class = _toolbar_obj2.children().eq(0).attr('class');
+    var _span_class = _toolbar_obj.children().eq(0).attr('class');
 
-    var _span_class_svg = _toolbar_obj2.children().eq(0).children().eq(0).attr('class');
+    var _span_class_svg = _toolbar_obj.children().eq(0).children().eq(0).attr('class');
 
-    var _span_class_text = _toolbar_obj2.children().eq(0).children().eq(1).attr('class');
+    var _span_class_text = _toolbar_obj.children().eq(0).children().eq(1).attr('class');
 
-    _toolbar_obj2.after(make_toolbar_bangumi(_toolbar_class, [_span_class, _span_class_svg, _span_class_text]));
+    _toolbar_obj.after(make_toolbar_bangumi(_toolbar_class, [_span_class, _span_class_svg, _span_class_text]));
+  } else if (!!$('#toolbar_module')[0]) {
+    // ! fix
+    $('#toolbar_module').after(toolbar);
   }
 }
 
@@ -3407,7 +3508,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.7", " ").concat("49d7a14", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.8", " ").concat("86621d4", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
