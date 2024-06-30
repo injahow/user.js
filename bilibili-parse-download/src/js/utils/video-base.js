@@ -89,7 +89,7 @@ class Video extends VideoBase {
             return
         }
         // ? 集合视频 pageSize = 1
-        let new_page = 1, i = 1
+        let new_page = 0, i = 1
         for (const section of sections) {
             const eplist = section.episodes || []
             for (const ep of eplist) {
@@ -100,8 +100,12 @@ class Video extends VideoBase {
                 i++
             }
         }
-        // 处理集合p
-        this.page = new_page
+        // 处理集合残留
+        if (new_page < 1) {
+            this.video_list = []
+        } else {
+            super.page = new_page
+        }
     }
 
     total() {

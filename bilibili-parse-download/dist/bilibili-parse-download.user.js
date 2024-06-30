@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.11
+// @version       2.5.12
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -223,7 +223,8 @@
             key: "get",
             value: function get() {
                 var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default", cache = CacheFactory.map[name];
-                return cache instanceof Cache ? cache : new Cache(name);
+                return cache instanceof Cache || (cache = new Cache, CacheFactory.set(name, cache)), 
+                cache;
             }
         } ]), CacheFactory;
     }();
@@ -237,8 +238,7 @@
     }(CacheFactory, "map", {});
     var Cache = function() {
         function Cache() {
-            var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default";
-            cache_classCallCheck(this, Cache), CacheFactory.set(name, this), this.value = {};
+            cache_classCallCheck(this, Cache), this.value = {};
         }
         return cache_createClass(Cache, [ {
             key: "get",
@@ -570,10 +570,37 @@
     function _possibleConstructorReturn(self, call) {
         if (call && ("object" === _typeof(call) || "function" == typeof call)) return call;
         if (void 0 !== call) throw new TypeError("Derived constructors may only return object or undefined");
-        return function _assertThisInitialized(self) {
-            if (void 0 === self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-            return self;
-        }(self);
+        return _assertThisInitialized(self);
+    }
+    function _assertThisInitialized(self) {
+        if (void 0 === self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        return self;
+    }
+    function set(target, property, value, receiver) {
+        return set = "undefined" != typeof Reflect && Reflect.set ? Reflect.set : function set(target, property, value, receiver) {
+            var desc, base = function _superPropBase(object, property) {
+                for (;!Object.prototype.hasOwnProperty.call(object, property) && null !== (object = _getPrototypeOf(object)); ) ;
+                return object;
+            }(target, property);
+            if (base) {
+                if ((desc = Object.getOwnPropertyDescriptor(base, property)).set) return desc.set.call(receiver, value), 
+                !0;
+                if (!desc.writable) return !1;
+            }
+            if (desc = Object.getOwnPropertyDescriptor(receiver, property)) {
+                if (!desc.writable) return !1;
+                desc.value = value, Object.defineProperty(receiver, property, desc);
+            } else !function video_base_defineProperty(obj, key, value) {
+                key in obj ? Object.defineProperty(obj, key, {
+                    value: value,
+                    enumerable: !0,
+                    configurable: !0,
+                    writable: !0
+                }) : obj[key] = value;
+                return obj;
+            }(receiver, property, value);
+            return !0;
+        }, set(target, property, value, receiver);
     }
     function _getPrototypeOf(o) {
         return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
@@ -682,11 +709,11 @@
         _inherits(Video, _VideoBase);
         var _super = _createSuper(Video);
         function Video(main_title, state) {
-            var _this2;
+            var _thisSuper, _this2;
             video_base_classCallCheck(this, Video), _this2 = _super.call(this, "video", main_title, state);
             var sections = state.sections || [];
             if (_this2.video_list = [], !sections.length > 0) return _possibleConstructorReturn(_this2);
-            var _step, new_page = 1, i = 1, _iterator = video_base_createForOfIteratorHelper(sections);
+            var _step, new_page = 0, i = 1, _iterator = video_base_createForOfIteratorHelper(sections);
             try {
                 for (_iterator.s(); !(_step = _iterator.n()).done; ) {
                     var _step2, _iterator2 = video_base_createForOfIteratorHelper(_step.value.episodes || []);
@@ -706,7 +733,11 @@
             } finally {
                 _iterator.f();
             }
-            return _this2.page = new_page, _this2;
+            return new_page < 1 ? _this2.video_list = [] : function _set(target, property, value, receiver, isStrict) {
+                if (!set(target, property, value, receiver || target) && isStrict) throw new Error("failed to set property");
+                return value;
+            }((_thisSuper = _assertThisInitialized(_this2), _getPrototypeOf(Video.prototype)), "page", new_page, _thisSuper, !0), 
+            _this2;
         }
         return video_base_createClass(Video, [ {
             key: "total",
@@ -2624,7 +2655,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.11", " ").concat("730279c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.12", " ").concat("ce6770c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

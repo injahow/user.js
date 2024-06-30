@@ -2,10 +2,10 @@
   "main": [
     "==UserScript==",
     {
-      "name": "bilibili视频下载(development)",
+      "name": "bilibili视频下载(dev)",
       "namespace": "https://github.com/injahow",
       "version": "0.0.1",
-      "description": "bilibili视频下载(development)",
+      "description": "bilibili视频下载(dev)",
       "author": "injahow",
       "copyright": "2021, injahow (https://github.com/injahow)",
       "license": "MIT",

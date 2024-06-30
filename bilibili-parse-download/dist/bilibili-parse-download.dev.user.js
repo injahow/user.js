@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name          bilibili视频下载(development)
+// @name          bilibili视频下载(dev)
 // @namespace     https://github.com/injahow
 // @version       0.0.1
-// @description   bilibili视频下载(development)
+// @description   bilibili视频下载(dev)
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
 // @license       MIT
@@ -352,7 +352,9 @@ var CacheFactory = /*#__PURE__*/function () {
         return cache;
       }
 
-      return new Cache(name);
+      cache = new Cache();
+      CacheFactory.set(name, cache);
+      return cache;
     }
   }]);
 
@@ -363,11 +365,8 @@ _defineProperty(CacheFactory, "map", {});
 
 var Cache = /*#__PURE__*/function () {
   function Cache() {
-    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
-
     cache_classCallCheck(this, Cache);
 
-    CacheFactory.set(name, this);
     this.value = {};
   }
 
@@ -714,6 +713,14 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
+function set(target, property, value, receiver) { if (typeof Reflect !== "undefined" && Reflect.set) { set = Reflect.set; } else { set = function set(target, property, value, receiver) { var base = _superPropBase(target, property); var desc; if (base) { desc = Object.getOwnPropertyDescriptor(base, property); if (desc.set) { desc.set.call(receiver, value); return true; } else if (!desc.writable) { return false; } } desc = Object.getOwnPropertyDescriptor(receiver, property); if (desc) { if (!desc.writable) { return false; } desc.value = value; Object.defineProperty(receiver, property, desc); } else { video_base_defineProperty(receiver, property, value); } return true; }; } return set(target, property, value, receiver); }
+
+function _set(target, property, value, receiver, isStrict) { var s = set(target, property, value, receiver || target); if (!s && isStrict) { throw new Error('failed to set property'); } return value; }
+
+function video_base_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function video_base_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -830,7 +837,7 @@ var Video = /*#__PURE__*/function (_VideoBase) {
   var _super = _createSuper(Video);
 
   function Video(main_title, state) {
-    var _this2;
+    var _thisSuper, _this2;
 
     video_base_classCallCheck(this, Video);
 
@@ -843,7 +850,7 @@ var Video = /*#__PURE__*/function (_VideoBase) {
     } // ? 集合视频 pageSize = 1
 
 
-    var new_page = 1,
+    var new_page = 0,
         i = 1;
 
     var _iterator = video_base_createForOfIteratorHelper(sections),
@@ -874,7 +881,7 @@ var Video = /*#__PURE__*/function (_VideoBase) {
         } finally {
           _iterator2.f();
         }
-      } // 处理集合p
+      } // 处理集合残留
 
     } catch (err) {
       _iterator.e(err);
@@ -882,7 +889,12 @@ var Video = /*#__PURE__*/function (_VideoBase) {
       _iterator.f();
     }
 
-    _this2.page = new_page;
+    if (new_page < 1) {
+      _this2.video_list = [];
+    } else {
+      _set((_thisSuper = _assertThisInitialized(_this2), _getPrototypeOf(Video.prototype)), "page", new_page, _thisSuper, true);
+    }
+
     return _this2;
   }
 
@@ -3714,7 +3726,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.11", " ").concat("730279c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.12", " ").concat("ce6770c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

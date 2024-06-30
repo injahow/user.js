@@ -8,19 +8,20 @@ class CacheFactory {
     }
 
     static get(name = 'default') {
-        const cache = CacheFactory.map[name]
+        let cache = CacheFactory.map[name]
         if (cache instanceof Cache) {
             return cache
         }
-        return new Cache(name)
+        cache = new Cache()
+        CacheFactory.set(name, cache)
+        return cache
     }
 
 }
 
 class Cache {
 
-    constructor(name = 'default') {
-        CacheFactory.set(name, this)
+    constructor() {
         this.value = {}
     }
 
