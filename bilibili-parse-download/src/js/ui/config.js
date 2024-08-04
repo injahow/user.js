@@ -145,17 +145,17 @@ const config_functions = {
         }
         help_clicked = true
         ajax({
-            url: `${config.base_api}/auth/v2/?act=help`,
+            url: `${config.base_api}/auth/?act=help`,
             dataType: 'text',
+        }).then(res => {
+            if (res) {
+                MessageBox.alert(res)
+            } else {
+                Message.warning('获取失败')
+            }
+        }).finally(() => {
+            help_clicked = false
         })
-            .then((res) => {
-                if (res) {
-                    MessageBox.alert(res)
-                } else {
-                    Message.warning('获取失败')
-                }
-            })
-            .finally(() => (help_clicked = false))
     },
     show_login() {
         auth.login('1')

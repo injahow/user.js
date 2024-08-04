@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.5.12
+// @version       2.6.0
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -69,38 +69,115 @@
             }
         } ]), User;
     }());
-    function store_defineProperties(target, props) {
+    function _slicedToArray(arr, i) {
+        return function _arrayWithHoles(arr) {
+            if (Array.isArray(arr)) return arr;
+        }(arr) || function _iterableToArrayLimit(arr, i) {
+            var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
+            if (null == _i) return;
+            var _s, _e, _arr = [], _n = !0, _d = !1;
+            try {
+                for (_i = _i.call(arr); !(_n = (_s = _i.next()).done) && (_arr.push(_s.value), !i || _arr.length !== i); _n = !0) ;
+            } catch (err) {
+                _d = !0, _e = err;
+            } finally {
+                try {
+                    _n || null == _i.return || _i.return();
+                } finally {
+                    if (_d) throw _e;
+                }
+            }
+            return _arr;
+        }(arr, i) || function _unsupportedIterableToArray(o, minLen) {
+            if (!o) return;
+            if ("string" == typeof o) return _arrayLikeToArray(o, minLen);
+            var n = Object.prototype.toString.call(o).slice(8, -1);
+            "Object" === n && o.constructor && (n = o.constructor.name);
+            if ("Map" === n || "Set" === n) return Array.from(o);
+            if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+        }(arr, i) || function _nonIterableRest() {
+            throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+        }();
+    }
+    function _arrayLikeToArray(arr, len) {
+        (null == len || len > arr.length) && (len = arr.length);
+        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+        return arr2;
+    }
+    function cache_classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+    }
+    function cache_defineProperties(target, props) {
         for (var i = 0; i < props.length; i++) {
             var descriptor = props[i];
             descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
             "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
         }
     }
-    var Store = function() {
-        function Store() {
-            !function store_classCallCheck(instance, Constructor) {
-                if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Store), this.prefix = "bp_";
+    function cache_createClass(Constructor, protoProps, staticProps) {
+        return protoProps && cache_defineProperties(Constructor.prototype, protoProps), 
+        staticProps && cache_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
+            writable: !1
+        }), Constructor;
+    }
+    var CacheFactory = function() {
+        function CacheFactory() {
+            cache_classCallCheck(this, CacheFactory);
         }
-        return function store_createClass(Constructor, protoProps, staticProps) {
-            return protoProps && store_defineProperties(Constructor.prototype, protoProps), 
-            staticProps && store_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
-                writable: !1
-            }), Constructor;
-        }(Store, [ {
+        return cache_createClass(CacheFactory, null, [ {
+            key: "get",
+            value: function get() {
+                var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default", cache = CacheFactory.map[name];
+                return cache instanceof Cache || (cache = new Cache, CacheFactory.map[name] = cache), 
+                cache;
+            }
+        }, {
+            key: "setValue",
+            value: function setValue() {
+                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", value = arguments.length > 1 ? arguments[1] : void 0, _key$split = key.split(".", 2), _key$split2 = _slicedToArray(_key$split, 2), cacheName = _key$split2[0], cacheKey = _key$split2[1];
+                if (cacheName && cacheKey) {
+                    var cache = CacheFactory.get(cacheName);
+                    cache instanceof Cache && cache.set(cacheKey, value);
+                }
+            }
+        }, {
+            key: "clear",
+            value: function clear(name) {
+                name ? CacheFactory.get(name).clear() : CacheFactory.map = {};
+            }
+        } ]), CacheFactory;
+    }();
+    !function _defineProperty(obj, key, value) {
+        return key in obj ? Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0
+        }) : obj[key] = value, obj;
+    }(CacheFactory, "map", {});
+    var Cache = function() {
+        function Cache() {
+            cache_classCallCheck(this, Cache), this.value = {};
+        }
+        return cache_createClass(Cache, [ {
             key: "get",
             value: function get() {
                 var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
-                return localStorage.getItem(this.prefix + key) || "";
+                return this.value[key];
             }
         }, {
             key: "set",
             value: function set() {
                 var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", value = arguments.length > 1 ? arguments[1] : void 0;
-                localStorage.setItem(this.prefix + key, value);
+                this.value[key] = value;
             }
-        } ]), Store;
-    }(), store = new Store;
+        }, {
+            key: "clear",
+            value: function clear() {
+                this.value = {};
+            }
+        } ]), Cache;
+    }(), cache = CacheFactory;
     var scroll_scroll = {
         show: function show_scroll() {
             $("div#bp_config").is(":hidden") && $("div#message_box").is(":hidden") && $("body").css("overflow", "auto");
@@ -149,15 +226,15 @@
             }), 1e3 * time);
         }(id, 3);
     }
-    var Message_success = function success(html) {
+    var message_Message_success = function success(html) {
         return message_message(html, "success");
-    }, Message_warning = function warning(html) {
+    }, message_Message_warning = function warning(html) {
         return message_message(html, "warning");
-    }, Message_error = function error(html) {
+    }, message_Message_error = function error(html) {
         return message_message(html, "error");
-    }, Message_info = function info(html) {
+    }, message_Message_info = function info(html) {
         return message_message(html, "info");
-    }, Message_miaow = function miaow() {
+    }, message_Message_miaow = function miaow() {
         return message_message("(^・ω・^)~喵喵喵~", "info");
     }, MessageBox_alert = function alert(html, affirm) {
         return messageBox({
@@ -178,10 +255,10 @@
     function ajax(obj) {
         return new Promise((function(resolve, reject) {
             obj.success = function(res) {
-                res && res.code && Message_warning("".concat(res.message || "CODE:".concat(res.code))), 
+                res && res.code && message_Message_warning("".concat(res.message || "CODE:".concat(res.code))), 
                 resolve(res);
             }, obj.error = function(err) {
-                Message_error("网络异常"), reject(err);
+                message_Message_error("网络异常"), reject(err);
             }, $.ajax(obj);
         }));
     }
@@ -194,277 +271,6 @@
             }), $.ajax(obj);
         }));
     }
-    function cache_classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-    }
-    function cache_defineProperties(target, props) {
-        for (var i = 0; i < props.length; i++) {
-            var descriptor = props[i];
-            descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
-            "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
-        }
-    }
-    function cache_createClass(Constructor, protoProps, staticProps) {
-        return protoProps && cache_defineProperties(Constructor.prototype, protoProps), 
-        staticProps && cache_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
-            writable: !1
-        }), Constructor;
-    }
-    var CacheFactory = function() {
-        function CacheFactory() {
-            cache_classCallCheck(this, CacheFactory);
-        }
-        return cache_createClass(CacheFactory, null, [ {
-            key: "set",
-            value: function set(name, cache) {
-                CacheFactory.map[name] = cache;
-            }
-        }, {
-            key: "get",
-            value: function get() {
-                var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default", cache = CacheFactory.map[name];
-                return cache instanceof Cache || (cache = new Cache, CacheFactory.set(name, cache)), 
-                cache;
-            }
-        } ]), CacheFactory;
-    }();
-    !function _defineProperty(obj, key, value) {
-        return key in obj ? Object.defineProperty(obj, key, {
-            value: value,
-            enumerable: !0,
-            configurable: !0,
-            writable: !0
-        }) : obj[key] = value, obj;
-    }(CacheFactory, "map", {});
-    var Cache = function() {
-        function Cache() {
-            cache_classCallCheck(this, Cache), this.value = {};
-        }
-        return cache_createClass(Cache, [ {
-            key: "get",
-            value: function get() {
-                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
-                return this.value[key];
-            }
-        }, {
-            key: "set",
-            value: function set() {
-                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", value = arguments.length > 1 ? arguments[1] : void 0;
-                this.value[key] = value;
-            }
-        }, {
-            key: "clear",
-            value: function clear() {
-                this.value = {};
-            }
-        } ]), Cache;
-    }(), cache = CacheFactory;
-    function _createForOfIteratorHelper(o, allowArrayLike) {
-        var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
-        if (!it) {
-            if (Array.isArray(o) || (it = function _unsupportedIterableToArray(o, minLen) {
-                if (!o) return;
-                if ("string" == typeof o) return _arrayLikeToArray(o, minLen);
-                var n = Object.prototype.toString.call(o).slice(8, -1);
-                "Object" === n && o.constructor && (n = o.constructor.name);
-                if ("Map" === n || "Set" === n) return Array.from(o);
-                if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-            }(o)) || allowArrayLike && o && "number" == typeof o.length) {
-                it && (o = it);
-                var i = 0, F = function F() {};
-                return {
-                    s: F,
-                    n: function n() {
-                        return i >= o.length ? {
-                            done: !0
-                        } : {
-                            done: !1,
-                            value: o[i++]
-                        };
-                    },
-                    e: function e(_e) {
-                        throw _e;
-                    },
-                    f: F
-                };
-            }
-            throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-        }
-        var err, normalCompletion = !0, didErr = !1;
-        return {
-            s: function s() {
-                it = it.call(o);
-            },
-            n: function n() {
-                var step = it.next();
-                return normalCompletion = step.done, step;
-            },
-            e: function e(_e2) {
-                didErr = !0, err = _e2;
-            },
-            f: function f() {
-                try {
-                    normalCompletion || null == it.return || it.return();
-                } finally {
-                    if (didErr) throw err;
-                }
-            }
-        };
-    }
-    function _arrayLikeToArray(arr, len) {
-        (null == len || len > arr.length) && (len = arr.length);
-        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-        return arr2;
-    }
-    function get_url_base(page, quality, video_format, success, error, request_type) {
-        var _success, _error;
-        _success = "function" == typeof success ? function _success(e) {
-            success(e);
-        } : function _success(res) {
-            return console.log(res);
-        }, _error = "function" == typeof error ? function _error(e) {
-            Message_error("请求失败"), error(e);
-        } : function _error(err) {
-            return console.error(err);
-        };
-        var vb = video.base(), _ref = [ vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type() ], aid = _ref[0], bvid = _ref[1], cid = _ref[2], epid = _ref[3], q = _ref[4], type = _ref[5], format = video_format || config_config.format;
-        "auto" === request_type && user.needReplace() && (request_type = "remote");
-        var base_api, url_replace_cdn = function url_replace_cdn(url) {
-            if ("0" !== config_config.host_key) {
-                var url_tmp = url.split("/");
-                url_tmp[2] = hostMap[config_config.host_key], url = url_tmp.join("/");
-            }
-            return url;
-        }, ajax_obj = {
-            type: "GET",
-            dataType: "json"
-        };
-        if ("auto" === request_type || "local" === request_type) {
-            var fnver, fnval;
-            "cheese" === type ? (base_api = "https://api.bilibili.com/pugv/player/web/playurl", 
-            fnver = "mp4" === format ? 1 : 0, fnval = 80) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl", 
-            fnver = 0, fnval = {
-                dash: 4048,
-                flv: 4049,
-                mp4: 0
-            }[format] || 0), base_api += "?avid=".concat(aid, "&bvid=").concat(bvid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
-            base_api += "mp4" === format ? "&platform=html5&high_quality=1" : "", ajax_obj.xhrFields = {
-                withCredentials: !0
-            };
-        } else {
-            base_api = config_config.base_api, base_api += "?av=".concat(aid, "&bv=").concat(bvid, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(format, "&otype=json");
-            var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
-            auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec), 
-            page && (base_api += "&s"));
-        }
-        ajax_obj.url = base_api, ajax(ajax_obj).then((function(res) {
-            var data;
-            if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "remote") : (res.url && (res.url = url_replace_cdn(res.url)), 
-            res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)), 
-            void _success(res));
-            var resultConvertor = function resultConvertor(data, _success) {
-                _ajax({
-                    type: "GET",
-                    url: data.url ? data.url : data.video,
-                    cache: !1,
-                    timeout: 1e3,
-                    success: function success() {
-                        _success(data);
-                    },
-                    error: function error(res) {
-                        "timeout" == res.statusText ? (console.log("use url"), _success(data)) : (console.log("use backup_url"), 
-                        data.backup_url && (data.url = data.backup_url), data.backup_video && (data.video = data.backup_video), 
-                        data.backup_audio && (data.audio = data.backup_audio), _success(data));
-                    }
-                });
-            };
-            if (data.dash) {
-                for (var result = {
-                    code: 0,
-                    quality: data.quality,
-                    accept_quality: data.accept_quality,
-                    video: "",
-                    audio: ""
-                }, videos = data.dash.video, i = 0; i < videos.length; i++) {
-                    var _video = videos[i];
-                    if (_video.id <= q) {
-                        result.video = url_replace_cdn(_video.base_url), result.audio = url_replace_cdn(data.dash.audio[0].base_url), 
-                        result.backup_video = _video.backup_url && url_replace_cdn(_video.backup_url[0]), 
-                        result.backup_audio = data.dash.audio[0].backup_url && url_replace_cdn(data.dash.audio[0].backup_url[0]);
-                        break;
-                    }
-                }
-                resultConvertor(result, _success);
-            } else resultConvertor({
-                code: 0,
-                quality: data.quality,
-                accept_quality: data.accept_quality,
-                url: url_replace_cdn(data.durl[0].url),
-                backup_url: data.durl[0].backup_url && url_replace_cdn(data.durl[0].backup_url[0])
-            }, _success);
-        })).catch((function(err) {
-            return _error(err);
-        }));
-    }
-    function _get_subtitle(p, callback) {
-        var to_blob_url = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], vb = video.base(), _ref3 = [ vb.aid(p), vb.cid(p), vb.epid(p) ], aid = _ref3[0], cid = _ref3[1], epid = _ref3[2];
-        ajax({
-            url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
-            dataType: "json"
-        }).then((function(res) {
-            !res.code && res.data.subtitle.subtitles[0] ? ajax({
-                url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
-                dataType: "json"
-            }).then((function(res) {
-                var _step, webvtt = "WEBVTT\n\n", _iterator = _createForOfIteratorHelper(res.body || [ {
-                    from: 0,
-                    to: 0,
-                    content: ""
-                } ]);
-                try {
-                    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
-                        var data = _step.value, a = new Date(1e3 * (parseInt(data.from) - 28800)).toTimeString().split(" ")[0] + "." + (data.from.toString().split(".")[1] || "000").padEnd(3, "0"), b = new Date(1e3 * (parseInt(data.to) - 28800)).toTimeString().split(" ")[0] + "." + (data.to.toString().split(".")[1] || "000").padEnd(3, "0");
-                        webvtt += "".concat(a, " --\x3e ").concat(b, "\n").concat(data.content.trim(), "\n\n");
-                    }
-                } catch (err) {
-                    _iterator.e(err);
-                } finally {
-                    _iterator.f();
-                }
-                callback(to_blob_url ? URL.createObjectURL(new Blob([ webvtt ], {
-                    type: "text/vtt"
-                })) : webvtt);
-            })).catch(callback) : callback();
-        })).catch(callback);
-    }
-    var api = {
-        get_url: function get_url(success, error) {
-            var request_type = config_config.request_type, format = config_config.format;
-            get_url_base(0, parseInt(config_config.video_quality), format, success, error, request_type);
-        },
-        get_urls: function get_urls(page, quality, format, success, error) {
-            get_url_base(page, quality, format, success, error, config_config.request_type);
-        },
-        get_subtitle_url: function get_subtitle_url(p, callback) {
-            _get_subtitle(p, callback, !0);
-        },
-        get_subtitle_data: function get_subtitle_data(p, callback) {
-            _get_subtitle(p, callback, !1);
-        },
-        get_season: function get_season(sid, epid) {
-            sid || epid ? ajax({
-                url: "https://api.bilibili.com/pugv/view/web/season?season_id=".concat(sid || "", "&ep_id=").concat(epid || ""),
-                xhrFields: {
-                    withCredentials: !0
-                },
-                dataType: "json"
-            }).then((function(res) {
-                res.code ? Message_warning("获取剧集信息失败") : cache.get("Cheese").set("episodes", res.data.episodes);
-            })).finally((function() {
-                cache.get("Cheese").set("lock", !1);
-            })) : console.log("get_season error");
-        }
-    };
     function _typeof(obj) {
         return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
@@ -472,17 +278,19 @@
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         }, _typeof(obj);
     }
-    function video_base_createForOfIteratorHelper(o, allowArrayLike) {
+    function _toConsumableArray(arr) {
+        return function _arrayWithoutHoles(arr) {
+            if (Array.isArray(arr)) return video_base_arrayLikeToArray(arr);
+        }(arr) || function _iterableToArray(iter) {
+            if ("undefined" != typeof Symbol && null != iter[Symbol.iterator] || null != iter["@@iterator"]) return Array.from(iter);
+        }(arr) || video_base_unsupportedIterableToArray(arr) || function _nonIterableSpread() {
+            throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+        }();
+    }
+    function _createForOfIteratorHelper(o, allowArrayLike) {
         var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
         if (!it) {
-            if (Array.isArray(o) || (it = function video_base_unsupportedIterableToArray(o, minLen) {
-                if (!o) return;
-                if ("string" == typeof o) return video_base_arrayLikeToArray(o, minLen);
-                var n = Object.prototype.toString.call(o).slice(8, -1);
-                "Object" === n && o.constructor && (n = o.constructor.name);
-                if ("Map" === n || "Set" === n) return Array.from(o);
-                if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_base_arrayLikeToArray(o, minLen);
-            }(o)) || allowArrayLike && o && "number" == typeof o.length) {
+            if (Array.isArray(o) || (it = video_base_unsupportedIterableToArray(o)) || allowArrayLike && o && "number" == typeof o.length) {
                 it && (o = it);
                 var i = 0, F = function F() {};
                 return {
@@ -523,6 +331,13 @@
                 }
             }
         };
+    }
+    function video_base_unsupportedIterableToArray(o, minLen) {
+        if (o) {
+            if ("string" == typeof o) return video_base_arrayLikeToArray(o, minLen);
+            var n = Object.prototype.toString.call(o).slice(8, -1);
+            return "Object" === n && o.constructor && (n = o.constructor.name), "Map" === n || "Set" === n ? Array.from(o) : "Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n) ? video_base_arrayLikeToArray(o, minLen) : void 0;
+        }
     }
     function video_base_arrayLikeToArray(arr, len) {
         (null == len || len > arr.length) && (len = arr.length);
@@ -590,15 +405,7 @@
             if (desc = Object.getOwnPropertyDescriptor(receiver, property)) {
                 if (!desc.writable) return !1;
                 desc.value = value, Object.defineProperty(receiver, property, desc);
-            } else !function video_base_defineProperty(obj, key, value) {
-                key in obj ? Object.defineProperty(obj, key, {
-                    value: value,
-                    enumerable: !0,
-                    configurable: !0,
-                    writable: !0
-                }) : obj[key] = value;
-                return obj;
-            }(receiver, property, value);
+            } else video_base_defineProperty(receiver, property, value);
             return !0;
         }, set(target, property, value, receiver);
     }
@@ -606,6 +413,35 @@
         return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
             return o.__proto__ || Object.getPrototypeOf(o);
         }, _getPrototypeOf(o);
+    }
+    function ownKeys(object, enumerableOnly) {
+        var keys = Object.keys(object);
+        if (Object.getOwnPropertySymbols) {
+            var symbols = Object.getOwnPropertySymbols(object);
+            enumerableOnly && (symbols = symbols.filter((function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            }))), keys.push.apply(keys, symbols);
+        }
+        return keys;
+    }
+    function _objectSpread(target) {
+        for (var i = 1; i < arguments.length; i++) {
+            var source = null != arguments[i] ? arguments[i] : {};
+            i % 2 ? ownKeys(Object(source), !0).forEach((function(key) {
+                video_base_defineProperty(target, key, source[key]);
+            })) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach((function(key) {
+                Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+            }));
+        }
+        return target;
+    }
+    function video_base_defineProperty(obj, key, value) {
+        return key in obj ? Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0
+        }) : obj[key] = value, obj;
     }
     function video_base_classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
@@ -632,17 +468,37 @@
         return video_base_createClass(VideoBase, [ {
             key: "getVideo",
             value: function getVideo(p) {
-                var _this = this, clazz = clazzMap[this.constructor.name];
-                return Object.fromEntries(Object.getOwnPropertyNames(VideoBase.prototype).filter((function(name) {
-                    return ![ "constructor", "getVideo" ].includes(name);
+                var _prop, _this = this, prop = (video_base_defineProperty(_prop = {
+                    p: p,
+                    id: 0,
+                    title: "",
+                    filename: "",
+                    aid: 0,
+                    bvid: "",
+                    cid: 0
+                }, "bvid", ""), video_base_defineProperty(_prop, "epid", 0), video_base_defineProperty(_prop, "needVip", !1), 
+                video_base_defineProperty(_prop, "vipNeedPay", !1), video_base_defineProperty(_prop, "isLimited", !1), 
+                _prop), clazz = clazzMap[this.constructor.name];
+                return prop = _objectSpread(_objectSpread({}, prop), Object.fromEntries(Object.getOwnPropertyNames(VideoBase.prototype).filter((function(key) {
+                    return key in prop;
                 })).map((function(key) {
                     return [ key, clazz.prototype[key].call(_this, p) ];
-                })));
+                }))));
             }
         }, {
             key: "type",
             value: function type() {
                 return this.video_type;
+            }
+        }, {
+            key: "getName",
+            value: function getName() {
+                return this.main_title || "";
+            }
+        }, {
+            key: "getFilename",
+            value: function getFilename() {
+                return this.getName().replace(/[\/\\:*?"<>|]+/g, "");
             }
         }, {
             key: "p",
@@ -713,10 +569,10 @@
             video_base_classCallCheck(this, Video), _this2 = _super.call(this, "video", main_title, state);
             var sections = state.sections || [];
             if (_this2.video_list = [], !sections.length > 0) return _possibleConstructorReturn(_this2);
-            var _step, new_page = 0, i = 1, _iterator = video_base_createForOfIteratorHelper(sections);
+            var _step, new_page = 0, i = 1, _iterator = _createForOfIteratorHelper(sections);
             try {
                 for (_iterator.s(); !(_step = _iterator.n()).done; ) {
-                    var _step2, _iterator2 = video_base_createForOfIteratorHelper(_step.value.episodes || []);
+                    var _step2, _iterator2 = _createForOfIteratorHelper(_step.value.episodes || []);
                     try {
                         for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
                             var ep = _step2.value;
@@ -778,9 +634,8 @@
         var _super2 = _createSuper(VideoList);
         function VideoList(main_title, state) {
             var _this3;
-            video_base_classCallCheck(this, VideoList), (_this3 = _super2.call(this, "video", main_title, state)).video = new Video(state.videoData.title, state), 
-            _this3.resourceList = state.resourceList || [];
-            var _step3, video_list = [], _iterator3 = video_base_createForOfIteratorHelper(_this3.resourceList);
+            video_base_classCallCheck(this, VideoList), (_this3 = _super2.call(this, "video", main_title, state)).video = new Video(state.videoData.title, state);
+            var _step3, video_list = [], _iterator3 = _createForOfIteratorHelper(state.resourceList || []);
             try {
                 for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) for (var video = _step3.value, i = 0, length = video.pages && video.pages.length || 0; i < length; ) {
                     var _video = Object.assign({}, video);
@@ -891,24 +746,26 @@
                 return p ? this.epList[this.id(p)] : this.epMap[this.epId] || this.epInfo || {};
             }
         }, {
-            key: "getTotalPadLen",
-            value: function getTotalPadLen() {
-                for (var n = this.total(), len = 1; n >= 1; ) n /= 10, len++;
+            key: "getEpPadLen",
+            value: function getEpPadLen() {
+                for (var n = Object.keys(this.isEpMap).length, len = n < 10 ? 1 : 0; n >= 1; ) n /= 10, 
+                len++;
                 return len;
             }
         }, {
             key: "title",
             value: function title(p) {
-                p = p || 1;
-                var title, ep = this.getEpisode(p);
-                return this.isEpMap[ep.id] ? title = "".concat(this.main_title, " EP").concat(("" + p).padStart(this.getTotalPadLen(), "0"), " ").concat(ep.long_title) : (title = ep.share_copy.split("》", 2), 
-                title = title.length > 1 ? "".concat(this.main_title, " ").concat(title[1]) : "".concat(this.main_title, " ").concat(ep.title, " ").concat(ep.long_title)), 
-                title.replaceAll("undefined", "").trim();
+                var ep = this.getEpisode(p), title = "";
+                if (this.isEpMap[ep.id]) {
+                    var epNum = Object.keys(this.isEpMap).length > 1 ? "EP".concat(("" + this.p(p)).padStart(this.getEpPadLen(), "0")) : "";
+                    title = "".concat(this.main_title, " ").concat(epNum, " ").concat(ep.long_title);
+                } else ep.share_copy ? (title = ep.share_copy.split("》", 2), title = title.length > 1 ? "".concat(this.main_title, " ").concat(title[1]) : "".concat(this.main_title, " ").concat(ep.title, " ").concat(ep.long_title)) : title = "".concat(ep.title, " ").concat(ep.long_title);
+                return title.replaceAll("undefined", "").replaceAll("  ", " ").trim();
             }
         }, {
             key: "filename",
             value: function filename(p) {
-                return p = p || 1, this.title(p).replace(/[\/\\:*?"<>|]+/g, "");
+                return this.title(p).replace(/[\/\\:*?"<>|]+/g, "");
             }
         }, {
             key: "aid",
@@ -952,9 +809,8 @@
                 if (location.href == bangumiCache.get("href") && bangumiCache.get("build")) return bangumiCache.get("build");
                 bangumiCache.set("build", null);
                 var main_title, sid, epid, epMap = {}, pathname = location.pathname.toLowerCase();
-                pathname.startsWith("/bangumi/play/ss") ? (sid = location.pathname.match(/ss(\d+)/), 
-                sid = parseInt(sid[1])) : pathname.startsWith("/bangumi/play/ep") && (epid = location.pathname.match(/ep(\d+)/), 
-                epid = parseInt(epid[1])), sid = sid || "", epid = epid || "";
+                pathname.startsWith("/bangumi/play/ss") ? (sid = pathname.match(/ss(\d+)/), sid = parseInt(sid[1])) : pathname.startsWith("/bangumi/play/ep") && (epid = pathname.match(/ep(\d+)/), 
+                epid = parseInt(epid[1]));
                 try {
                     console.log("location sid:", sid, "epid:", epid);
                     var page_data = JSON.parse($(".toolbar").attr("mr-show"));
@@ -965,6 +821,7 @@
                 }
                 if (sid != bangumiCache.get("sid") && (bangumiCache.set("sid", sid), bangumiCache.set("epid", ""), 
                 bangumiCache.set("hasData", !1)), sid && !epid && _ajax({
+                    type: "GET",
                     url: "https://api.bilibili.com/pgc/player/web/v2/playurl?support_multi_audio=true&qn=80&fnver=0&fnval=4048&fourk=1&gaia_source=&from_client=BROWSER&is_main_page=true&need_fragment=true&season_id=".concat(sid, "&isGaiaAvoided=false&voice_balance=1&drm_tech_type=2"),
                     dataType: "json",
                     xhrFields: {
@@ -973,39 +830,39 @@
                 }).then((function(res) {
                     res && !res.code && bangumiCache.set("epid", res.result.view_info.report.ep_id);
                 })), bangumiCache.get("lock")) throw "bangumiCache request waiting !";
-                if (bangumiCache.set("lock", !0), _ajax({
+                if (bangumiCache.set("lock", !0), epid = epid || "", _ajax({
                     type: "GET",
-                    url: "https://api.bilibili.com/pgc/view/web/ep/list?season_id=".concat(sid, "&ep_id=").concat(epid),
+                    url: "https://api.bilibili.com/pgc/view/web/ep/list?season_id=".concat(sid = sid || "", "&ep_id=").concat(epid),
                     dataType: "json",
                     cache: !0
                 }).then((function(res) {
-                    res && !res.code && (bangumiCache.set("hasData", !0), bangumiCache.set("episodes", res.result.episodes), 
+                    res && !res.code && (bangumiCache.set("hasData", !0), bangumiCache.set("episodes", res.result.episodes || []), 
                     bangumiCache.set("section", res.result.section || []));
                 })).finally((function() {
                     bangumiCache.set("lock", !1);
                 })), bangumiCache.set("href", location.href), !epid && !bangumiCache.get("epid")) throw "epid not found !";
                 if (!bangumiCache.get("hasData")) throw "bangumiCache no data !";
-                var episodes = bangumiCache.get("episodes") || [];
-                episodes.sort((function(a, b) {
-                    return a.badge_type - b.badge_type;
-                }));
-                var _step4, isEpMap = {}, _iterator4 = video_base_createForOfIteratorHelper(episodes);
+                var _step4, episodes = bangumiCache.get("episodes") || [], isEpMap = {}, _iterator4 = _createForOfIteratorHelper(episodes = [].concat(_toConsumableArray(episodes.filter((function(a) {
+                    return 1 != a.badge_type;
+                }))), _toConsumableArray(episodes.filter((function(a) {
+                    return 1 == a.badge_type;
+                })))));
                 try {
                     for (_iterator4.s(); !(_step4 = _iterator4.n()).done; ) {
                         var ep = _step4.value;
-                        0 == ep.badge_type && (isEpMap[ep.id] = !0);
+                        [ 0, 2, 3 ].includes(ep.badge_type) && (isEpMap[ep.id] = !0);
                     }
                 } catch (err) {
                     _iterator4.e(err);
                 } finally {
                     _iterator4.f();
                 }
-                var _step5, _iterator5 = video_base_createForOfIteratorHelper(bangumiCache.get("section") || []);
+                var _step5, _iterator5 = _createForOfIteratorHelper(bangumiCache.get("section") || []);
                 try {
                     for (_iterator5.s(); !(_step5 = _iterator5.n()).done; ) {
                         var item = _step5.value;
                         if (item.episodes) {
-                            var _step6, _iterator6 = video_base_createForOfIteratorHelper(item.episodes);
+                            var _step6, _iterator6 = _createForOfIteratorHelper(item.episodes);
                             try {
                                 for (_iterator6.s(); !(_step6 = _iterator6.n()).done; ) {
                                     var _ep = _step6.value;
@@ -1024,8 +881,8 @@
                     _iterator5.f();
                 }
                 epid = epid || bangumiCache.get("epid");
-                for (var _id = 0, i = 0; i < episodes.length; i++) 1 == episodes[i].badge_type && (episodes[i].title += "预告"), 
-                epMap[episodes[i].id] = episodes[i], episodes[i].id == epid && (_id = i);
+                for (var _id = 0, i = 0; i < episodes.length; i++) epMap[episodes[i].id] = episodes[i], 
+                episodes[i].id == epid && (_id = i);
                 var bangumi = new Bangumi(main_title, {
                     p: _id + 1,
                     epId: epid,
@@ -1075,6 +932,46 @@
             value: function epid(p) {
                 return this.episodes[this.id(p)].id;
             }
+        } ], [ {
+            key: "build",
+            value: function build() {
+                var epid, cheeseCache = cache.get("Cheese"), sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
+                if (sid || (epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
+                epid || (epid = parseInt($(".bpx-state-active").eq(0).attr("data-episodeid"))), 
+                sid && sid != cheeseCache.get("sid") && (cheeseCache.set("sid", sid), cheeseCache.set("episodes", null)), 
+                !cheeseCache.get("episodes")) {
+                    if (cheeseCache.get("lock")) throw "cheese request waiting !";
+                    if (cheeseCache.set("lock", !0), !sid && !epid) return void console.log("get_season error");
+                    _ajax({
+                        url: "https://api.bilibili.com/pugv/view/web/season?season_id=".concat(sid || "", "&ep_id=").concat(epid || ""),
+                        xhrFields: {
+                            withCredentials: !0
+                        },
+                        dataType: "json"
+                    }).then((function(res) {
+                        res.code ? Message.warning("获取剧集信息失败") : cheeseCache.set("episodes", res.data.episodes);
+                    })).finally((function() {
+                        cheeseCache.set("lock", !1);
+                    }));
+                }
+                var episodes = cheeseCache.get("episodes");
+                if (!episodes) throw "cheese has not data !";
+                for (var _id = -1, i = 0; i < episodes.length; i++) {
+                    if (!epid) {
+                        epid = episodes[i].id, _id = 0;
+                        break;
+                    }
+                    if (episodes[i].id == epid) {
+                        _id = i;
+                        break;
+                    }
+                }
+                if (_id < 0) throw cheeseCache.set("episodes", null), "episodes need reload !";
+                return new Cheese(($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, ""), {
+                    p: _id + 1,
+                    episodes: episodes
+                });
+            }
         } ]), Cheese;
     }(VideoBase);
     function type() {
@@ -1099,49 +996,18 @@
     var video = {
         type: type,
         base: function base() {
-            var _type = type();
+            var _type = type(), vb = new VideoBase;
             if ("video" === _type) {
                 var state = window.__INITIAL_STATE__, main_title = state.videoData && state.videoData.title;
-                return new Video(main_title, state);
-            }
-            if ("list" === _type) {
+                vb = new Video(main_title, state);
+            } else if ("list" === _type) {
                 var _state = window.__INITIAL_STATE__, _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + "-" + _state.mediaListInfo.title;
-                return new VideoList(_main_title, _state);
-            }
-            if ("festival" === _type) {
+                vb = new VideoList(_main_title, _state);
+            } else if ("festival" === _type) {
                 var _state2 = window.__INITIAL_STATE__, _main_title2 = _state2.title;
-                return new VideoFestival(_main_title2, _state2);
-            }
-            if ("bangumi" === _type) return Bangumi.build();
-            if ("cheese" === _type) {
-                var epid, cheeseCache = cache.get("Cheese"), sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || [ "", "" ])[1];
-                if (sid || (epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || [ "", "" ])[1]), 
-                epid || (epid = parseInt($(".bpx-state-active").eq(0).attr("data-episodeid"))), 
-                sid && sid != cheeseCache.get("sid") && (cheeseCache.set("sid", sid), cheeseCache.set("episodes", null)), 
-                !cheeseCache.get("episodes")) {
-                    if (cheeseCache.get("lock")) throw "cheese request waiting !";
-                    cheeseCache.set("lock", !0), api.get_season(sid, epid);
-                }
-                var episodes = cheeseCache.get("episodes");
-                if (!episodes) throw "cheese has not data !";
-                for (var _id = -1, i = 0; i < episodes.length; i++) {
-                    if (!epid) {
-                        epid = episodes[i].id, _id = 0;
-                        break;
-                    }
-                    if (episodes[i].id == epid) {
-                        _id = i;
-                        break;
-                    }
-                }
-                if (_id < 0) throw cheeseCache.set("episodes", null), "episodes need reload !";
-                var _main_title3 = ($("div.archive-title-box").text() || "unknown").replace(/[\/\\:*?"<>|]+/g, "");
-                return new Cheese(_main_title3, {
-                    p: _id + 1,
-                    episodes: episodes
-                });
-            }
-            return new VideoBase;
+                vb = new VideoFestival(_main_title2, _state2);
+            } else "bangumi" === _type ? vb = Bangumi.build() : "cheese" === _type && (vb = Cheese.build());
+            return vb;
         },
         get_quality: function get_quality() {
             var _q = 0, _q_max = 0, _type = type();
@@ -1171,6 +1037,231 @@
                 }));
             }
             return quality_list.length ? quality_list : [ "80", "64", "32", "16" ];
+        }
+    };
+    function store_defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+            var descriptor = props[i];
+            descriptor.enumerable = descriptor.enumerable || !1, descriptor.configurable = !0, 
+            "value" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);
+        }
+    }
+    var Store = function() {
+        function Store() {
+            !function store_classCallCheck(instance, Constructor) {
+                if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+            }(this, Store), this.prefix = "bp_";
+        }
+        return function store_createClass(Constructor, protoProps, staticProps) {
+            return protoProps && store_defineProperties(Constructor.prototype, protoProps), 
+            staticProps && store_defineProperties(Constructor, staticProps), Object.defineProperty(Constructor, "prototype", {
+                writable: !1
+            }), Constructor;
+        }(Store, [ {
+            key: "get",
+            value: function get() {
+                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
+                return localStorage.getItem(this.prefix + key) || "";
+            }
+        }, {
+            key: "set",
+            value: function set() {
+                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", value = arguments.length > 1 ? arguments[1] : void 0;
+                localStorage.setItem(this.prefix + key, value);
+            }
+        } ]), Store;
+    }(), store = new Store;
+    function api_createForOfIteratorHelper(o, allowArrayLike) {
+        var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
+        if (!it) {
+            if (Array.isArray(o) || (it = function api_unsupportedIterableToArray(o, minLen) {
+                if (!o) return;
+                if ("string" == typeof o) return api_arrayLikeToArray(o, minLen);
+                var n = Object.prototype.toString.call(o).slice(8, -1);
+                "Object" === n && o.constructor && (n = o.constructor.name);
+                if ("Map" === n || "Set" === n) return Array.from(o);
+                if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return api_arrayLikeToArray(o, minLen);
+            }(o)) || allowArrayLike && o && "number" == typeof o.length) {
+                it && (o = it);
+                var i = 0, F = function F() {};
+                return {
+                    s: F,
+                    n: function n() {
+                        return i >= o.length ? {
+                            done: !0
+                        } : {
+                            done: !1,
+                            value: o[i++]
+                        };
+                    },
+                    e: function e(_e) {
+                        throw _e;
+                    },
+                    f: F
+                };
+            }
+            throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+        }
+        var err, normalCompletion = !0, didErr = !1;
+        return {
+            s: function s() {
+                it = it.call(o);
+            },
+            n: function n() {
+                var step = it.next();
+                return normalCompletion = step.done, step;
+            },
+            e: function e(_e2) {
+                didErr = !0, err = _e2;
+            },
+            f: function f() {
+                try {
+                    normalCompletion || null == it.return || it.return();
+                } finally {
+                    if (didErr) throw err;
+                }
+            }
+        };
+    }
+    function api_arrayLikeToArray(arr, len) {
+        (null == len || len > arr.length) && (len = arr.length);
+        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+        return arr2;
+    }
+    function get_url_base(page, quality, video_format, success, error, request_type) {
+        var _success, _error;
+        _success = "function" == typeof success ? function _success(e) {
+            success(e);
+        } : function _success(res) {
+            return console.log(res);
+        }, _error = "function" == typeof error ? function _error(e) {
+            message_Message_error("请求失败"), error(e);
+        } : function _error(err) {
+            return console.error(err);
+        };
+        var vb = video.base(), _ref = [ vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type() ], aid = _ref[0], bvid = _ref[1], cid = _ref[2], epid = _ref[3], q = _ref[4], type = _ref[5], format = video_format || config_config.format;
+        "auto" === request_type && user.needReplace() && (request_type = "remote");
+        var base_api, url_replace_cdn = function url_replace_cdn(url) {
+            if ("0" !== config_config.host_key) {
+                var url_tmp = url.split("/");
+                url_tmp[2] = hostMap[config_config.host_key], url = url_tmp.join("/");
+            }
+            return url;
+        }, ajax_obj = {
+            type: "GET",
+            dataType: "json"
+        };
+        if ("auto" === request_type || "local" === request_type) {
+            var fnver, fnval;
+            "cheese" === type ? (base_api = "https://api.bilibili.com/pugv/player/web/playurl", 
+            fnver = "mp4" === format ? 1 : 0, fnval = 80) : (base_api = "video" === type ? "https://api.bilibili.com/x/player/playurl" : "https://api.bilibili.com/pgc/player/web/playurl", 
+            fnver = 0, fnval = {
+                dash: 4048,
+                flv: 4049,
+                mp4: 0
+            }[format] || 0), base_api += "?avid=".concat(aid, "&bvid=").concat(bvid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json"), 
+            base_api += "mp4" === format ? "&platform=html5&high_quality=1" : "", ajax_obj.xhrFields = {
+                withCredentials: !0
+            };
+        } else {
+            base_api = config_config.base_api, base_api += "?av=".concat(aid, "&bv=").concat(bvid, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(format, "&otype=json"), 
+            page && (base_api += "&s");
+            var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
+            auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec));
+        }
+        ajax_obj.url = base_api, ajax(ajax_obj).then((function(res) {
+            var data;
+            if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "remote") : (res.url && (res.url = url_replace_cdn(res.url)), 
+            res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)), 
+            void _success(res));
+            var resultConvertor = function resultConvertor(data, _success) {
+                _ajax({
+                    type: "GET",
+                    url: data.url ? data.url : data.video,
+                    cache: !1,
+                    timeout: 1e3,
+                    success: function success() {
+                        _success(data);
+                    },
+                    error: function error(res) {
+                        "timeout" == res.statusText ? (console.log("use url"), _success(data)) : (console.log("use backup_url"), 
+                        data.backup_url && (data.url = data.backup_url), data.backup_video && (data.video = data.backup_video), 
+                        data.backup_audio && (data.audio = data.backup_audio), _success(data));
+                    }
+                });
+            };
+            if (data.dash) {
+                for (var result = {
+                    code: 0,
+                    quality: data.quality,
+                    accept_quality: data.accept_quality,
+                    video: "",
+                    audio: ""
+                }, videos = data.dash.video, i = 0; i < videos.length; i++) {
+                    var _video = videos[i];
+                    if (_video.id <= q) {
+                        result.video = url_replace_cdn(_video.base_url), result.audio = url_replace_cdn(data.dash.audio[0].base_url), 
+                        result.backup_video = _video.backup_url && url_replace_cdn(_video.backup_url[0]), 
+                        result.backup_audio = data.dash.audio[0].backup_url && url_replace_cdn(data.dash.audio[0].backup_url[0]);
+                        break;
+                    }
+                }
+                resultConvertor(result, _success);
+            } else resultConvertor({
+                code: 0,
+                quality: data.quality,
+                accept_quality: data.accept_quality,
+                url: url_replace_cdn(data.durl[0].url),
+                backup_url: data.durl[0].backup_url && url_replace_cdn(data.durl[0].backup_url[0])
+            }, _success);
+        })).catch((function(err) {
+            return _error(err);
+        }));
+    }
+    function _get_subtitle(p, callback) {
+        var to_blob_url = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], vb = video.base(), _ref3 = [ vb.aid(p), vb.cid(p), vb.epid(p) ], aid = _ref3[0], cid = _ref3[1], epid = _ref3[2];
+        ajax({
+            url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
+            dataType: "json"
+        }).then((function(res) {
+            !res.code && res.data.subtitle.subtitles[0] ? ajax({
+                url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
+                dataType: "json"
+            }).then((function(res) {
+                var _step, webvtt = "WEBVTT\n\n", _iterator = api_createForOfIteratorHelper(res.body || [ {
+                    from: 0,
+                    to: 0,
+                    content: ""
+                } ]);
+                try {
+                    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+                        var data = _step.value, a = new Date(1e3 * (parseInt(data.from) - 28800)).toTimeString().split(" ")[0] + "." + (data.from.toString().split(".")[1] || "000").padEnd(3, "0"), b = new Date(1e3 * (parseInt(data.to) - 28800)).toTimeString().split(" ")[0] + "." + (data.to.toString().split(".")[1] || "000").padEnd(3, "0");
+                        webvtt += "".concat(a, " --\x3e ").concat(b, "\n").concat(data.content.trim(), "\n\n");
+                    }
+                } catch (err) {
+                    _iterator.e(err);
+                } finally {
+                    _iterator.f();
+                }
+                callback(to_blob_url ? URL.createObjectURL(new Blob([ webvtt ], {
+                    type: "text/vtt"
+                })) : webvtt);
+            })).catch(callback) : callback();
+        })).catch(callback);
+    }
+    var api = {
+        get_url: function get_url(success, error) {
+            var request_type = config_config.request_type, format = config_config.format;
+            get_url_base(0, parseInt(config_config.video_quality), format, success, error, request_type);
+        },
+        get_urls: function get_urls(page, quality, format, success, error) {
+            get_url_base(page, quality, format, success, error, config_config.request_type);
+        },
+        get_subtitle_url: function get_subtitle_url(p, callback) {
+            _get_subtitle(p, callback, !0);
+        },
+        get_subtitle_data: function get_subtitle_data(p, callback) {
+            _get_subtitle(p, callback, !1);
         }
     };
     function runtime_lib_typeof(obj) {
@@ -1842,12 +1933,12 @@
             }
         };
     }
-    function _toConsumableArray(arr) {
-        return function _arrayWithoutHoles(arr) {
+    function download_toConsumableArray(arr) {
+        return function download_arrayWithoutHoles(arr) {
             if (Array.isArray(arr)) return download_arrayLikeToArray(arr);
-        }(arr) || function _iterableToArray(iter) {
+        }(arr) || function download_iterableToArray(iter) {
             if ("undefined" != typeof Symbol && null != iter[Symbol.iterator] || null != iter["@@iterator"]) return Array.from(iter);
-        }(arr) || download_unsupportedIterableToArray(arr) || function _nonIterableSpread() {
+        }(arr) || download_unsupportedIterableToArray(arr) || function download_nonIterableSpread() {
             throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
         }();
     }
@@ -1871,9 +1962,9 @@
         download_rpc_post_all([ video ]);
     }
     function download_rpc_post_all(videos) {
-        if (download_rpc_clicked) Message_miaow(); else {
+        if (download_rpc_clicked) message_Message_miaow(); else {
             download_rpc_clicked = !0;
-            var data = _toConsumableArray(videos);
+            var data = download_toConsumableArray(videos);
             ajax(function get_rpc_post(data) {
                 data instanceof Array || (data = data instanceof Object ? [ data ] : []);
                 var rpc = {
@@ -1900,12 +1991,12 @@
                     })))
                 };
             }(data)).then((function(res) {
-                res.length === data.length ? Message_success("RPC请求成功") : Message_warning("请检查RPC参数");
+                res.length === data.length ? message_Message_success("RPC请求成功") : message_Message_warning("请检查RPC参数");
             })).catch((function() {
-                Message_error("请检查RPC服务配置");
+                message_Message_error("请检查RPC服务配置");
             })).finally((function() {
                 return download_rpc_clicked = !1;
-            })), Message_info("发送RPC下载请求");
+            })), message_Message_info("发送RPC下载请求");
         }
     }
     function open_ariang(rpc) {
@@ -1918,19 +2009,19 @@
         bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3), setTimeout((function() {
             var bp_aria2_window = window.bp_aria2_window, task_hash = "#!/new/task?" + [ "url=".concat(encodeURIComponent(window.btoa(video.url))), "out=".concat(encodeURIComponent(video.filename)), "header=User-Agent:".concat(window.navigator.userAgent), "header=Referer:".concat(window.location.href) ].join("&");
             bp_aria2_window && !bp_aria2_window.closed ? (bp_aria2_window.location.href = config_config.ariang_host + task_hash, 
-            Message_success("发送RPC请求")) : Message_warning("AriaNG页面未打开");
+            message_Message_success("发送RPC请求")) : message_Message_warning("AriaNG页面未打开");
         }), time);
     }
     function download_rpc_ariang() {
         for (var _len = arguments.length, videos = new Array(_len), _key = 0; _key < _len; _key++) videos[_key] = arguments[_key];
-        0 != videos.length && (1 == videos.length && videos[0] instanceof Array ? download_rpc_ariang.apply(void 0, _toConsumableArray(videos[0])) : (download_rpc_ariang_send(videos.pop()), 
+        0 != videos.length && (1 == videos.length && videos[0] instanceof Array ? download_rpc_ariang.apply(void 0, download_toConsumableArray(videos[0])) : (download_rpc_ariang_send(videos.pop()), 
         setTimeout((function() {
             download_rpc_ariang.apply(void 0, videos);
         }), 100)));
     }
     var download_blob_clicked = !1, need_show_progress = !0;
     function download_blob(url, filename) {
-        if (download_blob_clicked) return Message_miaow(), void (need_show_progress = !0);
+        if (download_blob_clicked) return message_Message_miaow(), void (need_show_progress = !0);
         var xhr = new XMLHttpRequest;
         xhr.open("get", url), xhr.responseType = "blob", xhr.onload = function() {
             if (200 === this.status || 304 === this.status) {
@@ -1952,7 +2043,7 @@
                     percent: Math.floor(100 * loaded / tot)
                 });
             }
-        }, xhr.send(), download_blob_clicked = !0, Message_info("准备开始下载");
+        }, xhr.send(), download_blob_clicked = !0, message_Message_info("准备开始下载");
     }
     function _download_danmaku_ass(cid, title) {
         var return_type = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null, callback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
@@ -1961,7 +2052,7 @@
             dataType: "text"
         }).then((function(result) {
             var result_dom = $(result.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, ""));
-            if (!result_dom || !result_dom.find("d")[0]) return "callback" === return_type && callback ? void callback() : void Message_warning("未发现弹幕");
+            if (!result_dom || !result_dom.find("d")[0]) return "callback" === return_type && callback ? void callback() : void message_Message_warning("未发现弹幕");
             var _step2, danmaku_data = result_dom.find("d").map((function(i, el) {
                 var item = $(el), p = item.attr("p").split(","), type = 0;
                 return "4" === p[1] ? type = 2 : "5" === p[1] && (type = 1), [ {
@@ -2024,7 +2115,7 @@
                 var a = document.createElement("a");
                 a.setAttribute("target", "_blank"), a.setAttribute("href", blob_url), a.setAttribute("download", file_name + ".vtt"), 
                 a.click(), URL.revokeObjectURL(blob_url);
-            } else Message_warning("未发现字幕");
+            } else message_Message_warning("未发现字幕");
         };
         api.get_subtitle_url(p, download_subtitle);
     }
@@ -2037,10 +2128,10 @@
     }
     function download_danmaku_ass_zip(videos, zip) {
         if (videos) {
-            if (0 === videos.length) return 0 === Object.keys(zip.files).length ? void Message_warning("未发现弹幕") : void zip.generateAsync({
+            if (0 === videos.length) return 0 === Object.keys(zip.files).length ? void message_Message_warning("未发现弹幕") : void zip.generateAsync({
                 type: "blob"
             }).then((function(data) {
-                return download_blob_zip(data, video.base().filename() + "_ass");
+                return download_blob_zip(data, video.base().getFilename() + "_ass");
             }));
             var _videos$pop = videos.pop(), cid = _videos$pop.cid, filename = _videos$pop.filename;
             _download_danmaku_ass(cid, filename, "callback", (function(data) {
@@ -2052,10 +2143,10 @@
     }
     function download_subtitle_vtt_zip(videos, zip) {
         if (videos) {
-            if (0 === videos.length) return 0 === Object.keys(zip.files).length ? void Message_warning("未发现字幕") : void zip.generateAsync({
+            if (0 === videos.length) return 0 === Object.keys(zip.files).length ? void message_Message_warning("未发现字幕") : void zip.generateAsync({
                 type: "blob"
             }).then((function(data) {
-                return download_blob_zip(data, video.base().filename() + "_vtt");
+                return download_blob_zip(data, video.base().getFilename() + "_vtt");
             }));
             var _videos$pop2 = videos.pop(), p = _videos$pop2.p, filename = _videos$pop2.filename;
             api.get_subtitle_data(p, (function(data) {
@@ -2091,7 +2182,7 @@
                 }
                 if ($(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)"), 
                 event.ctrlKey || event.altKey) {
-                    var current_select_option_index = get_option_index(event.target), option_videos = _toConsumableArray(document.getElementsByName("option_video"));
+                    var current_select_option_index = get_option_index(event.target), option_videos = download_toConsumableArray(document.getElementsByName("option_video"));
                     if (event.target.checked) for (var i = get_option_index(option_videos.filter((function(e) {
                         return e.checked && get_option_index(e) < current_select_option_index;
                     })).slice(-1)[0]); i < current_select_option_index; i++) option_videos[i].checked = !0, 
@@ -2130,7 +2221,7 @@
                         if (setTimeout((function() {
                             download_videos(video_tasks, ++i, videos);
                         }), 4e3), !res.code) {
-                            Message_success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
+                            message_Message_success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
                             MessageBox_alert("".concat(msg, "：获取成功！"));
                             var _ref3 = [ res.url, rpc_type(), res.video, res.audio ], url = _ref3[0], type = _ref3[1], video_url = _ref3[2], audio_url = _ref3[3];
                             "post" === type ? ("dash" === task.format ? videos.push({
@@ -2270,13 +2361,13 @@
             $("#".concat(key)).val(default_config[key]));
         },
         show_help: function show_help() {
-            help_clicked ? Message_miaow() : (help_clicked = !0, ajax({
-                url: "".concat(config_config.base_api, "/auth/v2/?act=help"),
+            help_clicked ? message_Message_miaow() : (help_clicked = !0, ajax({
+                url: "".concat(config_config.base_api, "/auth/?act=help"),
                 dataType: "text"
             }).then((function(res) {
-                res ? MessageBox_alert(res) : Message_warning("获取失败");
+                res ? MessageBox_alert(res) : message_Message_warning("获取失败");
             })).finally((function() {
-                return help_clicked = !1;
+                help_clicked = !1;
             })));
         },
         show_login: function show_login() {
@@ -2301,7 +2392,7 @@
         }
         return null;
     }
-    function ownKeys(object, enumerableOnly) {
+    function auth_ownKeys(object, enumerableOnly) {
         var keys = Object.keys(object);
         if (Object.getOwnPropertySymbols) {
             var symbols = Object.getOwnPropertySymbols(object);
@@ -2311,12 +2402,12 @@
         }
         return keys;
     }
-    function _objectSpread(target) {
+    function auth_objectSpread(target) {
         for (var i = 1; i < arguments.length; i++) {
             var source = null != arguments[i] ? arguments[i] : {};
-            i % 2 ? ownKeys(Object(source), !0).forEach((function(key) {
+            i % 2 ? auth_ownKeys(Object(source), !0).forEach((function(key) {
                 auth_defineProperty(target, key, source[key]);
-            })) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach((function(key) {
+            })) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : auth_ownKeys(Object(source)).forEach((function(key) {
                 Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
             }));
         }
@@ -2355,19 +2446,19 @@
                 var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || 0 ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
                 if (auth_id || auth_sec) {
                     if (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 2592e5)) {
-                        if (!access_key) return Message_info("授权已失效"), void this.reLogin();
+                        if (!access_key) return message_Message_info("授权已失效"), void this.reLogin();
                         ajax({
                             url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
                             type: "GET",
                             dataType: "json"
                         }).then((function(res) {
-                            if (res.code) return Message_info("授权已过期，准备重新授权"), void _this.reLogin();
+                            if (res.code) return message_Message_info("授权已过期，准备重新授权"), void _this.reLogin();
                             store.set("auth_time", Date.now()), ajax({
                                 url: "".concat(config_config.base_api, "/auth/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
                                 type: "GET",
                                 dataType: "json"
                             }).then((function(res) {
-                                res.code && (Message_info("检查失败，准备重新授权"), _this.reLogin());
+                                res.code && (message_Message_info("检查失败，准备重新授权"), _this.reLogin());
                             }));
                         }));
                     }
@@ -2377,7 +2468,7 @@
         }, {
             key: "makeAPIData",
             value: function makeAPIData(param, sec) {
-                return _objectSpread(_objectSpread({}, param), {}, {
+                return auth_objectSpread(auth_objectSpread({}, param), {}, {
                     sign: md5("".concat(Object.entries(param).map((function(e) {
                         return "".concat(e[0], "=").concat(e[1]);
                     })).join("&")).concat(sec))
@@ -2387,7 +2478,7 @@
             key: "_login",
             value: function _login(resolve) {
                 var _this2 = this;
-                this.auth_clicked ? Message_miaow() : (this.auth_clicked = !0, ajax({
+                this.auth_clicked ? message_Message_miaow() : (this.auth_clicked = !0, ajax({
                     url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code",
                     type: "POST",
                     data: this.makeAPIData({
@@ -2418,7 +2509,7 @@
                 this._login((function(res) {
                     if (res && !res.code) {
                         var _res$data = res.data, url = _res$data.url, auth_code = _res$data.auth_code, is_login = 0, box = MessageBox_alert('<p>请使用<a href="https://app.bilibili.com/" target="_blank">哔哩哔哩客户端</a>扫码登录</p><div id="login_qrcode"></div>', (function() {
-                            is_login || Message_info("登陆失败！"), clearInterval(timer), _this3.auth_clicked = !1;
+                            is_login || message_Message_info("登陆失败！"), clearInterval(timer), _this3.auth_clicked = !1;
                         }));
                         new QRCode(document.getElementById("login_qrcode"), url);
                         var timer = setInterval((function() {
@@ -2450,7 +2541,7 @@
                         _this4.auth_window = window.open(url);
                         var is_login = 0, timer = setInterval((function() {
                             if (!_this4.auth_window || _this4.auth_window.closed) return clearInterval(timer), 
-                            _this4.auth_clicked = !1, void (is_login || Message_info("登陆失败！"));
+                            _this4.auth_clicked = !1, void (is_login || message_Message_info("登陆失败！"));
                             _ajax({
                                 url: "https://passport.bilibili.com/x/passport-tv-login/qrcode/poll",
                                 type: "POST",
@@ -2475,14 +2566,14 @@
             key: "logout",
             value: function logout() {
                 var _this5 = this;
-                if (store.get("auth_id")) if (this.auth_clicked) Message_miaow(); else {
+                if (store.get("auth_id")) if (this.auth_clicked) message_Message_miaow(); else {
                     var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
                     ajax({
                         url: "".concat(config_config.base_api, "/auth/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
                         type: "GET",
                         dataType: "json"
                     }).then((function(res) {
-                        res.code ? Message_warning("注销失败") : (Message_success("注销成功"), store.set("auth_id", ""), 
+                        res.code ? message_Message_warning("注销失败") : (message_Message_success("注销成功"), store.set("auth_id", ""), 
                         store.set("auth_sec", ""), store.set("auth_time", "0"), store.set("access_key", ""), 
                         $("#auth").val("0"), config_config.auth = "0");
                     })).finally((function() {
@@ -2496,7 +2587,7 @@
                 var _this6 = this;
                 this.auth_window && !this.auth_window.closed && (this.auth_window.close(), this.auth_window = null), 
                 ajax({
-                    url: "".concat(config_config.base_api, "/auth/?act=login&").concat(Object.entries(_objectSpread({
+                    url: "".concat(config_config.base_api, "/auth/?act=login&").concat(Object.entries(auth_objectSpread({
                         auth_id: store.get("auth_id"),
                         auth_sec: store.get("auth_sec")
                     }, param)).map((function(e) {
@@ -2505,7 +2596,7 @@
                     type: "GET",
                     dataType: "json"
                 }).then((function(res) {
-                    res.code ? Message_warning("授权失败") : (Message_success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
+                    res.code ? message_Message_warning("授权失败") : (message_Message_success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
                     store.set("auth_sec", res.auth_sec)), store.set("access_key", param.access_token), 
                     store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
                 })).finally((function() {
@@ -2560,7 +2651,7 @@
             Object.keys(btn_list).map((function(key) {
                 if ("more" !== key) {
                     var item = toolbar_obj.find(".video-toolbar-content_item").eq(0).clone();
-                    item.attr("id", key);
+                    item.attr("id", key), item.attr("title", btn_list[key]);
                     var svg = svg_map[key].replaceAll("#757575", "currentColor"), item_icon = item.find(".content-item_icon").eq(0);
                     item_icon.removeClass("ic_like"), item_icon.html(svg), item.html(""), item.append(item_icon), 
                     item.append(btn_list[key]), left.append(item);
@@ -2608,11 +2699,12 @@
                 return "" + '<div class="'.concat(main_class_name, '">\n            ').concat(toolbar_elements, "\n            ").concat(more_style, "\n        </div>");
             }(toolbar_class, [ span_class, span_class_svg, span_class_text ]));
         } else $("#toolbar_module")[0] && $("#toolbar_module").after('<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true"> <div id="setting_btn" class="like-info"> <i class="iconfont icon-add"></i><span>脚本设置</span> </div> <div id="bilibili_parse" class="like-info"> <i class="iconfont icon-customer-serv"></i><span>请求地址</span> </div> <div id="video_download" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载视频</span> </div> <div id="video_download_2" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载音频</span> </div> <div id="video_download_all" class="like-info"> <i class="iconfont icon-download"></i><span>批量下载</span> </div> <div class="more">更多<div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:"";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ');
+        $("#limit-mask-wall")[0] && $("#limit-mask-wall").remove();
     }
-    function _slicedToArray(arr, i) {
-        return function _arrayWithHoles(arr) {
+    function main_slicedToArray(arr, i) {
+        return function main_arrayWithHoles(arr) {
             if (Array.isArray(arr)) return arr;
-        }(arr) || function _iterableToArrayLimit(arr, i) {
+        }(arr) || function main_iterableToArrayLimit(arr, i) {
             var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
             if (null == _i) return;
             var _s, _e, _arr = [], _n = !0, _d = !1;
@@ -2635,7 +2727,7 @@
             "Object" === n && o.constructor && (n = o.constructor.name);
             if ("Map" === n || "Set" === n) return Array.from(o);
             if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return main_arrayLikeToArray(o, minLen);
-        }(arr, i) || function _nonIterableRest() {
+        }(arr, i) || function main_nonIterableRest() {
             throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
         }();
     }
@@ -2655,7 +2747,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.5.12", " ").concat("ce6770c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.6.0", " ").concat("15ab083", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2724,13 +2816,13 @@
                         var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
                         if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
                         api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"), 
-                        $("#video_url_2").attr("href", "#"), api_url_temp = api_url, Message_info("开始请求"), 
+                        $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message_Message_info("开始请求"), 
                         api.get_url((function(res) {
                             if (res && !res.code) {
                                 var _url, _url_;
-                                if (Message_success("请求成功"), res.times && Message_info("剩余请求次数：".concat(res.times)), 
+                                if (message_Message_success("请求成功"), res.times && message_Message_info("剩余请求次数：".concat(res.times)), 
                                 res.url) _url = res.url.replace("http://", "https://"), _url_ = "#"; else {
-                                    if (!res.video || !res.audio) return void Message_warning("数据错误");
+                                    if (!res.video || !res.audio) return void message_Message_warning("数据错误");
                                     _url = res.video.replace("http://", "https://"), _url_ = res.audio.replace("http://", "https://");
                                 }
                                 $("#video_url").attr("href", _url), $("#video_url").attr("download", vb.filename() + Download.url_format(_url)), 
@@ -2740,7 +2832,7 @@
                                 "1" === config_config.auto_download && $("#video_download").click();
                             }
                         })); else {
-                            Message_miaow();
+                            message_Message_miaow();
                             var url = $("#video_url").attr("href"), url_2 = $("#video_url_2").attr("href");
                             url && "#" !== url && ($("#video_download").show(), "dash" === config_config.format && $("#video_download_2").show(), 
                             (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && !$("#bp_dplayer")[0] && player.replace_player(url, url_2), 
@@ -2767,15 +2859,15 @@
                             var _ref3 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href"), $("#video_url").attr("download"), $("#video_url_2").attr("download") ], video_url_2 = _ref3[1], file_name = _ref3[2], file_name_2 = _ref3[3], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref3[0], '" download="').concat(file_name, '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" download="').concat(file_name_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
                             MessageBox_alert(msg);
                         } else if ("aria" === type) {
-                            var _ref4 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref4[0], _video_url_ = _ref4[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref6 = _slicedToArray({
+                            var _ref4 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref4[0], _video_url_ = _ref4[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref6 = main_slicedToArray({
                                 min: [ 1, 5 ],
                                 mid: [ 16, 8 ],
                                 max: [ 32, 16 ]
                             }[config_config.aria2c_connection_level] || [ 1, 5 ], 2), url_max_connection = _ref6[0], server_max_connection = _ref6[1], aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection), _map = [ 'aria2c "'.concat(_video_url, '" --out "').concat(_file_name, '"'), 'aria2c "'.concat(_video_url_, '" --out "').concat(_file_name_, '"') ].map((function(code) {
                                 return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
-                            })), _map2 = _slicedToArray(_map, 2), code = _map2[0], code_2 = _map2[1], _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
+                            })), _map2 = main_slicedToArray(_map, 2), code = _map2[0], code_2 = _map2[1], _msg = "点击文本框即可复制下载命令！<br/><br/>" + '视频：<br/><input id="aria2_code" value=\''.concat(code, '\' onclick="bp_clip_btn(\'aria2_code\')" style="width:100%;"></br></br>') + ("dash" === config_config.format ? '音频：<br/><input id="aria2_code_2" value=\''.concat(code_2, '\' onclick="bp_clip_btn(\'aria2_code_2\')" style="width:100%;"><br/><br/>') + '全部：<br/><textarea id="aria2_code_all" onclick="bp_clip_btn(\'aria2_code_all\')" style="min-width:100%;max-width:100%;min-height:100px;max-height:100px;">'.concat(code, "\n").concat(code_2, "</textarea>") : "");
                             !window.bp_clip_btn && (window.bp_clip_btn = function(id) {
-                                $("#".concat(id)).select(), document.execCommand("copy") ? Message_success("复制成功") : Message_warning("复制失败");
+                                $("#".concat(id)).select(), document.execCommand("copy") ? message_Message_success("复制成功") : message_Message_warning("复制失败");
                             }), MessageBox_alert(_msg);
                         } else {
                             var url = $("#video_url").attr("href"), filename = video.base().filename() + Download.url_format(url);
@@ -2791,7 +2883,7 @@
                     }
                 };
                 window.bpd = evt, Object.entries(evt).forEach((function(_ref7) {
-                    var _ref8 = _slicedToArray(_ref7, 2), k = _ref8[0], v = _ref8[1];
+                    var _ref8 = main_slicedToArray(_ref7, 2), k = _ref8[0], v = _ref8[1];
                     return $("body").on("click", "#".concat(k), v);
                 })), $("body").on("click", "a.router-link-active", (function() {
                     this !== $('li[class="on"]').find("a")[0] && check.refresh();
@@ -2799,11 +2891,7 @@
                     check.refresh();
                 })), $("body").on("click", "button.bilibili-player-iconfont-next", (function() {
                     check.refresh();
-                }));
-                var bili_video_tag = player.bili_video_tag();
-                $(bili_video_tag)[0] && ($(bili_video_tag)[0].onended = function() {
-                    check.refresh();
-                }), $("body").on("click", "li.bui-select-item", (function() {
+                })), $("body").on("click", "li.bui-select-item", (function() {
                     check.refresh();
                 })), $("body").on("click", ".rec-list", (function() {
                     check.refresh();

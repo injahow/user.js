@@ -5,7 +5,6 @@ import { Message } from '../ui/message'
 import { user } from '../user'
 import { ajax, _ajax } from './ajax'
 import { video } from './video'
-import CacheFactory from './cache'
 
 function get_url_base(page, quality, video_format, success, error, request_type) {
 
@@ -77,13 +76,13 @@ function get_url_base(page, quality, video_format, success, error, request_type)
     } else {
         base_api = config.base_api
         base_api += `?av=${aid}&bv=${bvid}&cid=${cid}&ep=${epid}&q=${q}&type=${type}&format=${format}&otype=json`
+        !!page && (base_api += '&s')
         const [auth_id, auth_sec] = [
             store.get('auth_id'),
             store.get('auth_sec')
         ]
         if (auth_id && auth_sec) {
             base_api += `&auth_id=${auth_id}&auth_sec=${auth_sec}`
-            !!page && (base_api += '&s')
         }
     }
 
@@ -215,26 +214,6 @@ function get_subtitle_url(p, callback) {
     _get_subtitle(p, callback, true)
 }
 
-function get_season(sid, epid) {
-    if (!sid && !epid) {
-        console.log('get_season error')
-        return
-    }
-    ajax({
-        url: `https://api.bilibili.com/pugv/view/web/season?season_id=${sid || ''}&ep_id=${epid || ''}`,
-        xhrFields: { withCredentials: true },
-        dataType: 'json'
-    }).then(res => {
-        if (res.code) {
-            Message.warning('获取剧集信息失败')
-            return
-        }
-        CacheFactory.get('Cheese').set('episodes', res.data.episodes)
-    }).finally(() => {
-        CacheFactory.get('Cheese').set('lock', false)
-    })
-}
-
 export const api = {
     get_url(success, error) {
         const request_type = config.request_type
@@ -247,6 +226,5 @@ export const api = {
         get_url_base(page, quality, format, success, error, request_type)
     },
     get_subtitle_url,
-    get_subtitle_data,
-    get_season
+    get_subtitle_data
 }

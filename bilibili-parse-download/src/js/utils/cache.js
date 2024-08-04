@@ -3,18 +3,33 @@ class CacheFactory {
 
     static map = {}
 
-    static set(name, cache) {
-        CacheFactory.map[name] = cache
-    }
-
     static get(name = 'default') {
         let cache = CacheFactory.map[name]
         if (cache instanceof Cache) {
             return cache
         }
         cache = new Cache()
-        CacheFactory.set(name, cache)
+        CacheFactory.map[name] = cache
         return cache
+    }
+
+    static setValue(key = '', value) {
+        let [cacheName, cacheKey] = key.split('.', 2)
+        if (!cacheName || !cacheKey) {
+            return
+        }
+        const cache = CacheFactory.get(cacheName)
+        if (cache instanceof Cache) {
+            cache.set(cacheKey, value)
+        }
+    }
+
+    static clear(name) {
+        if (name) {
+            CacheFactory.get(name).clear()
+            return
+        }
+        CacheFactory.map = {}
     }
 
 }

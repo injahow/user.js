@@ -111,39 +111,115 @@ var User = /*#__PURE__*/function () {
 }();
 
 var user = new User();
-;// CONCATENATED MODULE: ./src/js/store.js
-function store_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+;// CONCATENATED MODULE: ./src/js/utils/cache.js
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function store_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function store_createClass(Constructor, protoProps, staticProps) { if (protoProps) store_defineProperties(Constructor.prototype, protoProps); if (staticProps) store_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-var Store = /*#__PURE__*/function () {
-  function Store() {
-    store_classCallCheck(this, Store);
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-    this.prefix = 'bp_';
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function cache_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function cache_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function cache_createClass(Constructor, protoProps, staticProps) { if (protoProps) cache_defineProperties(Constructor.prototype, protoProps); if (staticProps) cache_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var CacheFactory = /*#__PURE__*/function () {
+  function CacheFactory() {
+    cache_classCallCheck(this, CacheFactory);
   }
 
-  store_createClass(Store, [{
+  cache_createClass(CacheFactory, null, [{
+    key: "get",
+    value: function get() {
+      var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
+      var cache = CacheFactory.map[name];
+
+      if (cache instanceof Cache) {
+        return cache;
+      }
+
+      cache = new Cache();
+      CacheFactory.map[name] = cache;
+      return cache;
+    }
+  }, {
+    key: "setValue",
+    value: function setValue() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var value = arguments.length > 1 ? arguments[1] : undefined;
+
+      var _key$split = key.split('.', 2),
+          _key$split2 = _slicedToArray(_key$split, 2),
+          cacheName = _key$split2[0],
+          cacheKey = _key$split2[1];
+
+      if (!cacheName || !cacheKey) {
+        return;
+      }
+
+      var cache = CacheFactory.get(cacheName);
+
+      if (cache instanceof Cache) {
+        cache.set(cacheKey, value);
+      }
+    }
+  }, {
+    key: "clear",
+    value: function clear(name) {
+      if (name) {
+        CacheFactory.get(name).clear();
+        return;
+      }
+
+      CacheFactory.map = {};
+    }
+  }]);
+
+  return CacheFactory;
+}();
+
+_defineProperty(CacheFactory, "map", {});
+
+var Cache = /*#__PURE__*/function () {
+  function Cache() {
+    cache_classCallCheck(this, Cache);
+
+    this.value = {};
+  }
+
+  cache_createClass(Cache, [{
     key: "get",
     value: function get() {
       var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      return localStorage.getItem(this.prefix + key) || '';
+      return this.value[key];
     }
   }, {
     key: "set",
     value: function set() {
       var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
       var value = arguments.length > 1 ? arguments[1] : undefined;
-      localStorage.setItem(this.prefix + key, value);
+      this.value[key] = value;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.value = {};
     }
   }]);
 
-  return Store;
+  return Cache;
 }();
 
-var store = new Store();
+/* harmony default export */ var cache = (CacheFactory);
 ;// CONCATENATED MODULE: ./src/js/ui/scroll.js
 function show_scroll() {
   if ($('div#bp_config').is(':hidden') && $('div#message_box').is(':hidden')) {
@@ -249,7 +325,7 @@ function messageDeQueue(id) {
   }, time * 1000);
 }
 
-var Message = {
+var message_Message = {
   success: function success(html) {
     return message_message(html, 'success');
   },
@@ -294,14 +370,14 @@ function ajax(obj) {
     // set obj.success & obj.success
     obj.success = function (res) {
       if (res && res.code) {
-        Message.warning("".concat(res.message || "CODE:".concat(res.code))); // todo
+        message_Message.warning("".concat(res.message || "CODE:".concat(res.code))); // todo
       }
 
       resolve(res);
     };
 
     obj.error = function (err) {
-      Message.error('网络异常');
+      message_Message.error('网络异常');
       reject(err);
     };
 
@@ -323,379 +399,18 @@ function _ajax(obj) {
 }
 
 
-;// CONCATENATED MODULE: ./src/js/utils/cache.js
-function cache_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function cache_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function cache_createClass(Constructor, protoProps, staticProps) { if (protoProps) cache_defineProperties(Constructor.prototype, protoProps); if (staticProps) cache_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var CacheFactory = /*#__PURE__*/function () {
-  function CacheFactory() {
-    cache_classCallCheck(this, CacheFactory);
-  }
-
-  cache_createClass(CacheFactory, null, [{
-    key: "set",
-    value: function set(name, cache) {
-      CacheFactory.map[name] = cache;
-    }
-  }, {
-    key: "get",
-    value: function get() {
-      var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
-      var cache = CacheFactory.map[name];
-
-      if (cache instanceof Cache) {
-        return cache;
-      }
-
-      cache = new Cache();
-      CacheFactory.set(name, cache);
-      return cache;
-    }
-  }]);
-
-  return CacheFactory;
-}();
-
-_defineProperty(CacheFactory, "map", {});
-
-var Cache = /*#__PURE__*/function () {
-  function Cache() {
-    cache_classCallCheck(this, Cache);
-
-    this.value = {};
-  }
-
-  cache_createClass(Cache, [{
-    key: "get",
-    value: function get() {
-      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      return this.value[key];
-    }
-  }, {
-    key: "set",
-    value: function set() {
-      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      var value = arguments.length > 1 ? arguments[1] : undefined;
-      this.value[key] = value;
-    }
-  }, {
-    key: "clear",
-    value: function clear() {
-      this.value = {};
-    }
-  }]);
-
-  return Cache;
-}();
-
-/* harmony default export */ var cache = (CacheFactory);
-;// CONCATENATED MODULE: ./src/js/utils/api.js
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-
-
-
-
-
-
-
-
-function get_url_base(page, quality, video_format, success, error, request_type) {
-  var _success, _error;
-
-  if ('function' === typeof success) {
-    _success = function _success(e) {
-      // todo
-      success(e);
-    };
-  } else {
-    _success = function _success(res) {
-      return console.log(res);
-    };
-  }
-
-  if ('function' === typeof error) {
-    _error = function _error(e) {
-      Message.error('请求失败');
-      error(e);
-    };
-  } else {
-    _error = function _error(err) {
-      return console.error(err);
-    };
-  }
-
-  var vb = video.base();
-  var _ref = [vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type()],
-      aid = _ref[0],
-      bvid = _ref[1],
-      cid = _ref[2],
-      epid = _ref[3],
-      q = _ref[4],
-      type = _ref[5]; // 参数预处理
-
-  var format = video_format || config_config.format;
-  if (request_type === 'auto' && user.needReplace()) request_type = 'remote';
-
-  var url_replace_cdn = function url_replace_cdn(url) {
-    if (config_config.host_key !== '0') {
-      // 全部切换CDN
-      var url_tmp = url.split('/');
-      url_tmp[2] = hostMap[config_config.host_key];
-      url = url_tmp.join('/');
-    }
-
-    return url;
-  };
-
-  var base_api;
-  var ajax_obj = {
-    type: 'GET',
-    dataType: 'json'
-  };
-
-  if (request_type === 'auto' || request_type === 'local') {
-    var fnver, fnval;
-
-    if (type === 'cheese') {
-      base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
-      fnver = format === 'mp4' ? 1 : 0;
-      fnval = 80;
-    } else {
-      base_api = type === 'video' ? 'https://api.bilibili.com/x/player/playurl' : 'https://api.bilibili.com/pgc/player/web/playurl';
-      fnver = 0;
-      fnval = {
-        dash: 4048,
-        flv: 4049,
-        mp4: 0
-      }[format] || 0;
-    }
-
-    base_api += "?avid=".concat(aid, "&bvid=").concat(bvid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
-    base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
-    ajax_obj.xhrFields = {
-      withCredentials: true
-    };
-  } else {
-    base_api = config_config.base_api;
-    base_api += "?av=".concat(aid, "&bv=").concat(bvid, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(format, "&otype=json");
-    var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
-        auth_id = _ref2[0],
-        auth_sec = _ref2[1];
-
-    if (auth_id && auth_sec) {
-      base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
-      !!page && (base_api += '&s');
-    }
-  }
-
-  ajax_obj.url = base_api;
-  ajax(ajax_obj).then(function (res) {
-    var data;
-
-    if (!res.code) {
-      data = res.result || res.data;
-    }
-
-    if (!data) {
-      if (request_type === 'auto') {
-        get_url_base(page, quality, video_format, success, error, 'remote');
-        return;
-      } // remote
-
-
-      res.url && (res.url = url_replace_cdn(res.url));
-      res.video && (res.video = url_replace_cdn(res.video));
-      res.audio && (res.audio = url_replace_cdn(res.audio));
-
-      _success(res);
-
-      return;
-    }
-
-    var resultConvertor = function resultConvertor(data, _success) {
-      // 判断地址有效性
-      _ajax({
-        type: 'GET',
-        url: data.url ? data.url : data.video,
-        cache: false,
-        timeout: 1000,
-        success: function success() {
-          _success(data);
-        },
-        error: function error(res) {
-          if (res.statusText == 'timeout') {
-            console.log('use url');
-
-            _success(data);
-          } else {
-            // back_url
-            console.log('use backup_url');
-            data.backup_url && (data.url = data.backup_url);
-            data.backup_video && (data.video = data.backup_video);
-            data.backup_audio && (data.audio = data.backup_audio);
-
-            _success(data);
-          }
-        }
-      });
-    }; // local
-
-
-    if (data.dash) {
-      var result = {
-        code: 0,
-        quality: data.quality,
-        accept_quality: data.accept_quality,
-        video: '',
-        audio: ''
-      };
-      var videos = data.dash.video;
-
-      for (var i = 0; i < videos.length; i++) {
-        var _video = videos[i];
-
-        if (_video.id <= q) {
-          result.video = url_replace_cdn(_video.base_url);
-          result.audio = url_replace_cdn(data.dash.audio[0].base_url);
-          result.backup_video = _video.backup_url && url_replace_cdn(_video.backup_url[0]);
-          result.backup_audio = data.dash.audio[0].backup_url && url_replace_cdn(data.dash.audio[0].backup_url[0]);
-          break;
-        }
-      }
-
-      resultConvertor(result, _success);
-      return;
-    } // durl
-
-
-    resultConvertor({
-      code: 0,
-      quality: data.quality,
-      accept_quality: data.accept_quality,
-      url: url_replace_cdn(data.durl[0].url),
-      backup_url: data.durl[0].backup_url && url_replace_cdn(data.durl[0].backup_url[0])
-    }, _success);
-  }).catch(function (err) {
-    return _error(err);
-  });
-}
-
-function _get_subtitle(p, callback) {
-  var to_blob_url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  var vb = video.base();
-  var _ref3 = [vb.aid(p), vb.cid(p), vb.epid(p)],
-      aid = _ref3[0],
-      cid = _ref3[1],
-      epid = _ref3[2];
-  ajax({
-    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
-    dataType: 'json'
-  }).then(function (res) {
-    // todo
-    if (!res.code && res.data.subtitle.subtitles[0]) {
-      ajax({
-        url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
-        dataType: 'json'
-      }).then(function (res) {
-        // json -> webvtt -> blob_url
-        var datas = res.body || [{
-          from: 0,
-          to: 0,
-          content: ''
-        }];
-        var webvtt = 'WEBVTT\n\n';
-
-        var _iterator = _createForOfIteratorHelper(datas),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var data = _step.value;
-            var a = new Date((parseInt(data.from) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.from.toString().split('.')[1] || '000').padEnd(3, '0');
-            var b = new Date((parseInt(data.to) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0');
-            webvtt += "".concat(a, " --> ").concat(b, "\n").concat(data.content.trim(), "\n\n");
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-
-        if (to_blob_url) {
-          callback(URL.createObjectURL(new Blob([webvtt], {
-            type: 'text/vtt'
-          })));
-        } else {
-          callback(webvtt);
-        }
-      }).catch(callback);
-    } else {
-      callback();
-    }
-  }).catch(callback);
-}
-
-function get_subtitle_data(p, callback) {
-  _get_subtitle(p, callback, false);
-}
-
-function get_subtitle_url(p, callback) {
-  _get_subtitle(p, callback, true);
-}
-
-function get_season(sid, epid) {
-  if (!sid && !epid) {
-    console.log('get_season error');
-    return;
-  }
-
-  ajax({
-    url: "https://api.bilibili.com/pugv/view/web/season?season_id=".concat(sid || '', "&ep_id=").concat(epid || ''),
-    xhrFields: {
-      withCredentials: true
-    },
-    dataType: 'json'
-  }).then(function (res) {
-    if (res.code) {
-      Message.warning('获取剧集信息失败');
-      return;
-    }
-
-    cache.get('Cheese').set('episodes', res.data.episodes);
-  }).finally(function () {
-    cache.get('Cheese').set('lock', false);
-  });
-}
-
-var api = {
-  get_url: function get_url(success, error) {
-    var request_type = config_config.request_type;
-    var format = config_config.format;
-    var quality = parseInt(config_config.video_quality);
-    get_url_base(0, quality, format, success, error, request_type);
-  },
-  get_urls: function get_urls(page, quality, format, success, error) {
-    var request_type = config_config.request_type;
-    get_url_base(page, quality, format, success, error, request_type);
-  },
-  get_subtitle_url: get_subtitle_url,
-  get_subtitle_data: get_subtitle_data,
-  get_season: get_season
-};
 ;// CONCATENATED MODULE: ./src/js/utils/video-base.js
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-function video_base_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = video_base_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || video_base_unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return video_base_arrayLikeToArray(arr); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = video_base_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function video_base_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return video_base_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return video_base_arrayLikeToArray(o, minLen); }
 
@@ -717,11 +432,15 @@ function set(target, property, value, receiver) { if (typeof Reflect !== "undefi
 
 function _set(target, property, value, receiver, isStrict) { var s = set(target, property, value, receiver || target); if (!s && isStrict) { throw new Error('failed to set property'); } return value; }
 
-function video_base_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { video_base_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function video_base_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function video_base_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -751,19 +470,40 @@ var VideoBase = /*#__PURE__*/function () {
   video_base_createClass(VideoBase, [{
     key: "getVideo",
     value: function getVideo(p) {
-      var _this = this;
+      var _prop,
+          _this = this;
 
+      var prop = (_prop = {
+        'p': p,
+        'id': 0,
+        'title': '',
+        'filename': '',
+        'aid': 0,
+        'bvid': '',
+        'cid': 0
+      }, video_base_defineProperty(_prop, "bvid", ''), video_base_defineProperty(_prop, 'epid', 0), video_base_defineProperty(_prop, 'needVip', false), video_base_defineProperty(_prop, 'vipNeedPay', false), video_base_defineProperty(_prop, 'isLimited', false), _prop);
       var clazz = clazzMap[this.constructor.name];
-      return Object.fromEntries(Object.getOwnPropertyNames(VideoBase.prototype).filter(function (name) {
-        return !['constructor', 'getVideo'].includes(name);
+      prop = _objectSpread(_objectSpread({}, prop), Object.fromEntries(Object.getOwnPropertyNames(VideoBase.prototype).filter(function (key) {
+        return key in prop;
       }).map(function (key) {
         return [key, clazz.prototype[key].call(_this, p)];
-      }));
+      })));
+      return prop;
     }
   }, {
     key: "type",
     value: function type() {
       return this.video_type;
+    }
+  }, {
+    key: "getName",
+    value: function getName() {
+      return this.main_title || '';
+    }
+  }, {
+    key: "getFilename",
+    value: function getFilename() {
+      return this.getName().replace(/[\/\\:*?"<>|]+/g, '');
     }
   }, {
     key: "p",
@@ -853,7 +593,7 @@ var Video = /*#__PURE__*/function (_VideoBase) {
     var new_page = 0,
         i = 1;
 
-    var _iterator = video_base_createForOfIteratorHelper(sections),
+    var _iterator = _createForOfIteratorHelper(sections),
         _step;
 
     try {
@@ -861,7 +601,7 @@ var Video = /*#__PURE__*/function (_VideoBase) {
         var section = _step.value;
         var eplist = section.episodes || [];
 
-        var _iterator2 = video_base_createForOfIteratorHelper(eplist),
+        var _iterator2 = _createForOfIteratorHelper(eplist),
             _step2;
 
         try {
@@ -973,10 +713,10 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
 
     _this3 = _super2.call(this, 'video', main_title, state);
     _this3.video = new Video(state.videoData.title, state);
-    _this3.resourceList = state.resourceList || [];
+    var resourceList = state.resourceList || [];
     var video_list = [];
 
-    var _iterator3 = video_base_createForOfIteratorHelper(_this3.resourceList),
+    var _iterator3 = _createForOfIteratorHelper(resourceList),
         _step3;
 
     try {
@@ -1136,10 +876,10 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
       return p ? this.epList[this.id(p)] : this.epMap[this.epId] || this.epInfo || {};
     }
   }, {
-    key: "getTotalPadLen",
-    value: function getTotalPadLen() {
-      var n = this.total(),
-          len = 1;
+    key: "getEpPadLen",
+    value: function getEpPadLen() {
+      var n = Object.keys(this.isEpMap).length,
+          len = n < 10 ? 1 : 0;
 
       while (n >= 1) {
         n = n / 10;
@@ -1151,29 +891,32 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
   }, {
     key: "title",
     value: function title(p) {
-      p = p || 1;
       var ep = this.getEpisode(p);
-      var title;
+      var title = '';
 
       if (this.isEpMap[ep.id]) {
-        title = "".concat(this.main_title, " EP").concat(('' + p).padStart(this.getTotalPadLen(), '0'), " ").concat(ep.long_title);
+        var epNum = Object.keys(this.isEpMap).length > 1 ? "EP".concat(('' + this.p(p)).padStart(this.getEpPadLen(), '0')) : '';
+        title = "".concat(this.main_title, " ").concat(epNum, " ").concat(ep.long_title);
       } else {
         // title long_title 可能不准确
-        title = ep.share_copy.split('》', 2);
+        if (ep.share_copy) {
+          title = ep.share_copy.split('》', 2);
 
-        if (title.length > 1) {
-          title = "".concat(this.main_title, " ").concat(title[1]);
+          if (title.length > 1) {
+            title = "".concat(this.main_title, " ").concat(title[1]);
+          } else {
+            title = "".concat(this.main_title, " ").concat(ep.title, " ").concat(ep.long_title);
+          }
         } else {
-          title = "".concat(this.main_title, " ").concat(ep.title, " ").concat(ep.long_title);
+          title = "".concat(ep.title, " ").concat(ep.long_title);
         }
       }
 
-      return title.replaceAll('undefined', '').trim();
+      return title.replaceAll('undefined', '').replaceAll('  ', ' ').trim();
     }
   }, {
     key: "filename",
     value: function filename(p) {
-      p = p || 1;
       return this.title(p).replace(/[\/\\:*?"<>|]+/g, '');
     }
   }, {
@@ -1236,15 +979,12 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
       var pathname = location.pathname.toLowerCase();
 
       if (pathname.startsWith('/bangumi/play/ss')) {
-        sid = location.pathname.match(/ss(\d+)/);
+        sid = pathname.match(/ss(\d+)/);
         sid = parseInt(sid[1]);
       } else if (pathname.startsWith('/bangumi/play/ep')) {
-        epid = location.pathname.match(/ep(\d+)/);
+        epid = pathname.match(/ep(\d+)/);
         epid = parseInt(epid[1]);
       }
-
-      sid = sid || '';
-      epid = epid || '';
 
       try {
         console.log('location sid:', sid, 'epid:', epid);
@@ -1265,6 +1005,7 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
 
       if (!!sid && !epid) {
         _ajax({
+          type: 'GET',
           url: "https://api.bilibili.com/pgc/player/web/v2/playurl?support_multi_audio=true&qn=80&fnver=0&fnval=4048&fourk=1&gaia_source=&from_client=BROWSER&is_main_page=true&need_fragment=true&season_id=".concat(sid, "&isGaiaAvoided=false&voice_balance=1&drm_tech_type=2"),
           dataType: 'json',
           xhrFields: {
@@ -1282,6 +1023,8 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
       }
 
       bangumiCache.set('lock', true);
+      sid = sid || '';
+      epid = epid || '';
 
       _ajax({
         type: 'GET',
@@ -1291,7 +1034,7 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
       }).then(function (res) {
         if (res && !res.code) {
           bangumiCache.set('hasData', true);
-          bangumiCache.set('episodes', res.result.episodes);
+          bangumiCache.set('episodes', res.result.episodes || []);
           bangumiCache.set('section', res.result.section || []);
         }
       }).finally(function () {
@@ -1308,23 +1051,28 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
         throw 'bangumiCache no data !';
       }
 
-      var episodes = bangumiCache.get('episodes') || [];
-      episodes.sort(function (a, b) {
-        return a.badge_type - b.badge_type;
-      });
+      var episodes = bangumiCache.get('episodes') || []; // 预告移后
+
+      episodes = [].concat(_toConsumableArray(episodes.filter(function (a) {
+        return a.badge_type != 1;
+      })), _toConsumableArray(episodes.filter(function (a) {
+        return a.badge_type == 1;
+      }))); // 标记正片
+
       var isEpMap = {};
 
-      var _iterator4 = video_base_createForOfIteratorHelper(episodes),
+      var _iterator4 = _createForOfIteratorHelper(episodes),
           _step4;
 
       try {
         for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
           var ep = _step4.value;
 
-          if (ep.badge_type == 0) {
+          if ([0, 2, 3].includes(ep.badge_type)) {
             isEpMap[ep.id] = true;
           }
-        }
+        } // 追加 section
+
       } catch (err) {
         _iterator4.e(err);
       } finally {
@@ -1333,7 +1081,7 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
 
       var section = bangumiCache.get('section') || [];
 
-      var _iterator5 = video_base_createForOfIteratorHelper(section),
+      var _iterator5 = _createForOfIteratorHelper(section),
           _step5;
 
       try {
@@ -1344,7 +1092,7 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
             continue;
           }
 
-          var _iterator6 = video_base_createForOfIteratorHelper(item.episodes),
+          var _iterator6 = _createForOfIteratorHelper(item.episodes),
               _step6;
 
           try {
@@ -1368,10 +1116,6 @@ var Bangumi = /*#__PURE__*/function (_VideoBase4) {
       var _id = 0;
 
       for (var i = 0; i < episodes.length; i++) {
-        if (episodes[i].badge_type == 1) {
-          episodes[i].title += '预告';
-        }
-
         epMap[episodes[i].id] = episodes[i];
 
         if (episodes[i].id == epid) {
@@ -1441,6 +1185,89 @@ var Cheese = /*#__PURE__*/function (_VideoBase5) {
     value: function epid(p) {
       return this.episodes[this.id(p)].id;
     }
+  }], [{
+    key: "build",
+    value: function build() {
+      var cheeseCache = cache.get('Cheese');
+      var sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1];
+      var epid;
+
+      if (!sid) {
+        epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1];
+      }
+
+      if (!epid) {
+        epid = parseInt($('.bpx-state-active').eq(0).attr('data-episodeid'));
+      }
+
+      if (!!sid && sid != cheeseCache.get('sid')) {
+        cheeseCache.set('sid', sid);
+        cheeseCache.set('episodes', null);
+      }
+
+      if (!cheeseCache.get('episodes')) {
+        if (cheeseCache.get('lock')) {
+          throw 'cheese request waiting !';
+        }
+
+        cheeseCache.set('lock', true);
+
+        if (!sid && !epid) {
+          console.log('get_season error');
+          return;
+        }
+
+        _ajax({
+          url: "https://api.bilibili.com/pugv/view/web/season?season_id=".concat(sid || '', "&ep_id=").concat(epid || ''),
+          xhrFields: {
+            withCredentials: true
+          },
+          dataType: 'json'
+        }).then(function (res) {
+          if (res.code) {
+            Message.warning('获取剧集信息失败');
+            return;
+          }
+
+          cheeseCache.set('episodes', res.data.episodes);
+        }).finally(function () {
+          cheeseCache.set('lock', false);
+        });
+      }
+
+      var episodes = cheeseCache.get('episodes');
+
+      if (!episodes) {
+        throw 'cheese has not data !';
+      }
+
+      var _id = -1;
+
+      for (var i = 0; i < episodes.length; i++) {
+        if (!epid) {
+          epid = episodes[i].id;
+          _id = 0;
+          break;
+        }
+
+        if (episodes[i].id == epid) {
+          _id = i;
+          break;
+        }
+      }
+
+      if (_id < 0) {
+        cheeseCache.set('episodes', null);
+        throw 'episodes need reload !';
+      }
+
+      var main_title = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
+      var state = {
+        p: _id + 1,
+        episodes: episodes
+      };
+      return new Cheese(main_title, state);
+    }
   }]);
 
   return Cheese;
@@ -1448,8 +1275,6 @@ var Cheese = /*#__PURE__*/function (_VideoBase5) {
 
 
 ;// CONCATENATED MODULE: ./src/js/utils/video.js
-
-
 
 
 
@@ -1476,86 +1301,30 @@ function type() {
 function base() {
   var _type = type();
 
+  var vb = new VideoBase();
+
   if (_type === 'video') {
     var state = window.__INITIAL_STATE__;
     var main_title = state.videoData && state.videoData.title;
-    return new Video(main_title, state);
+    vb = new Video(main_title, state);
   } else if (_type === 'list') {
     var _state = window.__INITIAL_STATE__;
 
     var _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + '-' + _state.mediaListInfo.title;
 
-    return new VideoList(_main_title, _state);
+    vb = new VideoList(_main_title, _state);
   } else if (_type === 'festival') {
     var _state2 = window.__INITIAL_STATE__;
     var _main_title2 = _state2.title;
-    return new VideoFestival(_main_title2, _state2);
+    vb = new VideoFestival(_main_title2, _state2);
   } else if (_type === 'bangumi') {
-    return Bangumi.build();
+    vb = Bangumi.build();
   } else if (_type === 'cheese') {
     // todo
-    var cheeseCache = cache.get('Cheese');
-    var sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1];
-    var epid;
-
-    if (!sid) {
-      epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1];
-    }
-
-    if (!epid) {
-      epid = parseInt($('.bpx-state-active').eq(0).attr('data-episodeid'));
-    }
-
-    if (!!sid && sid != cheeseCache.get('sid')) {
-      cheeseCache.set('sid', sid);
-      cheeseCache.set('episodes', null);
-    }
-
-    if (!cheeseCache.get('episodes')) {
-      if (cheeseCache.get('lock')) {
-        throw 'cheese request waiting !';
-      }
-
-      cheeseCache.set('lock', true);
-      api.get_season(sid, epid);
-    }
-
-    var episodes = cheeseCache.get('episodes');
-
-    if (!episodes) {
-      throw 'cheese has not data !';
-    }
-
-    var _id = -1;
-
-    for (var i = 0; i < episodes.length; i++) {
-      if (!epid) {
-        epid = episodes[i].id;
-        _id = 0;
-        break;
-      }
-
-      if (episodes[i].id == epid) {
-        _id = i;
-        break;
-      }
-    }
-
-    if (_id < 0) {
-      cheeseCache.set('episodes', null);
-      throw 'episodes need reload !';
-    }
-
-    var _main_title3 = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '');
-
-    var _state3 = {
-      p: _id + 1,
-      episodes: episodes
-    };
-    return new Cheese(_main_title3, _state3);
+    vb = Cheese.build();
   }
 
-  return new VideoBase();
+  return vb;
 }
 
 var q_map = {
@@ -1640,6 +1409,311 @@ var video = {
   base: base,
   get_quality: get_quality,
   get_quality_support: get_quality_support
+};
+;// CONCATENATED MODULE: ./src/js/store.js
+function store_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function store_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function store_createClass(Constructor, protoProps, staticProps) { if (protoProps) store_defineProperties(Constructor.prototype, protoProps); if (staticProps) store_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var Store = /*#__PURE__*/function () {
+  function Store() {
+    store_classCallCheck(this, Store);
+
+    this.prefix = 'bp_';
+  }
+
+  store_createClass(Store, [{
+    key: "get",
+    value: function get() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      return localStorage.getItem(this.prefix + key) || '';
+    }
+  }, {
+    key: "set",
+    value: function set() {
+      var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var value = arguments.length > 1 ? arguments[1] : undefined;
+      localStorage.setItem(this.prefix + key, value);
+    }
+  }]);
+
+  return Store;
+}();
+
+var store = new Store();
+;// CONCATENATED MODULE: ./src/js/utils/api.js
+function api_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = api_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function api_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return api_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return api_arrayLikeToArray(o, minLen); }
+
+function api_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+
+
+
+
+
+
+function get_url_base(page, quality, video_format, success, error, request_type) {
+  var _success, _error;
+
+  if ('function' === typeof success) {
+    _success = function _success(e) {
+      // todo
+      success(e);
+    };
+  } else {
+    _success = function _success(res) {
+      return console.log(res);
+    };
+  }
+
+  if ('function' === typeof error) {
+    _error = function _error(e) {
+      message_Message.error('请求失败');
+      error(e);
+    };
+  } else {
+    _error = function _error(err) {
+      return console.error(err);
+    };
+  }
+
+  var vb = video.base();
+  var _ref = [vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type()],
+      aid = _ref[0],
+      bvid = _ref[1],
+      cid = _ref[2],
+      epid = _ref[3],
+      q = _ref[4],
+      type = _ref[5]; // 参数预处理
+
+  var format = video_format || config_config.format;
+  if (request_type === 'auto' && user.needReplace()) request_type = 'remote';
+
+  var url_replace_cdn = function url_replace_cdn(url) {
+    if (config_config.host_key !== '0') {
+      // 全部切换CDN
+      var url_tmp = url.split('/');
+      url_tmp[2] = hostMap[config_config.host_key];
+      url = url_tmp.join('/');
+    }
+
+    return url;
+  };
+
+  var base_api;
+  var ajax_obj = {
+    type: 'GET',
+    dataType: 'json'
+  };
+
+  if (request_type === 'auto' || request_type === 'local') {
+    var fnver, fnval;
+
+    if (type === 'cheese') {
+      base_api = 'https://api.bilibili.com/pugv/player/web/playurl';
+      fnver = format === 'mp4' ? 1 : 0;
+      fnval = 80;
+    } else {
+      base_api = type === 'video' ? 'https://api.bilibili.com/x/player/playurl' : 'https://api.bilibili.com/pgc/player/web/playurl';
+      fnver = 0;
+      fnval = {
+        dash: 4048,
+        flv: 4049,
+        mp4: 0
+      }[format] || 0;
+    }
+
+    base_api += "?avid=".concat(aid, "&bvid=").concat(bvid, "&cid=").concat(cid, "&qn=").concat(q, "&fnver=").concat(fnver, "&fnval=").concat(fnval, "&fourk=1&ep_id=").concat(epid, "&type=").concat(format, "&otype=json");
+    base_api += format === 'mp4' ? '&platform=html5&high_quality=1' : '';
+    ajax_obj.xhrFields = {
+      withCredentials: true
+    };
+  } else {
+    base_api = config_config.base_api;
+    base_api += "?av=".concat(aid, "&bv=").concat(bvid, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(format, "&otype=json");
+    !!page && (base_api += '&s');
+    var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+        auth_id = _ref2[0],
+        auth_sec = _ref2[1];
+
+    if (auth_id && auth_sec) {
+      base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
+    }
+  }
+
+  ajax_obj.url = base_api;
+  ajax(ajax_obj).then(function (res) {
+    var data;
+
+    if (!res.code) {
+      data = res.result || res.data;
+    }
+
+    if (!data) {
+      if (request_type === 'auto') {
+        get_url_base(page, quality, video_format, success, error, 'remote');
+        return;
+      } // remote
+
+
+      res.url && (res.url = url_replace_cdn(res.url));
+      res.video && (res.video = url_replace_cdn(res.video));
+      res.audio && (res.audio = url_replace_cdn(res.audio));
+
+      _success(res);
+
+      return;
+    }
+
+    var resultConvertor = function resultConvertor(data, _success) {
+      // 判断地址有效性
+      _ajax({
+        type: 'GET',
+        url: data.url ? data.url : data.video,
+        cache: false,
+        timeout: 1000,
+        success: function success() {
+          _success(data);
+        },
+        error: function error(res) {
+          if (res.statusText == 'timeout') {
+            console.log('use url');
+
+            _success(data);
+          } else {
+            // back_url
+            console.log('use backup_url');
+            data.backup_url && (data.url = data.backup_url);
+            data.backup_video && (data.video = data.backup_video);
+            data.backup_audio && (data.audio = data.backup_audio);
+
+            _success(data);
+          }
+        }
+      });
+    }; // local
+
+
+    if (data.dash) {
+      var result = {
+        code: 0,
+        quality: data.quality,
+        accept_quality: data.accept_quality,
+        video: '',
+        audio: ''
+      };
+      var videos = data.dash.video;
+
+      for (var i = 0; i < videos.length; i++) {
+        var _video = videos[i];
+
+        if (_video.id <= q) {
+          result.video = url_replace_cdn(_video.base_url);
+          result.audio = url_replace_cdn(data.dash.audio[0].base_url);
+          result.backup_video = _video.backup_url && url_replace_cdn(_video.backup_url[0]);
+          result.backup_audio = data.dash.audio[0].backup_url && url_replace_cdn(data.dash.audio[0].backup_url[0]);
+          break;
+        }
+      }
+
+      resultConvertor(result, _success);
+      return;
+    } // durl
+
+
+    resultConvertor({
+      code: 0,
+      quality: data.quality,
+      accept_quality: data.accept_quality,
+      url: url_replace_cdn(data.durl[0].url),
+      backup_url: data.durl[0].backup_url && url_replace_cdn(data.durl[0].backup_url[0])
+    }, _success);
+  }).catch(function (err) {
+    return _error(err);
+  });
+}
+
+function _get_subtitle(p, callback) {
+  var to_blob_url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  var vb = video.base();
+  var _ref3 = [vb.aid(p), vb.cid(p), vb.epid(p)],
+      aid = _ref3[0],
+      cid = _ref3[1],
+      epid = _ref3[2];
+  ajax({
+    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
+    dataType: 'json'
+  }).then(function (res) {
+    // todo
+    if (!res.code && res.data.subtitle.subtitles[0]) {
+      ajax({
+        url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
+        dataType: 'json'
+      }).then(function (res) {
+        // json -> webvtt -> blob_url
+        var datas = res.body || [{
+          from: 0,
+          to: 0,
+          content: ''
+        }];
+        var webvtt = 'WEBVTT\n\n';
+
+        var _iterator = api_createForOfIteratorHelper(datas),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var data = _step.value;
+            var a = new Date((parseInt(data.from) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.from.toString().split('.')[1] || '000').padEnd(3, '0');
+            var b = new Date((parseInt(data.to) - 8 * 60 * 60) * 1000).toTimeString().split(' ')[0] + '.' + (data.to.toString().split('.')[1] || '000').padEnd(3, '0');
+            webvtt += "".concat(a, " --> ").concat(b, "\n").concat(data.content.trim(), "\n\n");
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+
+        if (to_blob_url) {
+          callback(URL.createObjectURL(new Blob([webvtt], {
+            type: 'text/vtt'
+          })));
+        } else {
+          callback(webvtt);
+        }
+      }).catch(callback);
+    } else {
+      callback();
+    }
+  }).catch(callback);
+}
+
+function get_subtitle_data(p, callback) {
+  _get_subtitle(p, callback, false);
+}
+
+function get_subtitle_url(p, callback) {
+  _get_subtitle(p, callback, true);
+}
+
+var api = {
+  get_url: function get_url(success, error) {
+    var request_type = config_config.request_type;
+    var format = config_config.format;
+    var quality = parseInt(config_config.video_quality);
+    get_url_base(0, quality, format, success, error, request_type);
+  },
+  get_urls: function get_urls(page, quality, format, success, error) {
+    var request_type = config_config.request_type;
+    get_url_base(page, quality, format, success, error, request_type);
+  },
+  get_subtitle_url: get_subtitle_url,
+  get_subtitle_data: get_subtitle_data
 };
 ;// CONCATENATED MODULE: ./src/js/utils/runtime-lib.js
 function runtime_lib_typeof(obj) { "@babel/helpers - typeof"; return runtime_lib_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, runtime_lib_typeof(obj); }
@@ -2126,15 +2200,15 @@ var check = new Check();
 ;// CONCATENATED MODULE: ./src/js/utils/download.js
 function download_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = download_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || download_unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function download_toConsumableArray(arr) { return download_arrayWithoutHoles(arr) || download_iterableToArray(arr) || download_unsupportedIterableToArray(arr) || download_nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function download_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
 function download_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return download_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return download_arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function download_iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return download_arrayLikeToArray(arr); }
+function download_arrayWithoutHoles(arr) { if (Array.isArray(arr)) return download_arrayLikeToArray(arr); }
 
 function download_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
@@ -2173,7 +2247,7 @@ function download_all() {
       // 记录当前点击option的index
       var current_select_option_index = get_option_index(event.target); // 获取所有复选框
 
-      var option_videos = _toConsumableArray(document.getElementsByName('option_video'));
+      var option_videos = download_toConsumableArray(document.getElementsByName('option_video'));
 
       if (event.target.checked) {
         // checked = true: 选中`上一个被选中`到`这次被选中`的所有option
@@ -2327,7 +2401,7 @@ function download_all() {
         return;
       }
 
-      Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
+      message_Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
       MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
       var _ref3 = [res.url, rpc_type(), res.video, res.audio],
           url = _ref3[0],
@@ -2453,26 +2527,26 @@ function download_rpc_post(video) {
 
 function download_rpc_post_all(videos) {
   if (download_rpc_clicked) {
-    Message.miaow();
+    message_Message.miaow();
     return;
   }
 
   download_rpc_clicked = true;
 
-  var data = _toConsumableArray(videos);
+  var data = download_toConsumableArray(videos);
 
   ajax(get_rpc_post(data)).then(function (res) {
     if (res.length === data.length) {
-      Message.success('RPC请求成功');
+      message_Message.success('RPC请求成功');
     } else {
-      Message.warning('请检查RPC参数');
+      message_Message.warning('请检查RPC参数');
     }
   }).catch(function () {
-    Message.error('请检查RPC服务配置');
+    message_Message.error('请检查RPC服务配置');
   }).finally(function () {
     return download_rpc_clicked = false;
   });
-  Message.info('发送RPC下载请求');
+  message_Message.info('发送RPC下载请求');
 }
 
 function open_ariang(rpc) {
@@ -2499,9 +2573,9 @@ function download_rpc_ariang_send(video) {
 
     if (bp_aria2_window && !bp_aria2_window.closed) {
       bp_aria2_window.location.href = config_config.ariang_host + task_hash;
-      Message.success('发送RPC请求');
+      message_Message.success('发送RPC请求');
     } else {
-      Message.warning('AriaNG页面未打开');
+      message_Message.warning('AriaNG页面未打开');
     }
   }, time);
 }
@@ -2516,7 +2590,7 @@ function download_rpc_ariang() {
   }
 
   if (videos.length == 1 && videos[0] instanceof Array) {
-    download_rpc_ariang.apply(void 0, _toConsumableArray(videos[0]));
+    download_rpc_ariang.apply(void 0, download_toConsumableArray(videos[0]));
     return;
   }
 
@@ -2552,7 +2626,7 @@ function show_progress(_ref5) {
 
 function download_blob(url, filename) {
   if (download_blob_clicked) {
-    Message.miaow();
+    message_Message.miaow();
     need_show_progress = true;
     return;
   }
@@ -2595,7 +2669,7 @@ function download_blob(url, filename) {
   xhr.send();
   download_blob_clicked = true; // locked
 
-  Message.info('准备开始下载');
+  message_Message.info('准备开始下载');
 }
 /**
  * danmaku & subtitle
@@ -2618,7 +2692,7 @@ function _download_danmaku_ass(cid, title) {
         return;
       }
 
-      Message.warning('未发现弹幕');
+      message_Message.warning('未发现弹幕');
       return;
     } else {
       // 1.json
@@ -2767,7 +2841,7 @@ function download_subtitle_vtt() {
 
   var download_subtitle = function download_subtitle(blob_url) {
     if (!blob_url) {
-      Message.warning('未发现字幕');
+      message_Message.warning('未发现字幕');
       return;
     }
 
@@ -2805,14 +2879,14 @@ function download_danmaku_ass_zip(videos, zip) {
 
   if (videos.length === 0) {
     if (Object.keys(zip.files).length === 0) {
-      Message.warning('未发现弹幕');
+      message_Message.warning('未发现弹幕');
       return;
     }
 
     zip.generateAsync({
       type: 'blob'
     }).then(function (data) {
-      return download_blob_zip(data, video.base().filename() + '_ass');
+      return download_blob_zip(data, video.base().getFilename() + '_ass');
     });
     return;
   }
@@ -2844,14 +2918,14 @@ function download_subtitle_vtt_zip(videos, zip) {
 
   if (videos.length === 0) {
     if (Object.keys(zip.files).length === 0) {
-      Message.warning('未发现字幕');
+      message_Message.warning('未发现字幕');
       return;
     }
 
     zip.generateAsync({
       type: 'blob'
     }).then(function (data) {
-      return download_blob_zip(data, video.base().filename() + '_vtt');
+      return download_blob_zip(data, video.base().getFilename() + '_vtt');
     });
     return;
   }
@@ -3044,22 +3118,22 @@ var config_functions = {
   },
   show_help: function show_help() {
     if (help_clicked) {
-      Message.miaow();
+      message_Message.miaow();
       return;
     }
 
     help_clicked = true;
     ajax({
-      url: "".concat(config_config.base_api, "/auth/v2/?act=help"),
+      url: "".concat(config_config.base_api, "/auth/?act=help"),
       dataType: 'text'
     }).then(function (res) {
       if (res) {
         MessageBox.alert(res);
       } else {
-        Message.warning('获取失败');
+        message_Message.warning('获取失败');
       }
     }).finally(function () {
-      return help_clicked = false;
+      help_clicked = false;
     });
   },
   show_login: function show_login() {
@@ -3178,9 +3252,9 @@ function getCookie(cookieName) {
 
 
 ;// CONCATENATED MODULE: ./src/js/auth.js
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function auth_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { auth_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function auth_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? auth_ownKeys(Object(source), !0).forEach(function (key) { auth_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : auth_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 function auth_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -3222,7 +3296,7 @@ var Auth = /*#__PURE__*/function () {
 
       if (user.is_login && (config_config.base_api !== store.get('pre_base_api') || Date.now() - parseInt(auth_time) > 72 * 3600 * 1e3)) {
         if (!access_key) {
-          Message.info('授权已失效');
+          message_Message.info('授权已失效');
           this.reLogin();
           return;
         }
@@ -3233,7 +3307,7 @@ var Auth = /*#__PURE__*/function () {
           dataType: 'json'
         }).then(function (res) {
           if (res.code) {
-            Message.info('授权已过期，准备重新授权');
+            message_Message.info('授权已过期，准备重新授权');
 
             _this.reLogin();
 
@@ -3247,7 +3321,7 @@ var Auth = /*#__PURE__*/function () {
             dataType: 'json'
           }).then(function (res) {
             if (res.code) {
-              Message.info('检查失败，准备重新授权');
+              message_Message.info('检查失败，准备重新授权');
 
               _this.reLogin();
             }
@@ -3260,7 +3334,7 @@ var Auth = /*#__PURE__*/function () {
   }, {
     key: "makeAPIData",
     value: function makeAPIData(param, sec) {
-      return _objectSpread(_objectSpread({}, param), {}, {
+      return auth_objectSpread(auth_objectSpread({}, param), {}, {
         sign: md5("".concat(Object.entries(param).map(function (e) {
           return "".concat(e[0], "=").concat(e[1]);
         }).join('&')).concat(sec))
@@ -3272,7 +3346,7 @@ var Auth = /*#__PURE__*/function () {
       var _this2 = this;
 
       if (this.auth_clicked) {
-        Message.miaow();
+        message_Message.miaow();
         return;
       }
 
@@ -3327,7 +3401,7 @@ var Auth = /*#__PURE__*/function () {
         var is_login = 0;
         var box = MessageBox.alert('<p>请使用<a href="https://app.bilibili.com/" target="_blank">哔哩哔哩客户端</a>扫码登录</p><div id="login_qrcode"></div>', function () {
           if (!is_login) {
-            Message.info('登陆失败！');
+            message_Message.info('登陆失败！');
           }
 
           clearInterval(timer);
@@ -3381,7 +3455,7 @@ var Auth = /*#__PURE__*/function () {
             _this4.auth_clicked = false;
 
             if (!is_login) {
-              Message.info('登陆失败！');
+              message_Message.info('登陆失败！');
             }
 
             return;
@@ -3426,7 +3500,7 @@ var Auth = /*#__PURE__*/function () {
       }
 
       if (this.auth_clicked) {
-        Message.miaow();
+        message_Message.miaow();
         return;
       }
 
@@ -3439,7 +3513,7 @@ var Auth = /*#__PURE__*/function () {
         dataType: 'json'
       }).then(function (res) {
         if (!res.code) {
-          Message.success('注销成功');
+          message_Message.success('注销成功');
           store.set('auth_id', '');
           store.set('auth_sec', '');
           store.set('auth_time', '0');
@@ -3447,7 +3521,7 @@ var Auth = /*#__PURE__*/function () {
           $('#auth').val('0');
           config_config.auth = '0';
         } else {
-          Message.warning('注销失败');
+          message_Message.warning('注销失败');
         }
       }).finally(function () {
         return _this5.auth_clicked = false;
@@ -3464,7 +3538,7 @@ var Auth = /*#__PURE__*/function () {
       }
 
       ajax({
-        url: "".concat(config_config.base_api, "/auth/?act=login&").concat(Object.entries(_objectSpread({
+        url: "".concat(config_config.base_api, "/auth/?act=login&").concat(Object.entries(auth_objectSpread({
           auth_id: store.get('auth_id'),
           auth_sec: store.get('auth_sec')
         }, param)).map(function (e) {
@@ -3474,7 +3548,7 @@ var Auth = /*#__PURE__*/function () {
         dataType: 'json'
       }).then(function (res) {
         if (!res.code) {
-          Message.success('授权成功');
+          message_Message.success('授权成功');
 
           if (res.auth_id && res.auth_sec) {
             store.set('auth_id', res.auth_id);
@@ -3486,7 +3560,7 @@ var Auth = /*#__PURE__*/function () {
           $('#auth').val('1');
           config_config.auth = '1';
         } else {
-          Message.warning('授权失败');
+          message_Message.warning('授权失败');
         }
       }).finally(function () {
         return _this6.auth_clicked = false;
@@ -3617,6 +3691,7 @@ function showFestivalToolbar(toolbar_id) {
 
     var item = toolbar_obj.find('.video-toolbar-content_item').eq(0).clone();
     item.attr('id', key);
+    item.attr('title', btn_list[key]);
     var svg = svg_map[key].replaceAll('#757575', 'currentColor');
     var item_icon = item.find('.content-item_icon').eq(0);
     item_icon.removeClass('ic_like');
@@ -3685,22 +3760,25 @@ function initToolbar() {
   } else if (!!$('#toolbar_module')[0]) {
     // ! fix
     $('#toolbar_module').after(toolbar);
-  }
+  } // 处理遮挡
+
+
+  !!$('#limit-mask-wall')[0] && $('#limit-mask-wall').remove();
 }
 
 
 ;// CONCATENATED MODULE: ./src/js/main.js
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || main_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function main_slicedToArray(arr, i) { return main_arrayWithHoles(arr) || main_iterableToArrayLimit(arr, i) || main_unsupportedIterableToArray(arr, i) || main_nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function main_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
 function main_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return main_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return main_arrayLikeToArray(o, minLen); }
 
 function main_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function main_iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function main_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function main_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3726,7 +3804,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.5.12", " ").concat("ce6770c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.6.0", " ").concat("15ab083", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -3792,7 +3870,7 @@ var Main = /*#__PURE__*/function () {
           }
 
           if (api_url === api_url_temp && config_config.request_type !== 'local') {
-            Message.miaow();
+            message_Message.miaow();
             var url = $('#video_url').attr('href');
             var url_2 = $('#video_url_2').attr('href');
 
@@ -3815,11 +3893,11 @@ var Main = /*#__PURE__*/function () {
           $('#video_url').attr('href', '#');
           $('#video_url_2').attr('href', '#');
           api_url_temp = api_url;
-          Message.info('开始请求');
+          message_Message.info('开始请求');
           api.get_url(function (res) {
             if (res && !res.code) {
-              Message.success('请求成功');
-              res.times && Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
+              message_Message.success('请求成功');
+              res.times && message_Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
 
               var _url, _url_;
 
@@ -3830,7 +3908,7 @@ var Main = /*#__PURE__*/function () {
                 _url = res.video.replace('http://', 'https://');
                 _url_ = res.audio.replace('http://', 'https://');
               } else {
-                Message.warning('数据错误');
+                message_Message.warning('数据错误');
                 return;
               }
 
@@ -3907,7 +3985,7 @@ var Main = /*#__PURE__*/function () {
               mid: [16, 8],
               max: [32, 16]
             }[config_config.aria2c_connection_level] || [1, 5],
-                _ref6 = _slicedToArray(_ref5, 2),
+                _ref6 = main_slicedToArray(_ref5, 2),
                 url_max_connection = _ref6[0],
                 server_max_connection = _ref6[1];
 
@@ -3916,7 +3994,7 @@ var Main = /*#__PURE__*/function () {
             var _map = ["aria2c \"".concat(_video_url, "\" --out \"").concat(_file_name, "\""), "aria2c \"".concat(_video_url_, "\" --out \"").concat(_file_name_, "\"")].map(function (code) {
               return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
             }),
-                _map2 = _slicedToArray(_map, 2),
+                _map2 = main_slicedToArray(_map, 2),
                 code = _map2[0],
                 code_2 = _map2[1];
 
@@ -3926,9 +4004,9 @@ var Main = /*#__PURE__*/function () {
               $("#".concat(id)).select();
 
               if (document.execCommand('copy')) {
-                Message.success('复制成功');
+                message_Message.success('复制成功');
               } else {
-                Message.warning('复制失败');
+                message_Message.warning('复制失败');
               }
             });
             MessageBox.alert(_msg);
@@ -3957,7 +4035,7 @@ var Main = /*#__PURE__*/function () {
 
       window.bpd = evt;
       Object.entries(evt).forEach(function (_ref7) {
-        var _ref8 = _slicedToArray(_ref7, 2),
+        var _ref8 = main_slicedToArray(_ref7, 2),
             k = _ref8[0],
             v = _ref8[1];
 
@@ -3973,10 +4051,6 @@ var Main = /*#__PURE__*/function () {
         check.refresh();
       });
       $('body').on('click', 'button.bilibili-player-iconfont-next', function () {
-        check.refresh();
-      });
-      var bili_video_tag = player.bili_video_tag();
-      !!$(bili_video_tag)[0] && ($(bili_video_tag)[0].onended = function () {
         check.refresh();
       }); // 监听q
 

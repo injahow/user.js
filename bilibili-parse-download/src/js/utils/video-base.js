@@ -17,16 +17,42 @@ class VideoBase {
     }
 
     getVideo(p) {
+        let prop = {
+            'p': p,
+            'id': 0,
+            'title': '',
+            'filename': '',
+            'aid': 0,
+            'bvid': '',
+            'cid': 0,
+            'bvid': '',
+            'epid': 0,
+            'needVip': false,
+            'vipNeedPay': false,
+            'isLimited': false
+        }
         const clazz = clazzMap[this.constructor.name]
-        return Object.fromEntries(
-            Object.getOwnPropertyNames(VideoBase.prototype)
-                .filter(name => !['constructor', 'getVideo'].includes(name))
-                .map(key => [key, clazz.prototype[key].call(this, p)])
-        )
+        prop = {
+            ...prop,
+            ...Object.fromEntries(
+                Object.getOwnPropertyNames(VideoBase.prototype)
+                    .filter(key => key in prop)
+                    .map(key => [key, clazz.prototype[key].call(this, p)])
+            )
+        }
+        return prop
     }
 
     type() {
         return this.video_type
+    }
+
+    getName() {
+        return this.main_title || ''
+    }
+
+    getFilename() {
+        return this.getName().replace(/[\/\\:*?"<>|]+/g, '')
     }
 
     p(p) {
@@ -159,9 +185,9 @@ class VideoList extends VideoBase {
     constructor(main_title, state) {
         super('video', main_title, state)
         this.video = new Video(state.videoData.title, state)
-        this.resourceList = state.resourceList || []
+        const resourceList = state.resourceList || []
         const video_list = []
-        for (const video of this.resourceList) {
+        for (const video of resourceList) {
             let i = 0, length = video.pages && video.pages.length || 0
             while (i < length) {
                 const _video = Object.assign({}, video)
@@ -285,15 +311,12 @@ class Bangumi extends VideoBase {
         let main_title, sid, epid, epMap = {}
         const pathname = location.pathname.toLowerCase()
         if (pathname.startsWith('/bangumi/play/ss')) {
-            sid = location.pathname.match(/ss(\d+)/)
+            sid = pathname.match(/ss(\d+)/)
             sid = parseInt(sid[1])
         } else if (pathname.startsWith('/bangumi/play/ep')) {
-            epid = location.pathname.match(/ep(\d+)/)
+            epid = pathname.match(/ep(\d+)/)
             epid = parseInt(epid[1])
         }
-
-        sid = sid || ''
-        epid = epid || ''
 
         try {
             console.log('location sid:', sid, 'epid:', epid)
@@ -314,11 +337,10 @@ class Bangumi extends VideoBase {
 
         if (!!sid && !epid) {
             _ajax({
+                type: 'GET',
                 url: `https://api.bilibili.com/pgc/player/web/v2/playurl?support_multi_audio=true&qn=80&fnver=0&fnval=4048&fourk=1&gaia_source=&from_client=BROWSER&is_main_page=true&need_fragment=true&season_id=${sid}&isGaiaAvoided=false&voice_balance=1&drm_tech_type=2`,
                 dataType: 'json',
-                xhrFields: {
-                    withCredentials: true
-                },
+                xhrFields: { withCredentials: true }
             }).then(res => {
                 if (res && !res.code) {
                     bangumiCache.set('epid', res.result.view_info.report.ep_id)
@@ -330,6 +352,8 @@ class Bangumi extends VideoBase {
             throw 'bangumiCache request waiting !'
         }
         bangumiCache.set('lock', true)
+        sid = sid || ''
+        epid = epid || ''
         _ajax({
             type: 'GET',
             url: `https://api.bilibili.com/pgc/view/web/ep/list?season_id=${sid}&ep_id=${epid}`,
@@ -338,7 +362,7 @@ class Bangumi extends VideoBase {
         }).then(res => {
             if (res && !res.code) {
                 bangumiCache.set('hasData', true)
-                bangumiCache.set('episodes', res.result.episodes)
+                bangumiCache.set('episodes', res.result.episodes || [])
                 bangumiCache.set('section', res.result.section || [])
             }
         }).finally(() => {
@@ -355,18 +379,20 @@ class Bangumi extends VideoBase {
             throw 'bangumiCache no data !'
         }
 
-        const episodes = bangumiCache.get('episodes') || []
-        episodes.sort((a, b) => {
-            return a.badge_type - b.badge_type
-        })
-
+        let episodes = bangumiCache.get('episodes') || []
+        // 预告移后
+        episodes = [
+            ...episodes.filter(a => a.badge_type != 1),
+            ...episodes.filter(a => a.badge_type == 1)
+        ]
+        // 标记正片
         const isEpMap = {}
         for (const ep of episodes) {
-            if (ep.badge_type == 0) {
+            if ([0, 2, 3].includes(ep.badge_type)) {
                 isEpMap[ep.id] = true
             }
         }
-
+        // 追加 section
         const section = bangumiCache.get('section') || []
         for (const item of section) {
             if (!item.episodes) {
@@ -381,9 +407,6 @@ class Bangumi extends VideoBase {
 
         let _id = 0
         for (let i = 0; i < episodes.length; i++) {
-            if (episodes[i].badge_type == 1) {
-                episodes[i].title += '预告'
-            }
             epMap[episodes[i].id] = episodes[i]
             if (episodes[i].id == epid) {
                 _id = i
@@ -415,8 +438,8 @@ class Bangumi extends VideoBase {
             : this.epMap[this.epId] || this.epInfo || {}
     }
 
-    getTotalPadLen() {
-        let n = this.total(), len = 1
+    getEpPadLen() {
+        let n = Object.keys(this.isEpMap).length, len = n < 10 ? 1 : 0
         while (n >= 1) {
             n = n / 10
             len++
@@ -425,25 +448,28 @@ class Bangumi extends VideoBase {
     }
 
     title(p) {
-        p = p || 1
         const ep = this.getEpisode(p)
-        let title
+        let title = ''
         if (this.isEpMap[ep.id]) {
-            title = `${this.main_title} EP${('' + p).padStart(this.getTotalPadLen(), '0')} ${ep.long_title}`
+            const epNum = Object.keys(this.isEpMap).length > 1 ? `EP${('' + this.p(p)).padStart(this.getEpPadLen(), '0')}` : ''
+            title = `${this.main_title} ${epNum} ${ep.long_title}`
         } else { // title long_title 可能不准确
-            title = ep.share_copy.split('》', 2)
-            if (title.length > 1) {
-                title = `${this.main_title} ${title[1]}`
+            if (ep.share_copy) {
+                title = ep.share_copy.split('》', 2)
+                if (title.length > 1) {
+                    title = `${this.main_title} ${title[1]}`
+                } else {
+                    title = `${this.main_title} ${ep.title} ${ep.long_title}`
+                }
             } else {
-                title = `${this.main_title} ${ep.title} ${ep.long_title}`
+                title = `${ep.title} ${ep.long_title}`
             }
         }
 
-        return title.replaceAll('undefined', '').trim()
+        return title.replaceAll('undefined', '').replaceAll('  ', ' ').trim()
     }
 
     filename(p) {
-        p = p || 1
         return this.title(p).replace(/[\/\\:*?"<>|]+/g, '')
     }
 
@@ -494,6 +520,81 @@ class Cheese extends VideoBase {
     constructor(main_title, state) {
         super('cheese', main_title, state)
         this.episodes = state.episodes
+    }
+
+    static build() {
+        const cheeseCache = CacheFactory.get('Cheese')
+
+        const sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1]
+        let epid
+
+        if (!sid) {
+            epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1]
+        }
+        if (!epid) {
+            epid = parseInt($('.bpx-state-active').eq(0).attr('data-episodeid'))
+        }
+
+        if (!!sid && sid != cheeseCache.get('sid')) {
+            cheeseCache.set('sid', sid)
+            cheeseCache.set('episodes', null)
+        }
+
+        if (!cheeseCache.get('episodes')) {
+            if (cheeseCache.get('lock')) {
+                throw 'cheese request waiting !'
+            }
+            cheeseCache.set('lock', true)
+            if (!sid && !epid) {
+                console.log('get_season error')
+                return
+            }
+            _ajax({
+                url: `https://api.bilibili.com/pugv/view/web/season?season_id=${sid || ''}&ep_id=${epid || ''}`,
+                xhrFields: { withCredentials: true },
+                dataType: 'json'
+            }).then(res => {
+                if (res.code) {
+                    Message.warning('获取剧集信息失败')
+                    return
+                }
+                cheeseCache.set('episodes', res.data.episodes)
+            }).finally(() => {
+                cheeseCache.set('lock', false)
+            })
+        }
+
+        const episodes = cheeseCache.get('episodes')
+        if (!episodes) {
+            throw 'cheese has not data !'
+        }
+
+        let _id = -1
+
+        for (let i = 0; i < episodes.length; i++) {
+            if (!epid) {
+                epid = episodes[i].id
+                _id = 0
+                break
+            }
+            if (episodes[i].id == epid) {
+                _id = i
+                break
+            }
+        }
+
+        if (_id < 0) {
+            cheeseCache.set('episodes', null)
+            throw 'episodes need reload !'
+        }
+
+        const main_title = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
+        const state = {
+            p: _id + 1,
+            episodes
+        }
+
+        return new Cheese(main_title, state)
     }
 
     total() {

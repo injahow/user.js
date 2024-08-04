@@ -632,7 +632,7 @@ function download_danmaku_ass_zip(videos, zip) {
             Message.warning('未发现弹幕')
             return
         }
-        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().filename() + '_ass'))
+        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().getFilename() + '_ass'))
         return
     }
     const { cid, filename } = videos.pop()
@@ -659,7 +659,7 @@ function download_subtitle_vtt_zip(videos, zip) {
             Message.warning('未发现字幕')
             return
         }
-        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().filename() + '_vtt'))
+        zip.generateAsync({ type: 'blob' }).then(data => download_blob_zip(data, video.base().getFilename() + '_vtt'))
         return
     }
     const { p, filename } = videos.pop()

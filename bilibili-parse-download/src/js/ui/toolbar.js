@@ -133,6 +133,7 @@ function showFestivalToolbar(toolbar_id) {
         }
         const item = toolbar_obj.find('.video-toolbar-content_item').eq(0).clone()
         item.attr('id', key)
+        item.attr('title', btn_list[key])
         const svg = svg_map[key].replaceAll('#757575', 'currentColor')
         const item_icon = item.find('.content-item_icon').eq(0)
         item_icon.removeClass('ic_like')
@@ -198,6 +199,9 @@ function initToolbar() {
     } else if (!!$('#toolbar_module')[0]) { // ! fix
         $('#toolbar_module').after(toolbar_html)
     }
+
+    // 处理遮挡
+    !!$('#limit-mask-wall')[0] && $('#limit-mask-wall').remove()
 }
 
 export {

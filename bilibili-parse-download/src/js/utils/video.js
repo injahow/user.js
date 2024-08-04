@@ -1,7 +1,5 @@
 import { videoQualityMap } from '../ui/config'
 import { user } from '../user'
-import { api } from './api'
-import CacheFactory from './cache'
 import { Bangumi, Cheese, Video, VideoBase, VideoFestival, VideoList } from './video-base'
 
 
@@ -23,85 +21,31 @@ function type() {
 
 function base() {
     const _type = type()
+    let vb = new VideoBase()
     if (_type === 'video') {
         const state = window.__INITIAL_STATE__
         const main_title = state.videoData && state.videoData.title
 
-        return new Video(main_title, state)
+        vb = new Video(main_title, state)
     } else if (_type === 'list') {
         const state = window.__INITIAL_STATE__
         const main_title = state.mediaListInfo && (state.mediaListInfo.upper.name + '-' + state.mediaListInfo.title)
 
-        return new VideoList(main_title, state)
+        vb = new VideoList(main_title, state)
     } else if (_type === 'festival') {
         const state = window.__INITIAL_STATE__
         const main_title = state.title
 
-        return new VideoFestival(main_title, state)
+        vb = new VideoFestival(main_title, state)
     } else if (_type === 'bangumi') {
 
-        return Bangumi.build()
+        vb = Bangumi.build()
     } else if (_type === 'cheese') { // todo
 
-        const cheeseCache = CacheFactory.get('Cheese')
-
-        const sid = (location.href.match(/\/cheese\/play\/ss(\d+)/i) || ['', ''])[1]
-        let epid
-
-        if (!sid) {
-            epid = (location.href.match(/\/cheese\/play\/ep(\d+)/i) || ['', ''])[1]
-        }
-        if (!epid) {
-            epid = parseInt($('.bpx-state-active').eq(0).attr('data-episodeid'))
-        }
-
-        if (!!sid && sid != cheeseCache.get('sid')) {
-            cheeseCache.set('sid', sid)
-            cheeseCache.set('episodes', null)
-        }
-
-        if (!cheeseCache.get('episodes')) {
-            if (cheeseCache.get('lock')) {
-                throw 'cheese request waiting !'
-            }
-            cheeseCache.set('lock', true)
-            api.get_season(sid, epid)
-        }
-
-        const episodes = cheeseCache.get('episodes')
-        if (!episodes) {
-            throw 'cheese has not data !'
-        }
-
-        let _id = -1
-
-        for (let i = 0; i < episodes.length; i++) {
-            if (!epid) {
-                epid = episodes[i].id
-                _id = 0
-                break
-            }
-            if (episodes[i].id == epid) {
-                _id = i
-                break
-            }
-        }
-
-        if (_id < 0) {
-            cheeseCache.set('episodes', null)
-            throw 'episodes need reload !'
-        }
-
-        const main_title = ($('div.archive-title-box').text() || 'unknown').replace(/[\/\\:*?"<>|]+/g, '')
-        const state = {
-            p: _id + 1,
-            episodes
-        }
-
-        return new Cheese(main_title, state)
+        vb = Cheese.build()
     }
 
-    return new VideoBase()
+    return vb
 }
 
 const q_map = {
