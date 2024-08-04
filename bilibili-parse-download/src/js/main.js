@@ -245,10 +245,6 @@ class Main {
         $('body').on('click', 'button.bilibili-player-iconfont-next', () => {
             check.refresh()
         })
-        const bili_video_tag = player.bili_video_tag()
-        !!$(bili_video_tag)[0] && ($(bili_video_tag)[0].onended = () => {
-            check.refresh()
-        })
         // 监听q
         $('body').on('click', 'li.bui-select-item', () => {
             check.refresh()
