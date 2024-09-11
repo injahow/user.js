@@ -42,12 +42,20 @@ function get_url_base(page, quality, video_format, success, error, request_type)
     if (request_type === 'auto' && user.needReplace()) request_type = 'remote'
 
     const url_replace_cdn = url => {
-        if (config.host_key !== '0') {
-            // 全部切换CDN
-            let url_tmp = url.split('/')
-            url_tmp[2] = hostMap[config.host_key]
-            url = url_tmp.join('/')
+        if (config.host_key === '0') {
+            return url
         }
+        // 全部切换CDN
+        const url_tmp = url.split('/')
+        const mapping = hostMap[config.host_key]
+        if ('string' === typeof mapping && mapping.length) {
+            if (mapping.at(0).match(/[a-z]/)) {
+                url_tmp[2] = mapping
+            }
+        } else if ('function' === typeof mapping) {
+            url_tmp[2] = mapping()
+        }
+        url = url_tmp.join('/')
         return url
     }
 
@@ -86,6 +94,78 @@ function get_url_base(page, quality, video_format, success, error, request_type)
         }
     }
 
+    const resultConvertor = (data, _success) => { // 判断地址有效性
+        const checkTask = (key, backup_key) => {
+            if (!data[backup_key]) {
+                return Promise.resolve(key)
+            }
+            return _ajax({
+                type: 'GET',
+                url: data[key],
+                cache: false,
+                timeout: 1000,
+                success: function (res) {
+                    return key
+                },
+                error: function (res) {
+                    if (res.statusText == 'timeout') {
+                        return key
+                    } else { // back_url
+                        return backup_key
+                    }
+                }
+            })
+        }
+
+        new Promise((resolve, reject) => {
+            const promiseList = []
+            const valueList = []
+            if (data.url) {
+                promiseList.push(checkTask('url', 'backup_url'))
+            } else {
+                promiseList.push(checkTask('video', 'backup_video'))
+                promiseList.push(checkTask('audio', 'backup_audio'))
+            }
+            const timer = setTimeout(() => {
+                resolve(valueList)
+            }, 1500)
+            let index = 0
+            promiseList.forEach(async (promise) => {
+                let result
+                try {
+                    result = await promise
+                } catch (error) {
+                    result = error
+                }
+                console.log('use ' + result)
+                valueList[index++] = result
+                if (index == promiseList.length) {
+                    clearInterval(timer)
+                    resolve(valueList)
+                }
+            })
+        }).then((resList) => {
+            console.log('use data key: ', resList);
+            if (!resList) {
+                return
+            }
+            resList = [...resList]
+            for (const key of resList) {
+                if (!data[key]) continue
+                if (['url', 'backup_url'].includes(key)) {
+                    data.url = data[key]
+                } else if (['video', 'backup_video'].includes(key)) {
+                    data.video = data[key]
+                }
+                else if (['audio', 'backup_audio'].includes(key)) {
+                    data.audio = data[key]
+                }
+            }
+        }).finally(() => {
+            _success(data)
+        })
+    }
+
     ajax_obj.url = base_api
     ajax(ajax_obj).then(res => {
         let data
@@ -102,32 +182,9 @@ function get_url_base(page, quality, video_format, success, error, request_type)
             res.url && (res.url = url_replace_cdn(res.url))
             res.video && (res.video = url_replace_cdn(res.video))
             res.audio && (res.audio = url_replace_cdn(res.audio))
-            _success(res)
+            // _success(res)
+            resultConvertor(res, _success)
             return
-        }
-
-        const resultConvertor = (data, _success) => { // 判断地址有效性
-            _ajax({
-                type: 'GET',
-                url: data.url ? data.url : data.video,
-                cache: false,
-                timeout: 1000,
-                success: function () {
-                    _success(data)
-                },
-                error: function (res) {
-                    if (res.statusText == 'timeout') {
-                        console.log('use url')
-                        _success(data)
-                    } else { // back_url
-                        console.log('use backup_url')
-                        data.backup_url && (data.url = data.backup_url)
-                        data.backup_video && (data.video = data.backup_video)
-                        data.backup_audio && (data.audio = data.backup_audio)
-                        _success(data)
-                    }
-                }
-            })
         }
 
         // local

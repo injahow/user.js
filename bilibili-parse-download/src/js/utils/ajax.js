@@ -3,9 +3,8 @@ import { Message } from '../ui/message'
 
 function ajax(obj) {
     return new Promise((resolve, reject) => {
-        // set obj.success & obj.success
+        // set obj.success & obj.error
         obj.success = res => {
-
             if (res && res.code) {
                 Message.warning(`${res.message || `CODE:${res.code}`}`)
                 // todo
@@ -25,13 +24,16 @@ function ajax(obj) {
 
 function _ajax(obj) {
     return new Promise((resolve, reject) => {
-        // set obj.success & obj.success
-        obj.success || (obj.success = res => {
-            resolve(res)
-        })
-        obj.error || (obj.error = err => {
-            reject(err)
-        })
+        const _success = obj.success
+        obj.success = (res) => {
+            resolve(_success ? _success(res) : res)
+        }
+
+        const _error = obj.error
+        obj.error = (res) => {
+            reject(_error ? _error(res) : res)
+        }
+
         $.ajax(obj)
     })
 }

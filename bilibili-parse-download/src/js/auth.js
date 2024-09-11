@@ -1,7 +1,6 @@
 import { config } from './ui/config'
 import { store } from './store'
 import { Message, MessageBox } from './ui/message'
-import { user } from './user'
 import { _ajax, ajax } from './utils/ajax'
 import { QRCode, md5 } from './utils/runtime-lib'
 import { getCookie } from './utils/cookie'
@@ -25,8 +24,8 @@ class Auth {
 
         if (!auth_id && !auth_sec) return
 
-        if (user.is_login && (config.base_api !== store.get('pre_base_api') ||
-            Date.now() - parseInt(auth_time) > 72 * 3600 * 1e3)) {
+        if (config.base_api !== store.get('pre_base_api') ||
+            Date.now() - parseInt(auth_time) > 24 * 3600 * 1e3) {
             if (!access_key) {
                 Message.info('授权已失效')
                 this.reLogin()
@@ -44,7 +43,7 @@ class Auth {
                 }
                 store.set('auth_time', Date.now())
                 ajax({
-                    url: `${config.base_api}/auth/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}&access_key=${access_key}`,
+                    url: `${config.base_api}${(config.base_api.endsWith('/') ? '' : '/')}auth/?act=check&auth_id=${auth_id}&auth_sec=${auth_sec}`,
                     type: 'GET',
                     dataType: 'json'
                 }).then(res => {
@@ -131,7 +130,7 @@ class Auth {
                     if (!res.code && res.data) {
                         console.log('login success')
                         is_login = 1
-                        this.doAuth(res.data.token_info)
+                        this.doAuth(res.data)
                         box.affirm()
                     } else if (res.code === 86038) {
                         box.affirm()
@@ -171,7 +170,7 @@ class Auth {
                 }).then(res => {
                     if (!res.code && res.data) {
                         console.log('login success')
-                        this.doAuth(res.data.token_info)
+                        this.doAuth(res.data)
                         is_login = 1
                         this.auth_window.close()
                     } else if (res.code === 86038) {
@@ -197,7 +196,7 @@ class Auth {
             store.get('auth_sec')
         ]
         ajax({
-            url: `${config.base_api}/auth/?act=logout&auth_id=${auth_id}&auth_sec=${auth_sec}`,
+            url: `${config.base_api}${(config.base_api.endsWith('/') ? '' : '/')}auth/?act=logout&auth_id=${auth_id}&auth_sec=${auth_sec}`,
             type: 'GET',
             dataType: 'json',
         }).then(res => {
@@ -223,13 +222,15 @@ class Auth {
         }
 
         ajax({
-            url: `${config.base_api}/auth/?act=login&${Object.entries({
+            url: `${config.base_api}${(config.base_api.endsWith('/') ? '' : '/')}auth/?act=login&${Object.entries({
                 auth_id: store.get('auth_id'),
-                auth_sec: store.get('auth_sec'),
-                ...param
+                auth_sec: store.get('auth_sec')
             }).map(e => `${e[0]}=${e[1]}`).join('&')}`,
-            type: 'GET',
-            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                ...param
+            })
         }).then(res => {
             if (!res.code) {
                 Message.success('授权成功')

@@ -33,6 +33,8 @@ const config = {
 const default_config = Object.assign({}, config) // 浅拷贝
 
 const hostMap = {
+    local: document.head.innerHTML.match(/up[\w-]+\.bilivideo\.com/)?.[0] || '未发现本地CDN',
+    bd: 'upos-sz-mirrorbd.bilivideo.com',
     ks3: 'upos-sz-mirrorks3.bilivideo.com',
     ks3b: 'upos-sz-mirrorks3b.bilivideo.com',
     ks3c: 'upos-sz-mirrorks3c.bilivideo.com',
@@ -145,7 +147,7 @@ const config_functions = {
         }
         help_clicked = true
         ajax({
-            url: `${config.base_api}/auth/?act=help`,
+            url: `${config.base_api}${(config.base_api.endsWith('/') ? '' : '/')}auth/?act=help`,
             dataType: 'text',
         }).then(res => {
             if (res) {

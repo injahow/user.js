@@ -10,11 +10,11 @@ class Check {
         this.cid = ''
         this.q = ''
         this.epid = ''
-        this.lock = false
+        this.locked = false
     }
 
     refresh() {
-        if (this.lock) {
+        if (this.locked) {
             return
         }
         this.lock = true
@@ -22,8 +22,8 @@ class Check {
         $('#video_download').hide()
         $('#video_download_2').hide()
         player.recover_player()
-        // 更新check
         try {
+            // 更新check
             this.href = location.href
             const vb = video.base()
             this.aid = vb.aid()
@@ -32,7 +32,7 @@ class Check {
             this.q = video.get_quality().q
         } catch (err) {
             console.log(err)
-        } finally{
+        } finally {
             this.lock = false
         }
     }

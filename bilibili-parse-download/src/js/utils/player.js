@@ -110,6 +110,14 @@ function replace_player(url, url_2) {
                 {
                     text: '脚本作者',
                     link: 'https://injahow.com'
+                },
+                {
+                    text: '恢复播放器',
+                    click: () => {
+                        $('#video_download').hide()
+                        $('#video_download_2').hide()
+                        recover_player()
+                    }
                 }
             ]
         })

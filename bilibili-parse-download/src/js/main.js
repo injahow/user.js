@@ -261,13 +261,13 @@ class Main {
             if (check.href !== location.href) {
                 check.refresh()
             }
-        }, 1000)
+        }, 500)
         setInterval(() => {
             const vb = video.base()
             if (check.aid !== vb.aid() || check.cid !== vb.cid()) {
                 check.refresh()
             }
-        }, 3000)
+        }, 1500)
     }
 }
 
