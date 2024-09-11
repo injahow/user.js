@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.6.0
+// @version       2.6.1
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -264,11 +264,14 @@
     }
     function _ajax(obj) {
         return new Promise((function(resolve, reject) {
-            obj.success || (obj.success = function(res) {
-                resolve(res);
-            }), obj.error || (obj.error = function(err) {
-                reject(err);
-            }), $.ajax(obj);
+            var _success = obj.success;
+            obj.success = function(res) {
+                resolve(_success ? _success(res) : res);
+            };
+            var _error = obj.error;
+            obj.error = function(res) {
+                reject(_error ? _error(res) : res);
+            }, $.ajax(obj);
         }));
     }
     function _typeof(obj) {
@@ -986,6 +989,9 @@
         return "?";
     }
     var q_map = {
+        "8K 超高清": 127,
+        "4K 超清": 120,
+        "1080P 60帧": 116,
         "1080P 高码率": 112,
         "1080P 高清": 80,
         "720P 高清": 64,
@@ -1071,17 +1077,17 @@
             }
         } ]), Store;
     }(), store = new Store;
+    function api_typeof(obj) {
+        return api_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, api_typeof(obj);
+    }
     function api_createForOfIteratorHelper(o, allowArrayLike) {
         var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
         if (!it) {
-            if (Array.isArray(o) || (it = function api_unsupportedIterableToArray(o, minLen) {
-                if (!o) return;
-                if ("string" == typeof o) return api_arrayLikeToArray(o, minLen);
-                var n = Object.prototype.toString.call(o).slice(8, -1);
-                "Object" === n && o.constructor && (n = o.constructor.name);
-                if ("Map" === n || "Set" === n) return Array.from(o);
-                if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return api_arrayLikeToArray(o, minLen);
-            }(o)) || allowArrayLike && o && "number" == typeof o.length) {
+            if (Array.isArray(o) || (it = api_unsupportedIterableToArray(o)) || allowArrayLike && o && "number" == typeof o.length) {
                 it && (o = it);
                 var i = 0, F = function F() {};
                 return {
@@ -1123,10 +1129,330 @@
             }
         };
     }
+    function api_toConsumableArray(arr) {
+        return function api_arrayWithoutHoles(arr) {
+            if (Array.isArray(arr)) return api_arrayLikeToArray(arr);
+        }(arr) || function api_iterableToArray(iter) {
+            if ("undefined" != typeof Symbol && null != iter[Symbol.iterator] || null != iter["@@iterator"]) return Array.from(iter);
+        }(arr) || api_unsupportedIterableToArray(arr) || function api_nonIterableSpread() {
+            throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+        }();
+    }
+    function api_unsupportedIterableToArray(o, minLen) {
+        if (o) {
+            if ("string" == typeof o) return api_arrayLikeToArray(o, minLen);
+            var n = Object.prototype.toString.call(o).slice(8, -1);
+            return "Object" === n && o.constructor && (n = o.constructor.name), "Map" === n || "Set" === n ? Array.from(o) : "Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n) ? api_arrayLikeToArray(o, minLen) : void 0;
+        }
+    }
     function api_arrayLikeToArray(arr, len) {
         (null == len || len > arr.length) && (len = arr.length);
         for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
         return arr2;
+    }
+    function _regeneratorRuntime() {
+        _regeneratorRuntime = function _regeneratorRuntime() {
+            return exports;
+        };
+        var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+        function define(obj, key, value) {
+            return Object.defineProperty(obj, key, {
+                value: value,
+                enumerable: !0,
+                configurable: !0,
+                writable: !0
+            }), obj[key];
+        }
+        try {
+            define({}, "");
+        } catch (err) {
+            define = function define(obj, key, value) {
+                return obj[key] = value;
+            };
+        }
+        function wrap(innerFn, outerFn, self, tryLocsList) {
+            var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []);
+            return generator._invoke = function(innerFn, self, context) {
+                var state = "suspendedStart";
+                return function(method, arg) {
+                    if ("executing" === state) throw new Error("Generator is already running");
+                    if ("completed" === state) {
+                        if ("throw" === method) throw arg;
+                        return doneResult();
+                    }
+                    for (context.method = method, context.arg = arg; ;) {
+                        var delegate = context.delegate;
+                        if (delegate) {
+                            var delegateResult = maybeInvokeDelegate(delegate, context);
+                            if (delegateResult) {
+                                if (delegateResult === ContinueSentinel) continue;
+                                return delegateResult;
+                            }
+                        }
+                        if ("next" === context.method) context.sent = context._sent = context.arg; else if ("throw" === context.method) {
+                            if ("suspendedStart" === state) throw state = "completed", context.arg;
+                            context.dispatchException(context.arg);
+                        } else "return" === context.method && context.abrupt("return", context.arg);
+                        state = "executing";
+                        var record = tryCatch(innerFn, self, context);
+                        if ("normal" === record.type) {
+                            if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+                            return {
+                                value: record.arg,
+                                done: context.done
+                            };
+                        }
+                        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+                    }
+                };
+            }(innerFn, self, context), generator;
+        }
+        function tryCatch(fn, obj, arg) {
+            try {
+                return {
+                    type: "normal",
+                    arg: fn.call(obj, arg)
+                };
+            } catch (err) {
+                return {
+                    type: "throw",
+                    arg: err
+                };
+            }
+        }
+        exports.wrap = wrap;
+        var ContinueSentinel = {};
+        function Generator() {}
+        function GeneratorFunction() {}
+        function GeneratorFunctionPrototype() {}
+        var IteratorPrototype = {};
+        define(IteratorPrototype, iteratorSymbol, (function() {
+            return this;
+        }));
+        var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+        NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
+        var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+        function defineIteratorMethods(prototype) {
+            [ "next", "throw", "return" ].forEach((function(method) {
+                define(prototype, method, (function(arg) {
+                    return this._invoke(method, arg);
+                }));
+            }));
+        }
+        function AsyncIterator(generator, PromiseImpl) {
+            function invoke(method, arg, resolve, reject) {
+                var record = tryCatch(generator[method], generator, arg);
+                if ("throw" !== record.type) {
+                    var result = record.arg, value = result.value;
+                    return value && "object" == api_typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then((function(value) {
+                        invoke("next", value, resolve, reject);
+                    }), (function(err) {
+                        invoke("throw", err, resolve, reject);
+                    })) : PromiseImpl.resolve(value).then((function(unwrapped) {
+                        result.value = unwrapped, resolve(result);
+                    }), (function(error) {
+                        return invoke("throw", error, resolve, reject);
+                    }));
+                }
+                reject(record.arg);
+            }
+            var previousPromise;
+            this._invoke = function(method, arg) {
+                function callInvokeWithMethodAndArg() {
+                    return new PromiseImpl((function(resolve, reject) {
+                        invoke(method, arg, resolve, reject);
+                    }));
+                }
+                return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+            };
+        }
+        function maybeInvokeDelegate(delegate, context) {
+            var method = delegate.iterator[context.method];
+            if (void 0 === method) {
+                if (context.delegate = null, "throw" === context.method) {
+                    if (delegate.iterator.return && (context.method = "return", context.arg = void 0, 
+                    maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel;
+                    context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method");
+                }
+                return ContinueSentinel;
+            }
+            var record = tryCatch(method, delegate.iterator, context.arg);
+            if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, 
+            context.delegate = null, ContinueSentinel;
+            var info = record.arg;
+            return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, 
+            "return" !== context.method && (context.method = "next", context.arg = void 0), 
+            context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), 
+            context.delegate = null, ContinueSentinel);
+        }
+        function pushTryEntry(locs) {
+            var entry = {
+                tryLoc: locs[0]
+            };
+            1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], 
+            entry.afterLoc = locs[3]), this.tryEntries.push(entry);
+        }
+        function resetTryEntry(entry) {
+            var record = entry.completion || {};
+            record.type = "normal", delete record.arg, entry.completion = record;
+        }
+        function Context(tryLocsList) {
+            this.tryEntries = [ {
+                tryLoc: "root"
+            } ], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
+        }
+        function values(iterable) {
+            if (iterable) {
+                var iteratorMethod = iterable[iteratorSymbol];
+                if (iteratorMethod) return iteratorMethod.call(iterable);
+                if ("function" == typeof iterable.next) return iterable;
+                if (!isNaN(iterable.length)) {
+                    var i = -1, next = function next() {
+                        for (;++i < iterable.length; ) if (hasOwn.call(iterable, i)) return next.value = iterable[i], 
+                        next.done = !1, next;
+                        return next.value = void 0, next.done = !0, next;
+                    };
+                    return next.next = next;
+                }
+            }
+            return {
+                next: doneResult
+            };
+        }
+        function doneResult() {
+            return {
+                value: void 0,
+                done: !0
+            };
+        }
+        return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), 
+        define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), 
+        exports.isGeneratorFunction = function(genFun) {
+            var ctor = "function" == typeof genFun && genFun.constructor;
+            return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
+        }, exports.mark = function(genFun) {
+            return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, 
+            define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), 
+            genFun;
+        }, exports.awrap = function(arg) {
+            return {
+                __await: arg
+            };
+        }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, (function() {
+            return this;
+        })), exports.AsyncIterator = AsyncIterator, exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+            void 0 === PromiseImpl && (PromiseImpl = Promise);
+            var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+            return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then((function(result) {
+                return result.done ? result.value : iter.next();
+            }));
+        }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, (function() {
+            return this;
+        })), define(Gp, "toString", (function() {
+            return "[object Generator]";
+        })), exports.keys = function(object) {
+            var keys = [];
+            for (var key in object) keys.push(key);
+            return keys.reverse(), function next() {
+                for (;keys.length; ) {
+                    var key = keys.pop();
+                    if (key in object) return next.value = key, next.done = !1, next;
+                }
+                return next.done = !0, next;
+            };
+        }, exports.values = values, Context.prototype = {
+            constructor: Context,
+            reset: function reset(skipTempReset) {
+                if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1, 
+                this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(resetTryEntry), 
+                !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = void 0);
+            },
+            stop: function stop() {
+                this.done = !0;
+                var rootRecord = this.tryEntries[0].completion;
+                if ("throw" === rootRecord.type) throw rootRecord.arg;
+                return this.rval;
+            },
+            dispatchException: function dispatchException(exception) {
+                if (this.done) throw exception;
+                var context = this;
+                function handle(loc, caught) {
+                    return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", 
+                    context.arg = void 0), !!caught;
+                }
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i], record = entry.completion;
+                    if ("root" === entry.tryLoc) return handle("end");
+                    if (entry.tryLoc <= this.prev) {
+                        var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc");
+                        if (hasCatch && hasFinally) {
+                            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+                            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+                        } else if (hasCatch) {
+                            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+                        } else {
+                            if (!hasFinally) throw new Error("try statement without catch or finally");
+                            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+                        }
+                    }
+                }
+            },
+            abrupt: function abrupt(type, arg) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+                        var finallyEntry = entry;
+                        break;
+                    }
+                }
+                finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
+                var record = finallyEntry ? finallyEntry.completion : {};
+                return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", 
+                this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
+            },
+            complete: function complete(record, afterLoc) {
+                if ("throw" === record.type) throw record.arg;
+                return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, 
+                this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), 
+                ContinueSentinel;
+            },
+            finish: function finish(finallyLoc) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), 
+                    resetTryEntry(entry), ContinueSentinel;
+                }
+            },
+            catch: function _catch(tryLoc) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.tryLoc === tryLoc) {
+                        var record = entry.completion;
+                        if ("throw" === record.type) {
+                            var thrown = record.arg;
+                            resetTryEntry(entry);
+                        }
+                        return thrown;
+                    }
+                }
+                throw new Error("illegal catch attempt");
+            },
+            delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+                return this.delegate = {
+                    iterator: values(iterable),
+                    resultName: resultName,
+                    nextLoc: nextLoc
+                }, "next" === this.method && (this.arg = void 0), ContinueSentinel;
+            }
+        }, exports;
+    }
+    function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+        try {
+            var info = gen[key](arg), value = info.value;
+        } catch (error) {
+            return void reject(error);
+        }
+        info.done ? resolve(value) : Promise.resolve(value).then(_next, _throw);
     }
     function get_url_base(page, quality, video_format, success, error, request_type) {
         var _success, _error;
@@ -1142,11 +1468,10 @@
         var vb = video.base(), _ref = [ vb.aid(page), vb.bvid(page), vb.cid(page), vb.epid(page), quality || video.get_quality().q, vb.type() ], aid = _ref[0], bvid = _ref[1], cid = _ref[2], epid = _ref[3], q = _ref[4], type = _ref[5], format = video_format || config_config.format;
         "auto" === request_type && user.needReplace() && (request_type = "remote");
         var base_api, url_replace_cdn = function url_replace_cdn(url) {
-            if ("0" !== config_config.host_key) {
-                var url_tmp = url.split("/");
-                url_tmp[2] = hostMap[config_config.host_key], url = url_tmp.join("/");
-            }
-            return url;
+            if ("0" === config_config.host_key) return url;
+            var url_tmp = url.split("/"), mapping = hostMap[config_config.host_key];
+            return "string" == typeof mapping && mapping.length ? mapping.at(0).match(/[a-z]/) && (url_tmp[2] = mapping) : "function" == typeof mapping && (url_tmp[2] = mapping()), 
+            url = url_tmp.join("/");
         }, ajax_obj = {
             type: "GET",
             dataType: "json"
@@ -1169,27 +1494,94 @@
             var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
             auth_id && auth_sec && (base_api += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec));
         }
+        var resultConvertor = function resultConvertor(data, _success) {
+            var checkTask = function checkTask(key, backup_key) {
+                return data[backup_key] ? _ajax({
+                    type: "GET",
+                    url: data[key],
+                    cache: !1,
+                    timeout: 1e3,
+                    success: function success(res) {
+                        return key;
+                    },
+                    error: function error(res) {
+                        return "timeout" == res.statusText ? key : backup_key;
+                    }
+                }) : Promise.resolve(key);
+            };
+            new Promise((function(resolve, reject) {
+                var promiseList = [], valueList = [];
+                data.url ? promiseList.push(checkTask("url", "backup_url")) : (promiseList.push(checkTask("video", "backup_video")), 
+                promiseList.push(checkTask("audio", "backup_audio")));
+                var timer = setTimeout((function() {
+                    resolve(valueList);
+                }), 1500), index = 0;
+                promiseList.forEach(function() {
+                    var _ref3 = function _asyncToGenerator(fn) {
+                        return function() {
+                            var self = this, args = arguments;
+                            return new Promise((function(resolve, reject) {
+                                var gen = fn.apply(self, args);
+                                function _next(value) {
+                                    asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+                                }
+                                function _throw(err) {
+                                    asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+                                }
+                                _next(void 0);
+                            }));
+                        };
+                    }(_regeneratorRuntime().mark((function _callee(promise) {
+                        var result;
+                        return _regeneratorRuntime().wrap((function _callee$(_context) {
+                            for (;;) switch (_context.prev = _context.next) {
+                              case 0:
+                                return _context.prev = 0, _context.next = 3, promise;
+
+                              case 3:
+                                result = _context.sent, _context.next = 9;
+                                break;
+
+                              case 6:
+                                _context.prev = 6, _context.t0 = _context.catch(0), result = _context.t0;
+
+                              case 9:
+                                console.log("use " + result), valueList[index++] = result, index == promiseList.length && (clearInterval(timer), 
+                                resolve(valueList));
+
+                              case 12:
+                              case "end":
+                                return _context.stop();
+                            }
+                        }), _callee, null, [ [ 0, 6 ] ]);
+                    })));
+                    return function(_x) {
+                        return _ref3.apply(this, arguments);
+                    };
+                }());
+            })).then((function(resList) {
+                if (console.log("use data key: ", resList), resList) {
+                    var _step, _iterator = api_createForOfIteratorHelper(resList = api_toConsumableArray(resList));
+                    try {
+                        for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+                            var key = _step.value;
+                            data[key] && ([ "url", "backup_url" ].includes(key) ? data.url = data[key] : [ "video", "backup_video" ].includes(key) ? data.video = data[key] : [ "audio", "backup_audio" ].includes(key) && (data.audio = data[key]));
+                        }
+                    } catch (err) {
+                        _iterator.e(err);
+                    } finally {
+                        _iterator.f();
+                    }
+                }
+            })).finally((function() {
+                _success(data);
+            }));
+        };
         ajax_obj.url = base_api, ajax(ajax_obj).then((function(res) {
             var data;
             if (res.code || (data = res.result || res.data), !data) return "auto" === request_type ? void get_url_base(page, quality, video_format, success, error, "remote") : (res.url && (res.url = url_replace_cdn(res.url)), 
             res.video && (res.video = url_replace_cdn(res.video)), res.audio && (res.audio = url_replace_cdn(res.audio)), 
-            void _success(res));
-            var resultConvertor = function resultConvertor(data, _success) {
-                _ajax({
-                    type: "GET",
-                    url: data.url ? data.url : data.video,
-                    cache: !1,
-                    timeout: 1e3,
-                    success: function success() {
-                        _success(data);
-                    },
-                    error: function error(res) {
-                        "timeout" == res.statusText ? (console.log("use url"), _success(data)) : (console.log("use backup_url"), 
-                        data.backup_url && (data.url = data.backup_url), data.backup_video && (data.video = data.backup_video), 
-                        data.backup_audio && (data.audio = data.backup_audio), _success(data));
-                    }
-                });
-            };
+            void resultConvertor(res, _success));
             if (data.dash) {
                 for (var result = {
                     code: 0,
@@ -1219,7 +1611,7 @@
         }));
     }
     function _get_subtitle(p, callback) {
-        var to_blob_url = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], vb = video.base(), _ref3 = [ vb.aid(p), vb.cid(p), vb.epid(p) ], aid = _ref3[0], cid = _ref3[1], epid = _ref3[2];
+        var to_blob_url = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2], vb = video.base(), _ref4 = [ vb.aid(p), vb.cid(p), vb.epid(p) ], aid = _ref4[0], cid = _ref4[1], epid = _ref4[2];
         ajax({
             url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
             dataType: "json"
@@ -1228,20 +1620,20 @@
                 url: "".concat(res.data.subtitle.subtitles[0].subtitle_url),
                 dataType: "json"
             }).then((function(res) {
-                var _step, webvtt = "WEBVTT\n\n", _iterator = api_createForOfIteratorHelper(res.body || [ {
+                var _step2, webvtt = "WEBVTT\n\n", _iterator2 = api_createForOfIteratorHelper(res.body || [ {
                     from: 0,
                     to: 0,
                     content: ""
                 } ]);
                 try {
-                    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
-                        var data = _step.value, a = new Date(1e3 * (parseInt(data.from) - 28800)).toTimeString().split(" ")[0] + "." + (data.from.toString().split(".")[1] || "000").padEnd(3, "0"), b = new Date(1e3 * (parseInt(data.to) - 28800)).toTimeString().split(" ")[0] + "." + (data.to.toString().split(".")[1] || "000").padEnd(3, "0");
+                    for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+                        var data = _step2.value, a = new Date(1e3 * (parseInt(data.from) - 28800)).toTimeString().split(" ")[0] + "." + (data.from.toString().split(".")[1] || "000").padEnd(3, "0"), b = new Date(1e3 * (parseInt(data.to) - 28800)).toTimeString().split(" ")[0] + "." + (data.to.toString().split(".")[1] || "000").padEnd(3, "0");
                         webvtt += "".concat(a, " --\x3e ").concat(b, "\n").concat(data.content.trim(), "\n\n");
                     }
                 } catch (err) {
-                    _iterator.e(err);
+                    _iterator2.e(err);
                 } finally {
-                    _iterator.f();
+                    _iterator2.f();
                 }
                 callback(to_blob_url ? URL.createObjectURL(new Blob([ webvtt ], {
                     type: "text/vtt"
@@ -1271,8 +1663,8 @@
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         }, runtime_lib_typeof(obj);
     }
-    function _regeneratorRuntime() {
-        _regeneratorRuntime = function _regeneratorRuntime() {
+    function runtime_lib_regeneratorRuntime() {
+        runtime_lib_regeneratorRuntime = function _regeneratorRuntime() {
             return exports;
         };
         var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
@@ -1567,7 +1959,7 @@
             }
         }, exports;
     }
-    function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    function runtime_lib_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
         try {
             var info = gen[key](arg), value = info.value;
         } catch (error) {
@@ -1575,16 +1967,16 @@
         }
         info.done ? resolve(value) : Promise.resolve(value).then(_next, _throw);
     }
-    function _asyncToGenerator(fn) {
+    function runtime_lib_asyncToGenerator(fn) {
         return function() {
             var self = this, args = arguments;
             return new Promise((function(resolve, reject) {
                 var gen = fn.apply(self, args);
                 function _next(value) {
-                    asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+                    runtime_lib_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
                 }
                 function _throw(err) {
-                    asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+                    runtime_lib_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
                 }
                 _next(void 0);
             }));
@@ -1615,9 +2007,9 @@
                 return new Promise((function(resolve, reject) {
                     var i = 0;
                     urls.forEach((function(url) {
-                        setTimeout(_asyncToGenerator(_regeneratorRuntime().mark((function _callee() {
+                        setTimeout(runtime_lib_asyncToGenerator(runtime_lib_regeneratorRuntime().mark((function _callee() {
                             var code;
-                            return _regeneratorRuntime().wrap((function _callee$(_context) {
+                            return runtime_lib_regeneratorRuntime().wrap((function _callee$(_context) {
                                 for (;;) switch (_context.prev = _context.next) {
                                   case 0:
                                     if (_context.prev = 0, !_this.anyResolved) {
@@ -1812,6 +2204,11 @@
                     }, {
                         text: "脚本作者",
                         link: "https://injahow.com"
+                    }, {
+                        text: "恢复播放器",
+                        click: function click() {
+                            $("#video_download").hide(), $("#video_download_2").hide(), recover_player();
+                        }
                     } ]
                 }), url_2 && "#" !== url_2) {
                     $("body").append('<div id="bp_dplayer_2" style="display:none;"></div>'), window.bp_dplayer_2 = new DPlayer({
@@ -1862,7 +2259,7 @@
             !function check_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
             }(this, Check), this.href = "", this.aid = "", this.cid = "", this.q = "", this.epid = "", 
-            this.lock = !1;
+            this.locked = !1;
         }
         return function check_createClass(Constructor, protoProps, staticProps) {
             return protoProps && check_defineProperties(Constructor.prototype, protoProps), 
@@ -1872,7 +2269,7 @@
         }(Check, [ {
             key: "refresh",
             value: function refresh() {
-                if (!this.lock) {
+                if (!this.locked) {
                     this.lock = !0, console.log("refresh..."), $("#video_download").hide(), $("#video_download_2").hide(), 
                     player.recover_player();
                     try {
@@ -2159,7 +2556,7 @@
     function format(url) {
         return url ? url.match(".mp4|.m4s") ? ".mp4" : url.match(".flv") ? ".flv" : ".mp4" : "";
     }
-    var Download = {
+    var _document$head$innerH, Download = {
         url_format: format,
         download: function download(url, filename, type) {
             filename = filename.replace(/[\/\\*|]+/g, "-").replace(/:/g, "：").replace(/\?/g, "？").replace(/"/g, "'").replace(/</g, "《").replace(/>/g, "》"), 
@@ -2293,6 +2690,8 @@
         danmaku_speed: "15",
         danmaku_fontsize: "22"
     }, default_config = Object.assign({}, config_config), hostMap = {
+        local: (null === (_document$head$innerH = document.head.innerHTML.match(/up[\w-]+\.bilivideo\.com/)) || void 0 === _document$head$innerH ? void 0 : _document$head$innerH[0]) || "未发现本地CDN",
+        bd: "upos-sz-mirrorbd.bilivideo.com",
         ks3: "upos-sz-mirrorks3.bilivideo.com",
         ks3b: "upos-sz-mirrorks3b.bilivideo.com",
         ks3c: "upos-sz-mirrorks3c.bilivideo.com",
@@ -2362,7 +2761,7 @@
         },
         show_help: function show_help() {
             help_clicked ? message_Message_miaow() : (help_clicked = !0, ajax({
-                url: "".concat(config_config.base_api, "/auth/?act=help"),
+                url: "".concat(config_config.base_api).concat(config_config.base_api.endsWith("/") ? "" : "/", "auth/?act=help"),
                 dataType: "text"
             }).then((function(res) {
                 res ? MessageBox_alert(res) : message_Message_warning("获取失败");
@@ -2445,7 +2844,7 @@
             value: function checkLoginStatus() {
                 var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || 0 ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
                 if (auth_id || auth_sec) {
-                    if (user.is_login && (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 2592e5)) {
+                    if (config_config.base_api !== store.get("pre_base_api") || Date.now() - parseInt(auth_time) > 864e5) {
                         if (!access_key) return message_Message_info("授权已失效"), void this.reLogin();
                         ajax({
                             url: "https://passport.bilibili.com/api/oauth?access_key=".concat(access_key),
@@ -2454,7 +2853,7 @@
                         }).then((function(res) {
                             if (res.code) return message_Message_info("授权已过期，准备重新授权"), void _this.reLogin();
                             store.set("auth_time", Date.now()), ajax({
-                                url: "".concat(config_config.base_api, "/auth/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec, "&access_key=").concat(access_key),
+                                url: "".concat(config_config.base_api).concat(config_config.base_api.endsWith("/") ? "" : "/", "auth/?act=check&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
                                 type: "GET",
                                 dataType: "json"
                             }).then((function(res) {
@@ -2524,7 +2923,7 @@
                                     ts: Date.now().toString()
                                 }, _this3.TV_SEC)
                             }).then((function(res) {
-                                !res.code && res.data ? (console.log("login success"), is_login = 1, _this3.doAuth(res.data.token_info), 
+                                !res.code && res.data ? (console.log("login success"), is_login = 1, _this3.doAuth(res.data), 
                                 box.affirm()) : 86038 === res.code && box.affirm();
                             }));
                         }), 3e3);
@@ -2553,7 +2952,7 @@
                                     ts: Date.now().toString()
                                 }, _this4.TV_SEC)
                             }).then((function(res) {
-                                !res.code && res.data ? (console.log("login success"), _this4.doAuth(res.data.token_info), 
+                                !res.code && res.data ? (console.log("login success"), _this4.doAuth(res.data), 
                                 is_login = 1, _this4.auth_window.close()) : 86038 === res.code && _this4.auth_window.close();
                             })).catch((function() {
                                 return _this4.auth_window.close();
@@ -2569,7 +2968,7 @@
                 if (store.get("auth_id")) if (this.auth_clicked) message_Message_miaow(); else {
                     var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
                     ajax({
-                        url: "".concat(config_config.base_api, "/auth/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
+                        url: "".concat(config_config.base_api).concat(config_config.base_api.endsWith("/") ? "" : "/", "auth/?act=logout&auth_id=").concat(auth_id, "&auth_sec=").concat(auth_sec),
                         type: "GET",
                         dataType: "json"
                     }).then((function(res) {
@@ -2587,14 +2986,15 @@
                 var _this6 = this;
                 this.auth_window && !this.auth_window.closed && (this.auth_window.close(), this.auth_window = null), 
                 ajax({
-                    url: "".concat(config_config.base_api, "/auth/?act=login&").concat(Object.entries(auth_objectSpread({
+                    url: "".concat(config_config.base_api).concat(config_config.base_api.endsWith("/") ? "" : "/", "auth/?act=login&").concat(Object.entries({
                         auth_id: store.get("auth_id"),
                         auth_sec: store.get("auth_sec")
-                    }, param)).map((function(e) {
+                    }).map((function(e) {
                         return "".concat(e[0], "=").concat(e[1]);
                     })).join("&")),
-                    type: "GET",
-                    dataType: "json"
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(auth_objectSpread({}, param))
                 }).then((function(res) {
                     res.code ? message_Message_warning("授权失败") : (message_Message_success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
                     store.set("auth_sec", res.auth_sec)), store.set("access_key", param.access_token), 
@@ -2747,7 +3147,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.6.0", " ").concat("15ab083", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.6.1", " ").concat("713ece0", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -2899,10 +3299,10 @@
                     check.refresh();
                 })), setInterval((function() {
                     check.href !== location.href && check.refresh();
-                }), 1e3), setInterval((function() {
+                }), 500), setInterval((function() {
                     var vb = video.base();
                     check.aid === vb.aid() && check.cid === vb.cid() || check.refresh();
-                }), 3e3);
+                }), 1500);
             }
         } ]), Main;
     }(), main = Main;
