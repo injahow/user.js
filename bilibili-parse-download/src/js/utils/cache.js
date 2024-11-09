@@ -37,19 +37,19 @@ class CacheFactory {
 class Cache {
 
     constructor() {
-        this.value = {}
+        this.data = {}
     }
 
     get(key = '') {
-        return this.value[key]
+        return this.data[key]
     }
 
     set(key = '', value) {
-        this.value[key] = value
+        this.data[key] = value
     }
 
     clear() {
-        this.value = {}
+        this.data = {}
     }
 }
 

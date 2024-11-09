@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.6.1
+// @version       2.6.2
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -157,24 +157,24 @@
     }(CacheFactory, "map", {});
     var Cache = function() {
         function Cache() {
-            cache_classCallCheck(this, Cache), this.value = {};
+            cache_classCallCheck(this, Cache), this.data = {};
         }
         return cache_createClass(Cache, [ {
             key: "get",
             value: function get() {
                 var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "";
-                return this.value[key];
+                return this.data[key];
             }
         }, {
             key: "set",
             value: function set() {
                 var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", value = arguments.length > 1 ? arguments[1] : void 0;
-                this.value[key] = value;
+                this.data[key] = value;
             }
         }, {
             key: "clear",
             value: function clear() {
-                this.value = {};
+                this.data = {};
             }
         } ]), Cache;
     }(), cache = CacheFactory;
@@ -568,9 +568,9 @@
         _inherits(Video, _VideoBase);
         var _super = _createSuper(Video);
         function Video(main_title, state) {
-            var _thisSuper, _this2;
+            var _state$sectionsInfo, _thisSuper, _this2;
             video_base_classCallCheck(this, Video), _this2 = _super.call(this, "video", main_title, state);
-            var sections = state.sections || [];
+            var sections = state.sections || (null === (_state$sectionsInfo = state.sectionsInfo) || void 0 === _state$sectionsInfo ? void 0 : _state$sectionsInfo.sections) || [];
             if (_this2.video_list = [], !sections.length > 0) return _possibleConstructorReturn(_this2);
             var _step, new_page = 0, i = 1, _iterator = _createForOfIteratorHelper(sections);
             try {
@@ -2207,7 +2207,7 @@
                     }, {
                         text: "恢复播放器",
                         click: function click() {
-                            $("#video_download").hide(), $("#video_download_2").hide(), recover_player();
+                            recover_player();
                         }
                     } ]
                 }), url_2 && "#" !== url_2) {
@@ -2670,13 +2670,42 @@
         download_danmaku_ass: download_danmaku_ass,
         download_subtitle_vtt: download_subtitle_vtt,
         open_ariang: open_ariang
-    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria参数：</label> <label>最大连接数：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:20%"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ', config_config = {
+    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria参数：</label> <label>最大连接数：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:20%"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ';
+    function config_ownKeys(object, enumerableOnly) {
+        var keys = Object.keys(object);
+        if (Object.getOwnPropertySymbols) {
+            var symbols = Object.getOwnPropertySymbols(object);
+            enumerableOnly && (symbols = symbols.filter((function(sym) {
+                return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+            }))), keys.push.apply(keys, symbols);
+        }
+        return keys;
+    }
+    function config_objectSpread(target) {
+        for (var i = 1; i < arguments.length; i++) {
+            var source = null != arguments[i] ? arguments[i] : {};
+            i % 2 ? config_ownKeys(Object(source), !0).forEach((function(key) {
+                config_defineProperty(target, key, source[key]);
+            })) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : config_ownKeys(Object(source)).forEach((function(key) {
+                Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+            }));
+        }
+        return target;
+    }
+    function config_defineProperty(obj, key, value) {
+        return key in obj ? Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0
+        }) : obj[key] = value, obj;
+    }
+    var config_config = {
         base_api: "https://api.injahow.cn/bparse/",
         request_type: "auto",
         format: "mp4",
         host_key: "0",
         replace_force: "0",
-        auth: "0",
         download_type: "web",
         rpc_domain: "http://localhost",
         rpc_port: "16800",
@@ -2727,13 +2756,18 @@
         save_config: function save_config() {
             var old_config;
             try {
-                old_config = JSON.parse(store.get("config_str")), store.set("config_str", JSON.stringify(config_config));
+                old_config = JSON.parse(store.get("config_str"));
             } catch (err) {
-                old_config = Object.assign({}, config_config);
+                old_config = {};
+            } finally {
+                old_config = config_objectSpread(config_objectSpread({}, default_config), old_config);
             }
-            for (var _i = 0, _arr = [ "base_api", "format", "auth", "video_quality" ]; _i < _arr.length; _i++) {
-                var key = _arr[_i];
-                if (config_config[key] !== old_config[key]) {
+            var config_str = {};
+            for (var key in default_config) config_config[key] !== default_config[key] && (config_str[key] = config_config[key]);
+            store.set("config_str", JSON.stringify(config_str));
+            for (var _i = 0, _arr = [ "base_api", "format", "video_quality" ]; _i < _arr.length; _i++) {
+                var _key = _arr[_i];
+                if (config_config[_key] !== old_config[_key]) {
                     $("#video_download").hide(), $("#video_download_2").hide();
                     break;
                 }
@@ -2747,8 +2781,8 @@
                 });
             })));
             for (var _i2 = 0, _arr2 = [ "danmaku_speed", "danmaku_fontsize" ]; _i2 < _arr2.length; _i2++) {
-                var _key = _arr2[_i2];
-                if (config_config[_key] !== old_config[_key]) {
+                var _key2 = _arr2[_i2];
+                if (config_config[_key2] !== old_config[_key2]) {
                     player.danmaku.config();
                     break;
                 }
@@ -2756,8 +2790,7 @@
             $("#bp_config").hide(), $("#bp_config").css("opacity", 0), scroll_scroll.show();
         },
         reset_config: function reset_config() {
-            for (var key in default_config) "auth" !== key && (config_config[key] = default_config[key], 
-            $("#".concat(key)).val(default_config[key]));
+            for (var key in default_config) config_config[key] = default_config[key], $("#".concat(key)).val(default_config[key]);
         },
         show_help: function show_help() {
             help_clicked ? message_Message_miaow() : (help_clicked = !0, ajax({
@@ -2840,6 +2873,11 @@
                 writable: !1
             }), Constructor;
         }(Auth, [ {
+            key: "hasAuth",
+            value: function hasAuth() {
+                return store.get("auth_id") && store.get("auth_sec");
+            }
+        }, {
             key: "checkLoginStatus",
             value: function checkLoginStatus() {
                 var _this = this, _ref = [ store.get("auth_id"), store.get("auth_sec"), store.get("access_key"), store.get("auth_time") || 0 ], auth_id = _ref[0], auth_sec = _ref[1], access_key = _ref[2], auth_time = _ref[3];
@@ -2974,7 +3012,7 @@
                     }).then((function(res) {
                         res.code ? message_Message_warning("注销失败") : (message_Message_success("注销成功"), store.set("auth_id", ""), 
                         store.set("auth_sec", ""), store.set("auth_time", "0"), store.set("access_key", ""), 
-                        $("#auth").val("0"), config_config.auth = "0");
+                        $("#auth").val("0"));
                     })).finally((function() {
                         return _this5.auth_clicked = !1;
                     }));
@@ -2998,7 +3036,7 @@
                 }).then((function(res) {
                     res.code ? message_Message_warning("授权失败") : (message_Message_success("授权成功"), res.auth_id && res.auth_sec && (store.set("auth_id", res.auth_id), 
                     store.set("auth_sec", res.auth_sec)), store.set("access_key", param.access_token), 
-                    store.set("auth_time", Date.now()), $("#auth").val("1"), config_config.auth = "1");
+                    store.set("auth_time", Date.now()), $("#auth").val("1"));
                 })).finally((function() {
                     return _this6.auth_clicked = !1;
                 }));
@@ -3147,7 +3185,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.6.1", " ").concat("713ece0", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.6.2", " ").concat("bf80f97", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -3172,20 +3210,18 @@
                     } catch (_unused) {
                         console.log("初始化脚本配置");
                     }
-                    config_config.auth = store.get("auth_id") && store.get("auth_sec") ? "1" : "0", 
                     store.set("config_str", JSON.stringify(config_config));
-                    var _loop = function _loop(_key2) {
-                        if ("auth" === _key2) return "continue";
-                        $("#".concat(_key2)).on("input", (function(e) {
-                            config_config[_key2] = e.delegateTarget.value;
+                    var _loop = function _loop(_key3) {
+                        $("#".concat(_key3)).on("input", (function(e) {
+                            config_config[_key3] = e.delegateTarget.value;
                         }));
                     };
-                    for (var _key2 in config_config) _loop(_key2);
+                    for (var _key3 in config_config) _loop(_key3);
                     for (var _k2 in config_functions) {
                         var e = $("#".concat(_k2))[0];
                         e && (e.onclick = config_functions[_k2]);
                     }
-                    for (var _key3 in config_config) $("#".concat(_key3)).val(config_config[_key3]);
+                    for (var _key4 in config_config) $("#".concat(_key4)).val(config_config[_key4]);
                     window.onbeforeunload = function() {
                         var bp_aria2_window = window.bp_aria2_window;
                         bp_aria2_window && !bp_aria2_window.closed && bp_aria2_window.close();
@@ -3205,7 +3241,7 @@
                 var evt = {
                     setting_btn: function setting_btn() {
                         for (var key in user.lazyInit(!0), config_config) $("#".concat(key)).val(config_config[key]);
-                        $("#bp_config").show(), $("#bp_config").animate({
+                        $("#auth").val(auth.hasAuth() ? "1" : "0"), $("#bp_config").show(), $("#bp_config").animate({
                             opacity: "1"
                         }, 300), scroll_scroll.hide();
                     },
@@ -3214,7 +3250,7 @@
                         var vb = video.base(), _ref = [ vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid() ], type = _ref[0], aid = _ref[1], p = _ref[2], cid = _ref[3], epid = _ref[4], q = video.get_quality().q;
                         api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
                         var _ref2 = [ store.get("auth_id"), store.get("auth_sec") ], auth_id = _ref2[0], auth_sec = _ref2[1];
-                        if ("1" === config_config.auth && auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
+                        if (auth_id && auth_sec && (api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec)), 
                         api_url !== api_url_temp || "local" === config_config.request_type) $("#video_url").attr("href", "#"), 
                         $("#video_url_2").attr("href", "#"), api_url_temp = api_url, message_Message_info("开始请求"), 
                         api.get_url((function(res) {
@@ -3247,7 +3283,7 @@
                         Download.download_subtitle_vtt(0, video.base().filename());
                     },
                     video_download_all: function video_download_all() {
-                        user.lazyInit(!0), store.get("auth_id") && store.get("auth_sec") ? "rpc" === config_config.download_type ? Download.download_all() : MessageBox_confirm("仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？", (function() {
+                        user.lazyInit(!0), auth.hasAuth() ? "rpc" === config_config.download_type ? Download.download_all() : MessageBox_confirm("仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？", (function() {
                             Download.download_all();
                         })) : MessageBox_confirm("批量下载仅支持授权用户使用RPC接口下载，是否进行授权？", (function() {
                             auth.login();

@@ -52,9 +52,10 @@ class Main {
                 for (const key in config) {
                     $(`#${key}`).val(config[key])
                 }
+                $('#auth').val(auth.hasAuth() ? '1' : '0')
                 //show setting
-                $("#bp_config").show()
-                $("#bp_config").animate({
+                $('#bp_config').show()
+                $('#bp_config').animate({
                     'opacity': '1'
                 }, 300)
                 scroll.hide()
@@ -75,7 +76,7 @@ class Main {
                     store.get('auth_id'),
                     store.get('auth_sec')
                 ]
-                if (config.auth === '1' && auth_id && auth_sec) {
+                if (auth_id && auth_sec) {
                     api_url += `&auth_id=${auth_id}&auth_sec=${auth_sec}`
                 }
                 if (api_url === api_url_temp && config.request_type !== 'local') {
@@ -143,8 +144,7 @@ class Main {
             },
             video_download_all() {
                 user.lazyInit(true) // init
-
-                if (store.get('auth_id') && store.get('auth_sec')) {
+                if (auth.hasAuth()) {
                     if (config.download_type === 'rpc') {
                         Download.download_all()
                     } else {

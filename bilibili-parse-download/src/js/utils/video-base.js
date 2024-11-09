@@ -109,7 +109,7 @@ class Video extends VideoBase {
 
     constructor(main_title, state) {
         super('video', main_title, state)
-        const sections = state.sections || []
+        const sections = state.sections || state.sectionsInfo?.sections || []
         this.video_list = [] // todo
         if (!sections.length > 0) {
             return

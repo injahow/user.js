@@ -8,19 +8,19 @@ _注意：此脚本只在视频、番剧、电影、电视剧播放页面（包�
 
 首先打开特定播放页面，脚本运行后，等待几秒后页面会出现如图所示操作按钮，如果没有请刷新页面
 
-![1.md.png](https://img.injahow.com/images/2021/08/20/1.md.png)
+![1.png](https://cdn.jsdelivr.net/gh/injahow/user.js/bilibili-parse-download/docs/1.png)
 
 当脚本运行成功出现操作按钮后，点击 **请求地址** 即可获取视频地址，视频分辨率与用户当前播放器选择的分辨率一致
 
 点击 **请求地址** 后，脚本首先会自行判断是否需要换源播放，随后会显示如图 **下载视频** 按钮
 
-![1.5.md.png](https://img.injahow.com/images/2021/08/20/1.5.md.png)
+![1.5.png](https://cdn.jsdelivr.net/gh/injahow/user.js/bilibili-parse-download/docs/1.5.png)
 
 直接点击 **下载视频** 脚本就会按照设置中选择的方式弹出提示或下载当前视频
 
 脚本设置界面如图，修改设置之前请确认你知道自己在干什么
 
-![2.md.png](https://img.injahow.com/images/2021/08/13/2.md.png)
+![2.png](https://cdn.jsdelivr.net/gh/injahow/user.js/bilibili-parse-download/docs/2.png)
 
 此外脚本内置了一套弹窗组件，分为自动消失的用户请求反馈提示框和用户交互使用的对话框
 
@@ -57,21 +57,21 @@ _注意：此脚本只在视频、番剧、电影、电视剧播放页面（包�
 
 - 请先确认当前设置使用的 **下载方式** ，如图为 RPC 接口
 
-  ![3.png](https://img.injahow.com/images/2021/08/13/3.png)
+  ![3.png](https://cdn.jsdelivr.net/gh/injahow/user.js/bilibili-parse-download/docs/3.png)
 
 - 部分浏览器无法使用 web 浏览器方式下载，可能没有安装下载插件或其他原因，如果 web 方式无法下载而且视频不大可尝试 blob 方式下载，还是不行就直接使用 RPC 接口用 Motrix 下载，还是不行，请反馈问题
 
 ### 2.下载的文件打不开？
 
-- 请先确认当前设置使用的 **视频格式** ，如图为 flv 格式
+- 请先确认当前设置使用的 **视频格式** ，如图为 mp4 格式
 
-  ![4.png](https://img.injahow.com/images/2021/08/13/4.png)
+  ![4.png](https://cdn.jsdelivr.net/gh/injahow/user.js/bilibili-parse-download/docs/4.png)
 
-- 脚本默认为 flv 选项，下载 flv 格式的视频（低分辨率视频会下载 mp4 文件），需要使用支持 flv 视频的播放器才可以打开，你也可以使用 ffmpeg 之类的软件将其转码为 mp4 格式，也可以直接使用 FDM （内置 ffmpeg 工具）转码为 mp4 格式
+- 脚本默认为 MP4 选项，清晰度有限，默认下载最高画质
 
-- 此外 dash 选项是和网站原生播放器播放的相同格式，为音视频分离格式，文件后缀为 m4s，可以直接改为 mp4 播放，建议可将音视频文件均下载后使用 ffmpeg 直接合并为 mp4 文件
+- DASH 选项是和网站原生播放器播放的相同格式，为音视频分离格式，文件后缀为 m4s，可以直接改为 mp4 播放，建议可将音视频文件均下载后使用 ffmpeg 直接合并为 mp4 文件
 
-- 最后 MP4 格式，视频清晰度有限默认下载最大分辨率，一般没什么问题
+- FLV 格式不再支持
 
 ### 3.换源播放失败？
 

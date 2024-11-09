@@ -15,7 +15,6 @@ const config = {
     format: 'mp4',
     host_key: '0',
     replace_force: '0',
-    auth: '0',
     download_type: 'web',
     rpc_domain: 'http://localhost',
     rpc_port: '16800',
@@ -78,12 +77,25 @@ const config_functions = {
         let old_config
         try {
             old_config = JSON.parse(store.get('config_str'))
-            store.set('config_str', JSON.stringify(config))
         } catch (err) {
-            old_config = Object.assign({}, config)
+            old_config = {}
+        } finally {
+            old_config = {
+                ...default_config,
+                ...old_config
+            }
         }
-        // 判断重新请求
-        for (const key of ['base_api', 'format', 'auth', 'video_quality']) {
+        // 差量保存
+        const config_str = {}
+        for (const key in default_config) {
+            if (config[key] !== default_config[key]) {
+                config_str[key] = config[key]
+            }
+        }
+        store.set('config_str', JSON.stringify(config_str))
+
+        // 判断重新请求 todo: auth
+        for (const key of ['base_api', 'format', 'video_quality']) {
             if (config[key] !== old_config[key]) {
                 $('#video_download').hide()
                 $('#video_download_2').hide()
@@ -133,9 +145,6 @@ const config_functions = {
     },
     reset_config() {
         for (const key in default_config) {
-            if (key === 'auth') {
-                continue
-            }
             config[key] = default_config[key]
             $(`#${key}`).val(default_config[key])
         }
@@ -210,13 +219,9 @@ function initConfig(el) {
             console.log('初始化脚本配置')
         }
     }
-    config.auth = store.get('auth_id') && store.get('auth_sec') ? '1' : '0'
     store.set('config_str', JSON.stringify(config))
     // 函数绑定
     for (const key in config) {
-        if (key === 'auth') {
-            continue
-        }
         $(`#${key}`).on('input', e => {
             config[key] = e.delegateTarget.value
         })

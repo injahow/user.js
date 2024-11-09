@@ -13,6 +13,10 @@ class Auth {
         this.TV_SEC = '59b43e04ad6965f34319062b478f83dd'
     }
 
+    hasAuth(){
+        return store.get('auth_id') && store.get('auth_sec')
+    }
+
     checkLoginStatus() {
 
         const [auth_id, auth_sec, access_key, auth_time] = [
@@ -207,7 +211,6 @@ class Auth {
                 store.set('auth_time', '0')
                 store.set('access_key', '')
                 $('#auth').val('0')
-                config.auth = '0'
             } else {
                 Message.warning('注销失败')
             }
@@ -241,7 +244,6 @@ class Auth {
                 store.set('access_key', param.access_token)
                 store.set('auth_time', Date.now())
                 $('#auth').val('1')
-                config.auth = '1'
             } else {
                 Message.warning('授权失败')
             }
