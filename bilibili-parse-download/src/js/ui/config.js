@@ -206,20 +206,17 @@ function initConfig(el) {
     }
     // 同步数据
     const config_str = store.get('config_str')
-    if (config_str) {
-        // set config from cache
-        try {
-            const old_config = JSON.parse(config_str)
-            for (const key in old_config) {
-                if (Object.hasOwnProperty.call(config, key)) {
-                    config[key] = old_config[key]
-                }
+    try {
+        const old_config = JSON.parse(config_str)
+        for (const key in old_config) {
+            if (Object.hasOwnProperty.call(config, key)) {
+                config[key] = old_config[key]
             }
-        } catch {
-            console.log('初始化脚本配置')
         }
+    } catch {
+        console.log('初始化脚本配置')
+        store.set('config_str', '{}')
     }
-    store.set('config_str', JSON.stringify(config))
     // 函数绑定
     for (const key in config) {
         $(`#${key}`).on('input', e => {

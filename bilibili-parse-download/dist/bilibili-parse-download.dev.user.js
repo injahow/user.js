@@ -475,18 +475,21 @@ var VideoBase = /*#__PURE__*/function () {
   video_base_createClass(VideoBase, [{
     key: "getVideo",
     value: function getVideo(p) {
-      var _prop,
-          _this = this;
+      var _this = this;
 
-      var prop = (_prop = {
-        'p': p,
-        'id': 0,
-        'title': '',
-        'filename': '',
-        'aid': 0,
-        'bvid': '',
-        'cid': 0
-      }, video_base_defineProperty(_prop, "bvid", ''), video_base_defineProperty(_prop, 'epid', 0), video_base_defineProperty(_prop, 'needVip', false), video_base_defineProperty(_prop, 'vipNeedPay', false), video_base_defineProperty(_prop, 'isLimited', false), _prop);
+      var prop = {
+        p: p,
+        id: 0,
+        title: '',
+        filename: '',
+        aid: 0,
+        bvid: '',
+        cid: 0,
+        epid: 0,
+        needVip: false,
+        vipNeedPay: false,
+        isLimited: false
+      };
       var clazz = clazzMap[this.constructor.name];
       prop = _objectSpread(_objectSpread({}, prop), Object.fromEntries(Object.getOwnPropertyNames(VideoBase.prototype).filter(function (key) {
         return key in prop;
@@ -589,10 +592,11 @@ var Video = /*#__PURE__*/function (_VideoBase) {
     video_base_classCallCheck(this, Video);
 
     _this2 = _super.call(this, 'video', main_title, state);
-    var sections = state.sections || ((_state$sectionsInfo = state.sectionsInfo) === null || _state$sectionsInfo === void 0 ? void 0 : _state$sectionsInfo.sections) || [];
     _this2.video_list = []; // todo
 
-    if (!sections.length > 0) {
+    var sections = state.sections || ((_state$sectionsInfo = state.sectionsInfo) === null || _state$sectionsInfo === void 0 ? void 0 : _state$sectionsInfo.sections) || [];
+
+    if (!sections.length) {
       return _possibleConstructorReturn(_this2);
     } // ? 集合视频 pageSize = 1
 
@@ -736,7 +740,7 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
           var _video = Object.assign({}, video);
 
           _video.title = video.title + (length > 1 ? " P".concat(i + 1, " ").concat(video.pages[i].title) : '');
-          _video.cid = video.pages[i].id;
+          _video.cid = video.pages[i].cid || 0;
           video_list.push(_video);
           i++;
         }
@@ -775,12 +779,12 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
   }, {
     key: "aid",
     value: function aid(p) {
-      return !p ? this.video.aid() : this.video_list[this.id(p)].id;
+      return !p ? this.video.aid() : this.video_list[this.id(p)].aid;
     }
   }, {
     key: "bvid",
     value: function bvid(p) {
-      return !p ? this.video.bvid() : this.video_list[this.id(p)].bv_id;
+      return !p ? this.video.bvid() : this.video_list[this.id(p)].bvid;
     }
   }, {
     key: "cid",
@@ -1843,6 +1847,12 @@ var api = {
 ;// CONCATENATED MODULE: ./src/js/utils/runtime-lib.js
 function runtime_lib_typeof(obj) { "@babel/helpers - typeof"; return runtime_lib_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, runtime_lib_typeof(obj); }
 
+function runtime_lib_createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = runtime_lib_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function runtime_lib_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return runtime_lib_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return runtime_lib_arrayLikeToArray(o, minLen); }
+
+function runtime_lib_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function runtime_lib_regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ runtime_lib_regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == runtime_lib_typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 
 function runtime_lib_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -1916,32 +1926,23 @@ var RuntimeLib = /*#__PURE__*/function () {
 
                   case 9:
                     console.log("[Runtime Library] Downloaded from ".concat(url, " , length = ").concat(code.length));
-
-                    try {
-                      (function runEval() {
-                        return window.eval(code);
-                      }).bind(window)();
-                    } catch (error) {// ignore js error
-                    } finally {
-                      _this.anyResolved = true;
-                      resolve(getModule(window));
-                    }
-
-                    _context.next = 19;
+                    _this.anyResolved = true;
+                    resolve(code);
+                    _context.next = 20;
                     break;
 
-                  case 13:
-                    _context.prev = 13;
+                  case 14:
+                    _context.prev = 14;
                     _context.t0 = _context["catch"](0);
 
                     if (!_this.anyResolved) {
-                      _context.next = 17;
+                      _context.next = 18;
                       break;
                     }
 
                     return _context.abrupt("return");
 
-                  case 17:
+                  case 18:
                     errs.push({
                       url: url,
                       err: _context.t0
@@ -1952,12 +1953,12 @@ var RuntimeLib = /*#__PURE__*/function () {
                       reject(errs);
                     }
 
-                  case 19:
+                  case 20:
                   case "end":
                     return _context.stop();
                 }
               }
-            }, _callee, null, [[0, 13]]);
+            }, _callee, null, [[0, 14]]);
           })), i++ * 1000);
         });
       });
@@ -1993,9 +1994,81 @@ var urls = function urls(_ref2) {
   return cdn_keys.map(function (k) {
     return cdn_map[k](name, ver, filename);
   });
+}; // 使用iframe异步加载，隔离window
+
+
+var runtime_div = document.createElement('div');
+runtime_div.id = 'bp_runtime_div';
+runtime_div.style.display = 'none';
+
+if (!document.getElementById(runtime_div.id)) {
+  document.body.appendChild(runtime_div);
+}
+
+var iframeInvoke = function iframeInvoke(scripts, getModules) {
+  console.log('[Runtime Library] iframe invoke scripts, size =', scripts.length); // ! html
+
+  var scriptTags = scripts.map(function (code) {
+    return "<script>".concat(code, "</script>");
+  }).join('');
+  var html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Runtime Library</title></head><body>".concat(scriptTags, "</body></html>");
+  var blobUrl = URL.createObjectURL(new Blob([html], {
+    type: 'text/html'
+  }));
+  var iframe = document.createElement('iframe');
+
+  var clearIframe = function clearIframe() {
+    clearTimeout(timeoutId);
+    URL.revokeObjectURL(blobUrl);
+    iframe.remove();
+  };
+
+  var timeoutId = setTimeout(function () {
+    // 超时处理
+    console.error('[Runtime Library] Script loading timed out');
+    clearIframe();
+  }, 10000);
+  iframe.src = blobUrl;
+
+  iframe.onload = function () {
+    console.log('[Runtime Library] Script loaded in iframe');
+
+    var _iterator = runtime_lib_createForOfIteratorHelper(getModules),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var getModule = _step.value;
+
+        try {
+          getModule(iframe.contentWindow);
+        } catch (err) {
+          console.error('[Runtime Library] Error in getModule:', err);
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    clearIframe();
+  };
+
+  iframe.onerror = function () {
+    console.error('[Runtime Library] Failed to load script in iframe');
+    clearIframe();
+  };
+
+  runtime_div.appendChild(iframe);
 };
 
-var init = function init(name, ver, filename, getModule) {
+var count = 0;
+var scripts = [],
+    getModules = [];
+
+var initIframe = function initIframe(name, ver, filename, getModule) {
+  count++;
   new RuntimeLib({
     urls: urls({
       name: name,
@@ -2003,28 +2076,76 @@ var init = function init(name, ver, filename, getModule) {
       filename: filename
     }),
     getModule: getModule
-  }).getModulePromise().then(null);
-}; // 伪同步
+  }).getModulePromise().then(function (script) {
+    scripts.push(script);
+    getModules.push(getModule);
+  }).catch(function (err) {
+    console.error("[Runtime Library] Failed to load ".concat(name, " from CDN"), err);
+  }).finally(function () {
+    if (--count === 0) {
+      iframeInvoke(scripts, getModules);
+      console.log('[Runtime Library] iframe invoke complete');
+    }
+  });
+};
 
+var initLocal = function initLocal(name, ver, filename, getModule, handleScript) {
+  handleScript = handleScript || function (script) {
+    return script;
+  };
+
+  new RuntimeLib({
+    urls: urls({
+      name: name,
+      ver: ver,
+      filename: filename
+    }),
+    getModule: getModule
+  }).getModulePromise().then(function (script) {
+    var blob = new Blob([handleScript(script)], {
+      type: 'text/javascript'
+    });
+    var blob_url = URL.createObjectURL(blob);
+    var script_tag = document.createElement('script');
+    script_tag.src = blob_url;
+
+    script_tag.onload = function () {
+      console.log("[Runtime Library] Loaded ".concat(name, " from local"));
+      getModule(window);
+      URL.revokeObjectURL(blob_url);
+    };
+
+    script_tag.onerror = function () {
+      console.error("[Runtime Library] Failed to load ".concat(name, " from local"));
+      URL.revokeObjectURL(blob_url);
+    };
+
+    runtime_div.appendChild(script_tag);
+  }).catch(function (err) {
+    console.error("[Runtime Library] Failed to load ".concat(name, " from local"), err);
+  });
+};
 
 var JSZip;
-init('jszip', '3.10.0', 'jszip.min.js', function (w) {
+initIframe('jszip', '3.10.0', 'jszip.min.js', function (w) {
   return JSZip = w.JSZip;
 });
 var flvjs;
-init('flv.js', '1.6.2', 'flv.min.js', function (w) {
+initIframe('flv.js', '1.6.2', 'flv.min.js', function (w) {
   return flvjs = w.flvjs;
 });
 var DPlayer;
-init('dplayer', '1.26.0', 'DPlayer.min.js', function (w) {
+initLocal('dplayer', '1.26.0', 'DPlayer.min.js', function (w) {
   return DPlayer = w.DPlayer;
+}, function (script) {
+  return script.replace('"About author"', '"About DIYgod"');
 });
 var QRCode;
-init('qrcodejs', '1.0.0', 'qrcode.min.js', function (w) {
+initIframe('qrcodejs', '1.0.0', 'qrcode.min.js', function (w) {
   return QRCode = w.QRCode;
 });
 var md5;
-init('blueimp-md5', '2.19.0', 'js/md5.min.js', function (w) {
+initIframe('blueimp-md5', '2.19.0', 'js/md5.min.js', function (w) {
   return md5 = w.md5;
 });
 ;// CONCATENATED MODULE: ./src/js/utils/player.js
@@ -3108,7 +3229,7 @@ var Download = {
 };
 ;// CONCATENATED MODULE: ./src/html/config.html
 // Module
-var config_code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:30%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web浏览器</option> <option value=\"blob\">Blob请求</option> <option value=\"rpc\">RPC接口</option> <option value=\"aria\">Aria命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:30%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%\"/> | <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:20%\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>Aria参数：</label> <label>最大连接数：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:20%\"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:5%\"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:5%\"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">扫码授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">网页授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a> </div> <br/> <div style=\"text-align:right\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ";
+var config_code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:30%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web浏览器</option> <option value=\"blob\">Blob请求</option> <option value=\"rpc\">RPC接口</option> <option value=\"aria\">Aria2命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:30%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%\"/> | <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:20%\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>Aria2配置：</label> <label>最大连接数：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:20%\"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:5%\"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:5%\"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">扫码授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">网页授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a> </div> <br/> <div style=\"text-align:right\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ";
 // Exports
 /* harmony default export */ var config = (config_code);
 ;// CONCATENATED MODULE: ./src/js/ui/config.js
@@ -3194,7 +3315,7 @@ var config_functions = {
     var old_config;
 
     try {
-      old_config = JSON.parse(store.get('config_str')); // store.set('config_str', JSON.stringify(config))
+      old_config = JSON.parse(store.get('config_str'));
     } catch (err) {
       old_config = {};
     } finally {
@@ -3210,7 +3331,7 @@ var config_functions = {
       }
     }
 
-    store.set('config_str', JSON.stringify(config_str)); // 判断重新请求 // todo auth
+    store.set('config_str', JSON.stringify(config_str)); // 判断重新请求 todo: auth
 
     for (var _i = 0, _arr = ['base_api', 'format', 'video_quality']; _i < _arr.length; _i++) {
       var _key = _arr[_i];
@@ -3326,22 +3447,19 @@ function initConfig(el) {
 
   var config_str = store.get('config_str');
 
-  if (config_str) {
-    // set config from cache
-    try {
-      var old_config = JSON.parse(config_str);
+  try {
+    var old_config = JSON.parse(config_str);
 
-      for (var key in old_config) {
-        if (Object.hasOwnProperty.call(config_config, key)) {
-          config_config[key] = old_config[key];
-        }
+    for (var key in old_config) {
+      if (Object.hasOwnProperty.call(config_config, key)) {
+        config_config[key] = old_config[key];
       }
-    } catch (_unused) {
-      console.log('初始化脚本配置');
     }
-  }
+  } catch (_unused) {
+    console.log('初始化脚本配置');
+    store.set('config_str', '{}');
+  } // 函数绑定
 
-  store.set('config_str', JSON.stringify(config_config)); // 函数绑定
 
   var _loop = function _loop(_key3) {
     $("#".concat(_key3)).on('input', function (e) {
@@ -3947,7 +4065,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.6.2", " ").concat("bf80f97", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.6.3", " ").concat("ce166b3", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

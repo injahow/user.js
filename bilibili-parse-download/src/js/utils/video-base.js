@@ -18,18 +18,17 @@ class VideoBase {
 
     getVideo(p) {
         let prop = {
-            'p': p,
-            'id': 0,
-            'title': '',
-            'filename': '',
-            'aid': 0,
-            'bvid': '',
-            'cid': 0,
-            'bvid': '',
-            'epid': 0,
-            'needVip': false,
-            'vipNeedPay': false,
-            'isLimited': false
+            p: p,
+            id: 0,
+            title: '',
+            filename: '',
+            aid: 0,
+            bvid: '',
+            cid: 0,
+            epid: 0,
+            needVip: false,
+            vipNeedPay: false,
+            isLimited: false
         }
         const clazz = clazzMap[this.constructor.name]
         prop = {
@@ -109,9 +108,9 @@ class Video extends VideoBase {
 
     constructor(main_title, state) {
         super('video', main_title, state)
-        const sections = state.sections || state.sectionsInfo?.sections || []
         this.video_list = [] // todo
-        if (!sections.length > 0) {
+        const sections = state.sections || state.sectionsInfo?.sections || []
+        if (!sections.length) {
             return
         }
         // ? 集合视频 pageSize = 1
@@ -190,7 +189,10 @@ class VideoList extends VideoBase {
         for (const video of resourceList) {
             let i = 0, length = video.pages && video.pages.length || 0
             while (i < length) {
-                video_list.push(video)
+                const _video = Object.assign({}, video)
+                _video.title = video.title + (length > 1 ? ` P${i + 1} ${video.pages[i].title}` : '')
+                _video.cid = video.pages[i].cid || 0
+                video_list.push(_video)
                 i++
             }
         }
