@@ -190,10 +190,7 @@ class VideoList extends VideoBase {
         for (const video of resourceList) {
             let i = 0, length = video.pages && video.pages.length || 0
             while (i < length) {
-                const _video = Object.assign({}, video)
-                _video.title = video.title + (length > 1 ? ` P${i + 1} ${video.pages[i].title}` : '')
-                _video.cid = video.pages[i].id
-                video_list.push(_video)
+                video_list.push(video)
                 i++
             }
         }
@@ -222,13 +219,13 @@ class VideoList extends VideoBase {
     aid(p) {
         return !p
             ? this.video.aid()
-            : this.video_list[this.id(p)].id
+            : this.video_list[this.id(p)].aid
     }
 
     bvid(p) {
         return !p
             ? this.video.bvid()
-            : this.video_list[this.id(p)].bv_id
+            : this.video_list[this.id(p)].bvid
     }
 
     cid(p) {
