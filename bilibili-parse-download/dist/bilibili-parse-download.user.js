@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.6.3
+// @version       2.6.4
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -388,29 +388,10 @@
     function _possibleConstructorReturn(self, call) {
         if (call && ("object" === _typeof(call) || "function" == typeof call)) return call;
         if (void 0 !== call) throw new TypeError("Derived constructors may only return object or undefined");
-        return _assertThisInitialized(self);
-    }
-    function _assertThisInitialized(self) {
-        if (void 0 === self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-        return self;
-    }
-    function set(target, property, value, receiver) {
-        return set = "undefined" != typeof Reflect && Reflect.set ? Reflect.set : function set(target, property, value, receiver) {
-            var desc, base = function _superPropBase(object, property) {
-                for (;!Object.prototype.hasOwnProperty.call(object, property) && null !== (object = _getPrototypeOf(object)); ) ;
-                return object;
-            }(target, property);
-            if (base) {
-                if ((desc = Object.getOwnPropertyDescriptor(base, property)).set) return desc.set.call(receiver, value), 
-                !0;
-                if (!desc.writable) return !1;
-            }
-            if (desc = Object.getOwnPropertyDescriptor(receiver, property)) {
-                if (!desc.writable) return !1;
-                desc.value = value, Object.defineProperty(receiver, property, desc);
-            } else video_base_defineProperty(receiver, property, value);
-            return !0;
-        }, set(target, property, value, receiver);
+        return function _assertThisInitialized(self) {
+            if (void 0 === self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+            return self;
+        }(self);
     }
     function _getPrototypeOf(o) {
         return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
@@ -522,47 +503,47 @@
             }
         }, {
             key: "title",
-            value: function title() {
+            value: function title(p) {
                 return "";
             }
         }, {
             key: "filename",
-            value: function filename() {
+            value: function filename(p) {
                 return "";
             }
         }, {
             key: "aid",
-            value: function aid() {
+            value: function aid(p) {
                 return 0;
             }
         }, {
             key: "bvid",
-            value: function bvid() {
+            value: function bvid(p) {
                 return "";
             }
         }, {
             key: "cid",
-            value: function cid() {
+            value: function cid(p) {
                 return 0;
             }
         }, {
             key: "epid",
-            value: function epid() {
+            value: function epid(p) {
                 return "";
             }
         }, {
             key: "needVip",
-            value: function needVip() {
+            value: function needVip(p) {
                 return !1;
             }
         }, {
             key: "vipNeedPay",
-            value: function vipNeedPay() {
+            value: function vipNeedPay(p) {
                 return !1;
             }
         }, {
             key: "isLimited",
-            value: function isLimited() {
+            value: function isLimited(p) {
                 return !1;
             }
         } ]), VideoBase;
@@ -570,18 +551,23 @@
         _inherits(Video, _VideoBase);
         var _super = _createSuper(Video);
         function Video(main_title, state) {
-            var _state$sectionsInfo, _thisSuper, _this2;
-            video_base_classCallCheck(this, Video), (_this2 = _super.call(this, "video", main_title, state)).video_list = [];
+            var _state$sectionsInfo, _this2;
+            video_base_classCallCheck(this, Video), (_this2 = _super.call(this, "video", main_title, state)).video_list = [], 
+            _this2.epList = [];
             var sections = state.sections || (null === (_state$sectionsInfo = state.sectionsInfo) || void 0 === _state$sectionsInfo ? void 0 : _state$sectionsInfo.sections) || [];
             if (!sections.length) return _possibleConstructorReturn(_this2);
-            var _step, new_page = 0, i = 1, _iterator = _createForOfIteratorHelper(sections);
+            var _step, _iterator = _createForOfIteratorHelper(sections);
             try {
                 for (_iterator.s(); !(_step = _iterator.n()).done; ) {
                     var _step2, _iterator2 = _createForOfIteratorHelper(_step.value.episodes || []);
                     try {
                         for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
-                            var ep = _step2.value;
-                            _this2.video_list.push(ep), state.videoData.bvid == ep.bvid && (new_page = i), i++;
+                            for (var video = _step2.value, i = 0, length = video.pages && video.pages.length || 0; i < length; ) {
+                                var _video = Object.assign({}, video);
+                                _video.title = video.title + (length > 1 ? " P".concat(i + 1, " ").concat(video.pages[i].part) : ""), 
+                                _video.cid = video.pages[i].cid || 0, _this2.video_list.push(_video), i++;
+                            }
+                            _this2.epList.push(video);
                         }
                     } catch (err) {
                         _iterator2.e(err);
@@ -594,44 +580,39 @@
             } finally {
                 _iterator.f();
             }
-            return new_page < 1 ? _this2.video_list = [] : function _set(target, property, value, receiver, isStrict) {
-                if (!set(target, property, value, receiver || target) && isStrict) throw new Error("failed to set property");
-                return value;
-            }((_thisSuper = _assertThisInitialized(_this2), _getPrototypeOf(Video.prototype)), "page", new_page, _thisSuper, !0), 
-            _this2;
+            return _this2;
         }
         return video_base_createClass(Video, [ {
             key: "total",
             value: function total() {
-                return this.video_list.length > 0 ? this.video_list.length : this.state.videoData.pages.length;
+                return this.epList.length > 1 ? this.video_list.length : this.state.videoData.pages.length;
             }
         }, {
             key: "title",
             value: function title(p) {
-                var id = this.id(p);
-                return this.video_list.length > 0 ? this.video_list[id].title : this.state.videoData.pages[id].part;
+                return this.epList.length > 1 && p ? this.video_list[this.id(p)].title : this.state.videoData.pages[this.id(p)].part;
             }
         }, {
             key: "filename",
             value: function filename(p) {
-                if (this.video_list.length > 0) return this.title(p).replace(/[\/\\:*?"<>|]+/g, "");
+                if (this.epList.length > 1 && p) return this.title(p).replace(/[\/\\:*?"<>|]+/g, "");
                 var id = this.id(p);
                 return (this.main_title + (this.total() > 1 ? " P".concat(id + 1, " ").concat(this.state.videoData.pages[id].part || "") : "")).replace(/[\/\\:*?"<>|]+/g, "");
             }
         }, {
             key: "aid",
             value: function aid(p) {
-                return this.video_list.length > 0 ? this.video_list[this.id(p)].aid : this.state.videoData.aid;
+                return this.epList.length > 1 && p ? this.video_list[this.id(p)].aid : this.state.videoData.aid;
             }
         }, {
             key: "bvid",
             value: function bvid(p) {
-                return this.video_list.length > 0 ? this.video_list[this.id(p)].bvid : this.state.videoData.bvid;
+                return this.epList.length > 1 && p ? this.video_list[this.id(p)].bvid : this.state.videoData.bvid;
             }
         }, {
             key: "cid",
             value: function cid(p) {
-                return this.video_list.length > 0 ? this.video_list[this.id(p)].cid : this.state.videoData.pages[this.id(p)].cid;
+                return this.epList.length > 1 && p ? this.video_list[this.id(p)].cid : this.state.videoData.pages[this.id(p)].cid;
             }
         } ]), Video;
     }(VideoBase), VideoList = function(_VideoBase2) {
@@ -2191,6 +2172,30 @@
                 }, runtime_div.appendChild(iframe);
             }(scripts, getModules), console.log("[Runtime Library] iframe invoke complete"));
         }));
+    }, initLocal = function initLocal(name, ver, filename, getModule, handleScript) {
+        handleScript = handleScript || function(script) {
+            return script;
+        }, new RuntimeLib({
+            urls: urls({
+                name: name,
+                ver: ver,
+                filename: filename
+            }),
+            getModule: getModule
+        }).getModulePromise().then((function(script) {
+            var blob = new Blob([ handleScript(script) ], {
+                type: "text/javascript"
+            }), blob_url = URL.createObjectURL(blob), script_tag = document.createElement("script");
+            script_tag.src = blob_url, script_tag.onload = function() {
+                console.log("[Runtime Library] Loaded ".concat(name, " from local")), getModule(window), 
+                URL.revokeObjectURL(blob_url);
+            }, script_tag.onerror = function() {
+                console.error("[Runtime Library] Failed to load ".concat(name, " from local")), 
+                URL.revokeObjectURL(blob_url);
+            }, runtime_div.appendChild(script_tag);
+        })).catch((function(err) {
+            console.error("[Runtime Library] Failed to load ".concat(name, " from local"), err);
+        }));
     };
     function get_bili_player_id() {
         return $("#bilibiliPlayer")[0] ? "#bilibiliPlayer" : $("#bilibili-player")[0] ? "#bilibili-player" : $("#edu-player")[0] ? "div.bpx-player-primary-area" : void 0;
@@ -2242,33 +2247,9 @@
     }
     initIframe("jszip", "3.10.0", "jszip.min.js", (function(w) {
         return JSZip = w.JSZip;
-    })), initIframe("flv.js", "1.6.2", "flv.min.js", (function(w) {
+    })), initLocal("flv.js", "1.6.2", "flv.min.js", (function(w) {
         return w.flvjs;
-    })), function initLocal(name, ver, filename, getModule, handleScript) {
-        handleScript = handleScript || function(script) {
-            return script;
-        }, new RuntimeLib({
-            urls: urls({
-                name: name,
-                ver: ver,
-                filename: filename
-            }),
-            getModule: getModule
-        }).getModulePromise().then((function(script) {
-            var blob = new Blob([ handleScript(script) ], {
-                type: "text/javascript"
-            }), blob_url = URL.createObjectURL(blob), script_tag = document.createElement("script");
-            script_tag.src = blob_url, script_tag.onload = function() {
-                console.log("[Runtime Library] Loaded ".concat(name, " from local")), getModule(window), 
-                URL.revokeObjectURL(blob_url);
-            }, script_tag.onerror = function() {
-                console.error("[Runtime Library] Failed to load ".concat(name, " from local")), 
-                URL.revokeObjectURL(blob_url);
-            }, runtime_div.appendChild(script_tag);
-        })).catch((function(err) {
-            console.error("[Runtime Library] Failed to load ".concat(name, " from local"), err);
-        }));
-    }("dplayer", "1.26.0", "DPlayer.min.js", (function(w) {
+    })), initLocal("dplayer", "1.26.0", "DPlayer.min.js", (function(w) {
         return DPlayer = w.DPlayer;
     }), (function(script) {
         return script.replace('"About author"', '"About DIYgod"');
@@ -2789,7 +2770,7 @@
         download_danmaku_ass: download_danmaku_ass,
         download_subtitle_vtt: download_subtitle_vtt,
         open_ariang: open_ariang
-    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria2命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria2配置：</label> <label>最大连接数：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:20%"/><br/> <small>说明：用于配置Aria命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ';
+    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria2命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria2配置：</label> <label>最大连接数：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:20%"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ';
     function config_ownKeys(object, enumerableOnly) {
         var keys = Object.keys(object);
         if (Object.getOwnPropertySymbols) {
@@ -3180,7 +3161,7 @@
     };
     function showVideoToolbar(toolbar_id) {
         var toolbar_obj = $("#".concat(toolbar_id)), toolbar_obj_2 = toolbar_obj.clone();
-        toolbar_obj_2.attr("id", "".concat(toolbar_id, "_2"));
+        toolbar_obj_2.attr("id", "bp_toolbar");
         var left = toolbar_obj_2.find(".video-toolbar-left"), right = toolbar_obj_2.find(".video-toolbar-right");
         left.children().remove(), right.children().remove(), Object.keys(btn_list).map((function(key) {
             if ("more" !== key) {
@@ -3200,7 +3181,7 @@
     function initToolbar() {
         if ($("#arc_toolbar_report")[0]) showVideoToolbar("arc_toolbar_report"); else if ($("#playlistToolbar")[0]) showVideoToolbar("playlistToolbar"); else if ($("#videoToolbar")[0]) !function showFestivalToolbar(toolbar_id) {
             var toolbar_obj = $("#".concat(toolbar_id)), toolbar_obj_2 = toolbar_obj.clone();
-            toolbar_obj_2.attr("id", "".concat(toolbar_id, "_2"));
+            toolbar_obj_2.attr("id", "bp_toolbar");
             var left = toolbar_obj_2.find(".video-toolbar-content_left"), right = toolbar_obj_2.find(".video-toolbar-content_right");
             toolbar_obj_2.find(".video-toobar_title").remove(), left.children().remove();
             var watchlater = right.find(".watchlater").clone();
@@ -3223,7 +3204,9 @@
                 }
             })), toolbar_obj.after(toolbar_obj_2);
         }("videoToolbar"); else if ($(".toolbar")[0]) !function showBangumiToolbar(toolbar_class) {
-            var toolbar_obj = $(".".concat(toolbar_class)).eq(0), toolbar_obj_2 = toolbar_obj.clone(), left = toolbar_obj_2.find(".toolbar-left"), right = toolbar_obj_2.find(".toolbar-right");
+            var toolbar_obj = $(".".concat(toolbar_class)).eq(0), toolbar_obj_2 = toolbar_obj.clone();
+            toolbar_obj_2.attr("id", "bp_toolbar");
+            var left = toolbar_obj_2.find(".toolbar-left"), right = toolbar_obj_2.find(".toolbar-right");
             left.children().remove(), right.children().remove(), Object.keys(btn_list).map((function(key) {
                 if ("more" !== key) {
                     var item = toolbar_obj.find(".toolbar-left").children().eq(0).clone();
@@ -3255,7 +3238,7 @@
                 })).join("");
                 return "" + '<div class="'.concat(main_class_name, '">\n            ').concat(toolbar_elements, "\n            ").concat(more_style, "\n        </div>");
             }(toolbar_class, [ span_class, span_class_svg, span_class_text ]));
-        } else $("#toolbar_module")[0] && $("#toolbar_module").after('<div id="toolbar_module_2" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true"> <div id="setting_btn" class="like-info"> <i class="iconfont icon-add"></i><span>脚本设置</span> </div> <div id="bilibili_parse" class="like-info"> <i class="iconfont icon-customer-serv"></i><span>请求地址</span> </div> <div id="video_download" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载视频</span> </div> <div id="video_download_2" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载音频</span> </div> <div id="video_download_all" class="like-info"> <i class="iconfont icon-download"></i><span>批量下载</span> </div> <div class="more">更多<div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:"";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ');
+        } else $("#toolbar_module")[0] && $("#toolbar_module").after('<div id="bp_toolbar" class="tool-bar clearfix report-wrap-module report-scroll-module media-info" scrollshow="true"> <div id="setting_btn" class="like-info"> <i class="iconfont icon-add"></i><span>脚本设置</span> </div> <div id="bilibili_parse" class="like-info"> <i class="iconfont icon-customer-serv"></i><span>请求地址</span> </div> <div id="video_download" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载视频</span> </div> <div id="video_download_2" class="like-info" style="display:none"> <i class="iconfont icon-download"></i><span>下载音频</span> </div> <div id="video_download_all" class="like-info"> <i class="iconfont icon-download"></i><span>批量下载</span> </div> <div class="more">更多<div class="more-ops-list"> <ul> <li><span id="download_danmaku">下载弹幕</span></li> <li><span id="download_subtitle">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:"";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ');
         $("#limit-mask-wall")[0] && $("#limit-mask-wall").remove();
     }
     function main_slicedToArray(arr, i) {
@@ -3304,7 +3287,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.6.3", " ").concat("ce166b3", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.6.4", " ").concat("0917f27", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
@@ -3348,8 +3331,8 @@
                     el && $(el)[0] ? $(el).append(message) : $("body").append(message);
                 }("#".concat(root_div.id)), user.lazyInit(), auth.checkLoginStatus(), check.refresh(), 
                 $("#".concat(root_div.id)).append('<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/dplayer/1.25.0/DPlayer.min.css">'), 
-                $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" href="#"></a>'), 
-                $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" href="#"></a>');
+                $("#".concat(root_div.id)).append('<a id="video_url" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>'), 
+                $("#".concat(root_div.id)).append('<a id="video_url_2" style="display:none;" target="_blank" referrerpolicy="origin" href="#"></a>');
             }
         }, {
             key: "run",
@@ -3460,7 +3443,17 @@
             }
         } ]), Main;
     }(), main = Main;
-    window.bp_fun_locked || (window.bp_fun_locked = !0, $(".error-text")[0] || setTimeout((function() {
-        (new main).run();
-    }), 5e3));
+    !function() {
+        if (!window.bp_fun_locked && (window.bp_fun_locked = !0, !document.getElementsByClassName("error-text")[0])) {
+            var timer, running = !1, run = function run(timeout) {
+                setTimeout((function() {
+                    running || (running = !0, 0 === timeout ? clearInterval(timer) : console.warn("waiting timeout..."), 
+                    (new main).run());
+                }), 1e3 * timeout);
+            };
+            timer = setInterval((function() {
+                document.getElementById("nav-searchform") && !running && run(0);
+            }), 500), run(5), run(10);
+        }
+    }();
 }();

@@ -1,3 +1,4 @@
+
 import toolbar_html from '@/html/toolbar.html'
 import more_style from '@/html/more_style.html'
 
@@ -71,10 +72,12 @@ function make_toolbar_bangumi(main_class_name, sub_class_names) {  // class-3
         </div>`
 }
 
+const bp_toolbar_id = 'bp_toolbar'
+
 function showVideoToolbar(toolbar_id) {
     const toolbar_obj = $(`#${toolbar_id}`)
     const toolbar_obj_2 = toolbar_obj.clone()
-    toolbar_obj_2.attr('id', `${toolbar_id}_2`)
+    toolbar_obj_2.attr('id', bp_toolbar_id)
     const left = toolbar_obj_2.find('.video-toolbar-left')
     const right = toolbar_obj_2.find('.video-toolbar-right')
     left.children().remove()
@@ -109,7 +112,7 @@ function showVideoToolbar(toolbar_id) {
 function showFestivalToolbar(toolbar_id) {
     const toolbar_obj = $(`#${toolbar_id}`)
     const toolbar_obj_2 = toolbar_obj.clone()
-    toolbar_obj_2.attr('id', `${toolbar_id}_2`)
+    toolbar_obj_2.attr('id', bp_toolbar_id)
     const left = toolbar_obj_2.find('.video-toolbar-content_left')
     const right = toolbar_obj_2.find('.video-toolbar-content_right')
     toolbar_obj_2.find('.video-toobar_title').remove()
@@ -150,6 +153,7 @@ function showFestivalToolbar(toolbar_id) {
 function showBangumiToolbar(toolbar_class) {
     const toolbar_obj = $(`.${toolbar_class}`).eq(0)
     const toolbar_obj_2 = toolbar_obj.clone()
+    toolbar_obj_2.attr('id', bp_toolbar_id)
     const left = toolbar_obj_2.find('.toolbar-left')
     const right = toolbar_obj_2.find('.toolbar-right')
     left.children().remove()

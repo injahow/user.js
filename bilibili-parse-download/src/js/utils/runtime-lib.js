@@ -148,7 +148,7 @@ const initLocal = (name, ver, filename, getModule, handleScript) => {
 export let JSZip
 initIframe('jszip', '3.10.0', 'jszip.min.js', w => JSZip = w.JSZip)
 export let flvjs
-initIframe('flv.js', '1.6.2', 'flv.min.js', w => flvjs = w.flvjs)
+initLocal('flv.js', '1.6.2', 'flv.min.js', w => flvjs = w.flvjs)
 export let DPlayer
 initLocal('dplayer', '1.26.0', 'DPlayer.min.js',
     w => DPlayer = w.DPlayer,
