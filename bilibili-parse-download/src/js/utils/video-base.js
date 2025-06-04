@@ -67,39 +67,39 @@ class VideoBase {
         return 0
     }
 
-    title() {
+    title(p) {
         return ''
     }
 
-    filename() {
+    filename(p) {
         return ''
     }
 
-    aid() {
+    aid(p) {
         return 0
     }
 
-    bvid() {
+    bvid(p) {
         return ''
     }
 
-    cid() {
+    cid(p) {
         return 0
     }
 
-    epid() {
+    epid(p) {
         return ''
     }
 
-    needVip() {
+    needVip(p) {
         return false
     }
 
-    vipNeedPay() {
+    vipNeedPay(p) {
         return false
     }
 
-    isLimited() {
+    isLimited(p) {
         return false
     }
 }
@@ -108,48 +108,54 @@ class Video extends VideoBase {
 
     constructor(main_title, state) {
         super('video', main_title, state)
-        this.video_list = [] // todo
+        this.video_list = []
+        this.epList = []
+
         const sections = state.sections || state.sectionsInfo?.sections || []
         if (!sections.length) {
             return
         }
-        // ? 集合视频 pageSize = 1
-        let new_page = 0, i = 1
-        for (const section of sections) {
+
+        let new_page = 0
+        // 集合视频
+        for (const section of sections) { // 多节
             const eplist = section.episodes || []
-            for (const ep of eplist) {
-                this.video_list.push(ep)
-                if (state.videoData.bvid == ep.bvid) {
-                    new_page = i
+            for (const video of eplist) { // 剧集
+                let i = 0, length = video.pages && video.pages.length || 0
+                while (i < length) { // 最小单元 - pages >= 1
+                    const _video = Object.assign({}, video)
+                    _video.title = video.title + (length > 1 ? ` P${i + 1} ${video.pages[i].part}` : '')
+                    _video.cid = video.pages[i].cid || 0
+                    this.video_list.push(_video)
+                    i++
                 }
-                i++
+                this.epList.push(video)
             }
         }
-        // 处理集合残留
-        if (new_page < 1) {
-            this.video_list = []
-        } else {
-            super.page = new_page
-        }
+        // todo
+        // 集合视频残留
+        // if (new_page < 1) {
+        //     this.video_list = []
+        // }
+        // 单剧集 this.epList.length = 1 , page = state.p
     }
 
     total() {
-        if (this.video_list.length > 0) {
+        if (this.epList.length > 1) {
             return this.video_list.length
         }
         return this.state.videoData.pages.length
     }
 
     title(p) {
-        const id = this.id(p)
-        if (this.video_list.length > 0) {
-            return this.video_list[id].title
+        if (this.epList.length > 1 && p) {
+            return this.video_list[this.id(p)].title
         }
-        return this.state.videoData.pages[id].part
+        return this.state.videoData.pages[this.id(p)].part
     }
 
     filename(p) {
-        if (this.video_list.length > 0) {
+        if (this.epList.length > 1 && p) {
             return this.title(p).replace(/[\/\\:*?"<>|]+/g, '')
         }
         const id = this.id(p)
@@ -158,21 +164,21 @@ class Video extends VideoBase {
     }
 
     aid(p) {
-        if (this.video_list.length > 0) {
+        if (this.epList.length > 1 && p) {
             return this.video_list[this.id(p)].aid
         }
         return this.state.videoData.aid
     }
 
     bvid(p) {
-        if (this.video_list.length > 0) {
+        if (this.epList.length > 1 && p) {
             return this.video_list[this.id(p)].bvid
         }
         return this.state.videoData.bvid
     }
 
     cid(p) {
-        if (this.video_list.length > 0) {
+        if (this.epList.length > 1 && p) {
             return this.video_list[this.id(p)].cid
         }
         return this.state.videoData.pages[this.id(p)].cid
