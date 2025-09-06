@@ -43,7 +43,7 @@
 /************************************************************************/
 var __webpack_exports__ = {};
 /*!**************************************!*\
-  !*** ./src/js/index.js + 22 modules ***!
+  !*** ./src/js/index.js + 23 modules ***!
   \**************************************/
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
@@ -421,6 +421,10 @@ function video_base_unsupportedIterableToArray(o, minLen) { if (!o) return; if (
 
 function video_base_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
@@ -496,7 +500,8 @@ var VideoBase = /*#__PURE__*/function () {
     key: "type",
     value: function type() {
       return this.video_type;
-    }
+    } // 总体标题
+
   }, {
     key: "getName",
     value: function getName() {
@@ -676,8 +681,19 @@ var Video = /*#__PURE__*/function (_VideoBase) {
       }
 
       var id = this.id(p);
-      var title = this.main_title + (this.total() > 1 ? " P".concat(id + 1, " ").concat(this.state.videoData.pages[id].part || '') : '');
+      var pages = this.state.videoData.pages;
+      var title = this.main_title + (pages && pages.length > 1 ? " P".concat(id + 1, " ").concat(pages[id].part || '') : '');
       return title.replace(/[\/\\:*?"<>|]+/g, '');
+    }
+  }, {
+    key: "getName",
+    value: function getName() {
+      if (this.epList.length > 1) {
+        // 集合视频
+        return this.state.sectionsInfo.title;
+      }
+
+      return _get(_getPrototypeOf(Video.prototype), "getName", this).call(this);
     }
   }, {
     key: "aid",
@@ -1774,8 +1790,11 @@ function _get_subtitle(p, callback) {
       cid = _ref4[1],
       epid = _ref4[2];
   ajax({
-    url: "https://api.bilibili.com/x/player/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
-    dataType: 'json'
+    url: "https://api.bilibili.com/x/player/wbi/v2?aid=".concat(aid, "&cid=").concat(cid, "&ep_id=").concat(epid),
+    dataType: 'json',
+    xhrFields: {
+      withCredentials: true
+    }
   }).then(function (res) {
     // todo
     if (!res.code && res.data.subtitle.subtitles[0]) {
@@ -2018,8 +2037,7 @@ var iframeInvoke = function iframeInvoke(scripts, getModules) {
 
   var clearIframe = function clearIframe() {
     clearTimeout(timeoutId);
-    URL.revokeObjectURL(blobUrl);
-    iframe.remove();
+    URL.revokeObjectURL(blobUrl); // iframe.remove()
   };
 
   var timeoutId = setTimeout(function () {
@@ -2402,7 +2420,6 @@ function check_createClass(Constructor, protoProps, staticProps) { if (protoProp
 
 
 
-
 var Check = /*#__PURE__*/function () {
   function Check() {
     check_classCallCheck(this, Check);
@@ -2422,7 +2439,7 @@ var Check = /*#__PURE__*/function () {
         return;
       }
 
-      this.lock = true;
+      this.locked = true;
       console.log('refresh...');
       $('#video_download').hide();
       $('#video_download_2').hide();
@@ -2439,7 +2456,7 @@ var Check = /*#__PURE__*/function () {
       } catch (err) {
         console.log(err);
       } finally {
-        this.lock = false;
+        this.locked = false;
       }
     }
   }]);
@@ -3263,6 +3280,7 @@ var config_config = {
   aria2c_connection_level: 'min',
   aria2c_addition_parameters: '',
   ariang_host: 'http://ariang.injahow.com/',
+  auto_request: '0',
   auto_download: '0',
   video_quality: '0',
   danmaku_speed: '15',
@@ -3298,7 +3316,7 @@ var hostMap = {
 };
 var videoQualityMap = {
   127: '8K 超高清',
-  120: '4K 超清',
+  120: '4K 超高清',
   116: '1080P 60帧',
   112: '1080P 高码率',
   80: '1080P 高清',
@@ -3832,6 +3850,248 @@ var Auth = /*#__PURE__*/function () {
 }();
 
 var auth = new Auth();
+;// CONCATENATED MODULE: ./src/js/ui/event.js
+function event_slicedToArray(arr, i) { return event_arrayWithHoles(arr) || event_iterableToArrayLimit(arr, i) || event_unsupportedIterableToArray(arr, i) || event_nonIterableRest(); }
+
+function event_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function event_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return event_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return event_arrayLikeToArray(o, minLen); }
+
+function event_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function event_iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function event_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+
+
+
+
+
+
+
+
+
+
+var api_url, api_url_temp;
+
+function setting_btn() {
+  user.lazyInit(true); // init
+  // set form by config
+
+  for (var key in config_config) {
+    $("#".concat(key)).val(config_config[key]);
+  }
+
+  $('#auth').val(auth.hasAuth() ? '1' : '0'); //show setting
+
+  $('#bp_config').show();
+  $('#bp_config').animate({
+    'opacity': '1'
+  }, 300);
+  scroll_scroll.hide();
+}
+
+function bilibili_parse() {
+  user.lazyInit(true); // init
+
+  var vb = video.base();
+  var _ref = [vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid()],
+      type = _ref[0],
+      aid = _ref[1],
+      p = _ref[2],
+      cid = _ref[3],
+      epid = _ref[4];
+
+  var _video$get_quality = video.get_quality(),
+      q = _video$get_quality.q;
+
+  api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
+  var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
+      auth_id = _ref2[0],
+      auth_sec = _ref2[1];
+
+  if (auth_id && auth_sec) {
+    api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
+  }
+
+  if (api_url === api_url_temp && config_config.request_type !== 'local') {
+    message_Message.miaow();
+    var url = $('#video_url').attr('href');
+    var url_2 = $('#video_url_2').attr('href');
+
+    if (url && url !== '#') {
+      $('#video_download').show();
+      config_config.format === 'dash' && $('#video_download_2').show();
+
+      if (user.needReplace() || vb.isLimited() || config_config.replace_force === '1') {
+        !$('#bp_dplayer')[0] && player.replace_player(url, url_2);
+      }
+
+      if (config_config.auto_download === '1') {
+        $('#video_download').click();
+      }
+    }
+
+    return;
+  }
+
+  $('#video_url').attr('href', '#');
+  $('#video_url_2').attr('href', '#');
+  api_url_temp = api_url;
+  message_Message.info('开始请求');
+  api.get_url(function (res) {
+    if (res && !res.code) {
+      message_Message.success('请求成功');
+      res.times && message_Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
+
+      var _url, _url_;
+
+      if (res.url) {
+        _url = res.url.replace('http://', 'https://');
+        _url_ = '#';
+      } else if (res.video && res.audio) {
+        _url = res.video.replace('http://', 'https://');
+        _url_ = res.audio.replace('http://', 'https://');
+      } else {
+        message_Message.warning('数据错误');
+        return;
+      }
+
+      $('#video_url').attr('href', _url);
+      $('#video_url').attr('download', vb.filename() + Download.url_format(_url));
+      $('#video_download').show();
+
+      if (_url_ !== '#') {
+        $('#video_url_2').attr('href', _url_);
+        $('#video_url_2').attr('download', vb.filename() + '_audio.mp4');
+        $('#video_download_2').show();
+      }
+
+      if (user.needReplace() || vb.isLimited() || config_config.replace_force === '1') {
+        player.replace_player(_url, _url_);
+      }
+
+      if (config_config.auto_download === '1') {
+        $('#video_download').click();
+      }
+    }
+  });
+}
+
+function download_danmaku() {
+  var vb = video.base();
+  Download.download_danmaku_ass(vb.cid(), vb.filename());
+}
+
+function download_subtitle() {
+  Download.download_subtitle_vtt(0, video.base().filename());
+}
+
+function video_download() {
+  var type = config_config.download_type;
+
+  if (type === 'web') {
+    $('#video_url')[0].click();
+  } else if (type === 'a') {
+    var _ref3 = [$('#video_url').attr('href'), $('#video_url_2').attr('href'), $('#video_url').attr('download'), $('#video_url_2').attr('download')],
+        video_url = _ref3[0],
+        video_url_2 = _ref3[1],
+        file_name = _ref3[2],
+        file_name_2 = _ref3[3];
+    var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" download=\"").concat(file_name, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" download=\"").concat(file_name_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
+    MessageBox.alert(msg);
+  } else if (type === 'aria') {
+    var _ref4 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
+        _video_url = _ref4[0],
+        _video_url_ = _ref4[1];
+    var video_title = video.base().filename();
+
+    var _file_name = video_title + Download.url_format(_video_url),
+        _file_name_ = video_title + '.m4a';
+
+    var aria2c_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
+
+    var _ref5 = {
+      min: [1, 5],
+      mid: [16, 8],
+      max: [32, 16]
+    }[config_config.aria2c_connection_level] || [1, 5],
+        _ref6 = event_slicedToArray(_ref5, 2),
+        url_max_connection = _ref6[0],
+        server_max_connection = _ref6[1];
+
+    var aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection);
+
+    var _map = ["aria2c \"".concat(_video_url, "\" --out \"").concat(_file_name, "\""), "aria2c \"".concat(_video_url_, "\" --out \"").concat(_file_name_, "\"")].map(function (code) {
+      return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
+    }),
+        _map2 = event_slicedToArray(_map, 2),
+        code = _map2[0],
+        code_2 = _map2[1];
+
+    var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config_config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
+
+    !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
+      $("#".concat(id)).select();
+
+      if (document.execCommand('copy')) {
+        message_Message.success('复制成功');
+      } else {
+        message_Message.warning('复制失败');
+      }
+    });
+    MessageBox.alert(_msg);
+  } else {
+    var url = $('#video_url').attr('href');
+    var filename = video.base().filename() + Download.url_format(url);
+    Download.download(url, filename, type);
+  }
+}
+
+function video_download_2() {
+  var type = config_config.download_type;
+
+  if (type === 'web') {
+    $('#video_url_2')[0].click();
+  } else if (type === 'a') {
+    $('#video_download').click();
+  } else if (type === 'aria') {
+    $('#video_download').click();
+  } else {
+    var url = $('#video_url_2').attr('href');
+    var filename = video.base().filename() + '.m4a';
+    Download.download(url, filename, type);
+  }
+}
+
+function video_download_all() {
+  user.lazyInit(true); // init
+
+  if (auth.hasAuth()) {
+    if (config_config.download_type === 'rpc') {
+      Download.download_all();
+    } else {
+      MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
+        Download.download_all();
+      });
+    }
+  } else {
+    MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
+      auth.login();
+    });
+  }
+}
+
+var event_event = {
+  setting_btn: setting_btn,
+  bilibili_parse: bilibili_parse,
+  download_danmaku: download_danmaku,
+  download_subtitle: download_subtitle,
+  video_download: video_download,
+  video_download_2: video_download_2,
+  video_download_all: video_download_all
+};
 ;// CONCATENATED MODULE: ./src/html/toolbar.html
 // Module
 var toolbar_code = "<div id=\"bp_toolbar\" class=\"tool-bar clearfix report-wrap-module report-scroll-module media-info\" scrollshow=\"true\"> <div id=\"setting_btn\" class=\"like-info\"> <i class=\"iconfont icon-add\"></i><span>脚本设置</span> </div> <div id=\"bilibili_parse\" class=\"like-info\"> <i class=\"iconfont icon-customer-serv\"></i><span>请求地址</span> </div> <div id=\"video_download\" class=\"like-info\" style=\"display:none\"> <i class=\"iconfont icon-download\"></i><span>下载视频</span> </div> <div id=\"video_download_2\" class=\"like-info\" style=\"display:none\"> <i class=\"iconfont icon-download\"></i><span>下载音频</span> </div> <div id=\"video_download_all\" class=\"like-info\"> <i class=\"iconfont icon-download\"></i><span>批量下载</span> </div> <div class=\"more\">更多<div class=\"more-ops-list\"> <ul> <li><span id=\"download_danmaku\">下载弹幕</span></li> <li><span id=\"download_subtitle\">下载字幕</span></li> </ul> </div> </div> <style>.tool-bar .more{float:right;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.tool-bar .more:hover .more-ops-list{display:block}.tool-bar:after{display:block;content:\"\";clear:both}.more-ops-list{display:none;position:absolute;width:80px;left:-65px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> </div> ";
@@ -4058,16 +4318,12 @@ function main_createClass(Constructor, protoProps, staticProps) { if (protoProps
 
 
 
-
-
-
-
 var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.6.4", " ").concat("0917f27", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.6.5", " ").concat("5b7a02f", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
@@ -4091,217 +4347,13 @@ var Main = /*#__PURE__*/function () {
   }, {
     key: "run",
     value: function run() {
-      this.init();
-      var api_url, api_url_temp;
-      var evt = {
-        setting_btn: function setting_btn() {
-          user.lazyInit(true); // init
-          // set form by config
+      this.init(); // api & click
 
-          for (var key in config_config) {
-            $("#".concat(key)).val(config_config[key]);
-          }
-
-          $('#auth').val(auth.hasAuth() ? '1' : '0'); //show setting
-
-          $('#bp_config').show();
-          $('#bp_config').animate({
-            'opacity': '1'
-          }, 300);
-          scroll_scroll.hide();
-        },
-        bilibili_parse: function bilibili_parse() {
-          user.lazyInit(true); // init
-
-          var vb = video.base();
-          var _ref = [vb.type(), vb.aid(), vb.p(), vb.cid(), vb.epid()],
-              type = _ref[0],
-              aid = _ref[1],
-              p = _ref[2],
-              cid = _ref[3],
-              epid = _ref[4];
-
-          var _video$get_quality = video.get_quality(),
-              q = _video$get_quality.q;
-
-          api_url = "".concat(config_config.base_api, "?av=").concat(aid, "&p=").concat(p, "&cid=").concat(cid, "&ep=").concat(epid, "&q=").concat(q, "&type=").concat(type, "&format=").concat(config_config.format, "&otype=json&_host=").concat(config_config.host_key, "&_req=").concat(config_config.request_type, "&_q=").concat(config_config.video_quality);
-          var _ref2 = [store.get('auth_id'), store.get('auth_sec')],
-              auth_id = _ref2[0],
-              auth_sec = _ref2[1];
-
-          if (auth_id && auth_sec) {
-            api_url += "&auth_id=".concat(auth_id, "&auth_sec=").concat(auth_sec);
-          }
-
-          if (api_url === api_url_temp && config_config.request_type !== 'local') {
-            message_Message.miaow();
-            var url = $('#video_url').attr('href');
-            var url_2 = $('#video_url_2').attr('href');
-
-            if (url && url !== '#') {
-              $('#video_download').show();
-              config_config.format === 'dash' && $('#video_download_2').show();
-
-              if (user.needReplace() || vb.isLimited() || config_config.replace_force === '1') {
-                !$('#bp_dplayer')[0] && player.replace_player(url, url_2);
-              }
-
-              if (config_config.auto_download === '1') {
-                $('#video_download').click();
-              }
-            }
-
-            return;
-          }
-
-          $('#video_url').attr('href', '#');
-          $('#video_url_2').attr('href', '#');
-          api_url_temp = api_url;
-          message_Message.info('开始请求');
-          api.get_url(function (res) {
-            if (res && !res.code) {
-              message_Message.success('请求成功');
-              res.times && message_Message.info("\u5269\u4F59\u8BF7\u6C42\u6B21\u6570\uFF1A".concat(res.times));
-
-              var _url, _url_;
-
-              if (res.url) {
-                _url = res.url.replace('http://', 'https://');
-                _url_ = '#';
-              } else if (res.video && res.audio) {
-                _url = res.video.replace('http://', 'https://');
-                _url_ = res.audio.replace('http://', 'https://');
-              } else {
-                message_Message.warning('数据错误');
-                return;
-              }
-
-              $('#video_url').attr('href', _url);
-              $('#video_url').attr('download', vb.filename() + Download.url_format(_url));
-              $('#video_download').show();
-
-              if (_url_ !== '#') {
-                $('#video_url_2').attr('href', _url_);
-                $('#video_url_2').attr('download', vb.filename() + '_audio.mp4');
-                $('#video_download_2').show();
-              }
-
-              if (user.needReplace() || vb.isLimited() || config_config.replace_force === '1') {
-                player.replace_player(_url, _url_);
-              }
-
-              if (config_config.auto_download === '1') {
-                $('#video_download').click();
-              }
-            }
-          });
-        },
-        download_danmaku: function download_danmaku() {
-          var vb = video.base();
-          Download.download_danmaku_ass(vb.cid(), vb.filename());
-        },
-        download_subtitle: function download_subtitle() {
-          Download.download_subtitle_vtt(0, video.base().filename());
-        },
-        video_download_all: function video_download_all() {
-          user.lazyInit(true); // init
-
-          if (auth.hasAuth()) {
-            if (config_config.download_type === 'rpc') {
-              Download.download_all();
-            } else {
-              MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', function () {
-                Download.download_all();
-              });
-            }
-          } else {
-            MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', function () {
-              auth.login();
-            });
-          }
-        },
-        video_download: function video_download() {
-          var type = config_config.download_type;
-
-          if (type === 'web') {
-            $('#video_url')[0].click();
-          } else if (type === 'a') {
-            var _ref3 = [$('#video_url').attr('href'), $('#video_url_2').attr('href'), $('#video_url').attr('download'), $('#video_url_2').attr('download')],
-                video_url = _ref3[0],
-                video_url_2 = _ref3[1],
-                file_name = _ref3[2],
-                file_name_2 = _ref3[3];
-            var msg = '建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>' + "<a href=\"".concat(video_url, "\" download=\"").concat(file_name, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u89C6\u9891\u5730\u5740&lt</a><br/><br/>") + (config_config.format === 'dash' ? "<a href=\"".concat(video_url_2, "\" download=\"").concat(file_name_2, "\" target=\"_blank\" style=\"text-decoration:underline;\">&gt\u97F3\u9891\u5730\u5740&lt</a>") : '');
-            MessageBox.alert(msg);
-          } else if (type === 'aria') {
-            var _ref4 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
-                _video_url = _ref4[0],
-                _video_url_ = _ref4[1];
-            var video_title = video.base().filename();
-
-            var _file_name = video_title + Download.url_format(_video_url),
-                _file_name_ = video_title + '.m4a';
-
-            var aria2c_header = "--header \"User-Agent: ".concat(window.navigator.userAgent, "\" --header \"Referer: ").concat(window.location.href, "\"");
-
-            var _ref5 = {
-              min: [1, 5],
-              mid: [16, 8],
-              max: [32, 16]
-            }[config_config.aria2c_connection_level] || [1, 5],
-                _ref6 = main_slicedToArray(_ref5, 2),
-                url_max_connection = _ref6[0],
-                server_max_connection = _ref6[1];
-
-            var aria2c_max_connection_parameters = "--max-concurrent-downloads ".concat(url_max_connection, " --max-connection-per-server ").concat(server_max_connection);
-
-            var _map = ["aria2c \"".concat(_video_url, "\" --out \"").concat(_file_name, "\""), "aria2c \"".concat(_video_url_, "\" --out \"").concat(_file_name_, "\"")].map(function (code) {
-              return "".concat(code, " ").concat(aria2c_header, " ").concat(aria2c_max_connection_parameters, " ").concat(config_config.aria2c_addition_parameters);
-            }),
-                _map2 = main_slicedToArray(_map, 2),
-                code = _map2[0],
-                code_2 = _map2[1];
-
-            var _msg = '点击文本框即可复制下载命令！<br/><br/>' + "\u89C6\u9891\uFF1A<br/><input id=\"aria2_code\" value='".concat(code, "' onclick=\"bp_clip_btn('aria2_code')\" style=\"width:100%;\"></br></br>") + (config_config.format === 'dash' ? "\u97F3\u9891\uFF1A<br/><input id=\"aria2_code_2\" value='".concat(code_2, "' onclick=\"bp_clip_btn('aria2_code_2')\" style=\"width:100%;\"><br/><br/>") + "\u5168\u90E8\uFF1A<br/><textarea id=\"aria2_code_all\" onclick=\"bp_clip_btn('aria2_code_all')\" style=\"min-width:100%;max-width:100%;min-height:100px;max-height:100px;\">".concat(code, "\n").concat(code_2, "</textarea>") : '');
-
-            !window.bp_clip_btn && (window.bp_clip_btn = function (id) {
-              $("#".concat(id)).select();
-
-              if (document.execCommand('copy')) {
-                message_Message.success('复制成功');
-              } else {
-                message_Message.warning('复制失败');
-              }
-            });
-            MessageBox.alert(_msg);
-          } else {
-            var url = $('#video_url').attr('href');
-            var filename = video.base().filename() + Download.url_format(url);
-            Download.download(url, filename, type);
-          }
-        },
-        video_download_2: function video_download_2() {
-          var type = config_config.download_type;
-
-          if (type === 'web') {
-            $('#video_url_2')[0].click();
-          } else if (type === 'a') {
-            $('#video_download').click();
-          } else if (type === 'aria') {
-            $('#video_download').click();
-          } else {
-            var url = $('#video_url_2').attr('href');
-            var filename = video.base().filename() + '.m4a';
-            Download.download(url, filename, type);
-          }
-        }
-      }; // api & click
-
-      window.bpd = evt;
-      Object.entries(evt).forEach(function (_ref7) {
-        var _ref8 = main_slicedToArray(_ref7, 2),
-            k = _ref8[0],
-            v = _ref8[1];
+      window.bpd = event_event;
+      Object.entries(event_event).forEach(function (_ref) {
+        var _ref2 = main_slicedToArray(_ref, 2),
+            k = _ref2[0],
+            v = _ref2[1];
 
         return $('body').on('click', "#".concat(k), v);
       }); // part of check

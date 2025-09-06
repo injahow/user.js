@@ -1,6 +1,5 @@
 import { video } from './utils/video'
 import { player } from './utils/player'
-import CacheFactory from './utils/cache'
 
 class Check {
 
@@ -17,7 +16,7 @@ class Check {
         if (this.locked) {
             return
         }
-        this.lock = true
+        this.locked = true
         console.log('refresh...')
         $('#video_download').hide()
         $('#video_download_2').hide()
@@ -33,7 +32,7 @@ class Check {
         } catch (err) {
             console.log(err)
         } finally {
-            this.lock = false
+            this.locked = false
         }
     }
 

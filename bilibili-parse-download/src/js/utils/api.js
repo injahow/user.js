@@ -232,8 +232,9 @@ function _get_subtitle(p, callback, to_blob_url = true) {
         vb.epid(p)
     ]
     ajax({
-        url: `https://api.bilibili.com/x/player/v2?aid=${aid}&cid=${cid}&ep_id=${epid}`,
-        dataType: 'json'
+        url: `https://api.bilibili.com/x/player/wbi/v2?aid=${aid}&cid=${cid}&ep_id=${epid}`,
+        dataType: 'json',
+        xhrFields: { withCredentials: true }
     }).then(res => {
         // todo
         if (!res.code && res.data.subtitle.subtitles[0]) {
