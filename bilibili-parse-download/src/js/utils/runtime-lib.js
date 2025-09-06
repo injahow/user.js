@@ -77,7 +77,7 @@ const iframeInvoke = (scripts, getModules) => {
     const clearIframe = () => {
         clearTimeout(timeoutId)
         URL.revokeObjectURL(blobUrl)
-        iframe.remove()
+        // iframe.remove()
     }
     const timeoutId = setTimeout(() => { // 超时处理
         console.error('[Runtime Library] Script loading timed out');
