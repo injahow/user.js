@@ -46,6 +46,7 @@ class VideoBase {
         return this.video_type
     }
 
+    // 总体标题
     getName() {
         return this.main_title || ''
     }
@@ -159,8 +160,17 @@ class Video extends VideoBase {
             return this.title(p).replace(/[\/\\:*?"<>|]+/g, '')
         }
         const id = this.id(p)
-        const title = this.main_title + (this.total() > 1 ? ` P${id + 1} ${this.state.videoData.pages[id].part || ''}` : '')
+        const pages = this.state.videoData.pages
+        const title = this.main_title + (pages && pages.length > 1 ? ` P${id + 1} ${pages[id].part || ''}` : '')
         return title.replace(/[\/\\:*?"<>|]+/g, '')
+    }
+
+    getName() {
+        if (this.epList.length > 1) {
+            // 集合视频
+            return this.state.sectionsInfo.title
+        }
+        return super.getName()
     }
 
     aid(p) {
