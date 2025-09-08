@@ -102,20 +102,9 @@ function bilibili_parse() {
     })
 }
 
-function download_danmaku() {
-    const vb = video.base()
-    Download.download_danmaku_ass(vb.cid(), vb.filename())
-}
-
-function  download_subtitle() {
-    Download.download_subtitle_vtt(0, video.base().filename())
-}
-
 function video_download() {
     const type = config.download_type
-    if (type === 'web') {
-        $('#video_url')[0].click()
-    } else if (type === 'a') {
+    if (type === 'a') {
         const [video_url, video_url_2, file_name, file_name_2] = [
             $('#video_url').attr('href'),
             $('#video_url_2').attr('href'),
@@ -126,6 +115,8 @@ function video_download() {
             `<a href="${video_url}" download="${file_name}" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>` +
             (config.format === 'dash' ? `<a href="${video_url_2}" download="${file_name_2}" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>` : '')
         MessageBox.alert(msg)
+    } else if (type === 'web') {
+        $('#video_url')[0].click()
     } else if (type === 'aria') {
         const [video_url, video_url_2] = [
             $('#video_url').attr('href'),
@@ -160,7 +151,14 @@ function video_download() {
             }
         })
         MessageBox.alert(msg)
-    } else {
+    } else if (type === 'blob_merge') {
+        const [video_url, video_url_2] = [
+            $('#video_url').attr('href'),
+            $('#video_url_2').attr('href')
+        ]
+        const filename = video.base().filename()
+        Download.download_blob_merge(video_url, video_url_2, filename)
+    } else { // blob, rpc
         const url = $('#video_url').attr('href')
         const filename = video.base().filename() + Download.url_format(url)
         Download.download(url, filename, type)
@@ -169,13 +167,15 @@ function video_download() {
 
 function video_download_2() {
     const type = config.download_type
-    if (type === 'web') {
-        $('#video_url_2')[0].click()
-    } else if (type === 'a') {
+    if (type === 'a') {
         $('#video_download').click()
+    } else if (type === 'web') {
+        $('#video_url_2')[0].click()
     } else if (type === 'aria') {
         $('#video_download').click()
-    } else {
+    } else if (type === 'blob_merge') {
+        $('#video_download').click()
+    } else { // blob, rpc
         const url = $('#video_url_2').attr('href')
         const filename = video.base().filename() + '.m4a'
         Download.download(url, filename, type)
@@ -199,12 +199,25 @@ function video_download_all() {
     }
 }
 
+function download_danmaku() {
+    const vb = video.base()
+    Download.download_danmaku_ass(vb.cid(), vb.filename())
+}
+
+function download_subtitle() {
+    Download.download_subtitle_vtt(0, video.base().filename())
+}
+
+function test() {
+    MessageBox.alert()
+}
+
 export const event = {
     setting_btn,
     bilibili_parse,
-    download_danmaku,
-    download_subtitle,
     video_download,
     video_download_2,
-    video_download_all
+    video_download_all,
+    download_danmaku,
+    download_subtitle,
 }

@@ -185,7 +185,6 @@ class Auth {
         })
     }
 
-
     logout() {
         if (!store.get('auth_id')) {
             MessageBox.alert('没有发现授权记录')
