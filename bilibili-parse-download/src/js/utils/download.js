@@ -498,6 +498,7 @@ function download_blob_merge(video_url, audio_url, filename) {
 
     download_blob_merge_clicked = true
     Message.info('准备开始下载')
+    need_show_merge_progress = true
     ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then((mergedBlob) => {
         if (!mergedBlob) {
             Message.error('合并视频失败')
