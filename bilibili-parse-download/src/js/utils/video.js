@@ -50,11 +50,11 @@ function base() {
 
 const q_map = {
     '8K 超高清': 127,
-    '4K 超清': 120,
+    '4K 超高清': 120,
     '1080P 60帧': 116,
     '1080P 高码率': 112,
     '1080P 高清': 80,
-    '720P 高清': 64,
+    '720P 准高清': 64,
     '480P 清晰': 32,
     '360P 流畅': 16,
     '自动': 32
@@ -79,9 +79,17 @@ function get_quality() {
         _q = keys.indexOf(`${q}`) > -1 ? q : 0
         _q_max = keys.indexOf(`${q_max}`) > -1 ? q_max : 0
     }
-    !_q && (_q = 80)
-    !_q_max && (_q_max = 80)
 
+    if (!_q) {
+        _q = parseInt($('li.bpx-player-ctrl-quality-menu-item.bpx-state-active').attr('data-value') || _q)
+    }
+
+    if (!_q_max) {
+        _q_max = parseInt($('li.bpx-player-ctrl-quality-menu-item').attr('data-value') || _q_max)
+    }
+
+    !_q && (_q = 80) && (console.error('video get quality error'))
+    !_q_max && (_q_max = 80) && (console.error('video get quality max error'))
     if (!user.isVIP()) {
         _q = _q > 80 ? 80 : _q
     }

@@ -58,6 +58,7 @@ function message(html, type) {
     id += 1
     messageEnQueue(`<div id="message_${id}" class="message message-${type}"><div class="message-context"><p><strong>${type}：</strong></p><p>${html}</p></div></div>`, id)
     messageDeQueue(id, 3)
+    console.info(`[Message] ${type} : ${html}`);
 }
 
 function messageEnQueue(message, id) {

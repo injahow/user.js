@@ -174,7 +174,9 @@ function video_download_2() {
     } else if (type === 'aria') {
         $('#video_download').click()
     } else if (type === 'blob_merge') {
-        $('#video_download').click()
+        const url = $('#video_url_2').attr('href')
+        const filename = video.base().filename() + '.m4a'
+        Download.download(url, filename, 'blob')
     } else { // blob, rpc
         const url = $('#video_url_2').attr('href')
         const filename = video.base().filename() + '.m4a'
@@ -220,4 +222,5 @@ export const event = {
     video_download_all,
     download_danmaku,
     download_subtitle,
+    test
 }

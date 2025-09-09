@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.6.5
+// @version       2.7.0
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -127,9 +127,9 @@
         return cache_createClass(CacheFactory, null, [ {
             key: "get",
             value: function get() {
-                var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default", cache = CacheFactory.map[name];
-                return cache instanceof Cache || (cache = new Cache, CacheFactory.map[name] = cache), 
-                cache;
+                var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default", cache = new Cache;
+                return CacheFactory.map[name] instanceof Cache && (cache = CacheFactory.map[name]), 
+                CacheFactory.map[name] = cache, cache;
             }
         }, {
             key: "setValue",
@@ -139,6 +139,14 @@
                     var cache = CacheFactory.get(cacheName);
                     cache instanceof Cache && cache.set(cacheKey, value);
                 }
+            }
+        }, {
+            key: "getValue",
+            value: function getValue() {
+                var key = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", _key$split3 = key.split(".", 2), _key$split4 = _slicedToArray(_key$split3, 2), cacheName = _key$split4[0], cacheKey = _key$split4[1];
+                if (!cacheName || !cacheKey) return null;
+                var cache = CacheFactory.get(cacheName);
+                return cache instanceof Cache ? cache.get(cacheKey) : void 0;
             }
         }, {
             key: "clear",
@@ -224,7 +232,7 @@
                     $(e).remove();
                 }));
             }), 1e3 * time);
-        }(id, 3);
+        }(id, 3), console.info("[Message] ".concat(type, " : ").concat(html));
     }
     var message_Message_success = function success(html) {
         return message_message(html, "success");
@@ -991,11 +999,11 @@
     }
     var q_map = {
         "8K 超高清": 127,
-        "4K 超清": 120,
+        "4K 超高清": 120,
         "1080P 60帧": 116,
         "1080P 高码率": 112,
         "1080P 高清": 80,
-        "720P 高清": 64,
+        "720P 准高清": 64,
         "480P 清晰": 32,
         "360P 流畅": 16,
         "自动": 32
@@ -1025,8 +1033,10 @@
                 var keys = Object.keys(videoQualityMap), _q2 = parseInt(("video" === _type ? $("li.bpx-player-ctrl-quality-menu-item.bpx-state-active") : $("li.squirtle-select-item.active")).attr("data-value")), _q_max2 = parseInt($(("video" === _type ? $("li.bpx-player-ctrl-quality-menu-item") : $("li.squirtle-select-item")).get(0)).attr("data-value"));
                 _q = keys.indexOf("".concat(_q2)) > -1 ? _q2 : 0, _q_max = keys.indexOf("".concat(_q_max2)) > -1 ? _q_max2 : 0;
             }
-            return !_q && (_q = 80), !_q_max && (_q_max = 80), user.isVIP() || (_q = _q > 80 ? 80 : _q), 
-            {
+            return _q || (_q = parseInt($("li.bpx-player-ctrl-quality-menu-item.bpx-state-active").attr("data-value") || _q)), 
+            _q_max || (_q_max = parseInt($("li.bpx-player-ctrl-quality-menu-item").attr("data-value") || _q_max)), 
+            !_q && (_q = 80) && console.error("video get quality error"), !_q_max && (_q_max = 80) && console.error("video get quality max error"), 
+            user.isVIP() || (_q = _q > 80 ? 80 : _q), {
                 q: _q,
                 q_max: _q_max
             };
@@ -2066,7 +2076,7 @@
             value: function getModulePromise() {
                 var _this = this, _this$config = this.config, urls = _this$config.urls, errs = (_this$config.getModule, 
                 []);
-                return new Promise((function(resolve, reject) {
+                return urls && urls.length ? new Promise((function(resolve, reject) {
                     var i = 0;
                     urls.forEach((function(url) {
                         setTimeout(runtime_lib_asyncToGenerator(runtime_lib_regeneratorRuntime().mark((function _callee() {
@@ -2121,32 +2131,45 @@
                             }), _callee, null, [ [ 0, 14 ] ]);
                         }))), 1e3 * i++);
                     }));
-                }));
+                })) : Promise.reject(new Error("No urls provided"));
             }
         } ]), RuntimeLib;
-    }(), cdn_map = {
+    }(), filename_npm_mapping = {
+        "jszip.min.js": "dist/jszip.min.js",
+        "flv.min.js": "dist/flv.min.js",
+        "DPlayer.min.js": "dist/DPlayer.min.js"
+    }, cdn_support_mapping = {
+        "@ffmpeg/ffmpeg": [ "unpkg", "jsdelivr" ]
+    }, cdn_map = {
         cloudflare: function cloudflare(name, ver, filename) {
             return "https://cdnjs.cloudflare.com/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
         },
-        bootcdn: function bootcdn(name, ver, filename) {
-            return "https://cdn.bootcdn.net/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
+        unpkg: function unpkg(name, ver, filename) {
+            return filename = filename_npm_mapping[filename] || filename, "https://unpkg.com/".concat(name, "@").concat(ver, "/").concat(filename);
         },
         jsdelivr: function jsdelivr(name, ver, filename) {
-            return "https://cdn.jsdelivr.net/npm/".concat(name, "@").concat(ver, "/").concat(filename);
+            return filename = filename_npm_mapping[filename] || filename, "https://cdn.jsdelivr.net/npm/".concat(name, "@").concat(ver, "/").concat(filename);
         },
         staticfile: function staticfile(name, ver, filename) {
             return "https://cdn.staticfile.org/".concat(name, "/").concat(ver, "/").concat(filename);
+        },
+        bootcdn: function bootcdn(name, ver, filename) {
+            return "https://cdn.bootcdn.net/ajax/libs/".concat(name, "/").concat(ver, "/").concat(filename);
         }
     }, urls = function urls(_ref2) {
-        var name = _ref2.name, ver = _ref2.ver, filename = _ref2.filename, cdn_keys = _ref2.cdn_keys;
-        return (cdn_keys = cdn_keys ? cdn_keys.filter((function(key) {
+        var name = _ref2.name, ver = _ref2.ver, filename = _ref2.filename, cdn_keys = _ref2.cdn_keys, support = cdn_support_mapping[name];
+        return (cdn_keys = support ? cdn_keys ? cdn_keys.filter((function(key) {
+            return key in cdn_map && support.includes(key);
+        })) : support.filter((function(key) {
+            return key in cdn_map;
+        })) : cdn_keys ? cdn_keys.filter((function(key) {
             return key in cdn_map;
         })) : Object.keys(cdn_map)).map((function(k) {
             return cdn_map[k](name, ver, filename);
         }));
     }, runtime_div = document.createElement("div");
     runtime_div.id = "bp_runtime_div", runtime_div.style.display = "none", document.getElementById(runtime_div.id) || document.body.appendChild(runtime_div);
-    var JSZip, DPlayer, QRCode, md5, count = 0, scripts = [], getModules = [], initIframe = function initIframe(name, ver, filename, getModule) {
+    var JSZip, DPlayer, QRCode, md5, FFmpegWASM, count = 0, scripts = [], getModules = [], initIframe = function initIframe(name, ver, filename, getModule) {
         count++, new RuntimeLib({
             urls: urls({
                 name: name,
@@ -2196,27 +2219,46 @@
     }, initLocal = function initLocal(name, ver, filename, getModule, handleScript) {
         handleScript = handleScript || function(script) {
             return script;
-        }, new RuntimeLib({
-            urls: urls({
-                name: name,
-                ver: ver,
-                filename: filename
-            }),
-            getModule: getModule
-        }).getModulePromise().then((function(script) {
-            var blob = new Blob([ handleScript(script) ], {
-                type: "text/javascript"
-            }), blob_url = URL.createObjectURL(blob), script_tag = document.createElement("script");
-            script_tag.src = blob_url, script_tag.onload = function() {
-                console.log("[Runtime Library] Loaded ".concat(name, " from local")), getModule(window), 
-                URL.revokeObjectURL(blob_url);
-            }, script_tag.onerror = function() {
-                console.error("[Runtime Library] Failed to load ".concat(name, " from local")), 
-                URL.revokeObjectURL(blob_url);
-            }, runtime_div.appendChild(script_tag);
-        })).catch((function(err) {
+        };
+        try {
+            runtime_lib_asyncToGenerator(runtime_lib_regeneratorRuntime().mark((function _callee2() {
+                var script, blob, blob_url, script_tag;
+                return runtime_lib_regeneratorRuntime().wrap((function _callee2$(_context2) {
+                    for (;;) switch (_context2.prev = _context2.next) {
+                      case 0:
+                        return _context2.next = 2, new RuntimeLib({
+                            urls: urls({
+                                name: name,
+                                ver: ver,
+                                filename: filename
+                            }),
+                            getModule: getModule
+                        }).getModulePromise();
+
+                      case 2:
+                        return script = _context2.sent, _context2.t0 = Blob, _context2.next = 6, handleScript(script);
+
+                      case 6:
+                        _context2.t1 = _context2.sent, _context2.t2 = [ _context2.t1 ], _context2.t3 = {
+                            type: "text/javascript"
+                        }, blob = new _context2.t0(_context2.t2, _context2.t3), blob_url = URL.createObjectURL(blob), 
+                        (script_tag = document.createElement("script")).src = blob_url, script_tag.onload = function() {
+                            console.log("[Runtime Library] Loaded ".concat(name, " from local")), getModule(window), 
+                            URL.revokeObjectURL(blob_url);
+                        }, script_tag.onerror = function() {
+                            console.error("[Runtime Library] Failed to load ".concat(name, " from local")), 
+                            URL.revokeObjectURL(blob_url);
+                        }, runtime_div.appendChild(script_tag);
+
+                      case 16:
+                      case "end":
+                        return _context2.stop();
+                    }
+                }), _callee2);
+            })))();
+        } catch (error) {
             console.error("[Runtime Library] Failed to load ".concat(name, " from local"), err);
-        }));
+        }
     };
     function get_bili_player_id() {
         return $("#bilibiliPlayer")[0] ? "#bilibiliPlayer" : $("#bilibili-player")[0] ? "#bilibili-player" : $("#edu-player")[0] ? "div.bpx-player-primary-area" : void 0;
@@ -2278,6 +2320,10 @@
         return QRCode = w.QRCode;
     })), initIframe("blueimp-md5", "2.19.0", "js/md5.min.js", (function(w) {
         return md5 = w.md5;
+    })), initLocal("@ffmpeg/ffmpeg", "0.12.15", "dist/umd/ffmpeg.js", (function(w) {
+        return FFmpegWASM = w.FFmpegWASM;
+    }), (function(script) {
+        return script.replace("new URL(e.p+e.u(814),e.b)", "r.workerLoadURL");
     }));
     var player = {
         bili_video_tag: bili_video_tag,
@@ -2406,6 +2452,913 @@
             }
         } ]), Check;
     }());
+    function common_typeof(obj) {
+        return common_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, common_typeof(obj);
+    }
+    function common_regeneratorRuntime() {
+        common_regeneratorRuntime = function _regeneratorRuntime() {
+            return exports;
+        };
+        var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+        function define(obj, key, value) {
+            return Object.defineProperty(obj, key, {
+                value: value,
+                enumerable: !0,
+                configurable: !0,
+                writable: !0
+            }), obj[key];
+        }
+        try {
+            define({}, "");
+        } catch (err) {
+            define = function define(obj, key, value) {
+                return obj[key] = value;
+            };
+        }
+        function wrap(innerFn, outerFn, self, tryLocsList) {
+            var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []);
+            return generator._invoke = function(innerFn, self, context) {
+                var state = "suspendedStart";
+                return function(method, arg) {
+                    if ("executing" === state) throw new Error("Generator is already running");
+                    if ("completed" === state) {
+                        if ("throw" === method) throw arg;
+                        return doneResult();
+                    }
+                    for (context.method = method, context.arg = arg; ;) {
+                        var delegate = context.delegate;
+                        if (delegate) {
+                            var delegateResult = maybeInvokeDelegate(delegate, context);
+                            if (delegateResult) {
+                                if (delegateResult === ContinueSentinel) continue;
+                                return delegateResult;
+                            }
+                        }
+                        if ("next" === context.method) context.sent = context._sent = context.arg; else if ("throw" === context.method) {
+                            if ("suspendedStart" === state) throw state = "completed", context.arg;
+                            context.dispatchException(context.arg);
+                        } else "return" === context.method && context.abrupt("return", context.arg);
+                        state = "executing";
+                        var record = tryCatch(innerFn, self, context);
+                        if ("normal" === record.type) {
+                            if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+                            return {
+                                value: record.arg,
+                                done: context.done
+                            };
+                        }
+                        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+                    }
+                };
+            }(innerFn, self, context), generator;
+        }
+        function tryCatch(fn, obj, arg) {
+            try {
+                return {
+                    type: "normal",
+                    arg: fn.call(obj, arg)
+                };
+            } catch (err) {
+                return {
+                    type: "throw",
+                    arg: err
+                };
+            }
+        }
+        exports.wrap = wrap;
+        var ContinueSentinel = {};
+        function Generator() {}
+        function GeneratorFunction() {}
+        function GeneratorFunctionPrototype() {}
+        var IteratorPrototype = {};
+        define(IteratorPrototype, iteratorSymbol, (function() {
+            return this;
+        }));
+        var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+        NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
+        var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+        function defineIteratorMethods(prototype) {
+            [ "next", "throw", "return" ].forEach((function(method) {
+                define(prototype, method, (function(arg) {
+                    return this._invoke(method, arg);
+                }));
+            }));
+        }
+        function AsyncIterator(generator, PromiseImpl) {
+            function invoke(method, arg, resolve, reject) {
+                var record = tryCatch(generator[method], generator, arg);
+                if ("throw" !== record.type) {
+                    var result = record.arg, value = result.value;
+                    return value && "object" == common_typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then((function(value) {
+                        invoke("next", value, resolve, reject);
+                    }), (function(err) {
+                        invoke("throw", err, resolve, reject);
+                    })) : PromiseImpl.resolve(value).then((function(unwrapped) {
+                        result.value = unwrapped, resolve(result);
+                    }), (function(error) {
+                        return invoke("throw", error, resolve, reject);
+                    }));
+                }
+                reject(record.arg);
+            }
+            var previousPromise;
+            this._invoke = function(method, arg) {
+                function callInvokeWithMethodAndArg() {
+                    return new PromiseImpl((function(resolve, reject) {
+                        invoke(method, arg, resolve, reject);
+                    }));
+                }
+                return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+            };
+        }
+        function maybeInvokeDelegate(delegate, context) {
+            var method = delegate.iterator[context.method];
+            if (void 0 === method) {
+                if (context.delegate = null, "throw" === context.method) {
+                    if (delegate.iterator.return && (context.method = "return", context.arg = void 0, 
+                    maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel;
+                    context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method");
+                }
+                return ContinueSentinel;
+            }
+            var record = tryCatch(method, delegate.iterator, context.arg);
+            if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, 
+            context.delegate = null, ContinueSentinel;
+            var info = record.arg;
+            return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, 
+            "return" !== context.method && (context.method = "next", context.arg = void 0), 
+            context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), 
+            context.delegate = null, ContinueSentinel);
+        }
+        function pushTryEntry(locs) {
+            var entry = {
+                tryLoc: locs[0]
+            };
+            1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], 
+            entry.afterLoc = locs[3]), this.tryEntries.push(entry);
+        }
+        function resetTryEntry(entry) {
+            var record = entry.completion || {};
+            record.type = "normal", delete record.arg, entry.completion = record;
+        }
+        function Context(tryLocsList) {
+            this.tryEntries = [ {
+                tryLoc: "root"
+            } ], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
+        }
+        function values(iterable) {
+            if (iterable) {
+                var iteratorMethod = iterable[iteratorSymbol];
+                if (iteratorMethod) return iteratorMethod.call(iterable);
+                if ("function" == typeof iterable.next) return iterable;
+                if (!isNaN(iterable.length)) {
+                    var i = -1, next = function next() {
+                        for (;++i < iterable.length; ) if (hasOwn.call(iterable, i)) return next.value = iterable[i], 
+                        next.done = !1, next;
+                        return next.value = void 0, next.done = !0, next;
+                    };
+                    return next.next = next;
+                }
+            }
+            return {
+                next: doneResult
+            };
+        }
+        function doneResult() {
+            return {
+                value: void 0,
+                done: !0
+            };
+        }
+        return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), 
+        define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), 
+        exports.isGeneratorFunction = function(genFun) {
+            var ctor = "function" == typeof genFun && genFun.constructor;
+            return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
+        }, exports.mark = function(genFun) {
+            return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, 
+            define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), 
+            genFun;
+        }, exports.awrap = function(arg) {
+            return {
+                __await: arg
+            };
+        }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, (function() {
+            return this;
+        })), exports.AsyncIterator = AsyncIterator, exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+            void 0 === PromiseImpl && (PromiseImpl = Promise);
+            var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+            return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then((function(result) {
+                return result.done ? result.value : iter.next();
+            }));
+        }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, (function() {
+            return this;
+        })), define(Gp, "toString", (function() {
+            return "[object Generator]";
+        })), exports.keys = function(object) {
+            var keys = [];
+            for (var key in object) keys.push(key);
+            return keys.reverse(), function next() {
+                for (;keys.length; ) {
+                    var key = keys.pop();
+                    if (key in object) return next.value = key, next.done = !1, next;
+                }
+                return next.done = !0, next;
+            };
+        }, exports.values = values, Context.prototype = {
+            constructor: Context,
+            reset: function reset(skipTempReset) {
+                if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1, 
+                this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(resetTryEntry), 
+                !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = void 0);
+            },
+            stop: function stop() {
+                this.done = !0;
+                var rootRecord = this.tryEntries[0].completion;
+                if ("throw" === rootRecord.type) throw rootRecord.arg;
+                return this.rval;
+            },
+            dispatchException: function dispatchException(exception) {
+                if (this.done) throw exception;
+                var context = this;
+                function handle(loc, caught) {
+                    return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", 
+                    context.arg = void 0), !!caught;
+                }
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i], record = entry.completion;
+                    if ("root" === entry.tryLoc) return handle("end");
+                    if (entry.tryLoc <= this.prev) {
+                        var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc");
+                        if (hasCatch && hasFinally) {
+                            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+                            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+                        } else if (hasCatch) {
+                            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+                        } else {
+                            if (!hasFinally) throw new Error("try statement without catch or finally");
+                            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+                        }
+                    }
+                }
+            },
+            abrupt: function abrupt(type, arg) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+                        var finallyEntry = entry;
+                        break;
+                    }
+                }
+                finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
+                var record = finallyEntry ? finallyEntry.completion : {};
+                return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", 
+                this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
+            },
+            complete: function complete(record, afterLoc) {
+                if ("throw" === record.type) throw record.arg;
+                return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, 
+                this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), 
+                ContinueSentinel;
+            },
+            finish: function finish(finallyLoc) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), 
+                    resetTryEntry(entry), ContinueSentinel;
+                }
+            },
+            catch: function _catch(tryLoc) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.tryLoc === tryLoc) {
+                        var record = entry.completion;
+                        if ("throw" === record.type) {
+                            var thrown = record.arg;
+                            resetTryEntry(entry);
+                        }
+                        return thrown;
+                    }
+                }
+                throw new Error("illegal catch attempt");
+            },
+            delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+                return this.delegate = {
+                    iterator: values(iterable),
+                    resultName: resultName,
+                    nextLoc: nextLoc
+                }, "next" === this.method && (this.arg = void 0), ContinueSentinel;
+            }
+        }, exports;
+    }
+    function common_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+        try {
+            var info = gen[key](arg), value = info.value;
+        } catch (error) {
+            return void reject(error);
+        }
+        info.done ? resolve(value) : Promise.resolve(value).then(_next, _throw);
+    }
+    function common_asyncToGenerator(fn) {
+        return function() {
+            var self = this, args = arguments;
+            return new Promise((function(resolve, reject) {
+                var gen = fn.apply(self, args);
+                function _next(value) {
+                    common_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+                }
+                function _throw(err) {
+                    common_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+                }
+                _next(void 0);
+            }));
+        };
+    }
+    function toBlobURL(_x, _x2) {
+        return _toBlobURL.apply(this, arguments);
+    }
+    function _toBlobURL() {
+        return (_toBlobURL = common_asyncToGenerator(common_regeneratorRuntime().mark((function _callee(url, mimeType) {
+            var response, errorMsg, buffer, blob, blobUrl;
+            return common_regeneratorRuntime().wrap((function _callee$(_context) {
+                for (;;) switch (_context.prev = _context.next) {
+                  case 0:
+                    return console.log("toBlobURL: Fetching ".concat(url)), _context.next = 3, fetch(url);
+
+                  case 3:
+                    if ((response = _context.sent).ok) {
+                        _context.next = 8;
+                        break;
+                    }
+                    throw errorMsg = "toBlobURL: Failed to fetch ".concat(url, ": ").concat(response.status, " ").concat(response.statusText), 
+                    console.error(errorMsg), new Error(errorMsg);
+
+                  case 8:
+                    return _context.next = 10, response.arrayBuffer();
+
+                  case 10:
+                    return buffer = _context.sent, blob = new Blob([ buffer ], {
+                        type: mimeType
+                    }), blobUrl = URL.createObjectURL(blob), console.log("toBlobURL: Created Blob URL for ".concat(url)), 
+                    _context.abrupt("return", blobUrl);
+
+                  case 15:
+                  case "end":
+                    return _context.stop();
+                }
+            }), _callee);
+        })))).apply(this, arguments);
+    }
+    function fetchFileWithProgress(_x4, _x5) {
+        return _fetchFileWithProgress.apply(this, arguments);
+    }
+    function _fetchFileWithProgress() {
+        return (_fetchFileWithProgress = common_asyncToGenerator(common_regeneratorRuntime().mark((function _callee3(url, onProgress) {
+            var res, contentLength, total, reader, loaded, chunks, _yield$reader$read, done, value, dataArray, pos, _i, _chunks, chunk;
+            return common_regeneratorRuntime().wrap((function _callee3$(_context3) {
+                for (;;) switch (_context3.prev = _context3.next) {
+                  case 0:
+                    return _context3.next = 2, fetch(url);
+
+                  case 2:
+                    if ((res = _context3.sent).body) {
+                        _context3.next = 5;
+                        break;
+                    }
+                    throw new Error("URL下载失败: " + url);
+
+                  case 5:
+                    contentLength = res.headers.get("content-length"), total = contentLength ? parseInt(contentLength, 10) : 0, 
+                    reader = res.body.getReader(), loaded = 0, chunks = [];
+
+                  case 10:
+                    return _context3.next = 13, reader.read();
+
+                  case 13:
+                    if (_yield$reader$read = _context3.sent, done = _yield$reader$read.done, (value = _yield$reader$read.value) && (chunks.push(value), 
+                    loaded += value.length, onProgress && onProgress(loaded, total)), !done) {
+                        _context3.next = 19;
+                        break;
+                    }
+                    return _context3.abrupt("break", 21);
+
+                  case 19:
+                    _context3.next = 10;
+                    break;
+
+                  case 21:
+                    for (dataArray = new Uint8Array(loaded), pos = 0, _i = 0, _chunks = chunks; _i < _chunks.length; _i++) chunk = _chunks[_i], 
+                    dataArray.set(chunk, pos), pos += chunk.length;
+                    return _context3.abrupt("return", dataArray);
+
+                  case 25:
+                  case "end":
+                    return _context3.stop();
+                }
+            }), _callee3);
+        })))).apply(this, arguments);
+    }
+    function ffmpeg_typeof(obj) {
+        return ffmpeg_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, ffmpeg_typeof(obj);
+    }
+    function ffmpeg_slicedToArray(arr, i) {
+        return function ffmpeg_arrayWithHoles(arr) {
+            if (Array.isArray(arr)) return arr;
+        }(arr) || function ffmpeg_iterableToArrayLimit(arr, i) {
+            var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
+            if (null == _i) return;
+            var _s, _e, _arr = [], _n = !0, _d = !1;
+            try {
+                for (_i = _i.call(arr); !(_n = (_s = _i.next()).done) && (_arr.push(_s.value), !i || _arr.length !== i); _n = !0) ;
+            } catch (err) {
+                _d = !0, _e = err;
+            } finally {
+                try {
+                    _n || null == _i.return || _i.return();
+                } finally {
+                    if (_d) throw _e;
+                }
+            }
+            return _arr;
+        }(arr, i) || function ffmpeg_unsupportedIterableToArray(o, minLen) {
+            if (!o) return;
+            if ("string" == typeof o) return ffmpeg_arrayLikeToArray(o, minLen);
+            var n = Object.prototype.toString.call(o).slice(8, -1);
+            "Object" === n && o.constructor && (n = o.constructor.name);
+            if ("Map" === n || "Set" === n) return Array.from(o);
+            if ("Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return ffmpeg_arrayLikeToArray(o, minLen);
+        }(arr, i) || function ffmpeg_nonIterableRest() {
+            throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+        }();
+    }
+    function ffmpeg_arrayLikeToArray(arr, len) {
+        (null == len || len > arr.length) && (len = arr.length);
+        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+        return arr2;
+    }
+    function ffmpeg_regeneratorRuntime() {
+        ffmpeg_regeneratorRuntime = function _regeneratorRuntime() {
+            return exports;
+        };
+        var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+        function define(obj, key, value) {
+            return Object.defineProperty(obj, key, {
+                value: value,
+                enumerable: !0,
+                configurable: !0,
+                writable: !0
+            }), obj[key];
+        }
+        try {
+            define({}, "");
+        } catch (err) {
+            define = function define(obj, key, value) {
+                return obj[key] = value;
+            };
+        }
+        function wrap(innerFn, outerFn, self, tryLocsList) {
+            var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []);
+            return generator._invoke = function(innerFn, self, context) {
+                var state = "suspendedStart";
+                return function(method, arg) {
+                    if ("executing" === state) throw new Error("Generator is already running");
+                    if ("completed" === state) {
+                        if ("throw" === method) throw arg;
+                        return doneResult();
+                    }
+                    for (context.method = method, context.arg = arg; ;) {
+                        var delegate = context.delegate;
+                        if (delegate) {
+                            var delegateResult = maybeInvokeDelegate(delegate, context);
+                            if (delegateResult) {
+                                if (delegateResult === ContinueSentinel) continue;
+                                return delegateResult;
+                            }
+                        }
+                        if ("next" === context.method) context.sent = context._sent = context.arg; else if ("throw" === context.method) {
+                            if ("suspendedStart" === state) throw state = "completed", context.arg;
+                            context.dispatchException(context.arg);
+                        } else "return" === context.method && context.abrupt("return", context.arg);
+                        state = "executing";
+                        var record = tryCatch(innerFn, self, context);
+                        if ("normal" === record.type) {
+                            if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+                            return {
+                                value: record.arg,
+                                done: context.done
+                            };
+                        }
+                        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+                    }
+                };
+            }(innerFn, self, context), generator;
+        }
+        function tryCatch(fn, obj, arg) {
+            try {
+                return {
+                    type: "normal",
+                    arg: fn.call(obj, arg)
+                };
+            } catch (err) {
+                return {
+                    type: "throw",
+                    arg: err
+                };
+            }
+        }
+        exports.wrap = wrap;
+        var ContinueSentinel = {};
+        function Generator() {}
+        function GeneratorFunction() {}
+        function GeneratorFunctionPrototype() {}
+        var IteratorPrototype = {};
+        define(IteratorPrototype, iteratorSymbol, (function() {
+            return this;
+        }));
+        var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+        NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
+        var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+        function defineIteratorMethods(prototype) {
+            [ "next", "throw", "return" ].forEach((function(method) {
+                define(prototype, method, (function(arg) {
+                    return this._invoke(method, arg);
+                }));
+            }));
+        }
+        function AsyncIterator(generator, PromiseImpl) {
+            function invoke(method, arg, resolve, reject) {
+                var record = tryCatch(generator[method], generator, arg);
+                if ("throw" !== record.type) {
+                    var result = record.arg, value = result.value;
+                    return value && "object" == ffmpeg_typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then((function(value) {
+                        invoke("next", value, resolve, reject);
+                    }), (function(err) {
+                        invoke("throw", err, resolve, reject);
+                    })) : PromiseImpl.resolve(value).then((function(unwrapped) {
+                        result.value = unwrapped, resolve(result);
+                    }), (function(error) {
+                        return invoke("throw", error, resolve, reject);
+                    }));
+                }
+                reject(record.arg);
+            }
+            var previousPromise;
+            this._invoke = function(method, arg) {
+                function callInvokeWithMethodAndArg() {
+                    return new PromiseImpl((function(resolve, reject) {
+                        invoke(method, arg, resolve, reject);
+                    }));
+                }
+                return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+            };
+        }
+        function maybeInvokeDelegate(delegate, context) {
+            var method = delegate.iterator[context.method];
+            if (void 0 === method) {
+                if (context.delegate = null, "throw" === context.method) {
+                    if (delegate.iterator.return && (context.method = "return", context.arg = void 0, 
+                    maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel;
+                    context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method");
+                }
+                return ContinueSentinel;
+            }
+            var record = tryCatch(method, delegate.iterator, context.arg);
+            if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, 
+            context.delegate = null, ContinueSentinel;
+            var info = record.arg;
+            return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, 
+            "return" !== context.method && (context.method = "next", context.arg = void 0), 
+            context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), 
+            context.delegate = null, ContinueSentinel);
+        }
+        function pushTryEntry(locs) {
+            var entry = {
+                tryLoc: locs[0]
+            };
+            1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], 
+            entry.afterLoc = locs[3]), this.tryEntries.push(entry);
+        }
+        function resetTryEntry(entry) {
+            var record = entry.completion || {};
+            record.type = "normal", delete record.arg, entry.completion = record;
+        }
+        function Context(tryLocsList) {
+            this.tryEntries = [ {
+                tryLoc: "root"
+            } ], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
+        }
+        function values(iterable) {
+            if (iterable) {
+                var iteratorMethod = iterable[iteratorSymbol];
+                if (iteratorMethod) return iteratorMethod.call(iterable);
+                if ("function" == typeof iterable.next) return iterable;
+                if (!isNaN(iterable.length)) {
+                    var i = -1, next = function next() {
+                        for (;++i < iterable.length; ) if (hasOwn.call(iterable, i)) return next.value = iterable[i], 
+                        next.done = !1, next;
+                        return next.value = void 0, next.done = !0, next;
+                    };
+                    return next.next = next;
+                }
+            }
+            return {
+                next: doneResult
+            };
+        }
+        function doneResult() {
+            return {
+                value: void 0,
+                done: !0
+            };
+        }
+        return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), 
+        define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), 
+        exports.isGeneratorFunction = function(genFun) {
+            var ctor = "function" == typeof genFun && genFun.constructor;
+            return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
+        }, exports.mark = function(genFun) {
+            return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, 
+            define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), 
+            genFun;
+        }, exports.awrap = function(arg) {
+            return {
+                __await: arg
+            };
+        }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, (function() {
+            return this;
+        })), exports.AsyncIterator = AsyncIterator, exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+            void 0 === PromiseImpl && (PromiseImpl = Promise);
+            var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+            return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then((function(result) {
+                return result.done ? result.value : iter.next();
+            }));
+        }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, (function() {
+            return this;
+        })), define(Gp, "toString", (function() {
+            return "[object Generator]";
+        })), exports.keys = function(object) {
+            var keys = [];
+            for (var key in object) keys.push(key);
+            return keys.reverse(), function next() {
+                for (;keys.length; ) {
+                    var key = keys.pop();
+                    if (key in object) return next.value = key, next.done = !1, next;
+                }
+                return next.done = !0, next;
+            };
+        }, exports.values = values, Context.prototype = {
+            constructor: Context,
+            reset: function reset(skipTempReset) {
+                if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1, 
+                this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(resetTryEntry), 
+                !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = void 0);
+            },
+            stop: function stop() {
+                this.done = !0;
+                var rootRecord = this.tryEntries[0].completion;
+                if ("throw" === rootRecord.type) throw rootRecord.arg;
+                return this.rval;
+            },
+            dispatchException: function dispatchException(exception) {
+                if (this.done) throw exception;
+                var context = this;
+                function handle(loc, caught) {
+                    return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", 
+                    context.arg = void 0), !!caught;
+                }
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i], record = entry.completion;
+                    if ("root" === entry.tryLoc) return handle("end");
+                    if (entry.tryLoc <= this.prev) {
+                        var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc");
+                        if (hasCatch && hasFinally) {
+                            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+                            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+                        } else if (hasCatch) {
+                            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+                        } else {
+                            if (!hasFinally) throw new Error("try statement without catch or finally");
+                            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+                        }
+                    }
+                }
+            },
+            abrupt: function abrupt(type, arg) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+                        var finallyEntry = entry;
+                        break;
+                    }
+                }
+                finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
+                var record = finallyEntry ? finallyEntry.completion : {};
+                return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", 
+                this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
+            },
+            complete: function complete(record, afterLoc) {
+                if ("throw" === record.type) throw record.arg;
+                return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, 
+                this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), 
+                ContinueSentinel;
+            },
+            finish: function finish(finallyLoc) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), 
+                    resetTryEntry(entry), ContinueSentinel;
+                }
+            },
+            catch: function _catch(tryLoc) {
+                for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+                    var entry = this.tryEntries[i];
+                    if (entry.tryLoc === tryLoc) {
+                        var record = entry.completion;
+                        if ("throw" === record.type) {
+                            var thrown = record.arg;
+                            resetTryEntry(entry);
+                        }
+                        return thrown;
+                    }
+                }
+                throw new Error("illegal catch attempt");
+            },
+            delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+                return this.delegate = {
+                    iterator: values(iterable),
+                    resultName: resultName,
+                    nextLoc: nextLoc
+                }, "next" === this.method && (this.arg = void 0), ContinueSentinel;
+            }
+        }, exports;
+    }
+    function ffmpeg_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+        try {
+            var info = gen[key](arg), value = info.value;
+        } catch (error) {
+            return void reject(error);
+        }
+        info.done ? resolve(value) : Promise.resolve(value).then(_next, _throw);
+    }
+    function ffmpeg_asyncToGenerator(fn) {
+        return function() {
+            var self = this, args = arguments;
+            return new Promise((function(resolve, reject) {
+                var gen = fn.apply(self, args);
+                function _next(value) {
+                    ffmpeg_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+                }
+                function _throw(err) {
+                    ffmpeg_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+                }
+                _next(void 0);
+            }));
+        };
+    }
+    function _mergeVideoAndAudio() {
+        return _mergeVideoAndAudio = ffmpeg_asyncToGenerator(ffmpeg_regeneratorRuntime().mark((function _callee2(videoUrl, audioUrl, showProgress) {
+            var ffmpeg, load, videoLoaded, audioLoaded, videoTotal, audioTotal, updateProgress, _yield$Promise$all, _yield$Promise$all2, videoData, audioData, mergedData;
+            return ffmpeg_regeneratorRuntime().wrap((function _callee2$(_context2) {
+                for (;;) switch (_context2.prev = _context2.next) {
+                  case 0:
+                    return (showProgress = showProgress || function(data) {
+                        console.log("[ffmpeg] Progress: ", data);
+                    })({
+                        message: "正在初始化FFmpeg"
+                    }), ffmpeg = new FFmpegWASM.FFmpeg, load = function() {
+                        var _ref = ffmpeg_asyncToGenerator(ffmpeg_regeneratorRuntime().mark((function _callee() {
+                            var baseFFmpegUrl, baseCoreUrl, baseCoreMTUrl;
+                            return ffmpeg_regeneratorRuntime().wrap((function _callee$(_context) {
+                                for (;;) switch (_context.prev = _context.next) {
+                                  case 0:
+                                    if (!0, baseFFmpegUrl = "https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd", baseCoreUrl = "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd", 
+                                    baseCoreMTUrl = "https://unpkg.com/@ffmpeg/core-mt@0.12.10/dist/umd", ffmpeg.on("log", (function(_ref2) {
+                                        var message = _ref2.message;
+                                        console.log("[ffmpeg]", message);
+                                    })), !window.crossOriginIsolated) {
+                                        _context.next = 25;
+                                        break;
+                                    }
+                                    return console.log("[ffmpeg] 多线程模式"), _context.t0 = ffmpeg, _context.next = 10, 
+                                    toBlobURL("".concat(baseCoreMTUrl, "/ffmpeg-core.js"), "text/javascript");
+
+                                  case 10:
+                                    return _context.t1 = _context.sent, _context.next = 13, toBlobURL("".concat(baseCoreMTUrl, "/ffmpeg-core.wasm"), "application/wasm");
+
+                                  case 13:
+                                    return _context.t2 = _context.sent, _context.next = 16, toBlobURL("".concat(baseCoreMTUrl, "/ffmpeg-core.worker.js"), "application/javascript");
+
+                                  case 16:
+                                    return _context.t3 = _context.sent, _context.next = 19, toBlobURL("".concat(baseFFmpegUrl, "/814.ffmpeg.js"), "text/javascript");
+
+                                  case 19:
+                                    return _context.t4 = _context.sent, _context.t5 = {
+                                        coreURL: _context.t1,
+                                        wasmURL: _context.t2,
+                                        workerURL: _context.t3,
+                                        workerLoadURL: _context.t4
+                                    }, _context.next = 23, _context.t0.load.call(_context.t0, _context.t5);
+
+                                  case 23:
+                                    _context.next = 39;
+                                    break;
+
+                                  case 25:
+                                    return console.log("[ffmpeg] 单线程模式"), _context.t6 = ffmpeg, _context.next = 29, 
+                                    toBlobURL("".concat(baseCoreUrl, "/ffmpeg-core.js"), "text/javascript");
+
+                                  case 29:
+                                    return _context.t7 = _context.sent, _context.next = 32, toBlobURL("".concat(baseCoreUrl, "/ffmpeg-core.wasm"), "application/wasm");
+
+                                  case 32:
+                                    return _context.t8 = _context.sent, _context.next = 35, toBlobURL("".concat(baseFFmpegUrl, "/814.ffmpeg.js"), "text/javascript");
+
+                                  case 35:
+                                    return _context.t9 = _context.sent, _context.t10 = {
+                                        coreURL: _context.t7,
+                                        wasmURL: _context.t8,
+                                        workerLoadURL: _context.t9
+                                    }, _context.next = 39, _context.t6.load.call(_context.t6, _context.t10);
+
+                                  case 39:
+                                  case "end":
+                                    return _context.stop();
+                                }
+                            }), _callee);
+                        })));
+                        return function load() {
+                            return _ref.apply(this, arguments);
+                        };
+                    }(), _context2.next = 6, load();
+
+                  case 6:
+                    if (videoUrl && audioUrl) {
+                        _context2.next = 9;
+                        break;
+                    }
+                    return message_Message_warning("视频或音频地址为空"), _context2.abrupt("return");
+
+                  case 9:
+                    return _context2.prev = 9, showProgress({
+                        message: "准备下载视频和音频"
+                    }), videoLoaded = 0, audioLoaded = 0, videoTotal = 0, audioTotal = 0, updateProgress = function updateProgress() {
+                        var totalBytes = videoTotal + audioTotal, loadedBytes = videoLoaded + audioLoaded, overallPercent = totalBytes > 0 ? Math.floor(loadedBytes / totalBytes * 100) : 0, msg = "\n                下载进度: ".concat(overallPercent, "% </br>\n                视频: ").concat(Math.floor(videoLoaded / 1048576), "MB / ").concat(Math.floor(videoTotal / 1048576), "MB </br>\n                音频: ").concat(Math.floor(audioLoaded / 1048576), "MB / ").concat(Math.floor(audioTotal / 1048576), "MB </br>\n            ").trim().replace(/\n\s*/g, "\n");
+                        showProgress({
+                            message: msg
+                        });
+                    }, _context2.next = 15, Promise.all([ fetchFileWithProgress(videoUrl, (function(loaded, total) {
+                        videoLoaded = loaded, videoTotal = total, updateProgress();
+                    })), fetchFileWithProgress(audioUrl, (function(loaded, total) {
+                        audioLoaded = loaded, audioTotal = total, updateProgress();
+                    })) ]);
+
+                  case 15:
+                    return _yield$Promise$all = _context2.sent, _yield$Promise$all2 = ffmpeg_slicedToArray(_yield$Promise$all, 2), 
+                    videoData = _yield$Promise$all2[0], audioData = _yield$Promise$all2[1], _context2.next = 21, 
+                    ffmpeg.writeFile("video.m4s", videoData);
+
+                  case 21:
+                    return _context2.next = 23, ffmpeg.writeFile("audio.m4s", audioData);
+
+                  case 23:
+                    return showProgress({
+                        message: "正在合并视频和音频"
+                    }), _context2.next = 26, ffmpeg.exec([ "-i", "video.m4s", "-i", "audio.m4s", "-c", "copy", "output.mp4" ]);
+
+                  case 26:
+                    return showProgress({
+                        message: "合并成功，请等待浏览器保存文件"
+                    }), _context2.next = 29, ffmpeg.readFile("output.mp4");
+
+                  case 29:
+                    return mergedData = _context2.sent, _context2.abrupt("return", Promise.resolve(new Blob([ mergedData.buffer ], {
+                        type: "video/mp4"
+                    })));
+
+                  case 33:
+                    return _context2.prev = 33, _context2.t0 = _context2.catch(9), console.error("Error merging streams:", _context2.t0), 
+                    _context2.abrupt("return", Promise.reject(_context2.t0));
+
+                  case 37:
+                  case "end":
+                    return _context2.stop();
+                }
+            }), _callee2, null, [ [ 9, 33 ] ]);
+        }))), _mergeVideoAndAudio.apply(this, arguments);
+    }
+    var ffmpeg = {
+        mergeVideoAndAudio: function mergeVideoAndAudio(_x, _x2, _x3) {
+            return _mergeVideoAndAudio.apply(this, arguments);
+        }
+    };
     function download_createForOfIteratorHelper(o, allowArrayLike) {
         var it = "undefined" != typeof Symbol && o[Symbol.iterator] || o["@@iterator"];
         if (!it) {
@@ -2561,7 +3514,19 @@
                     percent: Math.floor(100 * loaded / tot)
                 });
             }
+        }, xhr.onerror = function() {
+            message_Message_error("下载失败"), download_blob_clicked = !1;
         }, xhr.send(), download_blob_clicked = !0, message_Message_info("准备开始下载");
+    }
+    var download_blob_merge_clicked = !1, need_show_merge_progress = !0;
+    function show_merge_progress(_ref6) {
+        var message = _ref6.message, loaded = _ref6.loaded, total = _ref6.total;
+        if (need_show_merge_progress) {
+            var content = "\n        ".concat(message, "</br>\n        ").concat(loaded && total && "\n        进度: ".concat(Math.round(loaded / total * 100), "% </br>\n        文件大小：").concat(Math.round(total / 1024 / 1024), "MB <br/>\n        已经下载：").concat(Math.round(loaded / 1024 / 1024), "MB </br>") || "", "\n        请勿操作浏览器，刷新或离开页面会导致下载取消！\n    ");
+            MessageBox_alert(content, (function() {
+                need_show_merge_progress = !1;
+            }));
+        }
     }
     function _download_danmaku_ass(cid, title) {
         var return_type = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null, callback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
@@ -2692,6 +3657,19 @@
                 });
             }(url, filename, rpc_type());
         },
+        download_blob_merge: function download_blob_merge(video_url, audio_url, filename) {
+            if (download_blob_merge_clicked) return message_Message_miaow(), void (need_show_merge_progress = !0);
+            download_blob_merge_clicked = !0, message_Message_info("准备开始下载"), ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then((function(mergedBlob) {
+                if (mergedBlob) {
+                    var blobUrl = URL.createObjectURL(mergedBlob), a = document.createElement("a");
+                    a.href = blobUrl, a.download = filename, a.click(), URL.revokeObjectURL(blobUrl);
+                } else message_Message_error("合并视频失败");
+            })).catch((function(error) {
+                console.error(error), message_Message_error("合并失败");
+            })).finally((function() {
+                download_blob_merge_clicked = !1;
+            }));
+        },
         download_all: function download_all() {
             var vb = video.base(), _ref = [ video.get_quality().q, vb.total() ], q = _ref[0], total = _ref[1];
             $("body").on("click", 'input[name="option_video"]', (function(event) {
@@ -2791,7 +3769,7 @@
         download_danmaku_ass: download_danmaku_ass,
         download_subtitle_vtt: download_subtitle_vtt,
         open_ariang: open_ariang
-    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web浏览器</option> <option value="blob">Blob请求</option> <option value="rpc">RPC接口</option> <option value="aria">Aria2命令</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria2配置：</label> <label>最大连接数：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:20%"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ';
+    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:30%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web请求</option> <option value="aria">Aria2命令</option> <option value="blob">Blob请求</option> <option value="blob_merge">Blob合并</option> <option value="rpc">RPC接口</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:30%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%"/> | <input id="rpc_dir" placeholder="留空使用默认目录" style="width:20%"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>Aria2配置：</label> <label>最大连接数：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:20%"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:5%"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:5%"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">这是什么？</a> </div> <br/> <div style="text-align:right"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ';
     function config_ownKeys(object, enumerableOnly) {
         var keys = Object.keys(object);
         if (Object.getOwnPropertySymbols) {
@@ -2835,7 +3813,6 @@
         aria2c_connection_level: "min",
         aria2c_addition_parameters: "",
         ariang_host: "http://ariang.injahow.com/",
-        auto_request: "0",
         auto_download: "0",
         video_quality: "0",
         danmaku_speed: "15",
@@ -3237,19 +4214,12 @@
                 "1" === config_config.auto_download && $("#video_download").click());
             }
         },
-        download_danmaku: function download_danmaku() {
-            var vb = video.base();
-            Download.download_danmaku_ass(vb.cid(), vb.filename());
-        },
-        download_subtitle: function download_subtitle() {
-            Download.download_subtitle_vtt(0, video.base().filename());
-        },
         video_download: function video_download() {
             var type = config_config.download_type;
-            if ("web" === type) $("#video_url")[0].click(); else if ("a" === type) {
+            if ("a" === type) {
                 var _ref3 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href"), $("#video_url").attr("download"), $("#video_url_2").attr("download") ], video_url_2 = _ref3[1], file_name = _ref3[2], file_name_2 = _ref3[3], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref3[0], '" download="').concat(file_name, '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" download="').concat(file_name_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
                 MessageBox_alert(msg);
-            } else if ("aria" === type) {
+            } else if ("web" === type) $("#video_url")[0].click(); else if ("aria" === type) {
                 var _ref4 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref4[0], _video_url_ = _ref4[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref6 = event_slicedToArray({
                     min: [ 1, 5 ],
                     mid: [ 16, 8 ],
@@ -3260,16 +4230,22 @@
                 !window.bp_clip_btn && (window.bp_clip_btn = function(id) {
                     $("#".concat(id)).select(), document.execCommand("copy") ? message_Message_success("复制成功") : message_Message_warning("复制失败");
                 }), MessageBox_alert(_msg);
+            } else if ("blob_merge" === type) {
+                var _ref7 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url2 = _ref7[0], _video_url_2 = _ref7[1], filename = video.base().filename();
+                Download.download_blob_merge(_video_url2, _video_url_2, filename);
             } else {
-                var url = $("#video_url").attr("href"), filename = video.base().filename() + Download.url_format(url);
-                Download.download(url, filename, type);
+                var url = $("#video_url").attr("href"), _filename = video.base().filename() + Download.url_format(url);
+                Download.download(url, _filename, type);
             }
         },
         video_download_2: function video_download_2() {
             var type = config_config.download_type;
-            if ("web" === type) $("#video_url_2")[0].click(); else if ("a" === type) $("#video_download").click(); else if ("aria" === type) $("#video_download").click(); else {
+            if ("a" === type) $("#video_download").click(); else if ("web" === type) $("#video_url_2")[0].click(); else if ("aria" === type) $("#video_download").click(); else if ("blob_merge" === type) {
                 var url = $("#video_url_2").attr("href"), filename = video.base().filename() + ".m4a";
-                Download.download(url, filename, type);
+                Download.download(url, filename, "blob");
+            } else {
+                var _url2 = $("#video_url_2").attr("href"), _filename2 = video.base().filename() + ".m4a";
+                Download.download(_url2, _filename2, type);
             }
         },
         video_download_all: function video_download_all() {
@@ -3278,6 +4254,16 @@
             })) : MessageBox_confirm("批量下载仅支持授权用户使用RPC接口下载，是否进行授权？", (function() {
                 auth.login();
             }));
+        },
+        download_danmaku: function download_danmaku() {
+            var vb = video.base();
+            Download.download_danmaku_ass(vb.cid(), vb.filename());
+        },
+        download_subtitle: function download_subtitle() {
+            Download.download_subtitle_vtt(0, video.base().filename());
+        },
+        test: function test() {
+            MessageBox_alert();
         }
     }, more_style = "<style>.more{float:right;padding:1px;cursor:pointer;color:#757575;font-size:16px;transition:all .3s;position:relative;text-align:center}.more:hover .more-ops-list{display:block}.more-ops-list{display:none;position:absolute;width:80px;left:-15px;z-index:30;text-align:center;padding:10px 0;background:#fff;border:1px solid #e5e9ef;box-shadow:0 2px 4px 0 rgba(0,0,0,.14);border-radius:2px;font-size:14px;color:#222}.more-ops-list li{position:relative;height:34px;line-height:34px;cursor:pointer;transition:all .3s}.more-ops-list li:hover{color:#00a1d6;background:#e7e7e7}</style> ", btn_list = {
         setting_btn: "脚本设置",
@@ -3287,7 +4273,8 @@
         video_download_all: "批量下载",
         more: {
             download_danmaku: "下载弹幕",
-            download_subtitle: "下载字幕"
+            download_subtitle: "下载字幕",
+            test: "测试功能"
         }
     }, download_svg = '<svg class width="28" height="28" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" xml:space="preserve">\n        <path fill="#757575" d="M16.015,0C7.186,0,0.03,7.157,0.03,15.985 S7.186,31.97,16.015,31.97S32,24.814,32,15.985S24.843,0,16.015,0z"/>\n        <path style="fill:#FFFFFF;" d="M16.942,23.642H9.109C8.496,23.642,8,24.17,8,24.821v0C8,25.472,8.496,26,9.109,26h14.783 C24.504,26,25,25.472,25,24.821v0c0-0.651-0.496-1.179-1.109-1.179H16.942z"/>\n        <path style="fill:#FFFFFF;" d="M8.798,16.998l6.729,6.33c0.398,0.375,1.029,0.375,1.427,0l6.729-6.33 c0.666-0.627,0.212-1.726-0.714-1.726h-3.382c-0.568,0-1.028-0.449-1.028-1.003V8.003C18.56,7.449,18.099,7,17.532,7h-2.582 c-0.568,0-1.028,0.449-1.028,1.003v6.266c0,0.554-0.46,1.003-1.028,1.003H9.511C8.586,15.273,8.132,16.372,8.798,16.998z"/>\n    </svg>', svg_map = {
         setting_btn: '<svg class width="28" height="28" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" xml:space="preserve">\n        <path fill="#757575" style="stroke-miterlimit:10;" d="M16,29.5L16,29.5c-0.828,0-1.5-0.672-1.5-1.5V4c0-0.828,0.672-1.5,1.5-1.5h0 c0.828,0,1.5,0.672,1.5,1.5v24C17.5,28.828,16.828,29.5,16,29.5z"/>\n        <path fill="#757575" style="stroke-miterlimit:10;" d="M29.5,16L29.5,16c0,0.828-0.672,1.5-1.5,1.5H4c-0.828,0-1.5-0.672-1.5-1.5v0 c0-0.828,0.672-1.5,1.5-1.5h24C28.828,14.5,29.5,15.172,29.5,16z"/>\n    </svg>',
@@ -3424,7 +4411,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.6.5", " ").concat("5b7a02f", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.7.0", " ").concat("dc9b9ac", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

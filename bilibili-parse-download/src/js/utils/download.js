@@ -4,6 +4,7 @@ import { ajax } from './ajax'
 import { api } from './api'
 import { video } from './video'
 import { JSZip } from './runtime-lib'
+import { ffmpeg } from './ffmpeg'
 
 function rpc_type() {
     if (config.rpc_domain.match('https://') || config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
@@ -458,9 +459,62 @@ function download_blob(url, filename) {
             })
         }
     }
+    xhr.onerror = function () {
+        Message.error('下载失败')
+        download_blob_clicked = false
+    }
     xhr.send()
     download_blob_clicked = true // locked
     Message.info('准备开始下载')
+}
+
+/**
+ * blob_merge
+ */
+let download_blob_merge_clicked = false, need_show_merge_progress = true
+
+function show_merge_progress({ message, loaded, total }) {
+    if (!need_show_merge_progress) return;
+    const content = `
+        ${message}</br>
+        ${loaded && total && `
+        进度: ${Math.round(loaded / total * 100)}% </br>
+        文件大小：${Math.round(total / 1024 / 1024)}MB <br/>
+        已经下载：${Math.round(loaded / 1024 / 1024)}MB </br>` || ''}
+        请勿操作浏览器，刷新或离开页面会导致下载取消！
+    `
+    MessageBox.alert(content, () => {
+        need_show_merge_progress = false
+    });
+}
+
+function download_blob_merge(video_url, audio_url, filename) {
+
+    if (download_blob_merge_clicked) {
+        Message.miaow()
+        need_show_merge_progress = true
+        return
+    }
+
+    download_blob_merge_clicked = true
+    Message.info('准备开始下载')
+    ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then((mergedBlob) => {
+        if (!mergedBlob) {
+            Message.error('合并视频失败')
+            return
+        }
+        const blobUrl = URL.createObjectURL(mergedBlob)
+        const a = document.createElement('a')
+        a.href = blobUrl
+        a.download = filename
+        a.click()
+        URL.revokeObjectURL(blobUrl)
+    }).catch((error) => {
+        console.error(error)
+        Message.error('合并失败')
+    }).finally(() => {
+        download_blob_merge_clicked = false;
+    })
 }
 
 /**
@@ -700,6 +754,7 @@ function download(url, filename, type) {
 export const Download = {
     url_format: format,
     download,
+    download_blob_merge,
     download_all,
     download_danmaku_ass,
     download_subtitle_vtt,

@@ -4,11 +4,10 @@ class CacheFactory {
     static map = {}
 
     static get(name = 'default') {
-        let cache = CacheFactory.map[name]
-        if (cache instanceof Cache) {
-            return cache
+        let cache = new Cache() // for code
+        if (CacheFactory.map[name] instanceof Cache) {
+            cache = CacheFactory.map[name]
         }
-        cache = new Cache()
         CacheFactory.map[name] = cache
         return cache
     }
@@ -21,6 +20,17 @@ class CacheFactory {
         const cache = CacheFactory.get(cacheName)
         if (cache instanceof Cache) {
             cache.set(cacheKey, value)
+        }
+    }
+
+    static getValue(key = '') {
+        let [cacheName, cacheKey] = key.split('.', 2)
+        if (!cacheName || !cacheKey) {
+            return null
+        }
+        const cache = CacheFactory.get(cacheName)
+        if (cache instanceof Cache) {
+            return cache.get(cacheKey)
         }
     }
 

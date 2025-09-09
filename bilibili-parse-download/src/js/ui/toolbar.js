@@ -10,7 +10,8 @@ const btn_list = {
     video_download_all: '批量下载',
     more: {
         download_danmaku: '下载弹幕',
-        download_subtitle: '下载字幕'
+        download_subtitle: '下载字幕',
+        test: '测试功能'
     }
 }
 
