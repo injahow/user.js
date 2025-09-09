@@ -3659,7 +3659,8 @@
         },
         download_blob_merge: function download_blob_merge(video_url, audio_url, filename) {
             if (download_blob_merge_clicked) return message_Message_miaow(), void (need_show_merge_progress = !0);
-            download_blob_merge_clicked = !0, message_Message_info("准备开始下载"), ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then((function(mergedBlob) {
+            download_blob_merge_clicked = !0, message_Message_info("准备开始下载"), need_show_merge_progress = !0, 
+            ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then((function(mergedBlob) {
                 if (mergedBlob) {
                     var blobUrl = URL.createObjectURL(mergedBlob), a = document.createElement("a");
                     a.href = blobUrl, a.download = filename, a.click(), URL.revokeObjectURL(blobUrl);
@@ -4411,7 +4412,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.7.0", " ").concat("dc9b9ac", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.7.0", " ").concat("ae6b27a", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 
