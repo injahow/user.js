@@ -3502,6 +3502,7 @@ function download_blob_merge(video_url, audio_url, filename) {
 
   download_blob_merge_clicked = true;
   message_Message.info('准备开始下载');
+  need_show_merge_progress = true;
   ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then(function (mergedBlob) {
     if (!mergedBlob) {
       message_Message.error('合并视频失败');
@@ -4927,7 +4928,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.0", " ").concat("dc9b9ac", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.0", " ").concat("ae6b27a", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{
