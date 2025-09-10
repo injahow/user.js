@@ -156,8 +156,13 @@ function video_download() {
             $('#video_url').attr('href'),
             $('#video_url_2').attr('href')
         ]
-        const filename = video.base().filename()
-        Download.download_blob_merge(video_url, video_url_2, filename)
+        const filename = video.base().filename() + Download.url_format(video_url)
+        console.log('blob_merge', video_url, video_url_2, filename);
+        if (config.format === 'dash') {
+            Download.download_blob_merge(video_url, video_url_2, filename)
+            return
+        }
+        Download.download(video_url, filename, 'blob')
     } else { // blob, rpc
         const url = $('#video_url').attr('href')
         const filename = video.base().filename() + Download.url_format(url)

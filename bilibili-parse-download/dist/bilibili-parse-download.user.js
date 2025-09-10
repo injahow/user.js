@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.7.0
+// @version       2.7.1
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -3229,6 +3229,20 @@
             return ffmpeg_regeneratorRuntime().wrap((function _callee2$(_context2) {
                 for (;;) switch (_context2.prev = _context2.next) {
                   case 0:
+                    if (videoUrl && "#" !== videoUrl) {
+                        _context2.next = 3;
+                        break;
+                    }
+                    return message_Message_warning("视频地址为空"), _context2.abrupt("return");
+
+                  case 3:
+                    if (audioUrl && "#" !== audioUrl) {
+                        _context2.next = 6;
+                        break;
+                    }
+                    return message_Message_warning("音频地址为空"), _context2.abrupt("return");
+
+                  case 6:
                     return (showProgress = showProgress || function(data) {
                         console.log("[ffmpeg] Progress: ", data);
                     })({
@@ -3297,61 +3311,54 @@
                         return function load() {
                             return _ref.apply(this, arguments);
                         };
-                    }(), _context2.next = 6, load();
+                    }(), _context2.next = 12, load();
 
-                  case 6:
-                    if (videoUrl && audioUrl) {
-                        _context2.next = 9;
-                        break;
-                    }
-                    return message_Message_warning("视频或音频地址为空"), _context2.abrupt("return");
-
-                  case 9:
-                    return _context2.prev = 9, showProgress({
+                  case 12:
+                    return _context2.prev = 12, showProgress({
                         message: "准备下载视频和音频"
                     }), videoLoaded = 0, audioLoaded = 0, videoTotal = 0, audioTotal = 0, updateProgress = function updateProgress() {
                         var totalBytes = videoTotal + audioTotal, loadedBytes = videoLoaded + audioLoaded, overallPercent = totalBytes > 0 ? Math.floor(loadedBytes / totalBytes * 100) : 0, msg = "\n                下载进度: ".concat(overallPercent, "% </br>\n                视频: ").concat(Math.floor(videoLoaded / 1048576), "MB / ").concat(Math.floor(videoTotal / 1048576), "MB </br>\n                音频: ").concat(Math.floor(audioLoaded / 1048576), "MB / ").concat(Math.floor(audioTotal / 1048576), "MB </br>\n            ").trim().replace(/\n\s*/g, "\n");
                         showProgress({
                             message: msg
                         });
-                    }, _context2.next = 15, Promise.all([ fetchFileWithProgress(videoUrl, (function(loaded, total) {
+                    }, _context2.next = 18, Promise.all([ fetchFileWithProgress(videoUrl, (function(loaded, total) {
                         videoLoaded = loaded, videoTotal = total, updateProgress();
                     })), fetchFileWithProgress(audioUrl, (function(loaded, total) {
                         audioLoaded = loaded, audioTotal = total, updateProgress();
                     })) ]);
 
-                  case 15:
+                  case 18:
                     return _yield$Promise$all = _context2.sent, _yield$Promise$all2 = ffmpeg_slicedToArray(_yield$Promise$all, 2), 
-                    videoData = _yield$Promise$all2[0], audioData = _yield$Promise$all2[1], _context2.next = 21, 
+                    videoData = _yield$Promise$all2[0], audioData = _yield$Promise$all2[1], _context2.next = 24, 
                     ffmpeg.writeFile("video.m4s", videoData);
 
-                  case 21:
-                    return _context2.next = 23, ffmpeg.writeFile("audio.m4s", audioData);
-
-                  case 23:
-                    return showProgress({
-                        message: "正在合并视频和音频"
-                    }), _context2.next = 26, ffmpeg.exec([ "-i", "video.m4s", "-i", "audio.m4s", "-c", "copy", "output.mp4" ]);
+                  case 24:
+                    return _context2.next = 26, ffmpeg.writeFile("audio.m4s", audioData);
 
                   case 26:
                     return showProgress({
-                        message: "合并成功，请等待浏览器保存文件"
-                    }), _context2.next = 29, ffmpeg.readFile("output.mp4");
+                        message: "正在合并视频和音频"
+                    }), _context2.next = 29, ffmpeg.exec([ "-i", "video.m4s", "-i", "audio.m4s", "-c", "copy", "output.mp4" ]);
 
                   case 29:
+                    return showProgress({
+                        message: "合并成功，请等待浏览器保存文件"
+                    }), _context2.next = 32, ffmpeg.readFile("output.mp4");
+
+                  case 32:
                     return mergedData = _context2.sent, _context2.abrupt("return", Promise.resolve(new Blob([ mergedData.buffer ], {
                         type: "video/mp4"
                     })));
 
-                  case 33:
-                    return _context2.prev = 33, _context2.t0 = _context2.catch(9), console.error("Error merging streams:", _context2.t0), 
+                  case 36:
+                    return _context2.prev = 36, _context2.t0 = _context2.catch(12), console.error("Error merging streams:", _context2.t0), 
                     _context2.abrupt("return", Promise.reject(_context2.t0));
 
-                  case 37:
+                  case 40:
                   case "end":
                     return _context2.stop();
                 }
-            }), _callee2, null, [ [ 9, 33 ] ]);
+            }), _callee2, null, [ [ 12, 36 ] ]);
         }))), _mergeVideoAndAudio.apply(this, arguments);
     }
     var ffmpeg = {
@@ -4232,8 +4239,9 @@
                     $("#".concat(id)).select(), document.execCommand("copy") ? message_Message_success("复制成功") : message_Message_warning("复制失败");
                 }), MessageBox_alert(_msg);
             } else if ("blob_merge" === type) {
-                var _ref7 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url2 = _ref7[0], _video_url_2 = _ref7[1], filename = video.base().filename();
-                Download.download_blob_merge(_video_url2, _video_url_2, filename);
+                var _ref7 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url2 = _ref7[0], _video_url_2 = _ref7[1], filename = video.base().filename() + Download.url_format(_video_url2);
+                if (console.log("blob_merge", _video_url2, _video_url_2, filename), "dash" === config_config.format) return void Download.download_blob_merge(_video_url2, _video_url_2, filename);
+                Download.download(_video_url2, filename, "blob");
             } else {
                 var url = $("#video_url").attr("href"), _filename = video.base().filename() + Download.url_format(url);
                 Download.download(url, _filename, type);
@@ -4412,7 +4420,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.7.0", " ").concat("ae6b27a", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.7.1", " ").concat("891d559", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

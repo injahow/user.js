@@ -2782,7 +2782,7 @@ function ffmpeg_asyncToGenerator(fn) { return function () { var self = this, arg
  * 使用 ffmpeg.wasm 合成视频
  * @param {string} videoUrl - 视频 URL
  * @param {string} audioUrl - 音频 URL
- * @param {string} showProgress - 进度回调函数
+ * @param {function} showProgress - 进度回调函数
  */
 
 function mergeVideoAndAudio(_x, _x2, _x3) {
@@ -2797,6 +2797,24 @@ function _mergeVideoAndAudio() {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
+            if (!(!videoUrl || videoUrl === '#')) {
+              _context2.next = 3;
+              break;
+            }
+
+            message_Message.warning('视频地址为空');
+            return _context2.abrupt("return");
+
+          case 3:
+            if (!(!audioUrl || audioUrl === '#')) {
+              _context2.next = 6;
+              break;
+            }
+
+            message_Message.warning('音频地址为空');
+            return _context2.abrupt("return");
+
+          case 6:
             showProgress = showProgress || function (data) {
               console.log('[ffmpeg] Progress: ', data);
             };
@@ -2902,24 +2920,16 @@ function _mergeVideoAndAudio() {
               };
             }();
 
-            _context2.next = 6;
+            _context2.next = 12;
             return load();
 
-          case 6:
-            if (!(!videoUrl || !audioUrl)) {
-              _context2.next = 9;
-              break;
-            }
-
-            message_Message.warning('视频或音频地址为空');
-            return _context2.abrupt("return");
-
-          case 9:
-            _context2.prev = 9;
+          case 12:
+            _context2.prev = 12;
             showProgress({
               message: '准备下载视频和音频'
-            });
-            videoLoaded = 0, audioLoaded = 0, videoTotal = 0, audioTotal = 0; // 统一显示总进度
+            }); // 统一显示总进度
+
+            videoLoaded = 0, audioLoaded = 0, videoTotal = 0, audioTotal = 0;
 
             updateProgress = function updateProgress() {
               var totalBytes = videoTotal + audioTotal;
@@ -2932,7 +2942,7 @@ function _mergeVideoAndAudio() {
             }; // 并行发起下载任务
 
 
-            _context2.next = 15;
+            _context2.next = 18;
             return Promise.all([fetchFileWithProgress(videoUrl, function (loaded, total) {
               videoLoaded = loaded;
               videoTotal = total;
@@ -2943,50 +2953,50 @@ function _mergeVideoAndAudio() {
               updateProgress();
             })]);
 
-          case 15:
+          case 18:
             _yield$Promise$all = _context2.sent;
             _yield$Promise$all2 = ffmpeg_slicedToArray(_yield$Promise$all, 2);
             videoData = _yield$Promise$all2[0];
             audioData = _yield$Promise$all2[1];
-            _context2.next = 21;
+            _context2.next = 24;
             return ffmpeg.writeFile('video.m4s', videoData);
 
-          case 21:
-            _context2.next = 23;
-            return ffmpeg.writeFile('audio.m4s', audioData);
-
-          case 23:
-            showProgress({
-              message: '正在合并视频和音频'
-            });
+          case 24:
             _context2.next = 26;
-            return ffmpeg.exec(['-i', 'video.m4s', '-i', 'audio.m4s', '-c', 'copy', 'output.mp4']);
+            return ffmpeg.writeFile('audio.m4s', audioData);
 
           case 26:
             showProgress({
-              message: '合并成功，请等待浏览器保存文件'
+              message: '正在合并视频和音频'
             });
             _context2.next = 29;
-            return ffmpeg.readFile('output.mp4');
+            return ffmpeg.exec(['-i', 'video.m4s', '-i', 'audio.m4s', '-c', 'copy', 'output.mp4']);
 
           case 29:
+            showProgress({
+              message: '合并成功，请等待浏览器保存文件'
+            });
+            _context2.next = 32;
+            return ffmpeg.readFile('output.mp4');
+
+          case 32:
             mergedData = _context2.sent;
             return _context2.abrupt("return", Promise.resolve(new Blob([mergedData.buffer], {
               type: 'video/mp4'
             })));
 
-          case 33:
-            _context2.prev = 33;
-            _context2.t0 = _context2["catch"](9);
+          case 36:
+            _context2.prev = 36;
+            _context2.t0 = _context2["catch"](12);
             console.error('Error merging streams:', _context2.t0);
             return _context2.abrupt("return", Promise.reject(_context2.t0));
 
-          case 37:
+          case 40:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[9, 33]]);
+    }, _callee2, null, [[12, 36]]);
   }));
   return _mergeVideoAndAudio.apply(this, arguments);
 }
@@ -4620,8 +4630,15 @@ function video_download() {
     var _ref7 = [$('#video_url').attr('href'), $('#video_url_2').attr('href')],
         _video_url2 = _ref7[0],
         _video_url_2 = _ref7[1];
-    var filename = video.base().filename();
-    Download.download_blob_merge(_video_url2, _video_url_2, filename);
+    var filename = video.base().filename() + Download.url_format(_video_url2);
+    console.log('blob_merge', _video_url2, _video_url_2, filename);
+
+    if (config_config.format === 'dash') {
+      Download.download_blob_merge(_video_url2, _video_url_2, filename);
+      return;
+    }
+
+    Download.download(_video_url2, filename, 'blob');
   } else {
     // blob, rpc
     var url = $('#video_url').attr('href');
@@ -4928,7 +4945,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.0", " ").concat("ae6b27a", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.1", " ").concat("891d559", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

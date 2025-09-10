@@ -6,9 +6,19 @@ import { fetchFileWithProgress, toBlobURL } from './common';
  * 使用 ffmpeg.wasm 合成视频
  * @param {string} videoUrl - 视频 URL
  * @param {string} audioUrl - 音频 URL
- * @param {string} showProgress - 进度回调函数
+ * @param {function} showProgress - 进度回调函数
  */
 async function mergeVideoAndAudio(videoUrl, audioUrl, showProgress) {
+
+    if (!videoUrl || videoUrl === '#') {
+        Message.warning('视频地址为空')
+        return
+    }
+
+    if (!audioUrl || audioUrl === '#') {
+        Message.warning('音频地址为空')
+        return
+    }
 
     showProgress = showProgress || ((data) => {
         console.log('[ffmpeg] Progress: ', data)
@@ -49,20 +59,14 @@ async function mergeVideoAndAudio(videoUrl, audioUrl, showProgress) {
 
     await load()
 
-    if (!videoUrl || !audioUrl) {
-        Message.warning('视频或音频地址为空')
-        return
-    }
-
     try {
         showProgress({
             message: '准备下载视频和音频'
         })
-
+        // 统一显示总进度
         let [videoLoaded, audioLoaded, videoTotal, audioTotal] = [
             0, 0, 0, 0
         ]
-        // 统一显示总进度
         const updateProgress = () => {
             const totalBytes = videoTotal + audioTotal;
             const loadedBytes = videoLoaded + audioLoaded;
