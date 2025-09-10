@@ -7,13 +7,14 @@ class CacheFactory {
         let cache = new Cache() // for code
         if (CacheFactory.map[name] instanceof Cache) {
             cache = CacheFactory.map[name]
+        } else {
+            CacheFactory.map[name] = cache
         }
-        CacheFactory.map[name] = cache
         return cache
     }
 
     static setValue(key = '', value) {
-        let [cacheName, cacheKey] = key.split('.', 2)
+        const [cacheName, cacheKey] = key.split('.', 2)
         if (!cacheName || !cacheKey) {
             return
         }
@@ -24,7 +25,7 @@ class CacheFactory {
     }
 
     static getValue(key = '') {
-        let [cacheName, cacheKey] = key.split('.', 2)
+        const [cacheName, cacheKey] = key.split('.', 2)
         if (!cacheName || !cacheKey) {
             return null
         }

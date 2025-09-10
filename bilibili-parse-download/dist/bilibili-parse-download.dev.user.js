@@ -145,9 +145,10 @@ var CacheFactory = /*#__PURE__*/function () {
 
       if (CacheFactory.map[name] instanceof Cache) {
         cache = CacheFactory.map[name];
+      } else {
+        CacheFactory.map[name] = cache;
       }
 
-      CacheFactory.map[name] = cache;
       return cache;
     }
   }, {
@@ -318,10 +319,10 @@ function messageBox(ctx, type) {
 var id = 0;
 
 function message_message(html, type) {
+  console.info("[Message] ".concat(type, " : ").concat(html));
   id += 1;
   messageEnQueue("<div id=\"message_".concat(id, "\" class=\"message message-").concat(type, "\"><div class=\"message-context\"><p><strong>").concat(type, "\uFF1A</strong></p><p>").concat(html, "</p></div></div>"), id);
   messageDeQueue(id, 3);
-  console.info("[Message] ".concat(type, " : ").concat(html));
 }
 
 function messageEnQueue(message, id) {
@@ -1415,8 +1416,8 @@ function get_quality() {
     _q_max = parseInt($('li.bpx-player-ctrl-quality-menu-item').attr('data-value') || _q_max);
   }
 
-  !_q && (_q = 80) && console.error('video get quality error');
   !_q_max && (_q_max = 80) && console.error('video get quality max error');
+  !_q && (_q = _q_max < 80 ? _q_max : 80);
 
   if (!user.isVIP()) {
     _q = _q > 80 ? 80 : _q;
@@ -2575,9 +2576,9 @@ function toBlobURL(_x, _x2) {
   return _toBlobURL.apply(this, arguments);
 }
 /**
- * 下载文件
- * @param {string} url - 文件 URL
- * @returns {Promise<Uint8Array>} - 获取的文件数据
+ * 使用浏览器a标签下载 Blob URL
+ * @param {string} blobUrl - Blob URL
+ * @param {string} downloadname - 含后缀的文件名
  */
 
 
@@ -2627,13 +2628,44 @@ function _toBlobURL() {
   return _toBlobURL.apply(this, arguments);
 }
 
+function downloadBlobURL(blobUrl, downloadname) {
+  var a = document.createElement('a');
+  a.href = blobUrl;
+  a.download = downloadname;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () {
+    return URL.revokeObjectURL(blobUrl);
+  }, 100);
+}
+/**
+ * 使用浏览器a标签下载 Blob 对象
+ * @param {Blob} blob - Blob 对象
+ * @param {string} downloadname - 含后缀的文件名
+ */
+
+
+function downloadBlob(blob, downloadname) {
+  var blobUrl = URL.createObjectURL(blob);
+  downloadBlobURL(blobUrl, downloadname);
+}
+/**
+ * 下载文件
+ * @param {string} url - 文件 URL
+ * @returns {Promise<Uint8Array>} - 获取的文件数据
+ */
+
+
 function fetchFile(_x3) {
   return _fetchFile.apply(this, arguments);
 }
 /**
  * 带进度下载文件
  * @param {string} url - 文件 URL
- * @param {Function} onProgress - 回调函数，参数: (loaded, total)
+ * @param {Object} options - 配置选项
+ * @param {Function} [options.onProgress] - 进度回调函数，接收 (loaded: number, total: number) 两个参数
+ * @param {AbortSignal} [options.signal] - 可选的 AbortSignal，用于取消请求（来自 AbortController.signal）
  * @returns {Promise<Uint8Array>} 下载的数据
  */
 
@@ -2670,42 +2702,52 @@ function _fetchFile() {
 function fetchFileWithProgress(_x4, _x5) {
   return _fetchFileWithProgress.apply(this, arguments);
 }
+/**
+ * 将字节大小格式化为可读的字符串（自动选择单位）
+ * @param {number} bytes - 字节数
+ * @param {number} [decimalPlaces=2] - 小数位数
+ * @returns {string} 格式化后的大小，如 "1.23 GB"
+ */
+
 
 function _fetchFileWithProgress() {
-  _fetchFileWithProgress = common_asyncToGenerator( /*#__PURE__*/common_regeneratorRuntime().mark(function _callee3(url, onProgress) {
-    var res, contentLength, total, reader, loaded, chunks, _yield$reader$read, done, value, dataArray, pos, _i, _chunks, chunk;
+  _fetchFileWithProgress = common_asyncToGenerator( /*#__PURE__*/common_regeneratorRuntime().mark(function _callee3(url, _ref) {
+    var onProgress, signal, res, contentLength, total, reader, loaded, chunks, _yield$reader$read, done, value, dataArray, pos, _i, _chunks, chunk;
 
     return common_regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _context3.next = 2;
-            return fetch(url);
+            onProgress = _ref.onProgress, signal = _ref.signal;
+            _context3.next = 3;
+            return fetch(url, {
+              signal: signal
+            });
 
-          case 2:
+          case 3:
             res = _context3.sent;
 
             if (res.body) {
-              _context3.next = 5;
+              _context3.next = 6;
               break;
             }
 
             throw new Error('URL下载失败: ' + url);
 
-          case 5:
+          case 6:
             contentLength = res.headers.get('content-length');
             total = contentLength ? parseInt(contentLength, 10) : 0;
             reader = res.body.getReader();
             loaded = 0;
             chunks = [];
 
-          case 10:
+          case 11:
             if (false) {}
 
-            _context3.next = 13;
+            _context3.next = 14;
             return reader.read();
 
-          case 13:
+          case 14:
             _yield$reader$read = _context3.sent;
             done = _yield$reader$read.done;
             value = _yield$reader$read.value;
@@ -2720,17 +2762,17 @@ function _fetchFileWithProgress() {
             }
 
             if (!done) {
-              _context3.next = 19;
+              _context3.next = 20;
               break;
             }
 
-            return _context3.abrupt("break", 21);
+            return _context3.abrupt("break", 22);
 
-          case 19:
-            _context3.next = 10;
+          case 20:
+            _context3.next = 11;
             break;
 
-          case 21:
+          case 22:
             // 合并 chunk
             dataArray = new Uint8Array(loaded);
             pos = 0;
@@ -2743,7 +2785,7 @@ function _fetchFileWithProgress() {
 
             return _context3.abrupt("return", dataArray);
 
-          case 25:
+          case 26:
           case "end":
             return _context3.stop();
         }
@@ -2751,6 +2793,23 @@ function _fetchFileWithProgress() {
     }, _callee3);
   }));
   return _fetchFileWithProgress.apply(this, arguments);
+}
+
+function prettyBytes(bytes) {
+  var decimalPlaces = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+  if (bytes === 0) return '0 B';
+  var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  var size = bytes;
+  var unitIndex = 0;
+
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  } // 保留指定小数位
+
+
+  var formatted = size.toFixed(decimalPlaces);
+  return "".concat(formatted, " ").concat(units[unitIndex]);
 }
 
 
@@ -2782,7 +2841,9 @@ function ffmpeg_asyncToGenerator(fn) { return function () { var self = this, arg
  * 使用 ffmpeg.wasm 合成视频
  * @param {string} videoUrl - 视频 URL
  * @param {string} audioUrl - 音频 URL
- * @param {function} showProgress - 进度回调函数
+ * @param {Object} options - 配置选项
+ * @param {Function} options.showProgress - 更新进度回调函数
+ * @param {AbortController|null} [options.controller] - 可选的 AbortController，用于取消请求
  */
 
 function mergeVideoAndAudio(_x, _x2, _x3) {
@@ -2790,31 +2851,33 @@ function mergeVideoAndAudio(_x, _x2, _x3) {
 }
 
 function _mergeVideoAndAudio() {
-  _mergeVideoAndAudio = ffmpeg_asyncToGenerator( /*#__PURE__*/ffmpeg_regeneratorRuntime().mark(function _callee2(videoUrl, audioUrl, showProgress) {
-    var ffmpeg, load, videoLoaded, audioLoaded, videoTotal, audioTotal, updateProgress, _yield$Promise$all, _yield$Promise$all2, videoData, audioData, mergedData;
+  _mergeVideoAndAudio = ffmpeg_asyncToGenerator( /*#__PURE__*/ffmpeg_regeneratorRuntime().mark(function _callee2(videoUrl, audioUrl, _ref) {
+    var showProgress, controller, ffmpeg, load, videoLoaded, audioLoaded, videoTotal, audioTotal, updateProgress, _yield$Promise$all, _yield$Promise$all2, videoData, audioData, mergedData;
 
     return ffmpeg_regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
+            showProgress = _ref.showProgress, controller = _ref.controller;
+
             if (!(!videoUrl || videoUrl === '#')) {
-              _context2.next = 3;
+              _context2.next = 4;
               break;
             }
 
             message_Message.warning('视频地址为空');
             return _context2.abrupt("return");
 
-          case 3:
+          case 4:
             if (!(!audioUrl || audioUrl === '#')) {
-              _context2.next = 6;
+              _context2.next = 7;
               break;
             }
 
             message_Message.warning('音频地址为空');
             return _context2.abrupt("return");
 
-          case 6:
+          case 7:
             showProgress = showProgress || function (data) {
               console.log('[ffmpeg] Progress: ', data);
             };
@@ -2825,7 +2888,7 @@ function _mergeVideoAndAudio() {
             ffmpeg = new FFmpegWASM.FFmpeg();
 
             load = /*#__PURE__*/function () {
-              var _ref = ffmpeg_asyncToGenerator( /*#__PURE__*/ffmpeg_regeneratorRuntime().mark(function _callee() {
+              var _ref2 = ffmpeg_asyncToGenerator( /*#__PURE__*/ffmpeg_regeneratorRuntime().mark(function _callee() {
                 var tryMultiThread, baseFFmpegUrl, baseCoreUrl, baseCoreMTUrl;
                 return ffmpeg_regeneratorRuntime().wrap(function _callee$(_context) {
                   while (1) {
@@ -2836,8 +2899,8 @@ function _mergeVideoAndAudio() {
                         baseFFmpegUrl = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd';
                         baseCoreUrl = 'https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd';
                         baseCoreMTUrl = 'https://unpkg.com/@ffmpeg/core-mt@0.12.10/dist/umd';
-                        ffmpeg.on('log', function (_ref2) {
-                          var message = _ref2.message;
+                        ffmpeg.on('log', function (_ref3) {
+                          var message = _ref3.message;
                           console.log('[ffmpeg]', message);
                         });
 
@@ -2916,87 +2979,100 @@ function _mergeVideoAndAudio() {
               }));
 
               return function load() {
-                return _ref.apply(this, arguments);
+                return _ref2.apply(this, arguments);
               };
             }();
 
-            _context2.next = 12;
+            _context2.prev = 11;
+            _context2.next = 14;
             return load();
 
-          case 12:
-            _context2.prev = 12;
+          case 14:
             showProgress({
               message: '准备下载视频和音频'
-            }); // 统一显示总进度
-
-            videoLoaded = 0, audioLoaded = 0, videoTotal = 0, audioTotal = 0;
+            });
+            videoLoaded = 0, audioLoaded = 0, videoTotal = 0, audioTotal = 0; // 显示总进度
 
             updateProgress = function updateProgress() {
               var totalBytes = videoTotal + audioTotal;
               var loadedBytes = videoLoaded + audioLoaded;
               var overallPercent = totalBytes > 0 ? Math.floor(loadedBytes / totalBytes * 100) : 0;
-              var msg = "\n                \u4E0B\u8F7D\u8FDB\u5EA6: ".concat(overallPercent, "% </br>\n                \u89C6\u9891: ").concat(Math.floor(videoLoaded / (1024 * 1024)), "MB / ").concat(Math.floor(videoTotal / (1024 * 1024)), "MB </br>\n                \u97F3\u9891: ").concat(Math.floor(audioLoaded / (1024 * 1024)), "MB / ").concat(Math.floor(audioTotal / (1024 * 1024)), "MB </br>\n            ").trim().replace(/\n\s*/g, '\n');
+              var msg = "\n                \u4E0B\u8F7D\u8FDB\u5EA6: ".concat(overallPercent, "% </br>\n                \u89C6\u9891: ").concat(prettyBytes(videoLoaded), " / ").concat(prettyBytes(videoTotal), " </br>\n                \u97F3\u9891: ").concat(prettyBytes(audioLoaded), " / ").concat(prettyBytes(audioTotal), " </br>\n            ").trim().replace(/\n\s*/g, '\n');
               showProgress({
                 message: msg
               });
-            }; // 并行发起下载任务
+            }; // 无外部信号使用内部信号
 
 
-            _context2.next = 18;
-            return Promise.all([fetchFileWithProgress(videoUrl, function (loaded, total) {
-              videoLoaded = loaded;
-              videoTotal = total;
-              updateProgress();
-            }), fetchFileWithProgress(audioUrl, function (loaded, total) {
-              audioLoaded = loaded;
-              audioTotal = total;
-              updateProgress();
+            controller = controller || new AbortController(); // 并行发起下载任务
+
+            _context2.next = 20;
+            return Promise.all([fetchFileWithProgress(videoUrl, {
+              onProgress: function onProgress(loaded, total) {
+                videoLoaded = loaded;
+                videoTotal = total;
+                updateProgress();
+              },
+              signal: controller.signal
+            }), fetchFileWithProgress(audioUrl, {
+              onProgress: function onProgress(loaded, total) {
+                audioLoaded = loaded;
+                audioTotal = total;
+                updateProgress();
+              },
+              signal: controller.signal
             })]);
 
-          case 18:
+          case 20:
             _yield$Promise$all = _context2.sent;
             _yield$Promise$all2 = ffmpeg_slicedToArray(_yield$Promise$all, 2);
             videoData = _yield$Promise$all2[0];
             audioData = _yield$Promise$all2[1];
-            _context2.next = 24;
+            _context2.next = 26;
             return ffmpeg.writeFile('video.m4s', videoData);
 
-          case 24:
-            _context2.next = 26;
+          case 26:
+            _context2.next = 28;
             return ffmpeg.writeFile('audio.m4s', audioData);
 
-          case 26:
+          case 28:
             showProgress({
               message: '正在合并视频和音频'
             });
-            _context2.next = 29;
+            _context2.next = 31;
             return ffmpeg.exec(['-i', 'video.m4s', '-i', 'audio.m4s', '-c', 'copy', 'output.mp4']);
 
-          case 29:
+          case 31:
             showProgress({
-              message: '合并成功，请等待浏览器保存文件'
+              message: '合并成功，正在读取文件'
             });
-            _context2.next = 32;
+            _context2.next = 34;
             return ffmpeg.readFile('output.mp4');
 
-          case 32:
+          case 34:
             mergedData = _context2.sent;
             return _context2.abrupt("return", Promise.resolve(new Blob([mergedData.buffer], {
               type: 'video/mp4'
             })));
 
-          case 36:
-            _context2.prev = 36;
-            _context2.t0 = _context2["catch"](12);
+          case 38:
+            _context2.prev = 38;
+            _context2.t0 = _context2["catch"](11);
+
+            if (controller && controller.signal && !controller.signal.aborted) {
+              controller.abort();
+              message_Message.error('任务被迫中止');
+            }
+
             console.error('Error merging streams:', _context2.t0);
             return _context2.abrupt("return", Promise.reject(_context2.t0));
 
-          case 40:
+          case 43:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[12, 36]]);
+    }, _callee2, null, [[11, 38]]);
   }));
   return _mergeVideoAndAudio.apply(this, arguments);
 }
@@ -3018,6 +3094,7 @@ function download_iterableToArray(iter) { if (typeof Symbol !== "undefined" && i
 function download_arrayWithoutHoles(arr) { if (Array.isArray(arr)) return download_arrayLikeToArray(arr); }
 
 function download_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 
@@ -3383,7 +3460,7 @@ function download_rpc_ariang_send(video) {
       bp_aria2_window.location.href = config_config.ariang_host + task_hash;
       message_Message.success('发送RPC请求');
     } else {
-      message_Message.warning('AriaNG页面未打开');
+      message_Message.warning('AriaNg页面未打开');
     }
   }, time);
 }
@@ -3421,7 +3498,7 @@ function show_progress(_ref5) {
       percent = _ref5.percent;
 
   if (need_show_progress) {
-    MessageBox.alert("\u6587\u4EF6\u5927\u5C0F\uFF1A".concat(Math.floor(total / (1024 * 1024)), "MB(").concat(total, "Byte)<br/>") + "\u5DF2\u7ECF\u4E0B\u8F7D\uFF1A".concat(Math.floor(loaded / (1024 * 1024)), "MB(").concat(loaded, "Byte)<br/>") + "\u5F53\u524D\u8FDB\u5EA6\uFF1A".concat(percent, "%<br/>\u4E0B\u8F7D\u4E2D\u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF0C\u5237\u65B0\u6216\u79BB\u5F00\u9875\u9762\u4F1A\u5BFC\u81F4\u4E0B\u8F7D\u53D6\u6D88\uFF01<br/>\u518D\u6B21\u70B9\u51FB\u4E0B\u8F7D\u6309\u94AE\u53EF\u67E5\u770B\u4E0B\u8F7D\u8FDB\u5EA6\u3002"), function () {
+    MessageBox.alert("\u6587\u4EF6\u5927\u5C0F\uFF1A".concat(prettyBytes(total), "(").concat(total, "Byte)<br/>") + "\u5DF2\u7ECF\u4E0B\u8F7D\uFF1A".concat(prettyBytes(loaded), "(").concat(loaded, "Byte)<br/>") + "\u5F53\u524D\u8FDB\u5EA6\uFF1A".concat(percent, "%<br/>\u4E0B\u8F7D\u4E2D\u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF0C\u5237\u65B0\u6216\u79BB\u5F00\u9875\u9762\u4F1A\u5BFC\u81F4\u4E0B\u8F7D\u53D6\u6D88\uFF01<br/>\u518D\u6B21\u70B9\u51FB\u4E0B\u8F7D\u6309\u94AE\u53EF\u67E5\u770B\u4E0B\u8F7D\u8FDB\u5EA6\u3002"), function () {
       need_show_progress = false;
     });
   }
@@ -3451,12 +3528,7 @@ function download_blob(url, filename) {
       }
 
       var blob_url = URL.createObjectURL(this.response);
-      var a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = blob_url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(blob_url);
+      downloadBlobURL(blob_url, filename);
     }
   };
 
@@ -3492,17 +3564,6 @@ function download_blob(url, filename) {
 var download_blob_merge_clicked = false,
     need_show_merge_progress = true;
 
-function show_merge_progress(_ref6) {
-  var message = _ref6.message,
-      loaded = _ref6.loaded,
-      total = _ref6.total;
-  if (!need_show_merge_progress) return;
-  var content = "\n        ".concat(message, "</br>\n        ").concat(loaded && total && "\n        \u8FDB\u5EA6: ".concat(Math.round(loaded / total * 100), "% </br>\n        \u6587\u4EF6\u5927\u5C0F\uFF1A").concat(Math.round(total / 1024 / 1024), "MB <br/>\n        \u5DF2\u7ECF\u4E0B\u8F7D\uFF1A").concat(Math.round(loaded / 1024 / 1024), "MB </br>") || '', "\n        \u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF0C\u5237\u65B0\u6216\u79BB\u5F00\u9875\u9762\u4F1A\u5BFC\u81F4\u4E0B\u8F7D\u53D6\u6D88\uFF01\n    ");
-  MessageBox.alert(content, function () {
-    need_show_merge_progress = false;
-  });
-}
-
 function download_blob_merge(video_url, audio_url, filename) {
   if (download_blob_merge_clicked) {
     message_Message.miaow();
@@ -3511,23 +3572,53 @@ function download_blob_merge(video_url, audio_url, filename) {
   }
 
   download_blob_merge_clicked = true;
-  message_Message.info('准备开始下载');
   need_show_merge_progress = true;
-  ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then(function (mergedBlob) {
-    if (!mergedBlob) {
+  var controller = new AbortController();
+
+  function show_merge_progress(_ref6) {
+    var message = _ref6.message,
+        loaded = _ref6.loaded,
+        total = _ref6.total,
+        isFinished = _ref6.isFinished;
+
+    if (need_show_merge_progress) {
+      var content = "\n                ".concat(message, "</br>\n                ").concat(loaded && total && "\n                \u4E0B\u8F7D\u8FDB\u5EA6: ".concat(Math.round(loaded / total * 100), "% </br>\n                \u6587\u4EF6\u5927\u5C0F\uFF1A").concat(prettyBytes(total), " <br/>\n                \u5DF2\u7ECF\u4E0B\u8F7D\uFF1A").concat(prettyBytes(loaded)) || '', "\n                \u8BF7\u52FF\u64CD\u4F5C\u6D4F\u89C8\u5668\uFF0C\u5237\u65B0\u6216\u79BB\u5F00\u9875\u9762\u4F1A\u5BFC\u81F4\u4E0B\u8F7D\u53D6\u6D88\uFF01\n            ");
+      MessageBox.confirm(content, function () {
+        need_show_merge_progress = false;
+      }, function () {
+        controller.abort();
+      });
+    }
+
+    if (isFinished) {
+      MessageBox.alert('下载完成，请等待浏览器保存！');
+      download_blob_merge_clicked = false;
+    }
+  }
+
+  message_Message.info('准备开始下载');
+  ffmpeg.mergeVideoAndAudio(video_url, audio_url, {
+    showProgress: show_merge_progress,
+    controller: controller
+  }).then(function (mergedBlob) {
+    if (!mergedBlob || mergedBlob.size === 0) {
       message_Message.error('合并视频失败');
       return;
     }
 
-    var blobUrl = URL.createObjectURL(mergedBlob);
-    var a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(blobUrl);
+    show_merge_progress({
+      isFinished: true
+    });
+    downloadBlob(mergedBlob, filename);
   }).catch(function (error) {
     console.error(error);
-    message_Message.error('合并失败');
+
+    if (error.name === 'AbortError') {
+      message_Message.warning('已取消下载');
+      return;
+    }
+
+    message_Message.error('合并下载失败');
   }).finally(function () {
     download_blob_merge_clicked = false;
   });
@@ -3672,15 +3763,9 @@ function _download_danmaku_ass(cid, title) {
       var data = content.join('\n');
 
       if (return_type === null || return_type === 'file') {
-        var blob_url = URL.createObjectURL(new Blob([data], {
+        downloadBlob(new Blob([data], {
           type: 'text/ass'
-        }));
-        var a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = blob_url;
-        a.download = title + '.ass';
-        a.click();
-        URL.revokeObjectURL(blob_url);
+        }), title + '.ass');
       } else if (return_type === 'callback' && callback) {
         callback(data);
       }
@@ -3706,12 +3791,7 @@ function download_subtitle_vtt() {
       return;
     }
 
-    var a = document.createElement('a');
-    a.setAttribute('target', '_blank');
-    a.setAttribute('href', blob_url);
-    a.setAttribute('download', file_name + '.vtt');
-    a.click();
-    URL.revokeObjectURL(blob_url);
+    downloadBlobURL(blob_url, file_name + '.vtt');
   };
 
   api.get_subtitle_url(p, download_subtitle);
@@ -3719,13 +3799,7 @@ function download_subtitle_vtt() {
 
 function download_blob_zip(blob_data, filename) {
   if (!blob_data) return;
-  var blob_url = URL.createObjectURL(blob_data);
-  var a = document.createElement('a');
-  a.setAttribute('target', '_blank');
-  a.setAttribute('href', blob_url);
-  a.setAttribute('download', filename + '.zip');
-  a.click();
-  URL.revokeObjectURL(blob_url);
+  downloadBlob(blob_data, filename + '.zip');
 }
 /**
  * 批量下载弹幕
@@ -4945,7 +5019,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.1", " ").concat("891d559", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.2", " ").concat("2ac5b1c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

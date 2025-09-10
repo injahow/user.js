@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.7.1
+// @version       2.7.2
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -128,8 +128,8 @@
             key: "get",
             value: function get() {
                 var name = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "default", cache = new Cache;
-                return CacheFactory.map[name] instanceof Cache && (cache = CacheFactory.map[name]), 
-                CacheFactory.map[name] = cache, cache;
+                return CacheFactory.map[name] instanceof Cache ? cache = CacheFactory.map[name] : CacheFactory.map[name] = cache, 
+                cache;
             }
         }, {
             key: "setValue",
@@ -215,12 +215,12 @@
     }
     var id = 0;
     function message_message(html, type) {
-        (function messageEnQueue(message, id) {
+        console.info("[Message] ".concat(type, " : ").concat(html)), function messageEnQueue(message, id) {
             $(".message-bg").append(message), $("#message_".concat(id)).animate({
                 "margin-top": "+=70px",
                 opacity: "1"
             }, 300);
-        })('<div id="message_'.concat(id += 1, '" class="message message-').concat(type, '"><div class="message-context"><p><strong>').concat(type, "：</strong></p><p>").concat(html, "</p></div></div>"), id), 
+        }('<div id="message_'.concat(id += 1, '" class="message message-').concat(type, '"><div class="message-context"><p><strong>').concat(type, "：</strong></p><p>").concat(html, "</p></div></div>"), id), 
         function messageDeQueue(id) {
             var time = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 3;
             setTimeout((function() {
@@ -232,7 +232,7 @@
                     $(e).remove();
                 }));
             }), 1e3 * time);
-        }(id, 3), console.info("[Message] ".concat(type, " : ").concat(html));
+        }(id, 3);
     }
     var message_Message_success = function success(html) {
         return message_message(html, "success");
@@ -1035,7 +1035,7 @@
             }
             return _q || (_q = parseInt($("li.bpx-player-ctrl-quality-menu-item.bpx-state-active").attr("data-value") || _q)), 
             _q_max || (_q_max = parseInt($("li.bpx-player-ctrl-quality-menu-item").attr("data-value") || _q_max)), 
-            !_q && (_q = 80) && console.error("video get quality error"), !_q_max && (_q_max = 80) && console.error("video get quality max error"), 
+            !_q_max && (_q_max = 80) && console.error("video get quality max error"), !_q && (_q = _q_max < 80 ? _q_max : 80), 
             user.isVIP() || (_q = _q > 80 ? 80 : _q), {
                 q: _q,
                 q_max: _q_max
@@ -2813,54 +2813,74 @@
             }), _callee);
         })))).apply(this, arguments);
     }
+    function downloadBlobURL(blobUrl, downloadname) {
+        var a = document.createElement("a");
+        a.href = blobUrl, a.download = downloadname, document.body.appendChild(a), a.click(), 
+        document.body.removeChild(a), setTimeout((function() {
+            return URL.revokeObjectURL(blobUrl);
+        }), 100);
+    }
+    function downloadBlob(blob, downloadname) {
+        downloadBlobURL(URL.createObjectURL(blob), downloadname);
+    }
     function fetchFileWithProgress(_x4, _x5) {
         return _fetchFileWithProgress.apply(this, arguments);
     }
     function _fetchFileWithProgress() {
-        return (_fetchFileWithProgress = common_asyncToGenerator(common_regeneratorRuntime().mark((function _callee3(url, onProgress) {
-            var res, contentLength, total, reader, loaded, chunks, _yield$reader$read, done, value, dataArray, pos, _i, _chunks, chunk;
+        return (_fetchFileWithProgress = common_asyncToGenerator(common_regeneratorRuntime().mark((function _callee3(url, _ref) {
+            var onProgress, signal, res, contentLength, total, reader, loaded, chunks, _yield$reader$read, done, value, dataArray, pos, _i, _chunks, chunk;
             return common_regeneratorRuntime().wrap((function _callee3$(_context3) {
                 for (;;) switch (_context3.prev = _context3.next) {
                   case 0:
-                    return _context3.next = 2, fetch(url);
+                    return onProgress = _ref.onProgress, signal = _ref.signal, _context3.next = 3, fetch(url, {
+                        signal: signal
+                    });
 
-                  case 2:
+                  case 3:
                     if ((res = _context3.sent).body) {
-                        _context3.next = 5;
+                        _context3.next = 6;
                         break;
                     }
                     throw new Error("URL下载失败: " + url);
 
-                  case 5:
+                  case 6:
                     contentLength = res.headers.get("content-length"), total = contentLength ? parseInt(contentLength, 10) : 0, 
                     reader = res.body.getReader(), loaded = 0, chunks = [];
 
-                  case 10:
-                    return _context3.next = 13, reader.read();
+                  case 11:
+                    return _context3.next = 14, reader.read();
 
-                  case 13:
+                  case 14:
                     if (_yield$reader$read = _context3.sent, done = _yield$reader$read.done, (value = _yield$reader$read.value) && (chunks.push(value), 
                     loaded += value.length, onProgress && onProgress(loaded, total)), !done) {
-                        _context3.next = 19;
+                        _context3.next = 20;
                         break;
                     }
-                    return _context3.abrupt("break", 21);
+                    return _context3.abrupt("break", 22);
 
-                  case 19:
-                    _context3.next = 10;
+                  case 20:
+                    _context3.next = 11;
                     break;
 
-                  case 21:
+                  case 22:
                     for (dataArray = new Uint8Array(loaded), pos = 0, _i = 0, _chunks = chunks; _i < _chunks.length; _i++) chunk = _chunks[_i], 
                     dataArray.set(chunk, pos), pos += chunk.length;
                     return _context3.abrupt("return", dataArray);
 
-                  case 25:
+                  case 26:
                   case "end":
                     return _context3.stop();
                 }
             }), _callee3);
         })))).apply(this, arguments);
+    }
+    function prettyBytes(bytes) {
+        var decimalPlaces = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 2;
+        if (0 === bytes) return "0 B";
+        for (var units = [ "B", "KB", "MB", "GB", "TB" ], size = bytes, unitIndex = 0; size >= 1024 && unitIndex < units.length - 1; ) size /= 1024, 
+        unitIndex++;
+        var formatted = size.toFixed(decimalPlaces);
+        return "".concat(formatted, " ").concat(units[unitIndex]);
     }
     function ffmpeg_typeof(obj) {
         return ffmpeg_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
@@ -3224,38 +3244,38 @@
         };
     }
     function _mergeVideoAndAudio() {
-        return _mergeVideoAndAudio = ffmpeg_asyncToGenerator(ffmpeg_regeneratorRuntime().mark((function _callee2(videoUrl, audioUrl, showProgress) {
-            var ffmpeg, load, videoLoaded, audioLoaded, videoTotal, audioTotal, updateProgress, _yield$Promise$all, _yield$Promise$all2, videoData, audioData, mergedData;
+        return _mergeVideoAndAudio = ffmpeg_asyncToGenerator(ffmpeg_regeneratorRuntime().mark((function _callee2(videoUrl, audioUrl, _ref) {
+            var showProgress, controller, ffmpeg, load, videoLoaded, audioLoaded, videoTotal, audioTotal, updateProgress, _yield$Promise$all, _yield$Promise$all2, videoData, audioData, mergedData;
             return ffmpeg_regeneratorRuntime().wrap((function _callee2$(_context2) {
                 for (;;) switch (_context2.prev = _context2.next) {
                   case 0:
-                    if (videoUrl && "#" !== videoUrl) {
-                        _context2.next = 3;
+                    if (showProgress = _ref.showProgress, controller = _ref.controller, videoUrl && "#" !== videoUrl) {
+                        _context2.next = 4;
                         break;
                     }
                     return message_Message_warning("视频地址为空"), _context2.abrupt("return");
 
-                  case 3:
+                  case 4:
                     if (audioUrl && "#" !== audioUrl) {
-                        _context2.next = 6;
+                        _context2.next = 7;
                         break;
                     }
                     return message_Message_warning("音频地址为空"), _context2.abrupt("return");
 
-                  case 6:
+                  case 7:
                     return (showProgress = showProgress || function(data) {
                         console.log("[ffmpeg] Progress: ", data);
                     })({
                         message: "正在初始化FFmpeg"
                     }), ffmpeg = new FFmpegWASM.FFmpeg, load = function() {
-                        var _ref = ffmpeg_asyncToGenerator(ffmpeg_regeneratorRuntime().mark((function _callee() {
+                        var _ref2 = ffmpeg_asyncToGenerator(ffmpeg_regeneratorRuntime().mark((function _callee() {
                             var baseFFmpegUrl, baseCoreUrl, baseCoreMTUrl;
                             return ffmpeg_regeneratorRuntime().wrap((function _callee$(_context) {
                                 for (;;) switch (_context.prev = _context.next) {
                                   case 0:
                                     if (!0, baseFFmpegUrl = "https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd", baseCoreUrl = "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd", 
-                                    baseCoreMTUrl = "https://unpkg.com/@ffmpeg/core-mt@0.12.10/dist/umd", ffmpeg.on("log", (function(_ref2) {
-                                        var message = _ref2.message;
+                                    baseCoreMTUrl = "https://unpkg.com/@ffmpeg/core-mt@0.12.10/dist/umd", ffmpeg.on("log", (function(_ref3) {
+                                        var message = _ref3.message;
                                         console.log("[ffmpeg]", message);
                                     })), !window.crossOriginIsolated) {
                                         _context.next = 25;
@@ -3309,56 +3329,63 @@
                             }), _callee);
                         })));
                         return function load() {
-                            return _ref.apply(this, arguments);
+                            return _ref2.apply(this, arguments);
                         };
-                    }(), _context2.next = 12, load();
+                    }(), _context2.prev = 11, _context2.next = 14, load();
 
-                  case 12:
-                    return _context2.prev = 12, showProgress({
+                  case 14:
+                    return showProgress({
                         message: "准备下载视频和音频"
                     }), videoLoaded = 0, audioLoaded = 0, videoTotal = 0, audioTotal = 0, updateProgress = function updateProgress() {
-                        var totalBytes = videoTotal + audioTotal, loadedBytes = videoLoaded + audioLoaded, overallPercent = totalBytes > 0 ? Math.floor(loadedBytes / totalBytes * 100) : 0, msg = "\n                下载进度: ".concat(overallPercent, "% </br>\n                视频: ").concat(Math.floor(videoLoaded / 1048576), "MB / ").concat(Math.floor(videoTotal / 1048576), "MB </br>\n                音频: ").concat(Math.floor(audioLoaded / 1048576), "MB / ").concat(Math.floor(audioTotal / 1048576), "MB </br>\n            ").trim().replace(/\n\s*/g, "\n");
+                        var totalBytes = videoTotal + audioTotal, loadedBytes = videoLoaded + audioLoaded, overallPercent = totalBytes > 0 ? Math.floor(loadedBytes / totalBytes * 100) : 0, msg = "\n                下载进度: ".concat(overallPercent, "% </br>\n                视频: ").concat(prettyBytes(videoLoaded), " / ").concat(prettyBytes(videoTotal), " </br>\n                音频: ").concat(prettyBytes(audioLoaded), " / ").concat(prettyBytes(audioTotal), " </br>\n            ").trim().replace(/\n\s*/g, "\n");
                         showProgress({
                             message: msg
                         });
-                    }, _context2.next = 18, Promise.all([ fetchFileWithProgress(videoUrl, (function(loaded, total) {
-                        videoLoaded = loaded, videoTotal = total, updateProgress();
-                    })), fetchFileWithProgress(audioUrl, (function(loaded, total) {
-                        audioLoaded = loaded, audioTotal = total, updateProgress();
-                    })) ]);
+                    }, controller = controller || new AbortController, _context2.next = 20, Promise.all([ fetchFileWithProgress(videoUrl, {
+                        onProgress: function onProgress(loaded, total) {
+                            videoLoaded = loaded, videoTotal = total, updateProgress();
+                        },
+                        signal: controller.signal
+                    }), fetchFileWithProgress(audioUrl, {
+                        onProgress: function onProgress(loaded, total) {
+                            audioLoaded = loaded, audioTotal = total, updateProgress();
+                        },
+                        signal: controller.signal
+                    }) ]);
 
-                  case 18:
+                  case 20:
                     return _yield$Promise$all = _context2.sent, _yield$Promise$all2 = ffmpeg_slicedToArray(_yield$Promise$all, 2), 
-                    videoData = _yield$Promise$all2[0], audioData = _yield$Promise$all2[1], _context2.next = 24, 
+                    videoData = _yield$Promise$all2[0], audioData = _yield$Promise$all2[1], _context2.next = 26, 
                     ffmpeg.writeFile("video.m4s", videoData);
 
-                  case 24:
-                    return _context2.next = 26, ffmpeg.writeFile("audio.m4s", audioData);
-
                   case 26:
+                    return _context2.next = 28, ffmpeg.writeFile("audio.m4s", audioData);
+
+                  case 28:
                     return showProgress({
                         message: "正在合并视频和音频"
-                    }), _context2.next = 29, ffmpeg.exec([ "-i", "video.m4s", "-i", "audio.m4s", "-c", "copy", "output.mp4" ]);
+                    }), _context2.next = 31, ffmpeg.exec([ "-i", "video.m4s", "-i", "audio.m4s", "-c", "copy", "output.mp4" ]);
 
-                  case 29:
+                  case 31:
                     return showProgress({
-                        message: "合并成功，请等待浏览器保存文件"
-                    }), _context2.next = 32, ffmpeg.readFile("output.mp4");
+                        message: "合并成功，正在读取文件"
+                    }), _context2.next = 34, ffmpeg.readFile("output.mp4");
 
-                  case 32:
+                  case 34:
                     return mergedData = _context2.sent, _context2.abrupt("return", Promise.resolve(new Blob([ mergedData.buffer ], {
                         type: "video/mp4"
                     })));
 
-                  case 36:
-                    return _context2.prev = 36, _context2.t0 = _context2.catch(12), console.error("Error merging streams:", _context2.t0), 
+                  case 38:
+                    return _context2.prev = 38, _context2.t0 = _context2.catch(11), controller && controller.signal && !controller.signal.aborted && (controller.abort(), 
+                    message_Message_error("任务被迫中止")), console.error("Error merging streams:", _context2.t0), 
                     _context2.abrupt("return", Promise.reject(_context2.t0));
 
-                  case 40:
+                  case 43:
                   case "end":
                     return _context2.stop();
                 }
-            }), _callee2, null, [ [ 12, 36 ] ]);
+            }), _callee2, null, [ [ 11, 38 ] ]);
         }))), _mergeVideoAndAudio.apply(this, arguments);
     }
     var ffmpeg = {
@@ -3487,7 +3514,7 @@
         bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3), setTimeout((function() {
             var bp_aria2_window = window.bp_aria2_window, task_hash = "#!/new/task?" + [ "url=".concat(encodeURIComponent(window.btoa(video.url))), "out=".concat(encodeURIComponent(video.filename)), "header=User-Agent:".concat(window.navigator.userAgent), "header=Referer:".concat(window.location.href) ].join("&");
             bp_aria2_window && !bp_aria2_window.closed ? (bp_aria2_window.location.href = config_config.ariang_host + task_hash, 
-            message_Message_success("发送RPC请求")) : message_Message_warning("AriaNG页面未打开");
+            message_Message_success("发送RPC请求")) : message_Message_warning("AriaNg页面未打开");
         }), time);
     }
     function download_rpc_ariang() {
@@ -3504,15 +3531,14 @@
         xhr.open("get", url), xhr.responseType = "blob", xhr.onload = function() {
             if (200 === this.status || 304 === this.status) {
                 if ("msSaveOrOpenBlob" in navigator) return void navigator.msSaveOrOpenBlob(this.response, filename);
-                var blob_url = URL.createObjectURL(this.response), a = document.createElement("a");
-                a.style.display = "none", a.href = blob_url, a.download = filename, a.click(), URL.revokeObjectURL(blob_url);
+                downloadBlobURL(URL.createObjectURL(this.response), filename);
             }
         }, need_show_progress = !0, xhr.onprogress = function(evt) {
             if (4 != this.state) {
                 var loaded = evt.loaded, tot = evt.total;
                 !function show_progress(_ref5) {
                     var total = _ref5.total, loaded = _ref5.loaded, percent = _ref5.percent;
-                    need_show_progress && MessageBox_alert("文件大小：".concat(Math.floor(total / 1048576), "MB(").concat(total, "Byte)<br/>") + "已经下载：".concat(Math.floor(loaded / 1048576), "MB(").concat(loaded, "Byte)<br/>") + "当前进度：".concat(percent, "%<br/>下载中请勿操作浏览器，刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。"), (function() {
+                    need_show_progress && MessageBox_alert("文件大小：".concat(prettyBytes(total), "(").concat(total, "Byte)<br/>") + "已经下载：".concat(prettyBytes(loaded), "(").concat(loaded, "Byte)<br/>") + "当前进度：".concat(percent, "%<br/>下载中请勿操作浏览器，刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。"), (function() {
                         need_show_progress = !1;
                     })), total === loaded && (MessageBox_alert("下载完成，请等待浏览器保存！"), download_blob_clicked = !1);
                 }({
@@ -3526,15 +3552,6 @@
         }, xhr.send(), download_blob_clicked = !0, message_Message_info("准备开始下载");
     }
     var download_blob_merge_clicked = !1, need_show_merge_progress = !0;
-    function show_merge_progress(_ref6) {
-        var message = _ref6.message, loaded = _ref6.loaded, total = _ref6.total;
-        if (need_show_merge_progress) {
-            var content = "\n        ".concat(message, "</br>\n        ").concat(loaded && total && "\n        进度: ".concat(Math.round(loaded / total * 100), "% </br>\n        文件大小：").concat(Math.round(total / 1024 / 1024), "MB <br/>\n        已经下载：").concat(Math.round(loaded / 1024 / 1024), "MB </br>") || "", "\n        请勿操作浏览器，刷新或离开页面会导致下载取消！\n    ");
-            MessageBox_alert(content, (function() {
-                need_show_merge_progress = !1;
-            }));
-        }
-    }
     function _download_danmaku_ass(cid, title) {
         var return_type = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null, callback = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : null;
         ajax({
@@ -3585,13 +3602,9 @@
                 _iterator2.f();
             }
             var data = content.join("\n");
-            if (null === return_type || "file" === return_type) {
-                var blob_url = URL.createObjectURL(new Blob([ data ], {
-                    type: "text/ass"
-                })), a = document.createElement("a");
-                a.style.display = "none", a.href = blob_url, a.download = title + ".ass", a.click(), 
-                URL.revokeObjectURL(blob_url);
-            } else "callback" === return_type && callback && callback(data);
+            null === return_type || "file" === return_type ? downloadBlob(new Blob([ data ], {
+                type: "text/ass"
+            }), title + ".ass") : "callback" === return_type && callback && callback(data);
         })).catch((function() {
             "callback" === return_type && callback && callback();
         }));
@@ -3601,20 +3614,12 @@
     }
     function download_subtitle_vtt() {
         var p = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0, file_name = arguments.length > 1 ? arguments[1] : void 0, download_subtitle = function download_subtitle(blob_url) {
-            if (blob_url) {
-                var a = document.createElement("a");
-                a.setAttribute("target", "_blank"), a.setAttribute("href", blob_url), a.setAttribute("download", file_name + ".vtt"), 
-                a.click(), URL.revokeObjectURL(blob_url);
-            } else message_Message_warning("未发现字幕");
+            blob_url ? downloadBlobURL(blob_url, file_name + ".vtt") : message_Message_warning("未发现字幕");
         };
         api.get_subtitle_url(p, download_subtitle);
     }
     function download_blob_zip(blob_data, filename) {
-        if (blob_data) {
-            var blob_url = URL.createObjectURL(blob_data), a = document.createElement("a");
-            a.setAttribute("target", "_blank"), a.setAttribute("href", blob_url), a.setAttribute("download", filename + ".zip"), 
-            a.click(), URL.revokeObjectURL(blob_url);
-        }
+        blob_data && downloadBlob(blob_data, filename + ".zip");
     }
     function download_danmaku_ass_zip(videos, zip) {
         if (videos) {
@@ -3666,14 +3671,29 @@
         },
         download_blob_merge: function download_blob_merge(video_url, audio_url, filename) {
             if (download_blob_merge_clicked) return message_Message_miaow(), void (need_show_merge_progress = !0);
-            download_blob_merge_clicked = !0, message_Message_info("准备开始下载"), need_show_merge_progress = !0, 
-            ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then((function(mergedBlob) {
-                if (mergedBlob) {
-                    var blobUrl = URL.createObjectURL(mergedBlob), a = document.createElement("a");
-                    a.href = blobUrl, a.download = filename, a.click(), URL.revokeObjectURL(blobUrl);
-                } else message_Message_error("合并视频失败");
+            download_blob_merge_clicked = !0, need_show_merge_progress = !0;
+            var controller = new AbortController;
+            function show_merge_progress(_ref6) {
+                var message = _ref6.message, loaded = _ref6.loaded, total = _ref6.total, isFinished = _ref6.isFinished;
+                if (need_show_merge_progress) {
+                    var content = "\n                ".concat(message, "</br>\n                ").concat(loaded && total && "\n                下载进度: ".concat(Math.round(loaded / total * 100), "% </br>\n                文件大小：").concat(prettyBytes(total), " <br/>\n                已经下载：").concat(prettyBytes(loaded)) || "", "\n                请勿操作浏览器，刷新或离开页面会导致下载取消！\n            ");
+                    MessageBox_confirm(content, (function() {
+                        need_show_merge_progress = !1;
+                    }), (function() {
+                        controller.abort();
+                    }));
+                }
+                isFinished && (MessageBox_alert("下载完成，请等待浏览器保存！"), download_blob_merge_clicked = !1);
+            }
+            message_Message_info("准备开始下载"), ffmpeg.mergeVideoAndAudio(video_url, audio_url, {
+                showProgress: show_merge_progress,
+                controller: controller
+            }).then((function(mergedBlob) {
+                mergedBlob && 0 !== mergedBlob.size ? (show_merge_progress({
+                    isFinished: !0
+                }), downloadBlob(mergedBlob, filename)) : message_Message_error("合并视频失败");
             })).catch((function(error) {
-                console.error(error), message_Message_error("合并失败");
+                console.error(error), "AbortError" !== error.name ? message_Message_error("合并下载失败") : message_Message_warning("已取消下载");
             })).finally((function() {
                 download_blob_merge_clicked = !1;
             }));
@@ -4420,7 +4440,7 @@
         function Main() {
             !function main_classCallCheck(instance, Constructor) {
                 if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.7.1", " ").concat("891d559", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.7.2", " ").concat("2ac5b1c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(Constructor, protoProps, staticProps) {
             return protoProps && main_defineProperties(Constructor.prototype, protoProps), staticProps && main_defineProperties(Constructor, staticProps), 

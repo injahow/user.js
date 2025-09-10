@@ -1,14 +1,16 @@
 import { Message } from '../ui/message';
 import { FFmpegWASM } from './runtime-lib';
-import { fetchFileWithProgress, toBlobURL } from './common';
+import { fetchFileWithProgress, prettyBytes, toBlobURL } from './common';
 
 /**
  * 使用 ffmpeg.wasm 合成视频
  * @param {string} videoUrl - 视频 URL
  * @param {string} audioUrl - 音频 URL
- * @param {function} showProgress - 进度回调函数
+ * @param {Object} options - 配置选项
+ * @param {Function} options.showProgress - 更新进度回调函数
+ * @param {AbortController|null} [options.controller] - 可选的 AbortController，用于取消请求
  */
-async function mergeVideoAndAudio(videoUrl, audioUrl, showProgress) {
+async function mergeVideoAndAudio(videoUrl, audioUrl, { showProgress, controller }) {
 
     if (!videoUrl || videoUrl === '#') {
         Message.warning('视频地址为空')
@@ -57,16 +59,17 @@ async function mergeVideoAndAudio(videoUrl, audioUrl, showProgress) {
         }
     }
 
-    await load()
-
     try {
+
+        await load()
+
         showProgress({
             message: '准备下载视频和音频'
         })
-        // 统一显示总进度
         let [videoLoaded, audioLoaded, videoTotal, audioTotal] = [
             0, 0, 0, 0
         ]
+        // 显示总进度
         const updateProgress = () => {
             const totalBytes = videoTotal + audioTotal;
             const loadedBytes = videoLoaded + audioLoaded;
@@ -74,25 +77,35 @@ async function mergeVideoAndAudio(videoUrl, audioUrl, showProgress) {
 
             const msg = `
                 下载进度: ${overallPercent}% </br>
-                视频: ${Math.floor(videoLoaded / (1024 * 1024))}MB / ${Math.floor(videoTotal / (1024 * 1024))}MB </br>
-                音频: ${Math.floor(audioLoaded / (1024 * 1024))}MB / ${Math.floor(audioTotal / (1024 * 1024))}MB </br>
+                视频: ${prettyBytes(videoLoaded)} / ${prettyBytes(videoTotal)} </br>
+                音频: ${prettyBytes(audioLoaded)} / ${prettyBytes(audioTotal)} </br>
             `.trim().replace(/\n\s*/g, '\n');
 
             showProgress({
                 message: msg
             })
         }
+
+        // 无外部信号使用内部信号
+        controller = controller || new AbortController()
+
         // 并行发起下载任务
         const [videoData, audioData] = await Promise.all([
-            fetchFileWithProgress(videoUrl, (loaded, total) => {
-                videoLoaded = loaded;
-                videoTotal = total;
-                updateProgress();
+            fetchFileWithProgress(videoUrl, {
+                onProgress: (loaded, total) => {
+                    videoLoaded = loaded
+                    videoTotal = total
+                    updateProgress()
+                },
+                signal: controller.signal
             }),
-            fetchFileWithProgress(audioUrl, (loaded, total) => {
-                audioLoaded = loaded;
-                audioTotal = total;
-                updateProgress();
+            fetchFileWithProgress(audioUrl, {
+                onProgress: (loaded, total) => {
+                    audioLoaded = loaded
+                    audioTotal = total
+                    updateProgress()
+                },
+                signal: controller.signal
             })
         ])
 
@@ -106,12 +119,15 @@ async function mergeVideoAndAudio(videoUrl, audioUrl, showProgress) {
         await ffmpeg.exec(['-i', 'video.m4s', '-i', 'audio.m4s', '-c', 'copy', 'output.mp4'])
 
         showProgress({
-            message: '合并成功，请等待浏览器保存文件'
+            message: '合并成功，正在读取文件'
         })
         const mergedData = await ffmpeg.readFile('output.mp4')
-
         return Promise.resolve(new Blob([mergedData.buffer], { type: 'video/mp4' }))
     } catch (error) {
+        if (controller && controller.signal && !controller.signal.aborted) {
+            controller.abort()
+            Message.error('任务被迫中止')
+        }
         console.error('Error merging streams:', error)
         return Promise.reject(error)
     }

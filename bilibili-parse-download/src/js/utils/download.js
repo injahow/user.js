@@ -5,6 +5,7 @@ import { api } from './api'
 import { video } from './video'
 import { JSZip } from './runtime-lib'
 import { ffmpeg } from './ffmpeg'
+import { downloadBlob, downloadBlobURL, prettyBytes } from './common'
 
 function rpc_type() {
     if (config.rpc_domain.match('https://') || config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
@@ -382,7 +383,7 @@ function download_rpc_ariang_send(video) {
             bp_aria2_window.location.href = config.ariang_host + task_hash
             Message.success('发送RPC请求')
         } else {
-            Message.warning('AriaNG页面未打开')
+            Message.warning('AriaNg页面未打开')
         }
 
     }, time)
@@ -411,8 +412,8 @@ let download_blob_clicked = false, need_show_progress = true
 
 function show_progress({ total, loaded, percent }) {
     if (need_show_progress) {
-        MessageBox.alert(`文件大小：${Math.floor(total / (1024 * 1024))}MB(${total}Byte)<br/>` +
-            `已经下载：${Math.floor(loaded / (1024 * 1024))}MB(${loaded}Byte)<br/>` +
+        MessageBox.alert(`文件大小：${prettyBytes(total)}(${total}Byte)<br/>` +
+            `已经下载：${prettyBytes(loaded)}(${loaded}Byte)<br/>` +
             `当前进度：${percent}%<br/>下载中请勿操作浏览器，刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。`, () => {
                 need_show_progress = false
             })
@@ -439,12 +440,7 @@ function download_blob(url, filename) {
                 return
             }
             const blob_url = URL.createObjectURL(this.response)
-            const a = document.createElement('a')
-            a.style.display = 'none'
-            a.href = blob_url
-            a.download = filename
-            a.click()
-            URL.revokeObjectURL(blob_url)
+            downloadBlobURL(blob_url, filename)
         }
     }
     need_show_progress = true
@@ -473,21 +469,6 @@ function download_blob(url, filename) {
  */
 let download_blob_merge_clicked = false, need_show_merge_progress = true
 
-function show_merge_progress({ message, loaded, total }) {
-    if (!need_show_merge_progress) return;
-    const content = `
-        ${message}</br>
-        ${loaded && total && `
-        进度: ${Math.round(loaded / total * 100)}% </br>
-        文件大小：${Math.round(total / 1024 / 1024)}MB <br/>
-        已经下载：${Math.round(loaded / 1024 / 1024)}MB </br>` || ''}
-        请勿操作浏览器，刷新或离开页面会导致下载取消！
-    `
-    MessageBox.alert(content, () => {
-        need_show_merge_progress = false
-    });
-}
-
 function download_blob_merge(video_url, audio_url, filename) {
 
     if (download_blob_merge_clicked) {
@@ -497,25 +478,54 @@ function download_blob_merge(video_url, audio_url, filename) {
     }
 
     download_blob_merge_clicked = true
-    Message.info('准备开始下载')
     need_show_merge_progress = true
-    ffmpeg.mergeVideoAndAudio(video_url, audio_url, show_merge_progress).then((mergedBlob) => {
-        if (!mergedBlob) {
+    const controller = new AbortController()
+    function show_merge_progress({ message, loaded, total, isFinished }) {
+        if (need_show_merge_progress) {
+            const content = `
+                ${message}</br>
+                ${loaded && total && `
+                下载进度: ${Math.round(loaded / total * 100)}% </br>
+                文件大小：${prettyBytes(total)} <br/>
+                已经下载：${prettyBytes(loaded)}` || ''}
+                请勿操作浏览器，刷新或离开页面会导致下载取消！
+            `
+            MessageBox.confirm(content, () => {
+                need_show_merge_progress = false
+            }, () => {
+                controller.abort()
+            })
+        }
+        if (isFinished) {
+            MessageBox.alert('下载完成，请等待浏览器保存！')
+            download_blob_merge_clicked = false
+        }
+    }
+
+    Message.info('准备开始下载')
+    ffmpeg.mergeVideoAndAudio(video_url, audio_url, {
+        showProgress: show_merge_progress,
+        controller
+    }).then((mergedBlob) => {
+        if (!mergedBlob || mergedBlob.size === 0) {
             Message.error('合并视频失败')
             return
         }
-        const blobUrl = URL.createObjectURL(mergedBlob)
-        const a = document.createElement('a')
-        a.href = blobUrl
-        a.download = filename
-        a.click()
-        URL.revokeObjectURL(blobUrl)
+        show_merge_progress({
+            isFinished: true
+        })
+        downloadBlob(mergedBlob, filename)
     }).catch((error) => {
         console.error(error)
-        Message.error('合并失败')
+        if (error.name === 'AbortError') {
+            Message.warning('已取消下载')
+            return
+        }
+        Message.error('合并下载失败')
     }).finally(() => {
-        download_blob_merge_clicked = false;
+        download_blob_merge_clicked = false
     })
+
 }
 
 /**
@@ -625,13 +635,7 @@ function _download_danmaku_ass(cid, title, return_type = null, callback = null) 
             // 4.ass & return
             const data = content.join('\n')
             if (return_type === null || return_type === 'file') {
-                const blob_url = URL.createObjectURL(new Blob([data], { type: 'text/ass' }))
-                const a = document.createElement('a')
-                a.style.display = 'none'
-                a.href = blob_url
-                a.download = title + '.ass'
-                a.click()
-                URL.revokeObjectURL(blob_url)
+                downloadBlob(new Blob([data], { type: 'text/ass' }), title + '.ass')
             } else if (return_type === 'callback' && callback) {
                 callback(data)
             }
@@ -653,25 +657,14 @@ function download_subtitle_vtt(p = 0, file_name) {
             Message.warning('未发现字幕')
             return
         }
-        const a = document.createElement('a')
-        a.setAttribute('target', '_blank')
-        a.setAttribute('href', blob_url)
-        a.setAttribute('download', file_name + '.vtt')
-        a.click()
-        URL.revokeObjectURL(blob_url)
+        downloadBlobURL(blob_url, file_name + '.vtt')
     }
     api.get_subtitle_url(p, download_subtitle)
 }
 
 function download_blob_zip(blob_data, filename) {
     if (!blob_data) return
-    const blob_url = URL.createObjectURL(blob_data)
-    const a = document.createElement('a')
-    a.setAttribute('target', '_blank')
-    a.setAttribute('href', blob_url)
-    a.setAttribute('download', filename + '.zip')
-    a.click()
-    URL.revokeObjectURL(blob_url)
+    downloadBlob(blob_data, filename + '.zip')
 }
 
 /**

@@ -88,8 +88,9 @@ function get_quality() {
         _q_max = parseInt($('li.bpx-player-ctrl-quality-menu-item').attr('data-value') || _q_max)
     }
 
-    !_q && (_q = 80) && (console.error('video get quality error'))
     !_q_max && (_q_max = 80) && (console.error('video get quality max error'))
+    !_q && (_q = _q_max < 80 ? _q_max : 80)
+
     if (!user.isVIP()) {
         _q = _q > 80 ? 80 : _q
     }
