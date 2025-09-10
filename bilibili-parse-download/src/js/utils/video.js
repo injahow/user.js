@@ -114,6 +114,9 @@ function get_quality_support() {
         list = ['video', 'list'].includes(_type)
             ? $('li.bpx-player-ctrl-quality-menu-item')
             : $('li.squirtle-select-item')
+        if (!list[0]) {
+            list = $('li.bpx-player-ctrl-quality-menu-item')
+        }
         if (list && list.length) {
             list.each(function () {
                 const q = `${parseInt($(this).attr('data-value'))}`

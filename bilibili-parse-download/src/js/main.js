@@ -75,7 +75,7 @@ class Main {
         }, 500)
         setInterval(() => {
             const vb = video.base()
-            if (check.aid !== vb.aid() || check.cid !== vb.cid()) {
+            if (check.aid !== vb.aid() || check.cid !== vb.cid() || check.q !== video.get_quality().q) {
                 check.refresh()
             }
         }, 1500)

@@ -29,6 +29,7 @@ function downloadBlobURL(blobUrl, downloadname) {
     const a = document.createElement('a')
     a.href = blobUrl
     a.download = downloadname
+    a.style.display = 'none'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

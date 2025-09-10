@@ -358,9 +358,13 @@ function open_ariang(rpc) {
         : ''
     const url = config.ariang_host + hash_tag
     const a = document.createElement('a')
-    a.setAttribute('target', '_blank')
-    a.setAttribute('onclick', `window.bp_aria2_window=window.open('${url}');`)
+    a.style.display = 'none'
+    a.onclick = () => {
+        window.bp_aria2_window = window.open(url)
+    }
+    document.body.appendChild(a)
     a.click()
+    document.body.removeChild(a)
 }
 
 function download_rpc_ariang_send(video) {
