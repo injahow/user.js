@@ -11,8 +11,8 @@
       "license": "MIT",
       "source": "https://github.com/injahow/user.js",
       "supportURL": "https://github.com/injahow/user.js/issues",
-      "downloadURL": "https://update.greasyfork.org/scripts/413228/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js",
-      "updateURL": "https://update.greasyfork.org/scripts/413228/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.meta.js",
+      "downloadURL": "https://unpkg.com/bpd-user-js",
+      "updateURL": "https://unpkg.com/bpd-user-js",
       "match": [
         "*://www.bilibili.com/video/av*",
         "*://www.bilibili.com/video/BV*",

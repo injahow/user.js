@@ -8,8 +8,8 @@
 // @license       MIT
 // @source        https://github.com/injahow/user.js
 // @supportURL    https://github.com/injahow/user.js/issues
-// @downloadURL   https://update.greasyfork.org/scripts/413228/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.user.js
-// @updateURL     https://update.greasyfork.org/scripts/413228/bilibili%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BD.meta.js
+// @downloadURL   https://unpkg.com/bpd-user-js
+// @updateURL     https://unpkg.com/bpd-user-js
 // @match         *://www.bilibili.com/video/av*
 // @match         *://www.bilibili.com/video/BV*
 // @match         *://www.bilibili.com/list/*
@@ -5030,7 +5030,7 @@ var Main = /*#__PURE__*/function () {
     main_classCallCheck(this, Main);
 
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.3", " ").concat("7b2272e", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.3", " ").concat("68f7b1c", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
 
   main_createClass(Main, [{

@@ -1,5 +1,5 @@
 {
-  "name": "bilibili-parse-download",
+  "name": "bpd-user-js",
   "version": "2.7.3",
   "description": "a script to download bilibli video",
   "main": "dist/bilibili-parse-download.user.js",
@@ -7,7 +7,6 @@
     "build-dev": "npx webpack --config ./webpack/webpack.dev.js",
     "build-prod": "npx webpack --config ./webpack/webpack.prod.js"
   },
-  "private": true,
   "keywords": [
     "bilibili",
     "download",
