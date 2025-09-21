@@ -1,0 +1,32 @@
+{
+  "name": "injahow.user.js",
+  "version": "0.0.1",
+  "description": "all-in-one user.js script repository",
+  "main": "dist/injahow.user.js",
+  "type": "module",
+  "scripts": {
+    "build": "node ./scripts/build.js && npm run webpack",
+    "webpack": "npx webpack --config ./webpack.config.cjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/injahow/user.js.git"
+  },
+  "keywords": [
+    "user.js"
+  ],
+  "author": "injahow",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/injahow/user.js/issues"
+  },
+  "homepage": "https://github.com/injahow/user.js#readme",
+  "devDependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/preset-env": "^7.28.3",
+    "babel-loader": "^10.0.0",
+    "git-revision-webpack-plugin": "^5.0.0",
+    "terser-webpack-plugin": "^5.3.14",
+    "webpack-cli": "^6.0.1"
+  }
+}

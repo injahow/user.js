@@ -35,3 +35,7 @@ build/
 
 ### NodeJS ###
 node_modules
+
+backup
+scripts/config.json
+scripts/meta.json

@@ -1,0 +1,17 @@
+{
+  "name": "injahow-user-js",
+  "namespace": "https://github.com/injahow",
+  "version": "1.0.0",
+  "description": "整合脚本",
+  "author": "injahow",
+  "copyright": "2022, injahow (https://github.com/injahow)",
+  "license": "MIT",
+  "source": "https://github.com/injahow/user.js",
+  "supportURL": "https://github.com/injahow/user.js/issues",
+  "downloadURL": "https://unpkg.com/injahow-user-js",
+  "updateURL": "https://unpkg.com/injahow-user-js",
+  "icon": "",
+  "match": [],
+  "require": [],
+  "compatible": []
+}
