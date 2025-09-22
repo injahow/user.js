@@ -56,42 +56,39 @@ async function buildAll() {
 
     const builtProjects = []
     const failedProjects = []
-
-    const buildPromises = projects.map(async ({ dir, pkg, name }) => {
-        const startTime = Date.now()
-        const projectLabel = `${name} - ${pkg.name}`
-
-        return new Promise((resolve) => {
-            console.log(`正在构建: ${projectLabel} ...`)
-
-            exec('npm run build', { cwd: dir, stdio: 'inherit' }, (error) => {
-                const duration = ((Date.now() - startTime) / 1000).toFixed(1)
-                if (error) {
-                    console.error(`构建失败: ${projectLabel} (耗时 ${duration}s)`)
-                    failedProjects.push({ dir, pkg, name, error })
-                } else {
-                    console.log(`构建成功: ${projectLabel} (耗时 ${duration}s)`)
-                    builtProjects.push({ dir, pkg, name })
-                }
-                resolve()
-            })
-        })
-    })
+    const startTime = Date.now()
 
     // 控制并发数量
-    await Promise.all(
-        buildPromises.reduce((acc, promise, index) => {
-            const chunkIndex = Math.floor(index / MAX_CONCURRENT)
-            acc[chunkIndex] = acc[chunkIndex] || []
-            acc[chunkIndex].push(promise)
-            return acc
-        }, []).map(chunk => Promise.all(chunk))
-    )
+    for (let i = 0; i < projects.length; i += MAX_CONCURRENT) {
+        const chunk = projects.slice(i, i + MAX_CONCURRENT)
 
+        const chunkPromises = chunk.map(({ dir, pkg, name }) => {
+            const startTime = Date.now()
+            const projectLabel = `${name} - ${pkg.name}`
+            console.log(`正在构建: ${projectLabel} ...`)
+
+            return new Promise((resolve) => {
+                exec('npm run build', { cwd: dir, stdio: 'inherit' }, (error) => {
+                    const duration = ((Date.now() - startTime) / 1000).toFixed(1)
+                    if (error) {
+                        console.error(`构建失败: ${projectLabel} (耗时 ${duration}s)`)
+                        failedProjects.push({ dir, pkg, name, error })
+                    } else {
+                        console.log(`构建成功: ${projectLabel} (耗时 ${duration}s)`)
+                        builtProjects.push({ dir, pkg, name })
+                    }
+                    resolve()
+                })
+            })
+        })
+
+        await Promise.all(chunkPromises)
+    }
     // 构建结果汇总
     console.log(`\n构建完成, 总数: ${projects.length}\n` +
         `成功: ${builtProjects.length}\n` +
-        `失败: ${failedProjects.length}\n`);
+        `失败: ${failedProjects.length}\n` +
+        `耗时: ${((Date.now() - startTime) / 1000).toFixed(1)}s\n`)
 
     if (failedProjects.length > 0) {
         console.error('\n失败项目列表:')
