@@ -12,7 +12,7 @@
     ],
     "module": "ESNext",
     "target": "ESNext",
-    "strict": false,
+    "strict": true,
     "noImplicitAny": false,
     "sourceMap": true,
     "baseUrl": ".",
@@ -20,7 +20,12 @@
       "@/*": [
         "src/*"
       ]
-    }
+    },
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*"

@@ -170,7 +170,7 @@ const initLocal = (name, ver, filename, getModule, handleScript) => {
             }
             runtime_div.appendChild(script_tag)
         })()
-    } catch (error) {
+    } catch (err) {
         console.error(`[Runtime Library] Failed to load ${name} from local`, err)
     }
 }

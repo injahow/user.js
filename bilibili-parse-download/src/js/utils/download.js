@@ -8,7 +8,7 @@ import { ffmpeg } from './ffmpeg'
 import { downloadBlob, downloadBlobURL, prettyBytes } from './common'
 
 function rpc_type() {
-    if (config.rpc_domain.match('https://') || config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
+    if (config.rpc_domain.startsWith('https://') || config.rpc_domain.match(/localhost|127\.0\.0\.1/)) {
         return 'post'
     } else {
         return 'ariang'
@@ -525,6 +525,9 @@ function download_blob_merge(video_url, audio_url, filename) {
             Message.warning('已取消下载')
             return
         }
+        if (!controller.signal.aborted) {
+            controller.abort()
+        }
         Message.error('合并下载失败')
     }).finally(() => {
         download_blob_merge_clicked = false
@@ -655,13 +658,13 @@ function download_danmaku_ass(cid, title) {
     _download_danmaku_ass(cid, title, 'file')
 }
 
-function download_subtitle_vtt(p = 0, file_name) {
+function download_subtitle_vtt(p = 0, filename) {
     const download_subtitle = blob_url => {
         if (!blob_url) {
             Message.warning('未发现字幕')
             return
         }
-        downloadBlobURL(blob_url, file_name + '.vtt')
+        downloadBlobURL(blob_url, filename + '.vtt')
     }
     api.get_subtitle_url(p, download_subtitle)
 }

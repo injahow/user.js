@@ -37,12 +37,14 @@ class CacheFactory {
 
     static clear(name) {
         if (name) {
-            CacheFactory.get(name).clear()
-            return
+            const cache = CacheFactory.map[name]
+            if (cache) {
+                cache.clear()
+            }
+        } else {
+            CacheFactory.map = {}
         }
-        CacheFactory.map = {}
     }
-
 }
 
 class Cache {

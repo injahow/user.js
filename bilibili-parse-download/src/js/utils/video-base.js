@@ -470,9 +470,10 @@ class Bangumi extends VideoBase {
             title = `${this.main_title} ${epNum} ${ep.long_title}`
         } else { // title long_title 可能不准确
             if (ep.share_copy) {
-                title = ep.share_copy.split('》', 2)
-                if (title.length > 1) {
-                    title = `${this.main_title} ${title[1]}`
+                const index = ep.share_copy.indexOf('》')
+                if (index > 0) {
+                    title = ep.share_copy.substring(index + 1)
+                    title = `${this.main_title} ${title}`
                 } else {
                     title = `${this.main_title} ${ep.title} ${ep.long_title}`
                 }

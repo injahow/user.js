@@ -1,7 +1,10 @@
-> 1%
+> 0.5%
 last 2 versions
 not dead
-chrome > 84
-edge > 84
-firefox > 80
-safari > 14.1
+ie >= 11
+chrome >= 43
+firefox >= 38
+safari >= 8
+edge >= 12
+ios_saf >= 8
+and_chr >= 43

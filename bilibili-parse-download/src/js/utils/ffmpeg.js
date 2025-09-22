@@ -14,12 +14,12 @@ async function mergeVideoAndAudio(videoUrl, audioUrl, { showProgress, controller
 
     if (!videoUrl || videoUrl === '#') {
         Message.warning('视频地址为空')
-        return
+        throw new Error('videoUrl not found')
     }
 
     if (!audioUrl || audioUrl === '#') {
         Message.warning('音频地址为空')
-        return
+        throw new Error('audioUrl not found')
     }
 
     showProgress = showProgress || ((data) => {
