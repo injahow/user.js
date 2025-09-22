@@ -3,6 +3,9 @@
   "version": "2.7.4",
   "description": "a script to download bilibli video",
   "main": "dist/bilibili-parse-download.user.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "npm run build-prod",
     "build-dev": "npx webpack --config ./webpack/webpack.dev.js",

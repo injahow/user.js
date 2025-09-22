@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "all-in-one user.js script repository",
   "main": "dist/injahow.user.js",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "scripts": {
     "build": "node ./scripts/build.js && npm run webpack",
