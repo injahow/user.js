@@ -3,37 +3,18 @@ import { fileURLToPath } from 'url'
 import { join, resolve, basename } from 'path'
 import { unlinkSync, existsSync, readFileSync, writeFileSync } from 'fs'
 
-import { extractUserScriptHeader } from './utils.js'
+import { extractUserScriptHeader, extractMetaValue } from './utils.js'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const ROOT = resolve(__dirname, '..')
 const DIST = resolve(ROOT, 'dist')
 
 /**
- * 从一行中提取 @key 的值，支持 // 后任意空白（空格/tabs）
- * @param {string} line - 如 "//   @match  https://xxx.com/abc*  "
- * @param {string} key  - 如 "match"
- * @returns {string|null}
- */
-function extractMetaValue(line, key) {
-    const trimmed = line.trim()
-    if (!trimmed.startsWith('//')) return null
-    const atKey = `@${key}`
-    const atKeyIndex = trimmed.indexOf(atKey)
-    if (atKeyIndex < 2) return null
-    const between = trimmed.slice(2, atKeyIndex).trim()
-    if (between !== '') return null
-    const valueStart = atKeyIndex + atKey.length
-    const value = trimmed.slice(valueStart).trim()
-    return value || null
-}
-
-/**
  * 生成 meta.json：聚合脚本的元信息
  * @param {Array<{ matches: string[], requires: string[] }>} scriptConfigs
  */
 async function createMetaJson(scriptConfigs) {
-    const metaPath = resolve(ROOT, 'scripts/meta.json')
+    const metaPath = resolve(ROOT, 'scripts', 'meta.json')
 
     if (existsSync(metaPath)) {
         unlinkSync(metaPath)
@@ -145,7 +126,7 @@ async function createJsonConfig(projects) {
     }
 
     // 生成 config.json
-    const configPath = resolve(ROOT, 'scripts/config.json')
+    const configPath = resolve(ROOT, 'scripts', 'config.json')
     if (existsSync(configPath)) {
         unlinkSync(configPath)
         console.log(`clean old file: ${configPath}`)

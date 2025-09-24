@@ -80,6 +80,27 @@ async function extractUserScriptHeader(filePath) {
     return header.trimEnd()
 }
 
+
+/**
+ * 从一行中提取 @key 的值，支持 // 后任意空白（空格/tabs）
+ * @param {string} line - 如 "//   @match  https://xxx.com/abc*  "
+ * @param {string} key  - 如 "match"
+ * @returns {string|null}
+ */
+function extractMetaValue(line, key) {
+    const trimmed = line.trim()
+    if (!trimmed.startsWith('//')) return null
+    const atKey = `@${key}`
+    const atKeyIndex = trimmed.indexOf(atKey)
+    if (atKeyIndex < 2) return null
+    const between = trimmed.slice(2, atKeyIndex).trim()
+    if (between !== '') return null
+    const valueStart = atKeyIndex + atKey.length
+    const value = trimmed.slice(valueStart).trim()
+    return value || null
+}
+
 export {
-    extractUserScriptHeader
+    extractUserScriptHeader,
+    extractMetaValue,
 }
