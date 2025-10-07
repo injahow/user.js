@@ -207,6 +207,10 @@ function initToolbar() {
 
     // 处理遮挡
     !!$('#limit-mask-wall')[0] && $('#limit-mask-wall').remove()
+
+    // 默认隐藏
+    $('#video_download').hide()
+    $('#video_download_2').hide()
 }
 
 export {

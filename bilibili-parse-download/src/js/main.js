@@ -2,8 +2,8 @@
 import { auth } from './auth'
 import { check } from './check'
 import { event } from './ui/event'
-import { initConfig } from './ui/config'
-import { initMessage } from './ui/message'
+import { config, initConfig } from './ui/config'
+import { initMessage, Message, MessageBox } from './ui/message'
 import { initToolbar } from './ui/toolbar'
 import { user } from './user'
 import { video } from './utils/video'
@@ -15,16 +15,63 @@ class Main {
         console.log(`${'\n'} %c bilibili-parse-download.user.js v${JS_VERSION} ${GIT_HASH} %c https://github.com/injahow/user.js ${'\n'}${'\n'}`, 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;')
     }
 
-    init() {
+    loadToolbar() {
+        // 处理 initToolbar 白屏问题，渲染后执行
+        let loading = false
+        let timer
+        const load = (timeout) => {
+            setTimeout(() => {
+                if (loading) {
+                    return
+                }
+                loading = true
+                if (timeout === 0) {
+                    clearInterval(timer)
+                    initToolbar()
+                    return
+                }
+                console.warn('waiting timeout...')
+                if (config.show_ui_confirm === '1') {
+                    if (config.show_ui_confirm_load_force === '1') {
+                        initToolbar()
+                        return
+                    }
+                    MessageBox.confirm('加载脚本UI超时，建议刷新页面重新加载，是否强制加载工具栏？', initToolbar, null)
+                    return
+                }
+                Message.warning('脚本UI加载异常，已自动延迟加载')
+                setTimeout(() => {
+                    initToolbar()
+                    Message.info('脚本UI已重新加载，如有问题可刷新页面')
+                }, 5000)
+            }, timeout * 1000)
+        }
+        timer = setInterval(() => {
+            const search_form = document.getElementById('nav-searchform')
+            if (search_form && !loading) {
+                load(0)
+            }
+        }, 500)
+        let timeout
+        try {
+            timeout = config.show_ui_timeout ? parseInt(config.show_ui_timeout) : 6
+            timeout = timeout > 0 ? timeout : 6
+        } catch (err) {
+            console.error('show_ui_timeout err:', err)
+        }
+        load(timeout)
+    }
 
-        initToolbar()
+    init() {
 
         const root_div = document.createElement('div')
         root_div.id = 'bp_root'
         document.body.append(root_div)
-        // initConfig
+
         initConfig(`#${root_div.id}`)
         initMessage(`#${root_div.id}`)
+        // 必须在 initConfig 和 initMessage 后
+        this.loadToolbar()
 
         user.lazyInit()
         auth.checkLoginStatus()

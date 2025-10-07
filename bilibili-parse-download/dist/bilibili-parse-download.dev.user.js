@@ -3380,7 +3380,7 @@ var Download = {
 };
 ;// ./src/html/config.html
 // Module
-var config_code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:30%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web请求</option> <option value=\"aria\">Aria2命令</option> <option value=\"blob\">Blob请求</option> <option value=\"blob_merge\">Blob合并</option> <option value=\"rpc\">RPC接口</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:30%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%;color:transparent\" onFocus=\"this.style.color='black';\" onBlur=\"this.style.color='transparent';\"/> | <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:20%\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>Aria2配置：</label> <label>最大连接数：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:20%\"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:5%\"/> s &nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:5%\"/> px<br/> <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> &nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">扫码授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">网页授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">这是什么？</a> </div> <br/> <div style=\"text-align:right\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}</style> </div> ";
+var config_code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px;display:block;margin-bottom:15px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"display:flex;gap:10px;height:460px\"> <div style=\"flex-shrink:0;border-right:1px solid #ddd;padding-right:10px;overflow-y:auto\"> <ul style=\"list-style:none;padding:0;margin:0;font-size:14px\"> <li><a href=\"javascript:;\" data-tab=\"basic\" class=\"tab-link active\">基本设置</a></li> <li><a href=\"javascript:;\" data-tab=\"other\" class=\"tab-link\">其他设置</a></li> </ul> </div> <div id=\"tab-content\" style=\"flex:1;overflow-y:auto;padding-left:10px;font-size:14px\"> <div class=\"tab-panel\" data-id=\"basic\"> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:40%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>提示：脚本识别错误时可手动设置请求的视频质量参数</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web请求</option> <option value=\"aria\">Aria2命令</option> <option value=\"blob\">Blob请求</option> <option value=\"blob_merge\">Blob合并</option> <option value=\"rpc\">RPC接口</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:40%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.2\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%;color:transparent\" onFocus=\"this.style.color='black';\" onBlur=\"this.style.color='transparent';\"/> | <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:20%\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">扫码授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">网页授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">授权说明</a> </div> </div> <div class=\"tab-panel\" data-id=\"other\" style=\"display:none\"> <div style=\"margin:2% 0\"> <span>[Aria2参数]</span><br/> <label>最大连接：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:40%\"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:10%\"/> s&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:10%\"/> px&nbsp;&nbsp;&nbsp;&nbsp; <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>UI超时时间：</label> <input id=\"show_ui_timeout\" style=\"width:10%\"> <small>说明：脚本初始化时，超时没有正常显示UI的检查时间</small> </div> <div style=\"margin:2% 0\"> <label>UI加载提示：</label> <select id=\"show_ui_confirm\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：脚本初始化UI时，如果检测到页面异常会进行弹窗提示是否手动加载</small> </div> <div style=\"margin:2% 0\"> <label>UI强制加载：</label> <select id=\"show_ui_confirm_load_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：启用UI加载超时弹窗时，自动确认强制加载UI，可能导致页面异常</small> </div> </div> </div> </div> <div style=\"text-align:right;margin-top:20px\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;max-width:90vw;max-height:90vh;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}#bp_config .tab-link{display:block;padding:8px 10px;margin:4px 0;border-radius:4px;color:#333;text-decoration:none;font-weight:500;transition:all .2s}#bp_config .tab-link:hover{background:#eef5ff}#bp_config .tab-link.active{background:#1e90ff;color:#fff}#bp_config small{color:#666;font-size:12px;margin-top:4px;display:block}#bp_config label{font-weight:500;min-width:60px;display:inline-block}#bp_config input,#bp_config select{padding:4px 6px;border:1px solid #ccc;border-radius:3px}#bp_config input:focus,#bp_config select:focus{border-color:#1e90ff;outline:0}</style> </div>";
 // Exports
 /* harmony default export */ var config = (config_code);
 ;// ./src/js/ui/config.js
@@ -3407,17 +3407,22 @@ var config_config = {
   host_key: '0',
   replace_force: '0',
   download_type: 'web',
+  // rpc
   rpc_domain: 'http://localhost',
   rpc_port: '16800',
   rpc_token: '',
   rpc_dir: '',
+  // aria2
   aria2c_connection_level: 'min',
   aria2c_addition_parameters: '',
   ariang_host: 'http://ariang.injahow.com/',
   auto_download: '0',
   video_quality: '0',
   danmaku_speed: '15',
-  danmaku_fontsize: '22'
+  danmaku_fontsize: '22',
+  show_ui_timeout: '6',
+  show_ui_confirm: '0',
+  show_ui_confirm_load_force: '0'
 };
 var default_config = Object.assign({}, config_config); // 浅拷贝
 
@@ -3453,7 +3458,7 @@ var videoQualityMap = {
   112: '1080P 高码率',
   80: '1080P 高清',
   74: '720P 60帧',
-  64: '720P 高清',
+  64: '720P 准高清',
   48: '720P 高清(MP4)',
   32: '480P 清晰',
   16: '360P 流畅'
@@ -3577,6 +3582,30 @@ function initConfig(el) {
   } else {
     $('body').append(config);
   }
+  // ui事件
+  var tabLinks = document.querySelectorAll('#bp_config .tab-link');
+  var panels = document.querySelectorAll('#bp_config .tab-panel');
+  var showTab = function showTab(id) {
+    panels.forEach(function (p) {
+      return p.style.display = 'none';
+    });
+    document.querySelectorAll('#bp_config .tab-link').forEach(function (t) {
+      return t.classList.remove('active');
+    });
+    var panel = document.querySelector("#bp_config .tab-panel[data-id=\"".concat(id, "\"]"));
+    if (panel) panel.style.display = 'block';
+    var link = document.querySelector("#bp_config .tab-link[data-tab=\"".concat(id, "\"]"));
+    if (link) link.classList.add('active');
+  };
+  tabLinks.forEach(function (link) {
+    link.addEventListener('click', function () {
+      var tabId = link.getAttribute('data-tab');
+      showTab(tabId);
+    });
+  });
+  // 默认显示基础设置
+  showTab('basic');
+
   // 同步数据
   var config_str = store.get('config_str');
   try {
@@ -3600,7 +3629,7 @@ function initConfig(el) {
     _loop(_key3);
   }
   for (var _k2 in config_functions) {
-    var e = $("#".concat(_k2))[0]; // a && button
+    var e = $("#".concat(_k2))[0]; // a | button
     !!e && (e.onclick = config_functions[_k2]);
   }
   // 渲染数据
@@ -4317,6 +4346,10 @@ function initToolbar() {
 
   // 处理遮挡
   !!$('#limit-mask-wall')[0] && $('#limit-mask-wall').remove();
+
+  // 默认隐藏
+  $('#video_download').hide();
+  $('#video_download_2').hide();
 }
 
 ;// ./src/js/main.js
@@ -4344,18 +4377,66 @@ var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.4", " ").concat("efeb98d", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.5", " ").concat("ded2161", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   main_createClass(Main, [{
+    key: "loadToolbar",
+    value: function loadToolbar() {
+      // 处理 initToolbar 白屏问题，渲染后执行
+      var loading = false;
+      var timer;
+      var load = function load(timeout) {
+        setTimeout(function () {
+          if (loading) {
+            return;
+          }
+          loading = true;
+          if (timeout === 0) {
+            clearInterval(timer);
+            initToolbar();
+            return;
+          }
+          console.warn('waiting timeout...');
+          if (config_config.show_ui_confirm === '1') {
+            if (config_config.show_ui_confirm_load_force === '1') {
+              initToolbar();
+              return;
+            }
+            MessageBox.confirm('加载脚本UI超时，建议刷新页面重新加载，是否强制加载工具栏？', initToolbar, null);
+            return;
+          }
+          message_Message.warning('脚本UI加载异常，已自动延迟加载');
+          setTimeout(function () {
+            initToolbar();
+            message_Message.info('脚本UI已重新加载，如有问题可刷新页面');
+          }, 5000);
+        }, timeout * 1000);
+      };
+      timer = setInterval(function () {
+        var search_form = document.getElementById('nav-searchform');
+        if (search_form && !loading) {
+          load(0);
+        }
+      }, 500);
+      var timeout;
+      try {
+        timeout = config_config.show_ui_timeout ? parseInt(config_config.show_ui_timeout) : 6;
+        timeout = timeout > 0 ? timeout : 6;
+      } catch (err) {
+        console.error('show_ui_timeout err:', err);
+      }
+      load(timeout);
+    }
+  }, {
     key: "init",
     value: function init() {
-      initToolbar();
       var root_div = document.createElement('div');
       root_div.id = 'bp_root';
       document.body.append(root_div);
-      // initConfig
       initConfig("#".concat(root_div.id));
       initMessage("#".concat(root_div.id));
+      // 必须在 initConfig 和 initMessage 后
+      this.loadToolbar();
       user.lazyInit();
       auth.checkLoginStatus();
       check.refresh();
@@ -4429,32 +4510,9 @@ var Main = /*#__PURE__*/function () {
   if (document.getElementsByClassName('error-text')[0]) {
     return;
   }
-
-  // 处理 initToolbar 白屏问题，渲染后执行
-  var running = false;
-  var timer;
-  var run = function run(timeout) {
-    setTimeout(function () {
-      if (running) {
-        return;
-      }
-      running = true;
-      if (timeout === 0) {
-        clearInterval(timer);
-      } else {
-        console.warn('waiting timeout...');
-      }
-      new main().run();
-    }, timeout * 1000);
-  };
-  timer = setInterval(function () {
-    var search_form = document.getElementById('nav-searchform');
-    if (search_form && !running) {
-      run(0);
-    }
-  }, 500);
-  run(5);
-  run(10);
+  setTimeout(function () {
+    new main().run();
+  }, 0);
 })();
 /******/ })()
 ;

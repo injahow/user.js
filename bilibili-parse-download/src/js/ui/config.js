@@ -16,17 +16,22 @@ const config = {
     host_key: '0',
     replace_force: '0',
     download_type: 'web',
+    // rpc
     rpc_domain: 'http://localhost',
     rpc_port: '16800',
     rpc_token: '',
     rpc_dir: '',
+    // aria2
     aria2c_connection_level: 'min',
     aria2c_addition_parameters: '',
     ariang_host: 'http://ariang.injahow.com/',
     auto_download: '0',
     video_quality: '0',
     danmaku_speed: '15',
-    danmaku_fontsize: '22'
+    danmaku_fontsize: '22',
+    show_ui_timeout: '6',
+    show_ui_confirm: '0',
+    show_ui_confirm_load_force: '0'
 }
 
 const default_config = Object.assign({}, config) // 浅拷贝
@@ -64,7 +69,7 @@ const videoQualityMap = {
     112: '1080P 高码率',
     80: '1080P 高清',
     74: '720P 60帧',
-    64: '720P 高清',
+    64: '720P 准高清',
     48: '720P 高清(MP4)',
     32: '480P 清晰',
     16: '360P 流畅'
@@ -204,6 +209,26 @@ function initConfig(el) {
     } else {
         $('body').append(config_html)
     }
+    // ui事件
+    const tabLinks = document.querySelectorAll('#bp_config .tab-link')
+    const panels = document.querySelectorAll('#bp_config .tab-panel')
+    const showTab = (id) => {
+        panels.forEach(p => p.style.display = 'none');
+        document.querySelectorAll('#bp_config .tab-link').forEach(t => t.classList.remove('active'))
+        const panel = document.querySelector(`#bp_config .tab-panel[data-id="${id}"]`)
+        if (panel) panel.style.display = 'block'
+        const link = document.querySelector(`#bp_config .tab-link[data-tab="${id}"]`)
+        if (link) link.classList.add('active')
+    }
+    tabLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const tabId = link.getAttribute('data-tab')
+            showTab(tabId)
+        })
+    })
+    // 默认显示基础设置
+    showTab('basic')
+
     // 同步数据
     const config_str = store.get('config_str')
     try {
@@ -224,7 +249,7 @@ function initConfig(el) {
         })
     }
     for (const k in config_functions) {
-        const e = $(`#${k}`)[0] // a && button
+        const e = $(`#${k}`)[0] // a | button
         !!e && (e.onclick = config_functions[k])
     }
     // 渲染数据
