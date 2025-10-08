@@ -52,7 +52,7 @@ const filename_npm_mapping = {
     'flv.min.js': 'dist/flv.min.js',
     'DPlayer.min.js': 'dist/DPlayer.min.js'
 }
-const cdn_support_mapping = {
+const cdn_supports_mapping = {
     '@ffmpeg/ffmpeg': ['unpkg', 'jsdelivr']
 }
 
@@ -77,16 +77,16 @@ const cdn_map = {
 }
 
 const urls = ({ name, ver, filename, cdn_keys }) => {
-    let support = cdn_support_mapping[name]
-    if (support) {
-        cdn_keys = cdn_keys ? cdn_keys.filter(key => key in cdn_map && support.includes(key)) : support.filter(key => key in cdn_map)
+    const supports = cdn_supports_mapping[name]
+    if (supports) {
+        cdn_keys = cdn_keys ? cdn_keys.filter(key => key in cdn_map && supports.includes(key)) : supports.filter(key => key in cdn_map)
     } else {
         cdn_keys = cdn_keys ? cdn_keys.filter(key => key in cdn_map) : Object.keys(cdn_map)
     }
     return cdn_keys.map(k => cdn_map[k](name, ver, filename))
 }
 
-// 使用iframe异步加载，隔离window
+// iframe隔离加载（部分不兼容）
 const runtime_div = document.createElement('div')
 runtime_div.id = 'bp_runtime_div'
 runtime_div.style.display = 'none'
@@ -176,7 +176,7 @@ const initLocal = (name, ver, filename, getModule, handleScript) => {
 }
 
 export let JSZip
-initIframe('jszip', '3.10.0', 'jszip.min.js', w => JSZip = w.JSZip)
+initLocal('jszip', '3.10.0', 'jszip.min.js', w => JSZip = w.JSZip)
 export let flvjs
 initLocal('flv.js', '1.6.2', 'flv.min.js', w => flvjs = w.flvjs)
 export let DPlayer
@@ -185,9 +185,9 @@ initLocal('dplayer', '1.26.0', 'DPlayer.min.js',
     script => script.replace('"About author"', '"About DIYgod"')
 )
 export let QRCode
-initIframe('qrcodejs', '1.0.0', 'qrcode.min.js', w => QRCode = w.QRCode)
+initLocal('qrcodejs', '1.0.0', 'qrcode.min.js', w => QRCode = w.QRCode)
 export let md5
-initIframe('blueimp-md5', '2.19.0', 'js/md5.min.js', w => md5 = w.md5)
+initLocal('blueimp-md5', '2.19.0', 'js/md5.min.js', w => md5 = w.md5)
 export let FFmpegWASM
 initLocal('@ffmpeg/ffmpeg', '0.12.15', 'dist/umd/ffmpeg.js',
     w => FFmpegWASM = w.FFmpegWASM,
