@@ -1,6 +1,6 @@
 {
   "name": "bpd-user-js",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "description": "a script to download bilibli video",
   "main": "dist/bilibili-parse-download.user.js",
   "files": [

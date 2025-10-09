@@ -118,7 +118,7 @@ function download_all() {
         </div>
         <div style="margin:2% 0;">
             <label>保存目录:</label>
-            <input id="dl_rpc_dir" placeholder="${rpc_type() === 'post' ? config.rpc_dir : config.ariang_dir || '为空使用默认目录'}" style="width:80%;"/>
+            <input id="dl_rpc_dir" placeholder="${(rpc_type() === 'post' ? config.rpc_dir : config.ariang_dir) || '为空使用默认目录'}" style="width:80%;"/>
         </div>
         <b>
             <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>
@@ -161,12 +161,12 @@ function download_all() {
         }
 
         if (dl_video || dl_audio) {
-            // 下载视频或音频
-            download_videos(video_tasks, 0, [])
+            // 1.下载视频或音频
+            download_videos([...video_tasks])
         }
 
         if (dl_subtitle) {
-            // 下载字幕
+            // 2.下载字幕
             if (video_tasks.length === 1) {
                 download_subtitle_vtt(video_tasks[0].p, video_tasks[0].filename)
             } else {
@@ -174,7 +174,8 @@ function download_all() {
             }
         }
 
-        if (dl_danmaku) { // 下载弹幕
+        if (dl_danmaku) {
+            // 3.下载弹幕
             if (video_tasks.length === 1) {
                 download_danmaku_ass(video_tasks[0].cid, video_tasks[0].filename)
             } else {
@@ -186,11 +187,7 @@ function download_all() {
     // 处理默认值
     $('#dl_format').val(config.format)
     $('#dl_quality').val(q)
-
-    // 绑定操作事件
-    $('body').on('change', '#dl_format', function () {
-        const format = $(this).val()
-        const dl_audio = $('#dl_audio').is(':checked')
+    const dl_format_change_evt = (format) => {
         if (format === 'dash') {
             $('#dl_audio').prop('checked', true).parent().css('color', 'rgba(0,0,0,1)')
             $('#dl_audio').prop('disabled', false)
@@ -198,6 +195,13 @@ function download_all() {
             $('#dl_audio').prop('checked', false).parent().css('color', 'rgba(0,0,0,0.5)')
             $('#dl_audio').prop('disabled', true)
         }
+    }
+    dl_format_change_evt(config.format)
+
+    // 绑定操作事件
+    $('body').on('change', '#dl_format', function () {
+        const format = $(this).val()
+        dl_format_change_evt(format)
     })
 
     // 处理input颜色
@@ -208,117 +212,119 @@ function download_all() {
             $(this).parent().css('color', 'rgba(0,0,0,0.5)')
         }
     })
-
-    function download_videos(video_tasks, i, videos) { // 递归请求下载
-
-        if (!video_tasks.length) {
-            return
-        }
-
-        if (i >= video_tasks.length) {
-            MessageBox.alert('视频地址请求完成！')
-            if (rpc_type() === 'post') {
-                if (videos.length > 0) {
-                    download_rpc_post_all(videos)
-                    videos.length = 0
-                }
-            }
-            // one by one -> null
-            return
-        }
-
-        const task = video_tasks[i]
-        const msg = `第${i + 1}（${i + 1}/${video_tasks.length}）个视频`
-        MessageBox.alert(`${msg}：获取中...`)
-
-        const success = res => {
-
-            setTimeout(() => {
-                download_videos(video_tasks, ++i, videos)
-            }, 4000)
-
-            if (res.code) {
-                return
-            }
-
-            Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
-            MessageBox.alert(`${msg}：获取成功！`)
-
-            const [url, type, video_url, audio_url] = [
-                res.url,
-                rpc_type(),
-                res.video,
-                res.audio
-            ]
-
-            // todo: 优化
-            if (type === 'post') {
-                if (task.format === 'dash') { // 处理dash
-                    if (task.dl_video) {
-                        videos.push({
-                            url: video_url,
-                            filename: task.filename + format(video_url),
-                            rpc_dir: task.rpc_dir
-                        })
-                    }
-                    if (task.dl_audio) {
-                        videos.push({
-                            url: audio_url,
-                            filename: task.filename + '.m4a',
-                            rpc_dir: task.rpc_dir
-                        })
-                    }
-                } else {
-                    videos.push({
-                        url: url,
-                        filename: task.filename + format(url),
-                        rpc_dir: task.rpc_dir
-                    })
-                }
-
-                if (videos.length > 3) {
-                    download_rpc_post_all(videos)
-                    videos.length = 0
-                }
-            } else if (type === 'ariang') {
-                if (task.format === 'dash') { // 处理dash
-                    const send_videos = []
-                    if (task.dl_video) {
-                        send_videos.push({
-                            url: video_url,
-                            filename: task.filename + format(video_url),
-                            rpc_dir: task.rpc_dir
-                        })
-                    }
-                    if (task.dl_audio) {
-                        send_videos.push({
-                            url: audio_url,
-                            filename: task.filename + '.m4a',
-                            rpc_dir: task.rpc_dir
-                        })
-                    }
-                    download_rpc_ariang(send_videos)
-                } else {
-                    download_rpc_ariang({
-                        url: url,
-                        filename: task.filename + format(url),
-                        rpc_dir: task.rpc_dir
-                    })
-                }
-            }
-        }
-
-        const error = () => {
-            download_videos(video_tasks, ++i, videos)
-        }
-
-        api.get_urls(task.p, task.q, task.format, success, error)
-    }
 }
 
 /**
  * rpc
  */
+function download_videos_rpc(videos, rpc_type) {
+    if (rpc_type === 'post') {
+        download_rpc_post_all(videos)
+    } else if (rpc_type === 'ariang') {
+        download_rpc_ariang(...videos)
+    } else {
+        console.error('未知RPC类型: ' + rpc_type)
+    }
+}
+
+/**
+ * 批量下载视频或音频，递归请求
+ * 注意：rpc_type() 在下载过程中可能变化
+ * @param {Array<Object>} video_tasks - 视频任务列表，每个任务包含视频参数（如 p, q, format, filename, rpc_dir, dl_video, dl_audio）
+ * @param {number} [i=0] - 当前处理的视频任务索引，递归时递增
+ * @param {Array<Object>} [videos=[]] - 已收集待下载的视频/音频信息
+ * @returns
+ */
+function download_videos(video_tasks, i = 0, videos = []) {
+
+    if (!video_tasks.length) {
+        return
+    }
+
+    if (i >= video_tasks.length) {
+        // 兜底处理，确认任务已清空
+        const type = rpc_type()
+        if (type === 'post') {
+            if (videos.length > 0) {
+                download_rpc_post_all(videos)
+                videos.length = 0
+            }
+        } else if (type === 'ariang') {
+            // 中途修改rpc_type时，可能出现遗漏
+            if (videos.length > 0) {
+                download_rpc_ariang(...videos)
+                videos.length = 0
+            }
+        }
+        MessageBox.alert('视频地址请求完成！')
+        return
+    }
+
+    const task = video_tasks[i]
+    const msg = `第${i + 1}（${i + 1}/${video_tasks.length}）个视频`
+    MessageBox.alert(`${msg}：获取中...`)
+
+    const success = res => {
+
+        setTimeout(() => {
+            download_videos(video_tasks, i + 1, videos)
+        }, 4000)
+
+        if (res.code) {
+            return
+        }
+
+        Message.success('请求成功' + (res.times ? `<br/>今日剩余请求次数${res.times}` : ''))
+        MessageBox.alert(`${msg}：获取成功！`)
+
+        const [url, type, video_url, audio_url] = [
+            res.url,
+            rpc_type(),
+            res.video,
+            res.audio
+        ]
+
+        if (task.format === 'dash') { // 处理dash
+            if (task.dl_video) {
+                videos.push({
+                    url: video_url,
+                    filename: task.filename + format(video_url),
+                    rpc_dir: task.rpc_dir
+                })
+            }
+            if (task.dl_audio) {
+                videos.push({
+                    url: audio_url,
+                    filename: task.filename + '.m4a',
+                    rpc_dir: task.rpc_dir
+                })
+            }
+        } else {
+            videos.push({
+                url: url,
+                filename: task.filename + format(url),
+                rpc_dir: task.rpc_dir
+            })
+        }
+
+        if (type === 'post') {
+            if (videos.length > 3) {
+                download_videos_rpc(videos, type)
+                videos.length = 0
+            }
+        } else if (type === 'ariang') {
+            download_videos_rpc(videos, type)
+            videos.length = 0
+        }
+    }
+
+    const error = () => {
+        download_videos(video_tasks, i + 1, videos)
+    }
+
+    api.get_urls(task.p, task.q, task.format, success, error)
+}
+
 function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
     if (!(data instanceof Array)) {
         data = data instanceof Object ? [data] : []
@@ -359,11 +365,11 @@ function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
     }
 }
 
-function download_rpc(url, filename, type = 'post') {
+function download_rpc(url, filename, rpc_dir, type = 'post') {
     if (type === 'post') {
-        download_rpc_post({ url, filename })
+        download_rpc_post({ url, filename, rpc_dir })
     } else if (type === 'ariang') {
-        download_rpc_ariang({ url, filename })
+        download_rpc_ariang({ url, filename, rpc_dir })
     }
 }
 
@@ -800,7 +806,7 @@ function download(url, filename, type) {
     if (type === 'blob') {
         download_blob(url, filename)
     } else if (type === 'rpc') {
-        download_rpc(url, filename, rpc_type())
+        download_rpc(url, filename, null, rpc_type())
     }
 }
 

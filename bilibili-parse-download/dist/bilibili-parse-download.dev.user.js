@@ -2747,7 +2747,7 @@ function download_all() {
   } finally {
     _iterator.f();
   }
-  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"mp4\" selected>MP4</option>\n                <option value=\"flv\">FLV</option>\n                <option value=\"dash\">DASH</option>\n            </select>\n            &nbsp;&nbsp;\u65E0\u6CD5\u8BBE\u7F6EMP4\u6E05\u6670\u5EA6\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <span style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_video\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_video\">\u89C6\u9891</label>\n            </span>\n            <span style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_audio\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_audio\">\u97F3\u9891</label>\n            </span>\n            <span style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_subtitle\" name=\"dl_option\">\n                <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            </span>\n            <span style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_danmaku\" name=\"dl_option\">\n                <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n            </span><br/>\n            <small>\u63D0\u793A\uFF1A\u4E0B\u8F7D\u97F3\u9891\u9700\u8981\u4FEE\u6539\u89C6\u9891\u683C\u5F0F\u4E3ADASH</small>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4FDD\u5B58\u76EE\u5F55:</label>\n            <input id=\"dl_rpc_dir\" placeholder=\"").concat(rpc_type() === 'post' ? config_config.rpc_dir : config_config.ariang_dir || '为空使用默认目录', "\" style=\"width:80%;\"/>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
+  var msg = '' + "<div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u683C\u5F0F:</label>\n            <select id=\"dl_format\">\n                <option value=\"mp4\" selected>MP4</option>\n                <option value=\"flv\">FLV</option>\n                <option value=\"dash\">DASH</option>\n            </select>\n            &nbsp;&nbsp;\u65E0\u6CD5\u8BBE\u7F6EMP4\u6E05\u6670\u5EA6\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u89C6\u9891\u8D28\u91CF:</label>\n            <select id=\"dl_quality\">\n                ".concat(option_support_html, "\n            </select>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4E0B\u8F7D\u9009\u62E9:</label>\n            <span style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_video\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_video\">\u89C6\u9891</label>\n            </span>\n            <span style=\"color:rgba(0,0,0,1);\">\n                <input type=\"checkbox\" id=\"dl_audio\" name=\"dl_option\" checked=\"checked\">\n                <label for=\"dl_audio\">\u97F3\u9891</label>\n            </span>\n            <span style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_subtitle\" name=\"dl_option\">\n                <label for=\"dl_subtitle\">\u5B57\u5E55</label>\n            </span>\n            <span style=\"color:rgba(0,0,0,0.5);\">\n                <input type=\"checkbox\" id=\"dl_danmaku\" name=\"dl_option\">\n                <label for=\"dl_danmaku\">\u5F39\u5E55</label>\n            </span><br/>\n            <small>\u63D0\u793A\uFF1A\u4E0B\u8F7D\u97F3\u9891\u9700\u8981\u4FEE\u6539\u89C6\u9891\u683C\u5F0F\u4E3ADASH</small>\n        </div>\n        <div style=\"margin:2% 0;\">\n            <label>\u4FDD\u5B58\u76EE\u5F55:</label>\n            <input id=\"dl_rpc_dir\" placeholder=\"").concat((rpc_type() === 'post' ? config_config.rpc_dir : config_config.ariang_dir) || '为空使用默认目录', "\" style=\"width:80%;\"/>\n        </div>\n        <b>\n            <span style=\"color:red;\">\u4E3A\u907F\u514D\u8BF7\u6C42\u88AB\u62E6\u622A\uFF0C\u8BBE\u7F6E\u4E86\u5EF6\u65F6\u4E14\u4E0D\u652F\u6301\u4E0B\u8F7D\u65E0\u6CD5\u64AD\u653E\u7684\u89C6\u9891\uFF1B\u8BF7\u52FF\u9891\u7E41\u4E0B\u8F7D\u8FC7\u591A\u89C6\u9891\uFF0C\u53EF\u80FD\u89E6\u53D1\u98CE\u63A7\u5BFC\u81F4\u4E0D\u53EF\u518D\u4E0B\u8F7D\uFF01</span>\n        </b><br />\n        <div style=\"height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);\">\n            ").concat(video_html, "\n        </div>\n        <div style=\"margin:2% 0;\">\n            <button id=\"checkbox_btn\">\u5168\u9009</button>\n        </div>");
   MessageBox.confirm(msg, function () {
     // 获取参数
     var _ref2 = [$('#dl_video').is(':checked'), $('#dl_audio').is(':checked'), $('#dl_subtitle').is(':checked'), $('#dl_danmaku').is(':checked'), $('#dl_format').val(), $('#dl_quality').val() || q, $('#dl_rpc_dir').val()],
@@ -2777,11 +2777,11 @@ function download_all() {
       });
     }
     if (dl_video || dl_audio) {
-      // 下载视频或音频
-      download_videos(video_tasks, 0, []);
+      // 1.下载视频或音频
+      download_videos([].concat(video_tasks));
     }
     if (dl_subtitle) {
-      // 下载字幕
+      // 2.下载字幕
       if (video_tasks.length === 1) {
         download_subtitle_vtt(video_tasks[0].p, video_tasks[0].filename);
       } else {
@@ -2789,7 +2789,7 @@ function download_all() {
       }
     }
     if (dl_danmaku) {
-      // 下载弹幕
+      // 3.下载弹幕
       if (video_tasks.length === 1) {
         download_danmaku_ass(video_tasks[0].cid, video_tasks[0].filename);
       } else {
@@ -2801,11 +2801,7 @@ function download_all() {
   // 处理默认值
   $('#dl_format').val(config_config.format);
   $('#dl_quality').val(q);
-
-  // 绑定操作事件
-  $('body').on('change', '#dl_format', function () {
-    var format = $(this).val();
-    var dl_audio = $('#dl_audio').is(':checked');
+  var dl_format_change_evt = function dl_format_change_evt(format) {
     if (format === 'dash') {
       $('#dl_audio').prop('checked', true).parent().css('color', 'rgba(0,0,0,1)');
       $('#dl_audio').prop('disabled', false);
@@ -2813,6 +2809,13 @@ function download_all() {
       $('#dl_audio').prop('checked', false).parent().css('color', 'rgba(0,0,0,0.5)');
       $('#dl_audio').prop('disabled', true);
     }
+  };
+  dl_format_change_evt(config_config.format);
+
+  // 绑定操作事件
+  $('body').on('change', '#dl_format', function () {
+    var format = $(this).val();
+    dl_format_change_evt(format);
   });
 
   // 处理input颜色
@@ -2823,108 +2826,108 @@ function download_all() {
       $(this).parent().css('color', 'rgba(0,0,0,0.5)');
     }
   });
-  function download_videos(video_tasks, i, videos) {
-    // 递归请求下载
-
-    if (!video_tasks.length) {
-      return;
-    }
-    if (i >= video_tasks.length) {
-      MessageBox.alert('视频地址请求完成！');
-      if (rpc_type() === 'post') {
-        if (videos.length > 0) {
-          download_rpc_post_all(videos);
-          videos.length = 0;
-        }
-      }
-      // one by one -> null
-      return;
-    }
-    var task = video_tasks[i];
-    var msg = "\u7B2C".concat(i + 1, "\uFF08").concat(i + 1, "/").concat(video_tasks.length, "\uFF09\u4E2A\u89C6\u9891");
-    MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
-    var success = function success(res) {
-      setTimeout(function () {
-        download_videos(video_tasks, ++i, videos);
-      }, 4000);
-      if (res.code) {
-        return;
-      }
-      message_Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
-      MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
-      var _ref3 = [res.url, rpc_type(), res.video, res.audio],
-        url = _ref3[0],
-        type = _ref3[1],
-        video_url = _ref3[2],
-        audio_url = _ref3[3];
-
-      // todo: 优化
-      if (type === 'post') {
-        if (task.format === 'dash') {
-          // 处理dash
-          if (task.dl_video) {
-            videos.push({
-              url: video_url,
-              filename: task.filename + format(video_url),
-              rpc_dir: task.rpc_dir
-            });
-          }
-          if (task.dl_audio) {
-            videos.push({
-              url: audio_url,
-              filename: task.filename + '.m4a',
-              rpc_dir: task.rpc_dir
-            });
-          }
-        } else {
-          videos.push({
-            url: url,
-            filename: task.filename + format(url),
-            rpc_dir: task.rpc_dir
-          });
-        }
-        if (videos.length > 3) {
-          download_rpc_post_all(videos);
-          videos.length = 0;
-        }
-      } else if (type === 'ariang') {
-        if (task.format === 'dash') {
-          // 处理dash
-          var send_videos = [];
-          if (task.dl_video) {
-            send_videos.push({
-              url: video_url,
-              filename: task.filename + format(video_url),
-              rpc_dir: task.rpc_dir
-            });
-          }
-          if (task.dl_audio) {
-            send_videos.push({
-              url: audio_url,
-              filename: task.filename + '.m4a',
-              rpc_dir: task.rpc_dir
-            });
-          }
-          download_rpc_ariang(send_videos);
-        } else {
-          download_rpc_ariang({
-            url: url,
-            filename: task.filename + format(url),
-            rpc_dir: task.rpc_dir
-          });
-        }
-      }
-    };
-    var error = function error() {
-      download_videos(video_tasks, ++i, videos);
-    };
-    api.get_urls(task.p, task.q, task.format, success, error);
-  }
 }
 
 /**
  * rpc
  */
+function download_videos_rpc(videos, rpc_type) {
+  if (rpc_type === 'post') {
+    download_rpc_post_all(videos);
+  } else if (rpc_type === 'ariang') {
+    download_rpc_ariang.apply(void 0, download_toConsumableArray(videos));
+  } else {
+    console.error('未知RPC类型: ' + rpc_type);
+  }
+}
+
+/**
+ * 批量下载视频或音频，递归请求
+ * 注意：rpc_type() 在下载过程中可能变化
+ * @param {Array<Object>} video_tasks - 视频任务列表，每个任务包含视频参数（如 p, q, format, filename, rpc_dir, dl_video, dl_audio）
+ * @param {number} [i=0] - 当前处理的视频任务索引，递归时递增
+ * @param {Array<Object>} [videos=[]] - 已收集待下载的视频/音频信息
+ * @returns
+ */
+function download_videos(video_tasks) {
+  var i = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var videos = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  if (!video_tasks.length) {
+    return;
+  }
+  if (i >= video_tasks.length) {
+    // 确认任务已清空
+    var type = rpc_type();
+    if (type === 'post') {
+      if (videos.length > 0) {
+        download_rpc_post_all(videos);
+        videos.length = 0;
+      }
+    } else if (type === 'ariang') {
+      // 中途修改rpc_type时，可能出现遗漏
+      if (videos.length > 0) {
+        download_rpc_ariang.apply(void 0, download_toConsumableArray(videos));
+        videos.length = 0;
+      }
+    }
+    MessageBox.alert('视频地址请求完成！');
+    return;
+  }
+  var task = video_tasks[i];
+  var msg = "\u7B2C".concat(i + 1, "\uFF08").concat(i + 1, "/").concat(video_tasks.length, "\uFF09\u4E2A\u89C6\u9891");
+  MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u4E2D..."));
+  var success = function success(res) {
+    setTimeout(function () {
+      download_videos(video_tasks, i + 1, videos);
+    }, 4000);
+    if (res.code) {
+      return;
+    }
+    message_Message.success('请求成功' + (res.times ? "<br/>\u4ECA\u65E5\u5269\u4F59\u8BF7\u6C42\u6B21\u6570".concat(res.times) : ''));
+    MessageBox.alert("".concat(msg, "\uFF1A\u83B7\u53D6\u6210\u529F\uFF01"));
+    var _ref3 = [res.url, rpc_type(), res.video, res.audio],
+      url = _ref3[0],
+      type = _ref3[1],
+      video_url = _ref3[2],
+      audio_url = _ref3[3];
+    if (task.format === 'dash') {
+      // 处理dash
+      if (task.dl_video) {
+        videos.push({
+          url: video_url,
+          filename: task.filename + format(video_url),
+          rpc_dir: task.rpc_dir
+        });
+      }
+      if (task.dl_audio) {
+        videos.push({
+          url: audio_url,
+          filename: task.filename + '.m4a',
+          rpc_dir: task.rpc_dir
+        });
+      }
+    } else {
+      videos.push({
+        url: url,
+        filename: task.filename + format(url),
+        rpc_dir: task.rpc_dir
+      });
+    }
+    if (type === 'post') {
+      if (videos.length > 3) {
+        download_videos_rpc(videos, type);
+        videos.length = 0;
+      }
+    } else if (type === 'ariang') {
+      download_videos_rpc(videos, type);
+      videos.length = 0;
+    }
+  };
+  var error = function error() {
+    download_videos(video_tasks, i + 1, videos);
+  };
+  api.get_urls(task.p, task.q, task.format, success, error);
+}
 function get_rpc_post(data) {
   // [...{ url, filename, rpc_dir }]
   if (!(data instanceof Array)) {
@@ -2961,17 +2964,19 @@ function get_rpc_post(data) {
     }))
   };
 }
-function download_rpc(url, filename) {
-  var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'post';
+function download_rpc(url, filename, rpc_dir) {
+  var type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'post';
   if (type === 'post') {
     download_rpc_post({
       url: url,
-      filename: filename
+      filename: filename,
+      rpc_dir: rpc_dir
     });
   } else if (type === 'ariang') {
     download_rpc_ariang({
       url: url,
-      filename: filename
+      filename: filename,
+      rpc_dir: rpc_dir
     });
   }
 }
@@ -3418,7 +3423,7 @@ function download(url, filename, type) {
   if (type === 'blob') {
     download_blob(url, filename);
   } else if (type === 'rpc') {
-    download_rpc(url, filename, rpc_type());
+    download_rpc(url, filename, null, rpc_type());
   }
 }
 var Download = {
@@ -4451,7 +4456,7 @@ var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.8.1", " ").concat("d1dbaa5", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.8.2", " ").concat("3a94128", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   main_createClass(Main, [{
     key: "loadToolbar",
