@@ -3004,7 +3004,7 @@ function download_rpc_post_all(videos) {
  * AriaNg
  */
 function get_ariang_set_hash(rpc) {
-  return rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace('://', '/'), "/").concat(rpc.port).concat(rpc.path).concat(window.btoa(rpc.token)) : '';
+  return rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace('://', '/'), "/").concat(rpc.port).concat(rpc.path, "/").concat(window.btoa(rpc.token)) : '';
 }
 function open_ariang(rpc) {
   var hash_tag = rpc ? get_ariang_set_hash(rpc) : '';
@@ -4451,7 +4451,7 @@ var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.8.0", " ").concat("9389409", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.8.1", " ").concat("d1dbaa5", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   main_createClass(Main, [{
     key: "loadToolbar",

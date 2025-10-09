@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.8.0
+// @version       2.8.1
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -3269,7 +3269,7 @@
         }
     }
     function get_ariang_set_hash(rpc) {
-        return rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port).concat(rpc.path).concat(window.btoa(rpc.token)) : "";
+        return rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port).concat(rpc.path, "/").concat(window.btoa(rpc.token)) : "";
     }
     function open_ariang(rpc) {
         var hash_tag = rpc ? get_ariang_set_hash(rpc) : "", url = config_config.ariang_host + hash_tag, a = document.createElement("a");
@@ -4299,7 +4299,7 @@
         function Main() {
             !function main_classCallCheck(a, n) {
                 if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.8.0", " ").concat("9389409", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.8.1", " ").concat("d1dbaa5", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(e, r, t) {
             return r && main_defineProperties(e.prototype, r), t && main_defineProperties(e, t), 

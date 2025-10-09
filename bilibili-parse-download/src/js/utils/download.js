@@ -397,7 +397,7 @@ function download_rpc_post_all(videos) {
  */
 function get_ariang_set_hash(rpc) {
     return rpc
-        ? `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}${rpc.path}${window.btoa(rpc.token)}`
+        ? `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}${rpc.path}/${window.btoa(rpc.token)}`
         : ''
 }
 
