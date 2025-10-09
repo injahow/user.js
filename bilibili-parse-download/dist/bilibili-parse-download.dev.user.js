@@ -3515,6 +3515,7 @@ var config_functions = {
           Download.open_ariang({
             domain: config_config.rpc_domain,
             port: config_config.rpc_port,
+            path: config_config.rpc_path,
             token: config_config.rpc_token
           });
         });
@@ -4391,7 +4392,7 @@ var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.7", " ").concat("ed8e9a7", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.7.8", " ").concat("928ea2a", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   main_createClass(Main, [{
     key: "loadToolbar",

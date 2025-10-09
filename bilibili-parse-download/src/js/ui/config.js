@@ -130,6 +130,7 @@ const config_functions = {
                         Download.open_ariang({
                             domain: config.rpc_domain,
                             port: config.rpc_port,
+                            path: config.rpc_path,
                             token: config.rpc_token
                         })
                     }
