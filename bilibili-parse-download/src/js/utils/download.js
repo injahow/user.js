@@ -282,20 +282,22 @@ function download_all() {
                 }
             } else if (type === 'ariang') {
                 if (task.format === 'dash') { // 处理dash
+                    const send_videos = []
                     if (task.dl_video) {
-                        download_rpc_ariang({
+                        send_videos.push({
                             url: video_url,
                             filename: task.filename + format(video_url),
                             rpc_dir: task.rpc_dir
                         })
                     }
                     if (task.dl_audio) {
-                        download_rpc_ariang({
+                        send_videos.push({
                             url: audio_url,
                             filename: task.filename + '.m4a',
                             rpc_dir: task.rpc_dir
                         })
                     }
+                    download_rpc_ariang(send_videos)
                 } else {
                     download_rpc_ariang({
                         url: url,
