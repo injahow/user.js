@@ -189,6 +189,23 @@ const config_functions = {
         MessageBox.confirm('进行授权之后在远程请求时拥有用户账号原有的权限，例如能够获取用户已经付费或承包的番剧，是否需要授权？', () => {
             auth.login()
         })
+    },
+    ariang_sync_config() {
+        const rpc = {
+            domain: config.rpc_domain,
+            port: config.rpc_port,
+            path: config.rpc_path,
+            token: config.rpc_token
+        }
+
+        const ariang_window = window.bp_aria2_window
+        if (ariang_window && !ariang_window.closed) {
+            ariang_window.location.href = config.ariang_host + Download.get_ariang_set_hash(rpc)
+            Message.info('已同步配置')
+            return
+        }
+
+        Download.open_ariang(rpc)
     }
 }
 

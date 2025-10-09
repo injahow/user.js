@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.7.8
+// @version       2.8.0
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -3268,11 +3268,14 @@
             }), message_Message_info("发送RPC下载请求");
         }
     }
+    function get_ariang_set_hash(rpc) {
+        return rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port).concat(rpc.path).concat(window.btoa(rpc.token)) : "";
+    }
     function open_ariang(rpc) {
-        var hash_tag = rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port).concat(rpc.path).concat(window.btoa(rpc.token)) : "", url = config_config.ariang_host + hash_tag, a = document.createElement("a");
-        a.style.display = "none", a.onclick = function() {
+        var hash_tag = rpc ? get_ariang_set_hash(rpc) : "", url = config_config.ariang_host + hash_tag, a = document.createElement("a");
+        return a.style.display = "none", a.onclick = function() {
             window.bp_aria2_window = window.open(url);
-        }, document.body.appendChild(a), a.click(), document.body.removeChild(a);
+        }, document.body.appendChild(a), a.click(), document.body.removeChild(a), window.bp_aria2_window;
     }
     function download_rpc_ariang() {
         for (var _len = arguments.length, videos = new Array(_len), _key = 0; _key < _len; _key++) videos[_key] = arguments[_key];
@@ -3491,7 +3494,7 @@
             } finally {
                 _iterator.f();
             }
-            var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="mp4" selected>MP4</option>\n                <option value="flv">FLV</option>\n                <option value="dash">DASH</option>\n            </select>\n            &nbsp;&nbsp;无法设置MP4清晰度\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <label style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video">视频</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </label>\n            <label style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </label>\n        </div>\n        <div style="margin:2% 0;">\n            <label>保存目录:</label>\n            <input id="dl_rpc_dir" placeholder="').concat("post" === rpc_type() ? config_config.rpc_dir : config_config.ariang_dir || "为空使用默认目录", '" style="width:80%;"/>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, '\n        </div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
+            var msg = "" + '<div style="margin:2% 0;">\n            <label>视频格式:</label>\n            <select id="dl_format">\n                <option value="mp4" selected>MP4</option>\n                <option value="flv">FLV</option>\n                <option value="dash">DASH</option>\n            </select>\n            &nbsp;&nbsp;无法设置MP4清晰度\n        </div>\n        <div style="margin:2% 0;">\n            <label>视频质量:</label>\n            <select id="dl_quality">\n                '.concat(option_support_html, '\n            </select>\n        </div>\n        <div style="margin:2% 0;">\n            <label>下载选择:</label>\n            <span style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_video" name="dl_option" checked="checked">\n                <label for="dl_video">视频</label>\n            </span>\n            <span style="color:rgba(0,0,0,1);">\n                <input type="checkbox" id="dl_audio" name="dl_option" checked="checked">\n                <label for="dl_audio">音频</label>\n            </span>\n            <span style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_subtitle" name="dl_option">\n                <label for="dl_subtitle">字幕</label>\n            </span>\n            <span style="color:rgba(0,0,0,0.5);">\n                <input type="checkbox" id="dl_danmaku" name="dl_option">\n                <label for="dl_danmaku">弹幕</label>\n            </span><br/>\n            <small>提示：下载音频需要修改视频格式为DASH</small>\n        </div>\n        <div style="margin:2% 0;">\n            <label>保存目录:</label>\n            <input id="dl_rpc_dir" placeholder="').concat("post" === rpc_type() ? config_config.rpc_dir : config_config.ariang_dir || "为空使用默认目录", '" style="width:80%;"/>\n        </div>\n        <b>\n            <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>\n        </b><br />\n        <div style="height:240px;width:100%;overflow:auto;background:rgba(0,0,0,0.1);">\n            ').concat(video_html, '\n        </div>\n        <div style="margin:2% 0;">\n            <button id="checkbox_btn">全选</button>\n        </div>');
             function download_videos(video_tasks, i, videos) {
                 if (video_tasks.length) {
                     if (i >= video_tasks.length) return MessageBox_alert("视频地址请求完成！"), void ("post" === rpc_type() && videos.length > 0 && (download_rpc_post_all(videos), 
@@ -3505,27 +3508,27 @@
                             message_Message_success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
                             MessageBox_alert("".concat(msg, "：获取成功！"));
                             var _ref3 = [ res.url, rpc_type(), res.video, res.audio ], url = _ref3[0], type = _ref3[1], video_url = _ref3[2], audio_url = _ref3[3];
-                            "post" === type ? ("dash" === task.format ? videos.push({
+                            "post" === type ? ("dash" === task.format ? (task.dl_video && videos.push({
                                 url: video_url,
                                 filename: task.filename + format(video_url),
                                 rpc_dir: task.rpc_dir
-                            }, {
+                            }), task.dl_audio && videos.push({
                                 url: audio_url,
                                 filename: task.filename + ".m4a",
                                 rpc_dir: task.rpc_dir
-                            }) : videos.push({
+                            })) : videos.push({
                                 url: url,
                                 filename: task.filename + format(url),
                                 rpc_dir: task.rpc_dir
-                            }), videos.length > 3 && (download_rpc_post_all(videos), videos.length = 0)) : "ariang" === type && ("dash" === task.format ? download_rpc_ariang({
+                            }), videos.length > 3 && (download_rpc_post_all(videos), videos.length = 0)) : "ariang" === type && ("dash" === task.format ? (task.dl_video && download_rpc_ariang({
                                 url: video_url,
                                 filename: task.filename + format(video_url),
                                 rpc_dir: task.rpc_dir
-                            }, {
+                            }), task.dl_audio && download_rpc_ariang({
                                 url: audio_url,
                                 filename: task.filename + ".m4a",
                                 rpc_dir: task.rpc_dir
-                            }) : download_rpc_ariang({
+                            })) : download_rpc_ariang({
                                 url: url,
                                 filename: task.filename + format(url),
                                 rpc_dir: task.rpc_dir
@@ -3537,27 +3540,36 @@
                 }
             }
             MessageBox_confirm(msg, function() {
-                for (var _ref2 = [ $("#dl_video").is(":checked"), $("#dl_subtitle").is(":checked"), $("#dl_danmaku").is(":checked"), $("#dl_format").val(), $("#dl_quality").val() || q, $("#dl_rpc_dir").val() ], dl_video = _ref2[0], dl_subtitle = _ref2[1], dl_danmaku = _ref2[2], dl_format = _ref2[3], dl_quality = _ref2[4], dl_rpc_dir = _ref2[5], videos = [], _i2 = 0; _i2 < total; _i2++) if ($("input#option_".concat(_i2)).is(":checked")) {
+                for (var _ref2 = [ $("#dl_video").is(":checked"), $("#dl_audio").is(":checked"), $("#dl_subtitle").is(":checked"), $("#dl_danmaku").is(":checked"), $("#dl_format").val(), $("#dl_quality").val() || q, $("#dl_rpc_dir").val() ], dl_video = _ref2[0], dl_audio = _ref2[1], dl_subtitle = _ref2[2], dl_danmaku = _ref2[3], dl_format = _ref2[4], dl_quality = _ref2[5], dl_rpc_dir = _ref2[6], video_tasks = [], _i2 = 0; _i2 < total; _i2++) if ($("input#option_".concat(_i2)).is(":checked")) {
                     var p = _i2 + 1;
-                    videos.push({
+                    video_tasks.push({
                         cid: vb.cid(p),
                         p: p,
                         q: dl_quality,
                         format: dl_format,
                         filename: vb.filename(p),
+                        dl_video: dl_video,
+                        dl_audio: dl_audio,
                         rpc_dir: dl_rpc_dir
                     });
                 }
-                dl_video && download_videos(videos, 0, []), dl_subtitle && (1 === videos.length ? download_subtitle_vtt(videos[0].p, videos[0].filename) : download_subtitle_vtt_zip([].concat(videos), new JSZip)), 
-                dl_danmaku && (1 === videos.length ? download_danmaku_ass(videos[0].cid, videos[0].filename) : download_danmaku_ass_zip([].concat(videos), new JSZip));
-            }), $("#dl_quality").val(q), $("body").on("click", 'input[name="dl_option"]', function() {
+                (dl_video || dl_audio) && download_videos(video_tasks, 0, []), dl_subtitle && (1 === video_tasks.length ? download_subtitle_vtt(video_tasks[0].p, video_tasks[0].filename) : download_subtitle_vtt_zip([].concat(video_tasks), new JSZip)), 
+                dl_danmaku && (1 === video_tasks.length ? download_danmaku_ass(video_tasks[0].cid, video_tasks[0].filename) : download_danmaku_ass_zip([].concat(video_tasks), new JSZip));
+            }), $("#dl_format").val(config_config.format), $("#dl_quality").val(q), $("body").on("change", "#dl_format", function() {
+                var format = $(this).val();
+                $("#dl_audio").is(":checked");
+                "dash" === format ? ($("#dl_audio").prop("checked", !0).parent().css("color", "rgba(0,0,0,1)"), 
+                $("#dl_audio").prop("disabled", !1)) : ($("#dl_audio").prop("checked", !1).parent().css("color", "rgba(0,0,0,0.5)"), 
+                $("#dl_audio").prop("disabled", !0));
+            }), $("body").on("click", 'input[name="dl_option"]', function() {
                 $(this).is(":checked") ? $(this).parent().css("color", "rgba(0,0,0,1)") : $(this).parent().css("color", "rgba(0,0,0,0.5)");
             });
         },
         download_danmaku_ass: download_danmaku_ass,
         download_subtitle_vtt: download_subtitle_vtt,
-        open_ariang: open_ariang
-    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px;display:block;margin-bottom:15px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="display:flex;gap:10px;height:460px"> <div style="flex-shrink:0;border-right:1px solid #ddd;padding-right:10px;overflow-y:auto"> <ul style="list-style:none;padding:0;margin:0;font-size:14px"> <li><a href="javascript:;" data-tab="basic" class="tab-link active">基本设置</a></li> <li><a href="javascript:;" data-tab="other" class="tab-link">其他设置</a></li> </ul> </div> <div id="tab-content" style="flex:1;overflow-y:auto;padding-left:10px;font-size:14px"> <div class="tab-panel" data-id="basic"> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:40%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>提示：脚本识别错误时可手动设置请求的视频质量参数</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web请求</option> <option value="aria">Aria2命令</option> <option value="blob">Blob请求</option> <option value="blob_merge">Blob合并</option> <option value="rpc">RPC接口</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:40%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label><br/> <input id="rpc_domain" placeholder="ws://192.168.1.1" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_path" placeholder="/jsonrpc" style="width:20%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%;color:transparent" onFocus="this.style.color=\'black\';" onBlur="this.style.color=\'transparent\';"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">授权说明</a> </div> </div> <div class="tab-panel" data-id="other" style="display:none"> <div style="margin:2% 0"> <label>RPC下载目录：</label> <input id="rpc_dir" placeholder="留空使用默认目录" style="width:70%"/> </div> <div style="margin:2% 0"> <label>AriaNg下载目录：</label> <input id="ariang_dir" placeholder="留空使用默认目录" style="width:70%"/> </div> <div style="margin:2% 0"> <span>[Aria2参数]</span><br/> <label>最大连接：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:40%"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:10%"/> s&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:10%"/> px&nbsp;&nbsp;&nbsp;&nbsp; <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>UI超时时间：</label> <input id="show_ui_timeout" style="width:10%"> s <small>说明：脚本初始化时，超时没有正常显示UI的检查时间，数值填写正整数</small> </div> <div style="margin:2% 0"> <label>UI加载提示：</label> <select id="show_ui_confirm"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：脚本初始化UI时，如果检测到页面异常会进行弹窗提示是否手动加载</small> </div> <div style="margin:2% 0"> <label>UI强制加载：</label> <select id="show_ui_confirm_load_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：启用UI加载超时弹窗时，自动确认强制加载UI，可能导致页面异常</small> </div> </div> </div> </div> <div style="text-align:right;margin-top:20px"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;max-width:90vw;max-height:90vh;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}#bp_config .tab-link{display:block;padding:8px 10px;margin:4px 0;border-radius:4px;color:#333;text-decoration:none;font-weight:500;transition:all .2s}#bp_config .tab-link:hover{background:#eef5ff}#bp_config .tab-link.active{background:#1e90ff;color:#fff}#bp_config small{color:#666;font-size:12px;margin-top:4px;display:block}#bp_config label{font-weight:500;min-width:60px;display:inline-block}#bp_config input,#bp_config select{padding:4px 6px;border:1px solid #ccc;border-radius:3px}#bp_config input:focus,#bp_config select:focus{border-color:#1e90ff;outline:0}</style> </div>';
+        open_ariang: open_ariang,
+        get_ariang_set_hash: get_ariang_set_hash
+    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px;display:block;margin-bottom:15px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="display:flex;gap:10px;height:460px"> <div style="flex-shrink:0;border-right:1px solid #ddd;padding-right:10px;overflow-y:auto"> <ul style="list-style:none;padding:0;margin:0;font-size:14px"> <li><a href="javascript:;" data-tab="basic" class="tab-link active">基本设置</a></li> <li><a href="javascript:;" data-tab="other" class="tab-link">其他设置</a></li> </ul> </div> <div id="tab-content" style="flex:1;overflow-y:auto;padding-left:10px;font-size:14px"> <div class="tab-panel" data-id="basic"> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:40%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>提示：脚本识别错误时可手动设置请求的视频质量参数</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web请求</option> <option value="aria">Aria2命令</option> <option value="blob">Blob请求</option> <option value="blob_merge">Blob合并</option> <option value="rpc">RPC接口</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:40%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label> <a class="setting-context" href="javascript:;" id="ariang_sync_config">同步至AriaNg</a><br/> <input id="rpc_domain" placeholder="ws://192.168.1.1" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_path" placeholder="/jsonrpc" style="width:20%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%;color:transparent" onFocus="this.style.color=\'black\';" onBlur="this.style.color=\'transparent\';"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">授权说明</a> </div> </div> <div class="tab-panel" data-id="other" style="display:none"> <div style="margin:2% 0"> <label>RPC下载目录：</label> <input id="rpc_dir" placeholder="留空使用默认目录" style="width:70%"/> </div> <div style="margin:2% 0"> <label>AriaNg下载目录：</label> <input id="ariang_dir" placeholder="留空使用默认目录" style="width:70%"/> </div> <div style="margin:2% 0"> <span>[Aria2参数]</span><br/> <label>最大连接：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:40%"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:10%"/> s&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:10%"/> px&nbsp;&nbsp;&nbsp;&nbsp; <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>UI超时时间：</label> <input id="show_ui_timeout" style="width:10%"> s <small>说明：脚本初始化时，超时没有正常显示UI的检查时间，数值填写正整数</small> </div> <div style="margin:2% 0"> <label>UI加载提示：</label> <select id="show_ui_confirm"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：脚本初始化UI时，如果检测到页面异常会进行弹窗提示是否手动加载</small> </div> <div style="margin:2% 0"> <label>UI强制加载：</label> <select id="show_ui_confirm_load_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：启用UI加载超时弹窗时，自动确认强制加载UI，可能导致页面异常</small> </div> </div> </div> </div> <div style="text-align:right;margin-top:20px"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;max-width:90vw;max-height:90vh;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}#bp_config .tab-link{display:block;padding:8px 10px;margin:4px 0;border-radius:4px;color:#333;text-decoration:none;font-weight:500;transition:all .2s}#bp_config .tab-link:hover{background:#eef5ff}#bp_config .tab-link.active{background:#1e90ff;color:#fff}#bp_config small{color:#666;font-size:12px;margin-top:4px;display:block}#bp_config label{font-weight:500;min-width:60px;display:inline-block}#bp_config input,#bp_config select{padding:4px 6px;border:1px solid #ccc;border-radius:3px}#bp_config input:focus,#bp_config select:focus{border-color:#1e90ff;outline:0}</style> </div>';
     function config_typeof(o) {
         return config_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
             return typeof o;
@@ -3727,6 +3739,17 @@
             MessageBox_confirm("进行授权之后在远程请求时拥有用户账号原有的权限，例如能够获取用户已经付费或承包的番剧，是否需要授权？", function() {
                 auth.login();
             });
+        },
+        ariang_sync_config: function ariang_sync_config() {
+            var rpc = {
+                domain: config_config.rpc_domain,
+                port: config_config.rpc_port,
+                path: config_config.rpc_path,
+                token: config_config.rpc_token
+            }, ariang_window = window.bp_aria2_window;
+            if (ariang_window && !ariang_window.closed) return ariang_window.location.href = config_config.ariang_host + Download.get_ariang_set_hash(rpc), 
+            void message_Message_info("已同步配置");
+            Download.open_ariang(rpc);
         }
     };
     function getCookie(cookieName) {
@@ -4273,7 +4296,7 @@
         function Main() {
             !function main_classCallCheck(a, n) {
                 if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.7.8", " ").concat("928ea2a", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.8.0", " ").concat("657c66c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(e, r, t) {
             return r && main_defineProperties(e.prototype, r), t && main_defineProperties(e, t), 

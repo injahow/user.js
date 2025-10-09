@@ -98,18 +98,23 @@ function download_all() {
         </div>
         <div style="margin:2% 0;">
             <label>下载选择:</label>
-            <label style="color:rgba(0,0,0,1);">
+            <span style="color:rgba(0,0,0,1);">
                 <input type="checkbox" id="dl_video" name="dl_option" checked="checked">
                 <label for="dl_video">视频</label>
-            </label>
-            <label style="color:rgba(0,0,0,0.5);">
+            </span>
+            <span style="color:rgba(0,0,0,1);">
+                <input type="checkbox" id="dl_audio" name="dl_option" checked="checked">
+                <label for="dl_audio">音频</label>
+            </span>
+            <span style="color:rgba(0,0,0,0.5);">
                 <input type="checkbox" id="dl_subtitle" name="dl_option">
                 <label for="dl_subtitle">字幕</label>
-            </label>
-            <label style="color:rgba(0,0,0,0.5);">
+            </span>
+            <span style="color:rgba(0,0,0,0.5);">
                 <input type="checkbox" id="dl_danmaku" name="dl_option">
                 <label for="dl_danmaku">弹幕</label>
-            </label>
+            </span><br/>
+            <small>提示：下载音频需要修改视频格式为DASH</small>
         </div>
         <div style="margin:2% 0;">
             <label>保存目录:</label>
@@ -127,54 +132,73 @@ function download_all() {
 
     MessageBox.confirm(msg, () => {
         // 获取参数
-        const [dl_video, dl_subtitle, dl_danmaku, dl_format, dl_quality, dl_rpc_dir] = [
+        const [dl_video, dl_audio, dl_subtitle, dl_danmaku, dl_format, dl_quality, dl_rpc_dir] = [
             $('#dl_video').is(':checked'),
+            $('#dl_audio').is(':checked'),
             $('#dl_subtitle').is(':checked'),
             $('#dl_danmaku').is(':checked'),
             $('#dl_format').val(),
             $('#dl_quality').val() || q,
             $('#dl_rpc_dir').val()
         ]
-        const videos = []
+        // video_tasks
+        const video_tasks = []
         for (let i = 0; i < total; i++) {
             if (!$(`input#option_${i}`).is(':checked')) {
                 continue
             }
             const p = i + 1
-            videos.push({
+            video_tasks.push({
                 cid: vb.cid(p),
                 p: p,
                 q: dl_quality,
                 format: dl_format,
                 filename: vb.filename(p),
+                dl_video,
+                dl_audio,
                 rpc_dir: dl_rpc_dir
             })
         }
 
-        if (dl_video) {
-            // 下载视频
-            download_videos(videos, 0, [])
+        if (dl_video || dl_audio) {
+            // 下载视频或音频
+            download_videos(video_tasks, 0, [])
         }
 
         if (dl_subtitle) {
             // 下载字幕
-            if (videos.length === 1) {
-                download_subtitle_vtt(videos[0].p, videos[0].filename)
+            if (video_tasks.length === 1) {
+                download_subtitle_vtt(video_tasks[0].p, video_tasks[0].filename)
             } else {
-                download_subtitle_vtt_zip([...videos], new JSZip())
+                download_subtitle_vtt_zip([...video_tasks], new JSZip())
             }
         }
 
         if (dl_danmaku) { // 下载弹幕
-            if (videos.length === 1) {
-                download_danmaku_ass(videos[0].cid, videos[0].filename)
+            if (video_tasks.length === 1) {
+                download_danmaku_ass(video_tasks[0].cid, video_tasks[0].filename)
             } else {
-                download_danmaku_ass_zip([...videos], new JSZip())
+                download_danmaku_ass_zip([...video_tasks], new JSZip())
             }
         }
     })
 
+    // 处理默认值
+    $('#dl_format').val(config.format)
     $('#dl_quality').val(q)
+
+    // 绑定操作事件
+    $('body').on('change', '#dl_format', function () {
+        const format = $(this).val()
+        const dl_audio = $('#dl_audio').is(':checked')
+        if (format === 'dash') {
+            $('#dl_audio').prop('checked', true).parent().css('color', 'rgba(0,0,0,1)')
+            $('#dl_audio').prop('disabled', false)
+        } else {
+            $('#dl_audio').prop('checked', false).parent().css('color', 'rgba(0,0,0,0.5)')
+            $('#dl_audio').prop('disabled', true)
+        }
+    })
 
     // 处理input颜色
     $('body').on('click', 'input[name="dl_option"]', function () {
@@ -227,17 +251,23 @@ function download_all() {
                 res.audio
             ]
 
+            // todo: 优化
             if (type === 'post') {
                 if (task.format === 'dash') { // 处理dash
-                    videos.push({
-                        url: video_url,
-                        filename: task.filename + format(video_url),
-                        rpc_dir: task.rpc_dir
-                    }, {
-                        url: audio_url,
-                        filename: task.filename + '.m4a',
-                        rpc_dir: task.rpc_dir
-                    })
+                    if (task.dl_video) {
+                        videos.push({
+                            url: video_url,
+                            filename: task.filename + format(video_url),
+                            rpc_dir: task.rpc_dir
+                        })
+                    }
+                    if (task.dl_audio) {
+                        videos.push({
+                            url: audio_url,
+                            filename: task.filename + '.m4a',
+                            rpc_dir: task.rpc_dir
+                        })
+                    }
                 } else {
                     videos.push({
                         url: url,
@@ -251,17 +281,21 @@ function download_all() {
                     videos.length = 0
                 }
             } else if (type === 'ariang') {
-
                 if (task.format === 'dash') { // 处理dash
-                    download_rpc_ariang({
-                        url: video_url,
-                        filename: task.filename + format(video_url),
-                        rpc_dir: task.rpc_dir
-                    }, {
-                        url: audio_url,
-                        filename: task.filename + '.m4a',
-                        rpc_dir: task.rpc_dir
-                    })
+                    if (task.dl_video) {
+                        download_rpc_ariang({
+                            url: video_url,
+                            filename: task.filename + format(video_url),
+                            rpc_dir: task.rpc_dir
+                        })
+                    }
+                    if (task.dl_audio) {
+                        download_rpc_ariang({
+                            url: audio_url,
+                            filename: task.filename + '.m4a',
+                            rpc_dir: task.rpc_dir
+                        })
+                    }
                 } else {
                     download_rpc_ariang({
                         url: url,
@@ -356,10 +390,17 @@ function download_rpc_post_all(videos) {
     Message.info('发送RPC下载请求')
 }
 
-function open_ariang(rpc) {
-    const hash_tag = rpc
+/**
+ * AriaNg
+ */
+function get_ariang_set_hash(rpc) {
+    return rpc
         ? `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}${rpc.path}${window.btoa(rpc.token)}`
         : ''
+}
+
+function open_ariang(rpc) {
+    const hash_tag = rpc ? get_ariang_set_hash(rpc) : ''
     const url = config.ariang_host + hash_tag
     const a = document.createElement('a')
     a.style.display = 'none'
@@ -369,6 +410,7 @@ function open_ariang(rpc) {
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
+    return window.bp_aria2_window
 }
 
 function download_rpc_ariang_send(video) {
@@ -767,5 +809,6 @@ export const Download = {
     download_all,
     download_danmaku_ass,
     download_subtitle_vtt,
-    open_ariang
+    open_ariang,
+    get_ariang_set_hash
 }
