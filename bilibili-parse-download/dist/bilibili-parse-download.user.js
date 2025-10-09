@@ -3508,7 +3508,7 @@
                             message_Message_success("请求成功" + (res.times ? "<br/>今日剩余请求次数".concat(res.times) : "")), 
                             MessageBox_alert("".concat(msg, "：获取成功！"));
                             var _ref3 = [ res.url, rpc_type(), res.video, res.audio ], url = _ref3[0], type = _ref3[1], video_url = _ref3[2], audio_url = _ref3[3];
-                            "post" === type ? ("dash" === task.format ? (task.dl_video && videos.push({
+                            if ("post" === type) "dash" === task.format ? (task.dl_video && videos.push({
                                 url: video_url,
                                 filename: task.filename + format(video_url),
                                 rpc_dir: task.rpc_dir
@@ -3520,19 +3520,22 @@
                                 url: url,
                                 filename: task.filename + format(url),
                                 rpc_dir: task.rpc_dir
-                            }), videos.length > 3 && (download_rpc_post_all(videos), videos.length = 0)) : "ariang" === type && ("dash" === task.format ? (task.dl_video && download_rpc_ariang({
-                                url: video_url,
-                                filename: task.filename + format(video_url),
-                                rpc_dir: task.rpc_dir
-                            }), task.dl_audio && download_rpc_ariang({
-                                url: audio_url,
-                                filename: task.filename + ".m4a",
-                                rpc_dir: task.rpc_dir
-                            })) : download_rpc_ariang({
+                            }), videos.length > 3 && (download_rpc_post_all(videos), videos.length = 0); else if ("ariang" === type) if ("dash" === task.format) {
+                                var send_videos = [];
+                                task.dl_video && send_videos.push({
+                                    url: video_url,
+                                    filename: task.filename + format(video_url),
+                                    rpc_dir: task.rpc_dir
+                                }), task.dl_audio && send_videos.push({
+                                    url: audio_url,
+                                    filename: task.filename + ".m4a",
+                                    rpc_dir: task.rpc_dir
+                                }), download_rpc_ariang(send_videos);
+                            } else download_rpc_ariang({
                                 url: url,
                                 filename: task.filename + format(url),
                                 rpc_dir: task.rpc_dir
-                            }));
+                            });
                         }
                     }, function error() {
                         download_videos(video_tasks, ++i, videos);
@@ -4296,7 +4299,7 @@
         function Main() {
             !function main_classCallCheck(a, n) {
                 if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.8.0", " ").concat("657c66c", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.8.0", " ").concat("9389409", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(e, r, t) {
             return r && main_defineProperties(e.prototype, r), t && main_defineProperties(e, t), 

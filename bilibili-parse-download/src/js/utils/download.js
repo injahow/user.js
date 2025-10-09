@@ -445,7 +445,7 @@ function download_rpc_ariang_send(video) {
     }, time)
 }
 
-function download_rpc_ariang(...videos) {
+function download_rpc_ariang(...videos) { // video: { url, filename, rpc_dir }
     if (videos.length == 0) {
         return
     }
