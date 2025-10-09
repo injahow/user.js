@@ -70,12 +70,12 @@
             <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small>
           </div>
           <div style="margin: 2% 0">
-            <label>RPC配置：[ 域名 : 端口 | 密钥 | 保存目录 ]</label><br />
-            <input id="rpc_domain" placeholder="ws://192.168.1.2" style="width: 25%" /> :
+            <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label><br />
+            <input id="rpc_domain" placeholder="ws://192.168.1.1" style="width: 25%" /> :
             <input id="rpc_port" placeholder="6800" style="width: 10%" /> |
+            <input id="rpc_path" placeholder="/jsonrpc" style="width: 20%" /> |
             <input id="rpc_token" placeholder="未设置不填" style="width: 15%; color: transparent;"
-              onFocus="this.style.color='black';" onBlur="this.style.color='transparent';" /> |
-            <input id="rpc_dir" placeholder="留空使用默认目录" style="width: 20%" /><br />
+              onFocus="this.style.color='black';" onBlur="this.style.color='transparent';" /><br />
             <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small>
           </div>
           <!-- 自动下载 -->
@@ -102,6 +102,15 @@
 
         <!-- 2. 其他设置 -->
         <div class="tab-panel" data-id="other" style="display:none;">
+          <!-- RPC参数 -->
+          <div style="margin: 2% 0">
+            <label>RPC下载目录：</label>
+            <input id="rpc_dir" placeholder="留空使用默认目录" style="width: 70%" />
+          </div>
+          <div style="margin: 2% 0">
+            <label>AriaNg下载目录：</label>
+            <input id="ariang_dir" placeholder="留空使用默认目录" style="width: 70%" />
+          </div>
           <!-- Aria2参数 -->
           <div style="margin: 2% 0">
             <span>[Aria2参数]</span><br />

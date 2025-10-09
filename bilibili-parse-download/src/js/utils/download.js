@@ -113,7 +113,7 @@ function download_all() {
         </div>
         <div style="margin:2% 0;">
             <label>保存目录:</label>
-            <input id="dl_rpc_dir" placeholder="${config.rpc_dir || '为空使用默认目录'}"/>
+            <input id="dl_rpc_dir" placeholder="${rpc_type() === 'post' ? config.rpc_dir : config.ariang_dir || '为空使用默认目录'}" style="width:80%;"/>
         </div>
         <b>
             <span style="color:red;">为避免请求被拦截，设置了延时且不支持下载无法播放的视频；请勿频繁下载过多视频，可能触发风控导致不可再下载！</span>
@@ -255,15 +255,18 @@ function download_all() {
                 if (task.format === 'dash') { // 处理dash
                     download_rpc_ariang({
                         url: video_url,
-                        filename: task.filename + format(video_url)
+                        filename: task.filename + format(video_url),
+                        rpc_dir: task.rpc_dir
                     }, {
                         url: audio_url,
-                        filename: task.filename + '.m4a'
+                        filename: task.filename + '.m4a',
+                        rpc_dir: task.rpc_dir
                     })
                 } else {
                     download_rpc_ariang({
                         url: url,
-                        filename: task.filename + format(url)
+                        filename: task.filename + format(url),
+                        rpc_dir: task.rpc_dir
                     })
                 }
             }
@@ -287,12 +290,13 @@ function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
     const rpc = {
         domain: config.rpc_domain,
         port: config.rpc_port,
+        path: config.rpc_path || '/jsonrpc',
         token: config.rpc_token,
         dir: config.rpc_dir
     }
 
     return {
-        url: `${rpc.domain}:${rpc.port}/jsonrpc`,
+        url: `${rpc.domain}:${rpc.port}${rpc.path}`,
         type: 'POST',
         dataType: 'json',
         data: JSON.stringify(data.map(({ url, filename, rpc_dir }) => {
@@ -354,7 +358,7 @@ function download_rpc_post_all(videos) {
 
 function open_ariang(rpc) {
     const hash_tag = rpc
-        ? `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}/jsonrpc/${window.btoa(rpc.token)}`
+        ? `#!/settings/rpc/set/${rpc.domain.replace('://', '/')}/${rpc.port}${rpc.path}${window.btoa(rpc.token)}`
         : ''
     const url = config.ariang_host + hash_tag
     const a = document.createElement('a')
@@ -376,13 +380,17 @@ function download_rpc_ariang_send(video) {
     }
     setTimeout(() => {
         const bp_aria2_window = window.bp_aria2_window
-        const task_hash = '#!/new/task?' + [
+        const cmd = [
             `url=${encodeURIComponent(window.btoa(video.url))}`,
             `out=${encodeURIComponent(video.filename)}`,
             `header=User-Agent:${window.navigator.userAgent}`,
-            `header=Referer:${window.location.href}`
-        ].join('&')
-
+            `header=Referer:${window.location.origin}`
+        ]
+        // issues#94
+        if (video.rpc_dir || config.ariang_dir) {
+            cmd.push(`dir=${encodeURIComponent(video.rpc_dir || config.ariang_dir)}`)
+        }
+        const task_hash = '#!/new/task?' + cmd.join('&')
         if (bp_aria2_window && !bp_aria2_window.closed) {
             bp_aria2_window.location.href = config.ariang_host + task_hash
             Message.success('发送RPC请求')

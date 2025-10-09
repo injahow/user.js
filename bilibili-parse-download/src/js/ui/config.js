@@ -20,7 +20,9 @@ const config = {
     rpc_domain: 'http://localhost',
     rpc_port: '16800',
     rpc_token: '',
+    rpc_path: '/jsonrpc',
     rpc_dir: '',
+    ariang_dir: '',
     // aria2
     aria2c_connection_level: 'min',
     aria2c_addition_parameters: '',

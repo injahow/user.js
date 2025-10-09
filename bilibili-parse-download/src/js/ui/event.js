@@ -189,19 +189,24 @@ function video_download_2() {
     }
 }
 
+let video_download_all_rpc_confirm = true
+
 function video_download_all() {
     user.lazyInit(true) // init
-    if (auth.hasAuth()) {
-        if (config.download_type === 'rpc') {
-            Download.download_all()
-        } else {
-            MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', () => {
-                Download.download_all()
-            })
-        }
-    } else {
-        MessageBox.confirm('批量下载仅支持授权用户使用RPC接口下载，是否进行授权？', () => {
+
+    if (config.request_type !== 'local' && !auth.hasAuth()) {
+        MessageBox.confirm('批量下载仅支持本地请求或授权用户使用RPC接口下载，是否进行授权？', () => {
             auth.login()
+        })
+        return
+    }
+
+    if (config.download_type === 'rpc' || !video_download_all_rpc_confirm) {
+        Download.download_all()
+    } else {
+        MessageBox.confirm('仅支持使用RPC接口批量下载，请确保RPC环境正常，是否继续？', () => {
+            Download.download_all()
+            video_download_all_rpc_confirm = false
         })
     }
 }
