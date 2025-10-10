@@ -340,9 +340,9 @@ function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
     return {
         url: `${rpc.domain}:${rpc.port}${rpc.path}`,
         type: 'POST',
+        method: 'POST', // GM.xmlHttpRequest 用这个字段区分请求方法
         dataType: 'json',
         data: JSON.stringify(data.map(({ url, filename, rpc_dir }) => {
-
             const param = {
                 out: filename,
                 header: [
@@ -386,16 +386,25 @@ function download_rpc_post_all(videos) {
     }
     download_rpc_clicked = true
     const data = [...videos]
-    ajax(get_rpc_post(data)).then(res => {
-        if (res.length === data.length) {
-            Message.success('RPC请求成功')
-        } else {
-            Message.warning('请检查RPC参数')
-        }
-    }).catch(() => {
-        Message.error('请检查RPC服务配置')
-    }).finally(() => download_rpc_clicked = false)
+
     Message.info('发送RPC下载请求')
+
+    const hasGMXHR = typeof GM.xmlHttpRequest === 'function'
+    const func = hasGMXHR ? GM.xmlHttpRequest : ajax
+    func(get_rpc_post(data))
+        .then(res => {
+            if ((hasGMXHR ? JSON.parse(res.response).length : res.length) === data.length) {
+                Message.success('RPC请求成功')
+            } else {
+                Message.warning('请检查RPC参数')
+            }
+        })
+        .catch(() => {
+            Message.error('请检查RPC服务配置')
+        })
+        .finally(() => {
+            download_rpc_clicked = false
+        })
 }
 
 /**
