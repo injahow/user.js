@@ -223,7 +223,7 @@ function download_videos_rpc(videos, rpc_type) {
     } else if (rpc_type === 'ariang') {
         download_rpc_ariang(...videos)
     } else {
-        console.error('未知RPC类型: ' + rpc_type)
+        Message.error('未知RPC类型: ' + rpc_type)
     }
 }
 
@@ -242,21 +242,13 @@ function download_videos(video_tasks, i = 0, videos = []) {
     }
 
     if (i >= video_tasks.length) {
-        // 兜底处理，确认任务已清空
+        // 兜底处理，确认videos已清空
         const type = rpc_type()
-        if (type === 'post') {
-            if (videos.length > 0) {
-                download_rpc_post_all(videos)
-                videos.length = 0
-            }
-        } else if (type === 'ariang') {
-            // 中途修改rpc_type时，可能出现遗漏
-            if (videos.length > 0) {
-                download_rpc_ariang(...videos)
-                videos.length = 0
-            }
+        if (videos.length > 0) {
+            download_videos_rpc(videos, type)
+            videos.length = 0
         }
-        MessageBox.alert('视频地址请求完成！')
+        MessageBox.alert('批量下载执行结束！')
         return
     }
 
@@ -326,8 +318,8 @@ function download_videos(video_tasks, i = 0, videos = []) {
 }
 
 function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
-    if (!(data instanceof Array)) {
-        data = data instanceof Object ? [data] : []
+    if (!Array.isArray(data)) {
+        data = data && typeof data === 'object' ? [data] : []
     }
     const rpc = {
         domain: config.rpc_domain,
@@ -456,11 +448,11 @@ function download_rpc_ariang(...videos) { // video: { url, filename, rpc_dir }
         return
     }
 
-    if (videos.length == 1 && videos[0] instanceof Array) {
+    if (videos.length == 1 && Array.isArray(videos[0])) {
         download_rpc_ariang(...videos[0])
         return
     }
-
+    // videos展开数组，是局部变量
     download_rpc_ariang_send(videos.pop())
     setTimeout(() => {
         download_rpc_ariang(...videos)
@@ -503,17 +495,20 @@ function download_blob(url, filename) {
             }
             const blob_url = URL.createObjectURL(this.response)
             downloadBlobURL(blob_url, filename)
+        } else {
+            Message.error(`下载失败，HTTP ${this.status}`)
         }
+        download_blob_clicked = false
     }
     need_show_progress = true
     xhr.onprogress = function (evt) {
-        if (this.state != 4) {
+        if (evt.lengthComputable) {
             const loaded = evt.loaded
-            const tot = evt.total
+            const total = evt.total
             show_progress({
-                total: tot,
+                total: total,
                 loaded: loaded,
-                percent: Math.floor(100 * loaded / tot)
+                percent: Math.floor(100 * loaded / total)
             })
         }
     }
@@ -786,14 +781,31 @@ function download_subtitle_vtt_zip(videos, zip) {
     })
 }
 
-function format(url) {
-    if (!url) return ''
-    if (url.match('.mp4|.m4s')) {
+function format(urlStr) {
+    let pathname = ''
+    try {
+        const url = new URL(urlStr)
+        pathname = url.pathname
+    } catch (e) {
+        pathname = urlStr.split(/[?#]/)[0]
+    }
+
+    if (!pathname) return ''
+
+    const lowerPath = pathname.toLowerCase()
+    if (lowerPath.endsWith('.mp4') || lowerPath.endsWith('.m4s')) {
         return '.mp4'
-    } else if (url.match('.flv')) {
+    } else if (lowerPath.endsWith('.flv')) {
         return '.flv'
     }
-    return '.mp4'
+
+    console.warn('意外的url文件：' + pathname)
+    const dotIndex = pathname.lastIndexOf('.')
+    if (dotIndex !== -1) {
+        return pathname.substring(dotIndex)
+    }
+
+    return ''
 }
 
 function download(url, filename, type) {

@@ -3147,6 +3147,13 @@
             return _mergeVideoAndAudio.apply(this, arguments);
         }
     };
+    function download_typeof(o) {
+        return download_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+            return typeof o;
+        } : function(o) {
+            return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+        }, download_typeof(o);
+    }
     function download_createForOfIteratorHelper(r, e) {
         var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
         if (!t) {
@@ -3217,15 +3224,15 @@
         return config_config.rpc_domain.startsWith("https://") || config_config.rpc_domain.match(/localhost|127\.0\.0\.1/) ? "post" : "ariang";
     }
     function download_videos_rpc(videos, rpc_type) {
-        "post" === rpc_type ? download_rpc_post_all(videos) : "ariang" === rpc_type ? download_rpc_ariang.apply(void 0, download_toConsumableArray(videos)) : console.error("未知RPC类型: " + rpc_type);
+        "post" === rpc_type ? download_rpc_post_all(videos) : "ariang" === rpc_type ? download_rpc_ariang.apply(void 0, download_toConsumableArray(videos)) : message_Message_error("未知RPC类型: " + rpc_type);
     }
     function download_videos(video_tasks) {
         var i = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0, videos = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : [];
         if (video_tasks.length) {
             if (i >= video_tasks.length) {
                 var type = rpc_type();
-                return "post" === type ? videos.length > 0 && (download_rpc_post_all(videos), videos.length = 0) : "ariang" === type && videos.length > 0 && (download_rpc_ariang.apply(void 0, download_toConsumableArray(videos)), 
-                videos.length = 0), void MessageBox_alert("视频地址请求完成！");
+                return videos.length > 0 && (download_videos_rpc(videos, type), videos.length = 0), 
+                void MessageBox_alert("批量下载执行结束！");
             }
             var task = video_tasks[i], msg = "第".concat(i + 1, "（").concat(i + 1, "/").concat(video_tasks.length, "）个视频");
             MessageBox_alert("".concat(msg, "：获取中..."));
@@ -3276,7 +3283,7 @@
             download_rpc_clicked = !0;
             var data = download_toConsumableArray(videos);
             ajax(function get_rpc_post(data) {
-                data instanceof Array || (data = data instanceof Object ? [ data ] : []);
+                Array.isArray(data) || (data = data && "object" === download_typeof(data) ? [ data ] : []);
                 var rpc = {
                     domain: config_config.rpc_domain,
                     port: config_config.rpc_port,
@@ -3321,7 +3328,7 @@
     }
     function download_rpc_ariang() {
         for (var _len = arguments.length, videos = new Array(_len), _key = 0; _key < _len; _key++) videos[_key] = arguments[_key];
-        0 != videos.length && (1 == videos.length && videos[0] instanceof Array ? download_rpc_ariang.apply(void 0, download_toConsumableArray(videos[0])) : (!function download_rpc_ariang_send(video) {
+        0 != videos.length && (1 == videos.length && Array.isArray(videos[0]) ? download_rpc_ariang.apply(void 0, download_toConsumableArray(videos[0])) : (!function download_rpc_ariang_send(video) {
             var bp_aria2_window = window.bp_aria2_window, time = 100;
             bp_aria2_window && !bp_aria2_window.closed || (open_ariang(), time = 3e3), setTimeout(function() {
                 var bp_aria2_window = window.bp_aria2_window, cmd = [ "url=".concat(encodeURIComponent(window.btoa(video.url))), "out=".concat(encodeURIComponent(video.filename)), "header=User-Agent:".concat(window.navigator.userAgent), "header=Referer:".concat(window.location.origin) ];
@@ -3342,19 +3349,20 @@
             if (200 === this.status || 304 === this.status) {
                 if ("msSaveOrOpenBlob" in navigator) return void navigator.msSaveOrOpenBlob(this.response, filename);
                 downloadBlobURL(URL.createObjectURL(this.response), filename);
-            }
+            } else message_Message_error("下载失败，HTTP ".concat(this.status));
+            download_blob_clicked = !1;
         }, need_show_progress = !0, xhr.onprogress = function(evt) {
-            if (4 != this.state) {
-                var loaded = evt.loaded, tot = evt.total;
+            if (evt.lengthComputable) {
+                var loaded = evt.loaded, total = evt.total;
                 !function show_progress(_ref5) {
                     var total = _ref5.total, loaded = _ref5.loaded, percent = _ref5.percent;
                     need_show_progress && MessageBox_alert("文件大小：".concat(prettyBytes(total), "(").concat(total, "Byte)<br/>") + "已经下载：".concat(prettyBytes(loaded), "(").concat(loaded, "Byte)<br/>") + "当前进度：".concat(percent, "%<br/>下载中请勿操作浏览器，刷新或离开页面会导致下载取消！<br/>再次点击下载按钮可查看下载进度。"), function() {
                         need_show_progress = !1;
                     }), total === loaded && (MessageBox_alert("下载完成，请等待浏览器保存！"), download_blob_clicked = !1);
                 }({
-                    total: tot,
+                    total: total,
                     loaded: loaded,
-                    percent: Math.floor(100 * loaded / tot)
+                    percent: Math.floor(100 * loaded / total)
                 });
             }
         }, xhr.onerror = function() {
@@ -3461,8 +3469,20 @@
             });
         }
     }
-    function format(url) {
-        return url ? url.match(".mp4|.m4s") ? ".mp4" : url.match(".flv") ? ".flv" : ".mp4" : "";
+    function format(urlStr) {
+        var pathname = "";
+        try {
+            pathname = new URL(urlStr).pathname;
+        } catch (e) {
+            pathname = urlStr.split(/[?#]/)[0];
+        }
+        if (!pathname) return "";
+        var lowerPath = pathname.toLowerCase();
+        if (lowerPath.endsWith(".mp4") || lowerPath.endsWith(".m4s")) return ".mp4";
+        if (lowerPath.endsWith(".flv")) return ".flv";
+        console.warn("意外的url文件：" + pathname);
+        var dotIndex = pathname.lastIndexOf(".");
+        return -1 !== dotIndex ? pathname.substring(dotIndex) : "";
     }
     var _document$head$innerH, Download = {
         url_format: format,
@@ -4297,7 +4317,7 @@
         function Main() {
             !function main_classCallCheck(a, n) {
                 if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.8.2", " ").concat("3a94128", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.8.2", " ").concat("a2f4226", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(e, r, t) {
             return r && main_defineProperties(e.prototype, r), t && main_defineProperties(e, t), 

@@ -2655,6 +2655,7 @@ var ffmpeg = {
   mergeVideoAndAudio: mergeVideoAndAudio
 };
 ;// ./src/js/utils/download.js
+function download_typeof(o) { "@babel/helpers - typeof"; return download_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, download_typeof(o); }
 function download_createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = download_unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function download_toConsumableArray(r) { return download_arrayWithoutHoles(r) || download_iterableToArray(r) || download_unsupportedIterableToArray(r) || download_nonIterableSpread(); }
 function download_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -2837,7 +2838,7 @@ function download_videos_rpc(videos, rpc_type) {
   } else if (rpc_type === 'ariang') {
     download_rpc_ariang.apply(void 0, download_toConsumableArray(videos));
   } else {
-    console.error('未知RPC类型: ' + rpc_type);
+    message_Message.error('未知RPC类型: ' + rpc_type);
   }
 }
 
@@ -2856,21 +2857,13 @@ function download_videos(video_tasks) {
     return;
   }
   if (i >= video_tasks.length) {
-    // 确认任务已清空
+    // 兜底处理，确认videos已清空
     var type = rpc_type();
-    if (type === 'post') {
-      if (videos.length > 0) {
-        download_rpc_post_all(videos);
-        videos.length = 0;
-      }
-    } else if (type === 'ariang') {
-      // 中途修改rpc_type时，可能出现遗漏
-      if (videos.length > 0) {
-        download_rpc_ariang.apply(void 0, download_toConsumableArray(videos));
-        videos.length = 0;
-      }
+    if (videos.length > 0) {
+      download_videos_rpc(videos, type);
+      videos.length = 0;
     }
-    MessageBox.alert('视频地址请求完成！');
+    MessageBox.alert('批量下载执行结束！');
     return;
   }
   var task = video_tasks[i];
@@ -2930,8 +2923,8 @@ function download_videos(video_tasks) {
 }
 function get_rpc_post(data) {
   // [...{ url, filename, rpc_dir }]
-  if (!(data instanceof Array)) {
-    data = data instanceof Object ? [data] : [];
+  if (!Array.isArray(data)) {
+    data = data && download_typeof(data) === 'object' ? [data] : [];
   }
   var rpc = {
     domain: config_config.rpc_domain,
@@ -3055,10 +3048,11 @@ function download_rpc_ariang() {
   if (videos.length == 0) {
     return;
   }
-  if (videos.length == 1 && videos[0] instanceof Array) {
+  if (videos.length == 1 && Array.isArray(videos[0])) {
     download_rpc_ariang.apply(void 0, download_toConsumableArray(videos[0]));
     return;
   }
+  // videos展开数组，是局部变量
   download_rpc_ariang_send(videos.pop());
   setTimeout(function () {
     download_rpc_ariang.apply(void 0, videos);
@@ -3101,17 +3095,20 @@ function download_blob(url, filename) {
       }
       var blob_url = URL.createObjectURL(this.response);
       downloadBlobURL(blob_url, filename);
+    } else {
+      message_Message.error("\u4E0B\u8F7D\u5931\u8D25\uFF0CHTTP ".concat(this.status));
     }
+    download_blob_clicked = false;
   };
   need_show_progress = true;
   xhr.onprogress = function (evt) {
-    if (this.state != 4) {
+    if (evt.lengthComputable) {
       var loaded = evt.loaded;
-      var tot = evt.total;
+      var total = evt.total;
       show_progress({
-        total: tot,
+        total: total,
         loaded: loaded,
-        percent: Math.floor(100 * loaded / tot)
+        percent: Math.floor(100 * loaded / total)
       });
     }
   };
@@ -3409,14 +3406,27 @@ function download_subtitle_vtt_zip(videos, zip) {
     }, 1000);
   });
 }
-function format(url) {
-  if (!url) return '';
-  if (url.match('.mp4|.m4s')) {
+function format(urlStr) {
+  var pathname = '';
+  try {
+    var url = new URL(urlStr);
+    pathname = url.pathname;
+  } catch (e) {
+    pathname = urlStr.split(/[?#]/)[0];
+  }
+  if (!pathname) return '';
+  var lowerPath = pathname.toLowerCase();
+  if (lowerPath.endsWith('.mp4') || lowerPath.endsWith('.m4s')) {
     return '.mp4';
-  } else if (url.match('.flv')) {
+  } else if (lowerPath.endsWith('.flv')) {
     return '.flv';
   }
-  return '.mp4';
+  console.warn('意外的url文件：' + pathname);
+  var dotIndex = pathname.lastIndexOf('.');
+  if (dotIndex !== -1) {
+    return pathname.substring(dotIndex);
+  }
+  return '';
 }
 function download(url, filename, type) {
   filename = filename.replace(/[\/\\*|]+/g, '-').replace(/:/g, '：').replace(/\?/g, '？').replace(/"/g, '\'').replace(/</g, '《').replace(/>/g, '》');
@@ -4456,7 +4466,7 @@ var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.8.2", " ").concat("3a94128", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.8.2", " ").concat("a2f4226", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   main_createClass(Main, [{
     key: "loadToolbar",
