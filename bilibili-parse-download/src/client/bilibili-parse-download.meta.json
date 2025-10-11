@@ -26,7 +26,8 @@
       "require": ["https://static.hdslb.com/js/jquery.min.js"],
       "icon": "https://static.hdslb.com/images/favicon.ico",
       "compatible": ["chrome", "firefox"],
-      "grant": "none"
+      "grant": ["GM.xmlHttpRequest"],
+      "connect": ["*"]
     },
     "==/UserScript=="
   ],
