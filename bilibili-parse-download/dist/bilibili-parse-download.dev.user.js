@@ -29,6 +29,135 @@
   !*** ./src/js/index.js + 25 modules ***!
   \**************************************/
 
+;// ./src/js/ui/scroll.js
+function show_scroll() {
+  if ($('div#bp_config').is(':hidden') && $('div#message_box').is(':hidden')) {
+    $('body').css('overflow', 'auto');
+  }
+}
+function hide_scroll() {
+  $('body').css('overflow', 'hidden');
+}
+var scroll_scroll = {
+  show: show_scroll,
+  hide: hide_scroll
+};
+;// ./src/html/message.html
+// Module
+var code = "<div class=\"message-bg\"></div> <div id=\"message_box\"> <div class=\"message-box-mark\"></div> <div class=\"message-box-bg\"> <span style=\"font-size:20px\"><b>提示：</b></span> <div id=\"message_box_context\" style=\"margin:2% 0\">...</div><br/><br/> <div class=\"message-box-btn\"> <button name=\"affirm\">确定</button> <button name=\"cancel\">取消</button> </div> </div> </div> <style>.message-bg{position:fixed;float:right;right:0;top:2%;z-index:30000}.message{margin-bottom:15px;padding:2% 2%;width:300px;display:flex;margin-top:-70px;opacity:0}.message-success{background-color:#dfd;border-left:6px solid #4caf50}.message-error{background-color:#fdd;border-left:6px solid #f44336}.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de}.message-warning{background-color:#ffc;border-left:6px solid #ffeb3b}.message-context{font-size:21px;word-wrap:break-word;word-break:break-all}.message-context p{margin:0}#message_box{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:20000}.message-box-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;z-index:20001}.message-box-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:20000}.message-box-btn{text-align:right}.message-box-btn button{margin:0 5px;width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}.message-box-btn button:hover{background:#59f}</style> ";
+// Exports
+/* harmony default export */ var message = (code);
+;// ./src/js/ui/message.js
+
+
+function initMessage(el) {
+  if (el && !!$(el)[0]) {
+    $(el).append(message);
+    return;
+  }
+  $('body').append(message);
+}
+function messageBox(ctx, type) {
+  if (type === 'confirm') {
+    $('.message-box-btn button[name="cancel"]').show();
+  } else if (type === 'alert') {
+    $('.message-box-btn button[name="cancel"]').hide();
+  }
+  if (ctx.html) {
+    $('#message_box_context').html("<div style=\"font-size:18px\">".concat(ctx.html, "</div>"));
+  } else {
+    $('#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>');
+  }
+  scroll_scroll.hide();
+  $('#message_box').show();
+  $('#message_box').animate({
+    'opacity': '1'
+  }, 300);
+  var option = {
+    affirm: function affirm() {
+      $('#message_box').hide();
+      $('#message_box').css('opacity', 0);
+      scroll_scroll.show();
+      if (ctx.callback && ctx.callback.affirm) {
+        ctx.callback.affirm();
+      }
+    },
+    cancel: function cancel() {
+      $('#message_box').hide();
+      $('#message_box').css('opacity', 0);
+      scroll_scroll.show();
+      if (ctx.callback && ctx.callback.cancel) {
+        ctx.callback.cancel();
+      }
+    }
+  };
+  $('.message-box-btn button[name="affirm"]')[0].onclick = option.affirm;
+  $('.message-box-btn button[name="cancel"]')[0].onclick = option.cancel;
+  return option;
+}
+var id = 0;
+function message_message(html, type) {
+  console.info("[Message] ".concat(type, " : ").concat(html));
+  id += 1;
+  messageEnQueue("<div id=\"message_".concat(id, "\" class=\"message message-").concat(type, "\"><div class=\"message-context\"><p><strong>").concat(type, "\uFF1A</strong></p><p>").concat(html, "</p></div></div>"), id);
+  messageDeQueue(id, 3);
+}
+function messageEnQueue(message, id) {
+  $('.message-bg').append(message);
+  $("#message_".concat(id)).animate({
+    'margin-top': '+=70px',
+    'opacity': '1'
+  }, 300);
+}
+function messageDeQueue(id) {
+  var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
+  setTimeout(function () {
+    var e = "div#message_".concat(id);
+    $(e).animate({
+      'margin-top': '-=70px',
+      'opacity': '0'
+    }, 300, function () {
+      $(e).remove();
+    });
+  }, time * 1000);
+}
+var message_Message = {
+  success: function success(html) {
+    return message_message(html, 'success');
+  },
+  warning: function warning(html) {
+    return message_message(html, 'warning');
+  },
+  error: function error(html) {
+    return message_message(html, 'error');
+  },
+  info: function info(html) {
+    return message_message(html, 'info');
+  },
+  miaow: function miaow() {
+    return message_message('(^・ω・^)~喵喵喵~', 'info');
+  }
+};
+var MessageBox = {
+  alert: function alert(html, affirm) {
+    return messageBox({
+      html: html,
+      callback: {
+        affirm: affirm
+      }
+    }, 'alert');
+  },
+  confirm: function confirm(html, affirm, cancel) {
+    return messageBox({
+      html: html,
+      callback: {
+        affirm: affirm,
+        cancel: cancel
+      }
+    }, 'confirm');
+  }
+};
+
 ;// ./src/js/user.js
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
@@ -191,135 +320,6 @@ var Cache = /*#__PURE__*/function () {
   return Cache;
 }();
 /* harmony default export */ var cache = (CacheFactory);
-;// ./src/js/ui/scroll.js
-function show_scroll() {
-  if ($('div#bp_config').is(':hidden') && $('div#message_box').is(':hidden')) {
-    $('body').css('overflow', 'auto');
-  }
-}
-function hide_scroll() {
-  $('body').css('overflow', 'hidden');
-}
-var scroll_scroll = {
-  show: show_scroll,
-  hide: hide_scroll
-};
-;// ./src/html/message.html
-// Module
-var code = "<div class=\"message-bg\"></div> <div id=\"message_box\"> <div class=\"message-box-mark\"></div> <div class=\"message-box-bg\"> <span style=\"font-size:20px\"><b>提示：</b></span> <div id=\"message_box_context\" style=\"margin:2% 0\">...</div><br/><br/> <div class=\"message-box-btn\"> <button name=\"affirm\">确定</button> <button name=\"cancel\">取消</button> </div> </div> </div> <style>.message-bg{position:fixed;float:right;right:0;top:2%;z-index:30000}.message{margin-bottom:15px;padding:2% 2%;width:300px;display:flex;margin-top:-70px;opacity:0}.message-success{background-color:#dfd;border-left:6px solid #4caf50}.message-error{background-color:#fdd;border-left:6px solid #f44336}.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de}.message-warning{background-color:#ffc;border-left:6px solid #ffeb3b}.message-context{font-size:21px;word-wrap:break-word;word-break:break-all}.message-context p{margin:0}#message_box{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:20000}.message-box-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;z-index:20001}.message-box-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:20000}.message-box-btn{text-align:right}.message-box-btn button{margin:0 5px;width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}.message-box-btn button:hover{background:#59f}</style> ";
-// Exports
-/* harmony default export */ var message = (code);
-;// ./src/js/ui/message.js
-
-
-function initMessage(el) {
-  if (el && !!$(el)[0]) {
-    $(el).append(message);
-    return;
-  }
-  $('body').append(message);
-}
-function messageBox(ctx, type) {
-  if (type === 'confirm') {
-    $('.message-box-btn button[name="cancel"]').show();
-  } else if (type === 'alert') {
-    $('.message-box-btn button[name="cancel"]').hide();
-  }
-  if (ctx.html) {
-    $('#message_box_context').html("<div style=\"font-size:18px\">".concat(ctx.html, "</div>"));
-  } else {
-    $('#message_box_context').html('<div style="font-size:18px">╰(￣▽￣)╮</div>');
-  }
-  scroll_scroll.hide();
-  $('#message_box').show();
-  $('#message_box').animate({
-    'opacity': '1'
-  }, 300);
-  var option = {
-    affirm: function affirm() {
-      $('#message_box').hide();
-      $('#message_box').css('opacity', 0);
-      scroll_scroll.show();
-      if (ctx.callback && ctx.callback.affirm) {
-        ctx.callback.affirm();
-      }
-    },
-    cancel: function cancel() {
-      $('#message_box').hide();
-      $('#message_box').css('opacity', 0);
-      scroll_scroll.show();
-      if (ctx.callback && ctx.callback.cancel) {
-        ctx.callback.cancel();
-      }
-    }
-  };
-  $('.message-box-btn button[name="affirm"]')[0].onclick = option.affirm;
-  $('.message-box-btn button[name="cancel"]')[0].onclick = option.cancel;
-  return option;
-}
-var id = 0;
-function message_message(html, type) {
-  console.info("[Message] ".concat(type, " : ").concat(html));
-  id += 1;
-  messageEnQueue("<div id=\"message_".concat(id, "\" class=\"message message-").concat(type, "\"><div class=\"message-context\"><p><strong>").concat(type, "\uFF1A</strong></p><p>").concat(html, "</p></div></div>"), id);
-  messageDeQueue(id, 3);
-}
-function messageEnQueue(message, id) {
-  $('.message-bg').append(message);
-  $("#message_".concat(id)).animate({
-    'margin-top': '+=70px',
-    'opacity': '1'
-  }, 300);
-}
-function messageDeQueue(id) {
-  var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
-  setTimeout(function () {
-    var e = "div#message_".concat(id);
-    $(e).animate({
-      'margin-top': '-=70px',
-      'opacity': '0'
-    }, 300, function () {
-      $(e).remove();
-    });
-  }, time * 1000);
-}
-var message_Message = {
-  success: function success(html) {
-    return message_message(html, 'success');
-  },
-  warning: function warning(html) {
-    return message_message(html, 'warning');
-  },
-  error: function error(html) {
-    return message_message(html, 'error');
-  },
-  info: function info(html) {
-    return message_message(html, 'info');
-  },
-  miaow: function miaow() {
-    return message_message('(^・ω・^)~喵喵喵~', 'info');
-  }
-};
-var MessageBox = {
-  alert: function alert(html, affirm) {
-    return messageBox({
-      html: html,
-      callback: {
-        affirm: affirm
-      }
-    }, 'alert');
-  },
-  confirm: function confirm(html, affirm, cancel) {
-    return messageBox({
-      html: html,
-      callback: {
-        affirm: affirm,
-        cancel: cancel
-      }
-    }, 'confirm');
-  }
-};
-
 ;// ./src/js/utils/ajax.js
 
 function ajax(obj) {
@@ -690,6 +690,53 @@ var VideoList = /*#__PURE__*/function (_VideoBase2) {
     key: "cid",
     value: function cid(p) {
       return !p ? this.video.cid() : this.video_list[this.id(p)].cid;
+    }
+  }], [{
+    key: "build",
+    value: function build() {
+      // resourceList
+      var videoListCache = cache.get('VideoList');
+      if (location.href == videoListCache.get('href') && !!videoListCache.get('build')) {
+        return videoListCache.get('build');
+      }
+      videoListCache.set('build', null);
+      var resourceList = [];
+      var pathname = location.pathname.toLowerCase();
+      if (pathname.startsWith('/bangumi/play/ss')) {
+        sid = pathname.match(/ss(\d+)/);
+        sid = parseInt(sid[1]);
+      }
+      if (videoListCache.get('lock')) {
+        throw 'videoListCache request waiting !';
+      }
+      videoListCache.set('lock', true);
+      _ajax({
+        type: 'GET',
+        url: "".concat(0),
+        dataType: 'json',
+        cache: true
+      }).then(function (res) {
+        if (res && !res.code) {
+          videoListCache.set('hasData', true);
+          videoListCache.set('episodes', res.result.episodes || []);
+        }
+      }).finally(function () {
+        videoListCache.set('lock', false);
+      });
+      videoListCache.set('href', location.href);
+      if (!epid && !videoListCache.get('epid')) {
+        throw 'epid not found !';
+      }
+      if (!videoListCache.get('hasData')) {
+        throw 'videoListCache no data !';
+      }
+      var episodes = videoListCache.get('episodes') || [];
+      var state = {
+        p: _id + 1
+      };
+      var videoList = new VideoList(main_title, state);
+      videoListCache.set('build', videoList);
+      return videoList;
     }
   }]);
   return VideoList;
@@ -1119,6 +1166,7 @@ var Cheese = /*#__PURE__*/function (_VideoBase5) {
 
 
 
+
 function type() {
   var routerMap = {
     video: '/video/',
@@ -1144,8 +1192,12 @@ function base() {
     vb = new Video(main_title, state);
   } else if (_type === 'list') {
     var _state = window.__INITIAL_STATE__;
-    var _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + '-' + _state.mediaListInfo.title;
-    vb = new VideoList(_main_title, _state);
+    if (!_state || !_state.mediaListInfo) {
+      vb = VideoList.build();
+    } else {
+      var _main_title = _state.mediaListInfo && _state.mediaListInfo.upper.name + '-' + _state.mediaListInfo.title;
+      vb = new VideoList(_main_title, _state);
+    }
   } else if (_type === 'festival') {
     var _state2 = window.__INITIAL_STATE__;
     var _main_title2 = _state2.title;
@@ -2779,7 +2831,14 @@ function download_all() {
     }
     if (dl_video || dl_audio) {
       // 1.下载视频或音频
-      download_videos([].concat(video_tasks));
+      if (rpc_type() === 'post' && config_config.show_motrix_confirm !== '0') {
+        // 检查 Motrix 状态
+        checkMotrixRunningBeforeExecute(function () {
+          download_videos([].concat(video_tasks));
+        });
+      } else {
+        download_videos([].concat(video_tasks));
+      }
     }
     if (dl_subtitle) {
       // 2.下载字幕
@@ -2827,12 +2886,53 @@ function download_all() {
       $(this).parent().css('color', 'rgba(0,0,0,0.5)');
     }
   });
+  if (config_config.video_list_auto_scroll_load !== '0') {
+    var _$$;
+    // 滚动加载，避免视频列表显示不全
+    var h = (_$$ = $('#playlist-video-action-list')[0]) === null || _$$ === void 0 ? void 0 : _$$.scrollHeight;
+    if (!h) {
+      return;
+    }
+    var timer1 = null,
+      timer2 = null;
+    var old_h = h,
+      change_count = 0,
+      not_change_count = 0;
+    timer1 = setInterval(function () {
+      $('#playlist-video-action-list').scrollTop($('#playlist-video-action-list')[0].scrollHeight);
+      setTimeout(function () {
+        $('#playlist-video-action-list').scrollTop(0);
+      }, 100);
+      if (not_change_count > 6) {
+        clearInterval(timer1);
+      }
+    }, 1000);
+    timer2 = setInterval(function () {
+      h = $('#playlist-video-action-list')[0].scrollHeight;
+      if (h > old_h) {
+        change_count++;
+        MessageBox.alert('正在加载视频列表，请稍后...');
+      } else {
+        not_change_count++;
+      }
+      old_h = h;
+      if (not_change_count > 6) {
+        clearInterval(timer1);
+        clearInterval(timer2);
+        message_Message.info('视频列表加载结束');
+        if (change_count > 0) {
+          download_all();
+        }
+      }
+    }, 500);
+  }
 }
 
 /**
  * rpc
  */
 function download_videos_rpc(videos, rpc_type) {
+  // const videos_copy = [...videos]
   if (rpc_type === 'post') {
     download_rpc_post_all(videos);
   } else if (rpc_type === 'ariang') {
@@ -2957,13 +3057,126 @@ function get_rpc_post(data) {
     }))
   };
 }
+function checkMotrixRunning(callback) {
+  var rpc = {
+    domain: config_config.rpc_domain,
+    port: config_config.rpc_port,
+    path: config_config.rpc_path,
+    token: config_config.rpc_token
+  };
+  // 设置 1s 超时
+  var controller = new AbortController();
+  var id = setTimeout(function () {
+    return controller.abort();
+  }, 1e3);
+  fetch("".concat(rpc.domain, ":").concat(rpc.port).concat(rpc.path), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: 'bp_aria2_rpc',
+      jsonrpc: '2.0',
+      method: 'aria2.getGlobalStat',
+      params: rpc.token ? ["token:".concat(rpc.token)] : []
+    }),
+    signal: controller.signal
+  }).then(function (res) {
+    callback(res.ok);
+  }).catch(function () {
+    callback(false);
+  }).finally(function () {
+    clearTimeout(id);
+  });
+}
+function handleMotrixNotRunning(execDownload) {
+  var MAX_WAIT_TIME = 10000; // 最大等待时间：10秒
+  var CHECK_INTERVAL = 500; // 每 500ms 检查
+  var startTime = Date.now();
+  var pollTimer = null;
+  var hasConfirmed = false; // 是否已弹窗或自动启动
+  var hasDownloaded = false; // 防止重复发送任务
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+  }
+  function sendDownload() {
+    if (!hasDownloaded) {
+      execDownload && execDownload();
+      hasDownloaded = true;
+    }
+    stopPolling();
+  }
+  function cancelDownload() {
+    stopPolling();
+    message_Message.info('下载已取消');
+  }
+  function startPolling() {
+    pollTimer = setInterval(function () {
+      var elapsed = Date.now() - startTime;
+      if (elapsed > MAX_WAIT_TIME) {
+        stopPolling();
+        if (!hasDownloaded) {
+          message_Message.error('连接超时：Motrix 启动失败或未响应');
+        }
+        return;
+      }
+      checkMotrixRunning(function (running) {
+        if (running && !hasDownloaded) {
+          sendDownload();
+          message_Message.success('已连接到 Motrix，任务已发送');
+        }
+      });
+    }, CHECK_INTERVAL);
+  }
+  // 自动启动
+  if (config_config.show_motrix_confirm_open_auto === '1') {
+    window.open('motrix://');
+    hasConfirmed = true;
+    startPolling();
+    return;
+  }
+  // 弹窗确认
+  MessageBox.confirm('未检测到运行的 Motrix，是否启动？', function () {
+    window.open('motrix://');
+    hasConfirmed = true;
+    startPolling();
+  }, function () {
+    hasConfirmed = true;
+    cancelDownload();
+  });
+}
+function checkMotrixRunningBeforeExecute(execFunc) {
+  // 检查 Motrix 状态
+  checkMotrixRunning(function (running) {
+    if (!running) {
+      handleMotrixNotRunning(execFunc);
+      return;
+    }
+    execFunc && execFunc();
+  });
+}
 function download_rpc(url, filename, rpc_dir) {
   var type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'post';
   if (type === 'post') {
-    download_rpc_post({
-      url: url,
-      filename: filename,
-      rpc_dir: rpc_dir
+    if (config_config.show_motrix_confirm === '0') {
+      download_rpc_post({
+        url: url,
+        filename: filename,
+        rpc_dir: rpc_dir
+      });
+      return;
+    }
+    // 检查 Motrix 状态
+    checkMotrixRunningBeforeExecute(function () {
+      download_rpc_post({
+        url: url,
+        filename: filename,
+        rpc_dir: rpc_dir
+      });
     });
   } else if (type === 'ariang') {
     download_rpc_ariang({
@@ -3448,7 +3661,7 @@ var Download = {
 };
 ;// ./src/html/config.html
 // Module
-var config_code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px;display:block;margin-bottom:15px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"display:flex;gap:10px;height:460px\"> <div style=\"flex-shrink:0;border-right:1px solid #ddd;padding-right:10px;overflow-y:auto\"> <ul style=\"list-style:none;padding:0;margin:0;font-size:14px\"> <li><a href=\"javascript:;\" data-tab=\"basic\" class=\"tab-link active\">基本设置</a></li> <li><a href=\"javascript:;\" data-tab=\"other\" class=\"tab-link\">其他设置</a></li> </ul> </div> <div id=\"tab-content\" style=\"flex:1;overflow-y:auto;padding-left:10px;font-size:14px\"> <div class=\"tab-panel\" data-id=\"basic\"> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:40%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>提示：脚本识别错误时可手动设置请求的视频质量参数</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web请求</option> <option value=\"aria\">Aria2命令</option> <option value=\"blob\">Blob请求</option> <option value=\"blob_merge\">Blob合并</option> <option value=\"rpc\">RPC接口</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:40%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label> <a class=\"setting-context\" href=\"javascript:;\" id=\"ariang_sync_config\">同步至AriaNg</a><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.1\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_path\" placeholder=\"/jsonrpc\" style=\"width:20%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%;color:transparent\" onFocus=\"this.style.color='black';\" onBlur=\"this.style.color='transparent';\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">扫码授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">网页授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">授权说明</a> </div> </div> <div class=\"tab-panel\" data-id=\"other\" style=\"display:none\"> <div style=\"margin:2% 0\"> <label>RPC下载目录：</label> <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:70%\"/> </div> <div style=\"margin:2% 0\"> <label>AriaNg下载目录：</label> <input id=\"ariang_dir\" placeholder=\"留空使用默认目录\" style=\"width:70%\"/> </div> <div style=\"margin:2% 0\"> <span>[Aria2参数]</span><br/> <label>最大连接：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:40%\"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:10%\"/> s&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:10%\"/> px&nbsp;&nbsp;&nbsp;&nbsp; <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>UI超时时间：</label> <input id=\"show_ui_timeout\" style=\"width:10%\"> s <small>说明：脚本初始化时，超时没有正常显示UI的检查时间，数值填写正整数</small> </div> <div style=\"margin:2% 0\"> <label>UI加载提示：</label> <select id=\"show_ui_confirm\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：脚本初始化UI时，如果检测到页面异常会进行弹窗提示是否手动加载</small> </div> <div style=\"margin:2% 0\"> <label>UI强制加载：</label> <select id=\"show_ui_confirm_load_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：启用UI加载超时弹窗时，自动确认强制加载UI，可能导致页面异常</small> </div> </div> </div> </div> <div style=\"text-align:right;margin-top:20px\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;max-width:90vw;max-height:90vh;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}#bp_config .tab-link{display:block;padding:8px 10px;margin:4px 0;border-radius:4px;color:#333;text-decoration:none;font-weight:500;transition:all .2s}#bp_config .tab-link:hover{background:#eef5ff}#bp_config .tab-link.active{background:#1e90ff;color:#fff}#bp_config small{color:#666;font-size:12px;margin-top:4px;display:block}#bp_config label{font-weight:500;min-width:60px;display:inline-block}#bp_config input,#bp_config select{padding:4px 6px;border:1px solid #ccc;border-radius:3px}#bp_config input:focus,#bp_config select:focus{border-color:#1e90ff;outline:0}</style> </div>";
+var config_code = "<div id=\"bp_config\"> <div class=\"config-mark\"></div> <div class=\"config-bg\"> <span style=\"font-size:20px;display:block;margin-bottom:15px\"> <b>bilibili视频下载 参数设置</b> <b> <a href=\"javascript:;\" id=\"reset_config\"> [重置] </a> <a style=\"text-decoration:underline\" href=\"javascript:;\" id=\"show_help\">&lt;通知/帮助&gt;</a> </b> </span> <div style=\"display:flex;gap:10px;height:480px\"> <div style=\"flex-shrink:0;border-right:1px solid #ddd;padding-right:10px;overflow-y:auto\"> <ul style=\"list-style:none;padding:0;margin:0;font-size:14px\"> <li><a href=\"javascript:;\" data-tab=\"basic\" class=\"tab-link active\">基本设置</a></li> <li><a href=\"javascript:;\" data-tab=\"download\" class=\"tab-link\">下载设置</a></li> <li><a href=\"javascript:;\" data-tab=\"other\" class=\"tab-link\">其他设置</a></li> </ul> </div> <div id=\"tab-content\" style=\"flex:1;overflow-y:auto;padding-left:10px;font-size:14px\"> <div class=\"tab-panel\" data-id=\"basic\"> <div style=\"margin:2% 0\"> <label>请求地址：</label> <input id=\"base_api\" style=\"width:40%\"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id=\"request_type\"> <option value=\"auto\">自动判断</option> <option value=\"local\">本地请求</option> <option value=\"remote\">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style=\"margin:2% 0\"> <label>视频格式：</label> <select id=\"format\"> <option value=\"mp4\">MP4</option> <option value=\"flv\">FLV</option> <option value=\"dash\">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id=\"host_key\"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style=\"margin:2% 0\"> <label>视频质量：</label> <select id=\"video_quality\"> {{video_quality_options}} </select><br/> <small>提示：脚本识别错误时可手动设置请求的视频质量参数</small> </div> <div style=\"margin:2% 0\"> <label>下载方式：</label> <select id=\"download_type\"> <option value=\"a\">URL链接</option> <option value=\"web\">Web请求</option> <option value=\"aria\">Aria2命令</option> <option value=\"blob\">Blob请求</option> <option value=\"blob_merge\">Blob合并</option> <option value=\"rpc\">RPC接口</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id=\"ariang_host\" style=\"width:40%\"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style=\"margin:2% 0\"> <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label> <a class=\"setting-context\" href=\"javascript:;\" id=\"ariang_sync_config\">同步至AriaNg</a><br/> <input id=\"rpc_domain\" placeholder=\"ws://192.168.1.1\" style=\"width:25%\"/> : <input id=\"rpc_port\" placeholder=\"6800\" style=\"width:10%\"/> | <input id=\"rpc_path\" placeholder=\"/jsonrpc\" style=\"width:20%\"/> | <input id=\"rpc_token\" placeholder=\"未设置不填\" style=\"width:15%;color:transparent\" onFocus=\"this.style.color='black';\" onBlur=\"this.style.color='transparent';\"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style=\"margin:2% 0\"> <label>自动下载：</label> <select id=\"auto_download\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮</small> </div> <div style=\"margin:2% 0\"> <label>授权状态：</label> <select id=\"auth\" disabled=\"disabled\"> <option value=\"0\">未授权</option> <option value=\"1\">已授权</option> </select> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login\">扫码授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_2\">网页授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_logout\">取消授权</a> <a class=\"setting-context\" href=\"javascript:;\" id=\"show_login_help\">授权说明</a> </div> </div> <div class=\"tab-panel\" data-id=\"download\"> <div style=\"margin:2% 0\"> <label>RPC下载目录：</label> <input id=\"rpc_dir\" placeholder=\"留空使用默认目录\" style=\"width:70%\"/> </div> <div style=\"margin:2% 0\"> <label>AriaNg下载目录：</label> <input id=\"ariang_dir\" placeholder=\"留空使用默认目录\" style=\"width:70%\"/> </div> <div style=\"margin:2% 0\"> <span>[Aria2参数]</span><br/> <label>最大连接：</label> <select id=\"aria2c_connection_level\"> <option value=\"min\">1</option> <option value=\"mid\">8</option> <option value=\"max\">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id=\"aria2c_addition_parameters\" placeholder=\"见Aria2c文档\" style=\"width:40%\"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style=\"margin:2% 0\"> <label>提示启动Motrix：</label> <select id=\"show_motrix_confirm\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：使用RPC（POST）请求下载时，如果接口不通会弹窗提示是否启动Motrix</small> </div> <div style=\"margin:2% 0\"> <label>自动启动Motrix：</label> <select id=\"show_motrix_confirm_open_auto\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：启用提示启动Motrix时，不再弹窗提示，自动启动Motrix</small> </div> <div style=\"margin:2% 0\"> <label>自动滚动加载：</label> <select id=\"video_list_auto_scroll_load\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：批量下载时，收藏视频的视频列表可能因数量过多而未加载所有数据，只显示局部的视频数据</small> </div> </div> <div class=\"tab-panel\" data-id=\"other\" style=\"display:none\"> <div style=\"margin:2% 0\"> <label>强制换源：</label> <select id=\"replace_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id=\"danmaku_speed\" style=\"width:10%\"/> s&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id=\"danmaku_fontsize\" style=\"width:10%\"/> px&nbsp;&nbsp;&nbsp;&nbsp; <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style=\"margin:2% 0\"> <label>UI超时时间：</label> <input id=\"show_ui_timeout\" style=\"width:10%\"> s <small>说明：脚本初始化时，超时没有正常显示UI的检查时间，数值填写正整数</small> </div> <div style=\"margin:2% 0\"> <label>UI加载提示：</label> <select id=\"show_ui_confirm\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：脚本初始化UI时，如果检测到页面异常会进行弹窗提示是否手动加载</small> </div> <div style=\"margin:2% 0\"> <label>UI强制加载：</label> <select id=\"show_ui_confirm_load_force\"> <option value=\"0\">关闭</option> <option value=\"1\">开启</option> </select> <small>说明：启用UI加载超时弹窗时，自动确认强制加载UI，可能导致页面异常</small> </div> </div> </div> </div> <div style=\"text-align:right;margin-top:20px\"> <button class=\"setting-button\" id=\"save_config\">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;max-width:90vw;max-height:90vh;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}#bp_config .tab-link{display:block;padding:8px 10px;margin:4px 0;border-radius:4px;color:#333;text-decoration:none;font-weight:500;transition:all .2s}#bp_config .tab-link:hover{background:#eef5ff}#bp_config .tab-link.active{background:#1e90ff;color:#fff}#bp_config small{color:#666;font-size:12px;margin-top:4px;display:block}#bp_config label{font-weight:500;min-width:60px;display:inline-block}#bp_config input,#bp_config select{padding:4px 6px;border:1px solid #ccc;border-radius:3px}#bp_config input:focus,#bp_config select:focus{border-color:#1e90ff;outline:0}</style> </div> ";
 // Exports
 /* harmony default export */ var config = (config_code);
 ;// ./src/js/ui/config.js
@@ -3492,7 +3705,10 @@ var config_config = {
   danmaku_fontsize: '22',
   show_ui_timeout: '6',
   show_ui_confirm: '0',
-  show_ui_confirm_load_force: '0'
+  show_ui_confirm_load_force: '0',
+  show_motrix_confirm: '0',
+  show_motrix_confirm_open_auto: '0',
+  video_list_auto_scroll_load: '0'
 };
 var default_config = Object.assign({}, config_config); // 浅拷贝
 
@@ -4466,7 +4682,7 @@ var Main = /*#__PURE__*/function () {
   function Main() {
     main_classCallCheck(this, Main);
     /* global JS_VERSION GIT_HASH */
-    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.8.2", " ").concat("a2f4226", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
+    console.log('\n'.concat(" %c bilibili-parse-download.user.js v", "2.9.0", " ").concat("0ee920a", " %c https://github.com/injahow/user.js ", '\n', '\n'), 'color: #fadfa3; background: #030307; padding:5px 0;', 'background: #fadfa3; padding:5px 0;');
   }
   main_createClass(Main, [{
     key: "loadToolbar",

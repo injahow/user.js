@@ -10,11 +10,12 @@
       </b>
     </span>
     <!-- 2.内容，左右布局 -->
-    <div style="display: flex; gap: 10px; height: 460px;">
+    <div style="display: flex; gap: 10px; height: 480px;">
       <!-- 左 -->
       <div style="flex-shrink: 0; border-right: 1px solid #ddd; padding-right: 10px; overflow-y: auto;">
         <ul style="list-style: none; padding: 0; margin: 0; font-size: 14px;">
           <li><a href="javascript:;" data-tab="basic" class="tab-link active">基本设置</a></li>
+          <li><a href="javascript:;" data-tab="download" class="tab-link">下载设置</a></li>
           <li><a href="javascript:;" data-tab="other" class="tab-link">其他设置</a></li>
           <!-- <li><a href="javascript:;" data-tab="about" class="tab-link">关于脚本</a></li> -->
         </ul>
@@ -70,7 +71,8 @@
             <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small>
           </div>
           <div style="margin: 2% 0">
-            <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label> <a class="setting-context" href="javascript:;" id="ariang_sync_config" >同步至AriaNg</a><br />
+            <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label> <a class="setting-context" href="javascript:;"
+              id="ariang_sync_config">同步至AriaNg</a><br />
             <input id="rpc_domain" placeholder="ws://192.168.1.1" style="width: 25%" /> :
             <input id="rpc_port" placeholder="6800" style="width: 10%" /> |
             <input id="rpc_path" placeholder="/jsonrpc" style="width: 20%" /> |
@@ -99,9 +101,8 @@
             <a class="setting-context" href="javascript:;" id="show_login_help">授权说明</a>
           </div>
         </div>
-
-        <!-- 2. 其他设置 -->
-        <div class="tab-panel" data-id="other" style="display:none;">
+        <!-- 2. 下载设置 -->
+        <div class="tab-panel" data-id="download">
           <!-- RPC参数 -->
           <div style="margin: 2% 0">
             <label>RPC下载目录：</label>
@@ -126,6 +127,35 @@
           </div>
 
           <div style="margin: 2% 0">
+            <label>提示启动Motrix：</label>
+            <select id="show_motrix_confirm">
+              <option value="0">关闭</option>
+              <option value="1">开启</option>
+            </select>
+            <small>说明：使用RPC（POST）请求下载时，如果接口不通会弹窗提示是否启动Motrix</small>
+          </div>
+          <div style="margin: 2% 0">
+            <label>自动启动Motrix：</label>
+            <select id="show_motrix_confirm_open_auto">
+              <option value="0">关闭</option>
+              <option value="1">开启</option>
+            </select>
+            <small>说明：启用提示启动Motrix时，不再弹窗提示，自动启动Motrix</small>
+          </div>
+
+          <div style="margin: 2% 0">
+            <label>自动滚动加载：</label>
+            <select id="video_list_auto_scroll_load">
+              <option value="0">关闭</option>
+              <option value="1">开启</option>
+            </select>
+            <small>说明：批量下载时，收藏视频的视频列表可能因数量过多而未加载所有数据，只显示局部的视频数据</small>
+          </div>
+
+        </div>
+        <!-- 3. 其他设置 -->
+        <div class="tab-panel" data-id="other" style="display:none;">
+          <div style="margin: 2% 0">
             <label>强制换源：</label>
             <select id="replace_force">
               <option value="0">关闭</option>
@@ -137,6 +167,7 @@
             <input id="danmaku_fontsize" style="width: 10%" /> px&nbsp;&nbsp;&nbsp;&nbsp;
             <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small>
           </div>
+
           <div style="margin: 2% 0">
             <label>UI超时时间：</label>
             <input id="show_ui_timeout" style="width: 10%"> s
@@ -150,7 +181,6 @@
             </select>
             <small>说明：脚本初始化UI时，如果检测到页面异常会进行弹窗提示是否手动加载</small>
           </div>
-
           <div style="margin: 2% 0">
             <label>UI强制加载：</label>
             <select id="show_ui_confirm_load_force">
@@ -159,9 +189,10 @@
             </select>
             <small>说明：启用UI加载超时弹窗时，自动确认强制加载UI，可能导致页面异常</small>
           </div>
+
         </div>
 
-        <!-- 3. ... -->
+        <!-- 4. ... -->
         <!-- <div class="tab-panel" data-id="xxx">
         </div> -->
       </div>

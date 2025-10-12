@@ -162,7 +162,14 @@ function download_all() {
 
         if (dl_video || dl_audio) {
             // 1.下载视频或音频
-            download_videos([...video_tasks])
+            if (rpc_type() === 'post' && config.show_motrix_confirm !== '0') {
+                // 检查 Motrix 状态
+                checkMotrixRunningBeforeExecute(() => {
+                    download_videos([...video_tasks])
+                })
+            } else {
+                download_videos([...video_tasks])
+            }
         }
 
         if (dl_subtitle) {
@@ -212,12 +219,52 @@ function download_all() {
             $(this).parent().css('color', 'rgba(0,0,0,0.5)')
         }
     })
+
+    if (config.video_list_auto_scroll_load !== '0') {
+        // 滚动加载，避免视频列表显示不全
+        let h = $('#playlist-video-action-list')[0]?.scrollHeight
+        if (!h) {
+            return
+        }
+        let timer1 = null, timer2 = null
+        let old_h = h, change_count = 0, not_change_count = 0
+        timer1 = setInterval(() => {
+            $('#playlist-video-action-list').scrollTop($('#playlist-video-action-list')[0].scrollHeight)
+            setTimeout(() => {
+                $('#playlist-video-action-list').scrollTop(0)
+            }, 100)
+            if (not_change_count > 6) {
+                clearInterval(timer1)
+            }
+        }, 1000)
+        timer2 = setInterval(() => {
+            h = $('#playlist-video-action-list')[0].scrollHeight
+            if (h > old_h) {
+                change_count++
+                MessageBox.alert('正在加载视频列表，请稍后...')
+            } else {
+                not_change_count++
+            }
+            old_h = h
+            if (not_change_count > 6) {
+                clearInterval(timer1)
+                clearInterval(timer2)
+                Message.info('视频列表加载结束')
+                if (change_count > 0) {
+                    download_all()
+                }
+            }
+        }, 500)
+    }
 }
+
+
 
 /**
  * rpc
  */
 function download_videos_rpc(videos, rpc_type) {
+    // const videos_copy = [...videos]
     if (rpc_type === 'post') {
         download_rpc_post_all(videos)
     } else if (rpc_type === 'ariang') {
@@ -357,9 +404,125 @@ function get_rpc_post(data) { // [...{ url, filename, rpc_dir }]
     }
 }
 
+function checkMotrixRunning(callback) {
+    const rpc = {
+        domain: config.rpc_domain,
+        port: config.rpc_port,
+        path: config.rpc_path,
+        token: config.rpc_token
+    }
+    // 设置 1s 超时
+    const controller = new AbortController()
+    const id = setTimeout(() => controller.abort(), 1e3)
+    fetch(`${rpc.domain}:${rpc.port}${rpc.path}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: 'bp_aria2_rpc',
+            jsonrpc: '2.0',
+            method: 'aria2.getGlobalStat',
+            params: rpc.token ? [`token:${rpc.token}`] : []
+        }),
+        signal: controller.signal
+    }).then(res => {
+        callback(res.ok)
+    }).catch(() => {
+        callback(false)
+    }).finally(() => {
+        clearTimeout(id)
+    })
+}
+
+function handleMotrixNotRunning(execDownload) {
+    const MAX_WAIT_TIME = 10000  // 最大等待时间：10秒
+    const CHECK_INTERVAL = 500   // 每 500ms 检查
+    let startTime = Date.now()
+    let pollTimer = null
+    let hasConfirmed = false     // 是否已弹窗或自动启动
+    let hasDownloaded = false    // 防止重复发送任务
+
+    function stopPolling() {
+        if (pollTimer) {
+            clearInterval(pollTimer)
+            pollTimer = null
+        }
+    }
+
+    function sendDownload() {
+        if (!hasDownloaded) {
+            execDownload && execDownload()
+            hasDownloaded = true
+        }
+        stopPolling()
+    }
+
+    function cancelDownload() {
+        stopPolling()
+        Message.info('下载已取消')
+    }
+
+    function startPolling() {
+        pollTimer = setInterval(() => {
+            const elapsed = Date.now() - startTime
+
+            if (elapsed > MAX_WAIT_TIME) {
+                stopPolling()
+                if (!hasDownloaded) {
+                    Message.error('连接超时：Motrix 启动失败或未响应')
+                }
+                return
+            }
+
+            checkMotrixRunning((running) => {
+                if (running && !hasDownloaded) {
+                    sendDownload()
+                    Message.success('已连接到 Motrix，任务已发送')
+                }
+            })
+        }, CHECK_INTERVAL)
+    }
+    // 自动启动
+    if (config.show_motrix_confirm_open_auto === '1') {
+        window.open('motrix://')
+        hasConfirmed = true
+        startPolling()
+        return
+    }
+    // 弹窗确认
+    MessageBox.confirm('未检测到运行的 Motrix，是否启动？', () => {
+        window.open('motrix://')
+        hasConfirmed = true
+        startPolling()
+    }, () => {
+        hasConfirmed = true
+        cancelDownload()
+    })
+
+}
+
+function checkMotrixRunningBeforeExecute(execFunc) {
+    // 检查 Motrix 状态
+    checkMotrixRunning((running) => {
+        if (!running) {
+            handleMotrixNotRunning(execFunc)
+            return
+        }
+        execFunc && execFunc()
+    })
+}
+
 function download_rpc(url, filename, rpc_dir, type = 'post') {
     if (type === 'post') {
-        download_rpc_post({ url, filename, rpc_dir })
+        if (config.show_motrix_confirm === '0') {
+            download_rpc_post({ url, filename, rpc_dir })
+            return
+        }
+        // 检查 Motrix 状态
+        checkMotrixRunningBeforeExecute(() => {
+            download_rpc_post({ url, filename, rpc_dir })
+        })
     } else if (type === 'ariang') {
         download_rpc_ariang({ url, filename, rpc_dir })
     }

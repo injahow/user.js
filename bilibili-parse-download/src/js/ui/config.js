@@ -33,7 +33,10 @@ const config = {
     danmaku_fontsize: '22',
     show_ui_timeout: '6',
     show_ui_confirm: '0',
-    show_ui_confirm_load_force: '0'
+    show_ui_confirm_load_force: '0',
+    show_motrix_confirm: '0',
+    show_motrix_confirm_open_auto: '0',
+    video_list_auto_scroll_load: '0'
 }
 
 const default_config = Object.assign({}, config) // 浅拷贝
