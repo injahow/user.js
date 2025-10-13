@@ -29,9 +29,12 @@ function base() {
         vb = new Video(main_title, state)
     } else if (_type === 'list') {
         const state = window.__INITIAL_STATE__
-        const main_title = state.mediaListInfo && (state.mediaListInfo.upper.name + '-' + state.mediaListInfo.title)
-
-        vb = new VideoList(main_title, state)
+        if (!state || !state.mediaListInfo) {
+            vb = VideoList.build()
+        } else {
+            const main_title = state.mediaListInfo && (state.mediaListInfo.upper.name + '-' + state.mediaListInfo.title)
+            vb = new VideoList(main_title, state)
+        }
     } else if (_type === 'festival') {
         const state = window.__INITIAL_STATE__
         const main_title = state.title
