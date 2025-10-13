@@ -251,6 +251,12 @@ class VideoList extends VideoBase {
             ? this.video.cid()
             : this.video_list[this.id(p)].cid
     }
+
+    static build() {
+
+        // todo
+        return new VideoBase('video', '', {})
+    }
 }
 
 class VideoFestival extends VideoBase {
