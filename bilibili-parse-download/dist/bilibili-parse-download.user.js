@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          bilibili视频下载
 // @namespace     https://github.com/injahow
-// @version       2.9.0
+// @version       2.9.1
 // @description   支持Web、RPC、Blob、Aria等下载方式；支持下载flv、dash、mp4视频格式；支持下载港区番剧；支持下载字幕弹幕；支持换源播放等功能
 // @author        injahow
 // @copyright     2021, injahow (https://github.com/injahow)
@@ -28,80 +28,6 @@
 // @[ You can find all source codes in GitHub repo ]
 !function() {
     "use strict";
-    var scroll_scroll = {
-        show: function show_scroll() {
-            $("div#bp_config").is(":hidden") && $("div#message_box").is(":hidden") && $("body").css("overflow", "auto");
-        },
-        hide: function hide_scroll() {
-            $("body").css("overflow", "hidden");
-        }
-    }, message = '<div class="message-bg"></div> <div id="message_box"> <div class="message-box-mark"></div> <div class="message-box-bg"> <span style="font-size:20px"><b>提示：</b></span> <div id="message_box_context" style="margin:2% 0">...</div><br/><br/> <div class="message-box-btn"> <button name="affirm">确定</button> <button name="cancel">取消</button> </div> </div> </div> <style>.message-bg{position:fixed;float:right;right:0;top:2%;z-index:30000}.message{margin-bottom:15px;padding:2% 2%;width:300px;display:flex;margin-top:-70px;opacity:0}.message-success{background-color:#dfd;border-left:6px solid #4caf50}.message-error{background-color:#fdd;border-left:6px solid #f44336}.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de}.message-warning{background-color:#ffc;border-left:6px solid #ffeb3b}.message-context{font-size:21px;word-wrap:break-word;word-break:break-all}.message-context p{margin:0}#message_box{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:20000}.message-box-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;z-index:20001}.message-box-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:20000}.message-box-btn{text-align:right}.message-box-btn button{margin:0 5px;width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}.message-box-btn button:hover{background:#59f}</style> ';
-    function messageBox(ctx, type) {
-        "confirm" === type ? $('.message-box-btn button[name="cancel"]').show() : "alert" === type && $('.message-box-btn button[name="cancel"]').hide(), 
-        ctx.html ? $("#message_box_context").html('<div style="font-size:18px">'.concat(ctx.html, "</div>")) : $("#message_box_context").html('<div style="font-size:18px">╰(￣▽￣)╮</div>'), 
-        scroll_scroll.hide(), $("#message_box").show(), $("#message_box").animate({
-            opacity: "1"
-        }, 300);
-        var option = {
-            affirm: function affirm() {
-                $("#message_box").hide(), $("#message_box").css("opacity", 0), scroll_scroll.show(), 
-                ctx.callback && ctx.callback.affirm && ctx.callback.affirm();
-            },
-            cancel: function cancel() {
-                $("#message_box").hide(), $("#message_box").css("opacity", 0), scroll_scroll.show(), 
-                ctx.callback && ctx.callback.cancel && ctx.callback.cancel();
-            }
-        };
-        return $('.message-box-btn button[name="affirm"]')[0].onclick = option.affirm, $('.message-box-btn button[name="cancel"]')[0].onclick = option.cancel, 
-        option;
-    }
-    var id = 0;
-    function message_message(html, type) {
-        console.info("[Message] ".concat(type, " : ").concat(html)), function messageEnQueue(message, id) {
-            $(".message-bg").append(message), $("#message_".concat(id)).animate({
-                "margin-top": "+=70px",
-                opacity: "1"
-            }, 300);
-        }('<div id="message_'.concat(id += 1, '" class="message message-').concat(type, '"><div class="message-context"><p><strong>').concat(type, "：</strong></p><p>").concat(html, "</p></div></div>"), id), 
-        function messageDeQueue(id) {
-            var time = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 3;
-            setTimeout(function() {
-                var e = "div#message_".concat(id);
-                $(e).animate({
-                    "margin-top": "-=70px",
-                    opacity: "0"
-                }, 300, function() {
-                    $(e).remove();
-                });
-            }, 1e3 * time);
-        }(id, 3);
-    }
-    var message_Message_success = function success(html) {
-        return message_message(html, "success");
-    }, message_Message_warning = function warning(html) {
-        return message_message(html, "warning");
-    }, message_Message_error = function error(html) {
-        return message_message(html, "error");
-    }, message_Message_info = function info(html) {
-        return message_message(html, "info");
-    }, message_Message_miaow = function miaow() {
-        return message_message("(^・ω・^)~喵喵喵~", "info");
-    }, MessageBox_alert = function alert(html, affirm) {
-        return messageBox({
-            html: html,
-            callback: {
-                affirm: affirm
-            }
-        }, "alert");
-    }, MessageBox_confirm = function confirm(html, affirm, cancel) {
-        return messageBox({
-            html: html,
-            callback: {
-                affirm: affirm,
-                cancel: cancel
-            }
-        }, "confirm");
-    };
     function _typeof(o) {
         return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
             return typeof o;
@@ -305,6 +231,80 @@
             }
         } ]), Cache;
     }(), cache = CacheFactory;
+    var scroll_scroll = {
+        show: function show_scroll() {
+            $("div#bp_config").is(":hidden") && $("div#message_box").is(":hidden") && $("body").css("overflow", "auto");
+        },
+        hide: function hide_scroll() {
+            $("body").css("overflow", "hidden");
+        }
+    }, message = '<div class="message-bg"></div> <div id="message_box"> <div class="message-box-mark"></div> <div class="message-box-bg"> <span style="font-size:20px"><b>提示：</b></span> <div id="message_box_context" style="margin:2% 0">...</div><br/><br/> <div class="message-box-btn"> <button name="affirm">确定</button> <button name="cancel">取消</button> </div> </div> </div> <style>.message-bg{position:fixed;float:right;right:0;top:2%;z-index:30000}.message{margin-bottom:15px;padding:2% 2%;width:300px;display:flex;margin-top:-70px;opacity:0}.message-success{background-color:#dfd;border-left:6px solid #4caf50}.message-error{background-color:#fdd;border-left:6px solid #f44336}.message-info{background-color:#e7f3fe;border-left:6px solid #0c86de}.message-warning{background-color:#ffc;border-left:6px solid #ffeb3b}.message-context{font-size:21px;word-wrap:break-word;word-break:break-all}.message-context p{margin:0}#message_box{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:20000}.message-box-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;z-index:20001}.message-box-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:20000}.message-box-btn{text-align:right}.message-box-btn button{margin:0 5px;width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}.message-box-btn button:hover{background:#59f}</style> ';
+    function messageBox(ctx, type) {
+        "confirm" === type ? $('.message-box-btn button[name="cancel"]').show() : "alert" === type && $('.message-box-btn button[name="cancel"]').hide(), 
+        ctx.html ? $("#message_box_context").html('<div style="font-size:18px">'.concat(ctx.html, "</div>")) : $("#message_box_context").html('<div style="font-size:18px">╰(￣▽￣)╮</div>'), 
+        scroll_scroll.hide(), $("#message_box").show(), $("#message_box").animate({
+            opacity: "1"
+        }, 300);
+        var option = {
+            affirm: function affirm() {
+                $("#message_box").hide(), $("#message_box").css("opacity", 0), scroll_scroll.show(), 
+                ctx.callback && ctx.callback.affirm && ctx.callback.affirm();
+            },
+            cancel: function cancel() {
+                $("#message_box").hide(), $("#message_box").css("opacity", 0), scroll_scroll.show(), 
+                ctx.callback && ctx.callback.cancel && ctx.callback.cancel();
+            }
+        };
+        return $('.message-box-btn button[name="affirm"]')[0].onclick = option.affirm, $('.message-box-btn button[name="cancel"]')[0].onclick = option.cancel, 
+        option;
+    }
+    var id = 0;
+    function message_message(html, type) {
+        console.info("[Message] ".concat(type, " : ").concat(html)), function messageEnQueue(message, id) {
+            $(".message-bg").append(message), $("#message_".concat(id)).animate({
+                "margin-top": "+=70px",
+                opacity: "1"
+            }, 300);
+        }('<div id="message_'.concat(id += 1, '" class="message message-').concat(type, '"><div class="message-context"><p><strong>').concat(type, "：</strong></p><p>").concat(html, "</p></div></div>"), id), 
+        function messageDeQueue(id) {
+            var time = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 3;
+            setTimeout(function() {
+                var e = "div#message_".concat(id);
+                $(e).animate({
+                    "margin-top": "-=70px",
+                    opacity: "0"
+                }, 300, function() {
+                    $(e).remove();
+                });
+            }, 1e3 * time);
+        }(id, 3);
+    }
+    var message_Message_success = function success(html) {
+        return message_message(html, "success");
+    }, message_Message_warning = function warning(html) {
+        return message_message(html, "warning");
+    }, message_Message_error = function error(html) {
+        return message_message(html, "error");
+    }, message_Message_info = function info(html) {
+        return message_message(html, "info");
+    }, message_Message_miaow = function miaow() {
+        return message_message("(^・ω・^)~喵喵喵~", "info");
+    }, MessageBox_alert = function alert(html, affirm) {
+        return messageBox({
+            html: html,
+            callback: {
+                affirm: affirm
+            }
+        }, "alert");
+    }, MessageBox_confirm = function confirm(html, affirm, cancel) {
+        return messageBox({
+            html: html,
+            callback: {
+                affirm: affirm,
+                cancel: cancel
+            }
+        }, "confirm");
+    };
     function ajax(obj) {
         return new Promise(function(resolve, reject) {
             obj.success = function(res) {
@@ -751,28 +751,7 @@
         } ], [ {
             key: "build",
             value: function build() {
-                var videoListCache = cache.get("VideoList");
-                if (location.href == videoListCache.get("href") && videoListCache.get("build")) return videoListCache.get("build");
-                videoListCache.set("build", null);
-                var pathname = location.pathname.toLowerCase();
-                if (pathname.startsWith("/bangumi/play/ss") && (sid = pathname.match(/ss(\d+)/), 
-                sid = parseInt(sid[1])), videoListCache.get("lock")) throw "videoListCache request waiting !";
-                if (videoListCache.set("lock", !0), _ajax({
-                    type: "GET",
-                    url: "".concat(0),
-                    dataType: "json",
-                    cache: !0
-                }).then(function(res) {
-                    res && !res.code && (videoListCache.set("hasData", !0), videoListCache.set("episodes", res.result.episodes || []));
-                }).finally(function() {
-                    videoListCache.set("lock", !1);
-                }), videoListCache.set("href", location.href), !epid && !videoListCache.get("epid")) throw "epid not found !";
-                if (!videoListCache.get("hasData")) throw "videoListCache no data !";
-                videoListCache.get("episodes");
-                var state = {
-                    p: _id + 1
-                }, videoList = new VideoList(main_title, state);
-                return videoListCache.set("build", videoList), videoList;
+                return new VideoBase("video", "", {});
             }
         } ]), VideoList;
     }(VideoBase), VideoFestival = function(_VideoBase3) {
@@ -3398,9 +3377,11 @@
         return rpc ? "#!/settings/rpc/set/".concat(rpc.domain.replace("://", "/"), "/").concat(rpc.port).concat(rpc.path, "/").concat(window.btoa(rpc.token)) : "";
     }
     function open_ariang(rpc) {
-        var hash_tag = rpc ? get_ariang_set_hash(rpc) : "", url = config_config.ariang_host + hash_tag, a = document.createElement("a");
+        var hash_tag = rpc ? get_ariang_set_hash(rpc) : "", a = document.createElement("a");
         return a.style.display = "none", a.onclick = function() {
-            window.bp_aria2_window = window.open(url);
+            window.bp_aria2_window = window.open(config_config.ariang_host), setTimeout(function() {
+                window.bp_aria2_window.location.href = config_config.ariang_host + hash_tag;
+            }, 500);
         }, document.body.appendChild(a), a.click(), document.body.removeChild(a), window.bp_aria2_window;
     }
     function download_rpc_ariang() {
@@ -3764,15 +3745,15 @@
         rpc_token: "",
         rpc_path: "/jsonrpc",
         rpc_dir: "",
-        ariang_dir: "",
         aria2c_connection_level: "min",
         aria2c_addition_parameters: "",
-        ariang_host: "http://ariang.injahow.com/",
+        ariang_host: "http://ariang.injahow.cn/",
+        ariang_dir: "",
         auto_download: "0",
         video_quality: "0",
         danmaku_speed: "15",
         danmaku_fontsize: "22",
-        show_ui_timeout: "6",
+        show_ui_timeout: "8",
         show_ui_confirm: "0",
         show_ui_confirm_load_force: "0",
         show_motrix_confirm: "0",
@@ -4433,7 +4414,7 @@
         function Main() {
             !function main_classCallCheck(a, n) {
                 if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.9.0", " ").concat("0ee920a", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.9.1", " ").concat("9c7694a", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(e, r, t) {
             return r && main_defineProperties(e.prototype, r), t && main_defineProperties(e, t), 
@@ -4443,26 +4424,25 @@
         }(Main, [ {
             key: "loadToolbar",
             value: function loadToolbar() {
-                var timer, timeout, loading = !1, load = function load(timeout) {
-                    setTimeout(function() {
-                        if (!loading) {
-                            if (loading = !0, 0 === timeout) return clearInterval(timer), void initToolbar();
-                            if (console.warn("waiting timeout..."), "1" === config_config.show_ui_confirm) return "1" === config_config.show_ui_confirm_load_force ? void initToolbar() : void MessageBox_confirm("加载脚本UI超时，建议刷新页面重新加载，是否强制加载工具栏？", initToolbar, null);
-                            message_Message_warning("脚本UI加载异常，已自动延迟加载"), setTimeout(function() {
-                                initToolbar(), message_Message_info("脚本UI已重新加载，如有问题可刷新页面");
-                            }, 5e3);
-                        }
-                    }, 1e3 * timeout);
-                };
+                var timer, timeout, loading = !1;
                 timer = setInterval(function() {
-                    document.getElementById("nav-searchform") && !loading && load(0);
+                    document.getElementById("nav-searchform") && (loading || (loading = !0, initToolbar()), 
+                    clearInterval(timer));
                 }, 500);
                 try {
-                    timeout = (timeout = config_config.show_ui_timeout ? parseInt(config_config.show_ui_timeout) : 6) > 0 ? timeout : 6;
+                    timeout = (timeout = config_config.show_ui_timeout ? parseInt(config_config.show_ui_timeout) : 8) > 0 ? timeout : 8;
                 } catch (err) {
                     console.error("show_ui_timeout err:", err);
                 }
-                load(timeout);
+                setTimeout(function() {
+                    if (clearInterval(timer), !loading) {
+                        if (console.warn("waiting timeout..."), "1" === config_config.show_ui_confirm) return "1" === config_config.show_ui_confirm_load_force ? (loading = !0, 
+                        void initToolbar()) : void MessageBox_confirm("加载脚本工具栏超时，建议刷新页面重新加载，是否强制加载工具栏？", initToolbar, null);
+                        message_Message_warning("工具栏加载异常，已延迟加载"), setTimeout(function() {
+                            loading || (loading = !0, initToolbar()), message_Message_info("工具栏已重新加载");
+                        }, 5e3);
+                    }
+                }, 1e3 * timeout);
             }
         }, {
             key: "init",

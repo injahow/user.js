@@ -19,47 +19,47 @@ class Main {
         // 处理 initToolbar 白屏问题，渲染后执行
         let loading = false
         let timer
-        const load = (timeout) => {
-            setTimeout(() => {
-                if (loading) {
-                    return
-                }
-                loading = true
-                if (timeout === 0) {
-                    clearInterval(timer)
-                    initToolbar()
-                    return
-                }
-                console.warn('waiting timeout...')
-                if (config.show_ui_confirm === '1') {
-                    if (config.show_ui_confirm_load_force === '1') {
-                        initToolbar()
-                        return
-                    }
-                    MessageBox.confirm('加载脚本UI超时，建议刷新页面重新加载，是否强制加载工具栏？', initToolbar, null)
-                    return
-                }
-                Message.warning('脚本UI加载异常，已自动延迟加载')
-                setTimeout(() => {
-                    initToolbar()
-                    Message.info('脚本UI已重新加载，如有问题可刷新页面')
-                }, 5000)
-            }, timeout * 1000)
-        }
         timer = setInterval(() => {
             const search_form = document.getElementById('nav-searchform')
-            if (search_form && !loading) {
-                load(0)
+            if (search_form) {
+                if (!loading) {
+                    loading = true
+                    initToolbar()
+                }
+                clearInterval(timer)
             }
         }, 500)
         let timeout
         try {
-            timeout = config.show_ui_timeout ? parseInt(config.show_ui_timeout) : 6
-            timeout = timeout > 0 ? timeout : 6
+            timeout = config.show_ui_timeout ? parseInt(config.show_ui_timeout) : 8
+            timeout = timeout > 0 ? timeout : 8
         } catch (err) {
             console.error('show_ui_timeout err:', err)
         }
-        load(timeout)
+        setTimeout(() => {
+            clearInterval(timer)
+            if (loading) {
+                return
+            }
+            console.warn('waiting timeout...')
+            if (config.show_ui_confirm === '1') {
+                if (config.show_ui_confirm_load_force === '1') {
+                    loading = true
+                    initToolbar()
+                    return
+                }
+                MessageBox.confirm('加载脚本工具栏超时，建议刷新页面重新加载，是否强制加载工具栏？', initToolbar, null)
+                return
+            }
+            Message.warning('工具栏加载异常，已延迟加载')
+            setTimeout(() => {
+                if (!loading) {
+                    loading = true
+                    initToolbar()
+                }
+                Message.info('工具栏已重新加载')
+            }, 5000)
+        }, timeout * 1000)
     }
 
     init() {

@@ -564,11 +564,13 @@ function get_ariang_set_hash(rpc) {
 
 function open_ariang(rpc) {
     const hash_tag = rpc ? get_ariang_set_hash(rpc) : ''
-    const url = config.ariang_host + hash_tag
     const a = document.createElement('a')
     a.style.display = 'none'
     a.onclick = () => {
-        window.bp_aria2_window = window.open(url)
+        window.bp_aria2_window = window.open(config.ariang_host)
+        setTimeout(() => { // for safari
+            window.bp_aria2_window.location.href = config.ariang_host + hash_tag
+        }, 500)
     }
     document.body.appendChild(a)
     a.click()
