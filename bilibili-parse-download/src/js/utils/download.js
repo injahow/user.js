@@ -1,3 +1,4 @@
+import { downloadFilename } from './filename'
 import { config, videoQualityMap } from '../ui/config'
 import { Message, MessageBox } from '../ui/message'
 import { ajax } from './ajax'
@@ -153,7 +154,7 @@ function download_all() {
                 p: p,
                 q: dl_quality,
                 format: dl_format,
-                filename: vb.filename(p),
+                filename: downloadFilename(vb, config.filename_template, p),
                 dl_video,
                 dl_audio,
                 rpc_dir: dl_rpc_dir

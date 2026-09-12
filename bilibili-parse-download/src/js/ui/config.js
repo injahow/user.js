@@ -16,6 +16,7 @@ const config = {
     host_key: '0',
     replace_force: '0',
     download_type: 'web',
+    filename_template: '',
     // rpc
     rpc_domain: 'http://localhost',
     rpc_port: '16800',

@@ -7,6 +7,7 @@
     "dist"
   ],
   "scripts": {
+    "test": "node --experimental-vm-modules --test tests/*.test.cjs",
     "build": "npm run build-prod",
     "build-all": "npm run build-dev && npm run build-prod",
     "build-dev": "npx webpack --config ./webpack/webpack.dev.js",

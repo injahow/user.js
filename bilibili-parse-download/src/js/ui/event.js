@@ -1,3 +1,4 @@
+import { downloadFilename } from '../utils/filename'
 import { auth } from "../auth"
 import { store } from "../store"
 import { user } from "../user"
@@ -83,11 +84,11 @@ function bilibili_parse() {
                 return
             }
             $('#video_url').attr('href', url)
-            $('#video_url').attr('download', vb.filename() + Download.url_format(url))
+            $('#video_url').attr('download', downloadFilename(vb, config.filename_template) + Download.url_format(url))
             $('#video_download').show()
             if (url_2 !== '#') {
                 $('#video_url_2').attr('href', url_2)
-                $('#video_url_2').attr('download', vb.filename() + '_audio.mp4')
+                $('#video_url_2').attr('download', downloadFilename(vb, config.filename_template) + '_audio.mp4')
                 $('#video_download_2').show()
             }
 
@@ -104,6 +105,9 @@ function bilibili_parse() {
 
 function video_download() {
     const type = config.download_type
+    const basename = downloadFilename(video.base(), config.filename_template)
+    $('#video_url').attr('download', basename + Download.url_format($('#video_url').attr('href') || ''))
+    $('#video_url_2').attr('download', basename + '_audio.mp4')
     if (type === 'a') {
         const [video_url, video_url_2, file_name, file_name_2] = [
             $('#video_url').attr('href'),
@@ -122,7 +126,7 @@ function video_download() {
             $('#video_url').attr('href'),
             $('#video_url_2').attr('href')
         ]
-        const video_title = video.base().filename()
+        const video_title = downloadFilename(video.base(), config.filename_template)
         const [file_name, file_name_2] = [
             video_title + Download.url_format(video_url),
             video_title + '.m4a'
@@ -156,7 +160,7 @@ function video_download() {
             $('#video_url').attr('href'),
             $('#video_url_2').attr('href')
         ]
-        const filename = video.base().filename() + Download.url_format(video_url)
+        const filename = downloadFilename(video.base(), config.filename_template) + Download.url_format(video_url)
         console.log('blob_merge', video_url, video_url_2, filename);
         if (config.format === 'dash') {
             Download.download_blob_merge(video_url, video_url_2, filename)
@@ -165,13 +169,14 @@ function video_download() {
         Download.download(video_url, filename, 'blob')
     } else { // blob, rpc
         const url = $('#video_url').attr('href')
-        const filename = video.base().filename() + Download.url_format(url)
+        const filename = downloadFilename(video.base(), config.filename_template) + Download.url_format(url)
         Download.download(url, filename, type)
     }
 }
 
 function video_download_2() {
     const type = config.download_type
+    $('#video_url_2').attr('download', downloadFilename(video.base(), config.filename_template) + '_audio.mp4')
     if (type === 'a') {
         $('#video_download').click()
     } else if (type === 'web') {
@@ -180,11 +185,11 @@ function video_download_2() {
         $('#video_download').click()
     } else if (type === 'blob_merge') {
         const url = $('#video_url_2').attr('href')
-        const filename = video.base().filename() + '.m4a'
+        const filename = downloadFilename(video.base(), config.filename_template) + '.m4a'
         Download.download(url, filename, 'blob')
     } else { // blob, rpc
         const url = $('#video_url_2').attr('href')
-        const filename = video.base().filename() + '.m4a'
+        const filename = downloadFilename(video.base(), config.filename_template) + '.m4a'
         Download.download(url, filename, type)
     }
 }
@@ -213,11 +218,11 @@ function video_download_all() {
 
 function download_danmaku() {
     const vb = video.base()
-    Download.download_danmaku_ass(vb.cid(), vb.filename())
+    Download.download_danmaku_ass(vb.cid(), downloadFilename(vb, config.filename_template))
 }
 
 function download_subtitle() {
-    Download.download_subtitle_vtt(0, video.base().filename())
+    Download.download_subtitle_vtt(0, downloadFilename(video.base(), config.filename_template))
 }
 
 function test() {

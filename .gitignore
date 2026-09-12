@@ -1,41 +1,58 @@
-HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Node.js dependencies and package-manager caches (root and subprojects)
+node_modules/
+.npm/
+.pnpm-store/
+
+# Generated aggregate bundle and metadata
+# Keep bilibili-parse-download/dist/ tracked: users install these release scripts.
+/dist/
+/scripts/config.json
+/scripts/meta.json
+
+# Build caches and test output
+.cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+coverage/
+.nyc_output/
+
+# Logs and temporary files
+*.log
+logs/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+/tmp/
+/temp/
+/backup/
+
+# Local environment settings; keep shareable templates
 .env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
+# IDE settings
+.idea/
 *.iws
 *.iml
 *.ipr
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# Operating-system metadata
+.DS_Store
+._*
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
 
-### VS Code ###
-.vscode/
-
-### NodeJS ###
-node_modules
-
-backup
-scripts/config.json
-scripts/meta.json
+# Keep package-lock.json, source files, documentation and release scripts tracked.

@@ -693,7 +693,7 @@
         }, {
             key: "cid",
             value: function cid(p) {
-                return this.epList.length && p ? this.video_list[this.id(p)].cid : this.state.cid || this.state.videoData.pages[this.id(p)].cid;
+                return this.epList.length && p ? this.video_list[this.id(p)].cid : !p && this.state.cid || this.state.videoData.pages[this.id(p)].cid;
             }
         } ]), Video;
     }(VideoBase), VideoList = function(_VideoBase2) {
@@ -2339,6 +2339,53 @@
             }
         } ]), Check;
     }());
+    function sanitizeFilename(value) {
+        var name = String(null != value ? value : "").replace(/[\\/:*?"<>|\u0000-\u001f\u007f]/g, "_").trim(), bytes = 0, encoder = new TextEncoder;
+        return name = Array.from(name).filter(function(char) {
+            return (bytes += encoder.encode(char).length) <= 180;
+        }).join("").replace(/[. ]+$/g, ""), /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(name) && (name = "_" + name),
+        name;
+    }
+    function downloadFilename(vb, template, _p) {
+        var fallback = vb.filename(_p);
+        if ("string" != typeof template || !template.trim()) return fallback;
+        var fields = {
+            default: function _default() {
+                return fallback;
+            },
+            title: function title() {
+                return vb.getName();
+            },
+            part: function part() {
+                return vb.title(_p);
+            },
+            p: function p() {
+                return vb.p(_p);
+            },
+            total: function total() {
+                return vb.total();
+            },
+            bvid: function bvid() {
+                return vb.bvid(_p);
+            },
+            aid: function aid() {
+                return vb.aid(_p);
+            },
+            cid: function cid() {
+                return vb.cid(_p);
+            },
+            epid: function epid() {
+                return vb.epid(_p);
+            }
+        };
+        return sanitizeFilename(template.replace(/\{([a-z]+)(?::(0?[1-9]))?\}/g, function(token, key, width) {
+            var _fields$key;
+            if (!Object.prototype.hasOwnProperty.call(fields, key)) return token;
+            if (width && ![ "p", "total", "aid", "cid", "epid" ].includes(key)) return token;
+            var value = String(null !== (_fields$key = fields[key]()) && void 0 !== _fields$key ? _fields$key : "");
+            return width && value ? value.padStart(Number(width), "0") : value;
+        })) || sanitizeFilename(fallback) || "video";
+    }
     function common_typeof(o) {
         return common_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
             return typeof o;
@@ -3747,7 +3794,7 @@
                         p: p,
                         q: dl_quality,
                         format: dl_format,
-                        filename: vb.filename(p),
+                        filename: downloadFilename(vb, config_config.filename_template, p),
                         dl_video: dl_video,
                         dl_audio: dl_audio,
                         rpc_dir: dl_rpc_dir
@@ -3787,7 +3834,7 @@
         download_subtitle_vtt: download_subtitle_vtt,
         open_ariang: open_ariang,
         get_ariang_set_hash: get_ariang_set_hash
-    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px;display:block;margin-bottom:15px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="display:flex;gap:10px;height:420px"> <div style="flex-shrink:0;border-right:1px solid #ddd;padding-right:10px;overflow-y:auto"> <ul style="list-style:none;padding:0;margin:0;font-size:14px"> <li><a href="javascript:;" data-tab="basic" class="tab-link active">基本设置</a></li> <li><a href="javascript:;" data-tab="download" class="tab-link">下载设置</a></li> <li><a href="javascript:;" data-tab="other" class="tab-link">其他设置</a></li> </ul> </div> <div id="tab-content" style="flex:1;overflow-y:auto;padding-left:10px;font-size:14px"> <div class="tab-panel" data-id="basic"> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:40%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮；脚本识别错误时可手动设置质量参数</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web请求</option> <option value="aria">Aria2命令</option> <option value="blob">Blob请求</option> <option value="blob_merge">Blob合并</option> <option value="rpc">RPC接口</option> <option value="api">API请求</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:40%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label> <a class="setting-context" href="javascript:;" id="ariang_sync_config">同步至AriaNg</a><br/> <input id="rpc_domain" placeholder="ws://192.168.1.1" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_path" placeholder="/jsonrpc" style="width:20%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%;color:transparent" onFocus="this.style.color=\'black\';" onBlur="this.style.color=\'transparent\';"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">授权说明</a> </div> </div> <div class="tab-panel" data-id="download"> <div style="margin:2% 0"> <label>RPC下载目录：</label> <input id="rpc_dir" placeholder="留空使用默认目录" style="width:70%"/> </div> <div style="margin:2% 0"> <label>AriaNg下载目录：</label> <input id="ariang_dir" placeholder="留空使用默认目录" style="width:70%"/> </div> <div style="margin:2% 0"> <span>[Aria2参数]</span><br/> <label>最大连接：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:40%"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style="margin:2% 0"> <span>API下载参数 [ 接口 | 密钥 ]</span> <a class="setting-context" target="_blank" href="https://github.com/injahow/idm-agent">参考IDM-Agent</a><br/> <input id="download_api" placeholder="自定义API下载接口" style="width:40%"/> | <input id="download_api_secret" style="width:30%;color:transparent" onFocus="this.style.color=\'black\';" onBlur="this.style.color=\'transparent\';"/><br/> <small>说明：接口为API下载方式请求地址，密钥用于服务端校验参数签名</small> </div> <div style="margin:2% 0"> <label>提示启动Motrix：</label> <select id="show_motrix_confirm"> <option value="0">关闭</option> <option value="1">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>自动启动Motrix：</label> <select id="show_motrix_confirm_open_auto"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：使用RPC（POST）请求下载时，支持弹窗提示是否启动Motrix；不再弹窗提示，自动启动Motrix</small> </div> <div style="margin:2% 0"> <label>自动滚动加载：</label> <select id="video_list_auto_scroll_load"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：批量下载时，自动滚动播放列表触发更新，获取完整视频列表信息</small> </div> </div> <div class="tab-panel" data-id="other" style="display:none"> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:10%"/> s&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:10%"/> px&nbsp;&nbsp;&nbsp;&nbsp; <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>UI超时时间：</label> <input id="show_ui_timeout" style="width:10%"> s <small>说明：脚本初始化时，超时没有正常显示UI的检查时间，数值填写正整数</small> </div> <div style="margin:2% 0"> <label>UI加载提示：</label> <select id="show_ui_confirm"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：脚本初始化UI时，如果检测到页面异常会进行弹窗提示是否手动加载</small> </div> <div style="margin:2% 0"> <label>UI强制加载：</label> <select id="show_ui_confirm_load_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：启用UI加载超时弹窗时，自动确认强制加载UI，可能导致页面异常</small> </div> </div> </div> </div> <div style="text-align:right;margin-top:20px"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;max-width:90vw;max-height:90vh;overflow:auto;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}#bp_config .tab-link{display:block;padding:8px 10px;margin:4px 0;border-radius:4px;color:#333;text-decoration:none;font-weight:500;transition:all .2s}#bp_config .tab-link:hover{background:#eef5ff}#bp_config .tab-link.active{background:#1e90ff;color:#fff}#bp_config small{color:#666;font-size:12px;margin-top:4px;display:block}#bp_config label{font-weight:500;min-width:60px;display:inline-block}#bp_config input,#bp_config select{padding:4px 6px;border:1px solid #ccc;border-radius:3px}#bp_config input:focus,#bp_config select:focus{border-color:#1e90ff;outline:0}</style> </div> ';
+    }, config = '<div id="bp_config"> <div class="config-mark"></div> <div class="config-bg"> <span style="font-size:20px;display:block;margin-bottom:15px"> <b>bilibili视频下载 参数设置</b> <b> <a href="javascript:;" id="reset_config"> [重置] </a> <a style="text-decoration:underline" href="javascript:;" id="show_help">&lt;通知/帮助&gt;</a> </b> </span> <div style="display:flex;gap:10px;height:420px"> <div style="flex-shrink:0;border-right:1px solid #ddd;padding-right:10px;overflow-y:auto"> <ul style="list-style:none;padding:0;margin:0;font-size:14px"> <li><a href="javascript:;" data-tab="basic" class="tab-link active">基本设置</a></li> <li><a href="javascript:;" data-tab="download" class="tab-link">下载设置</a></li> <li><a href="javascript:;" data-tab="other" class="tab-link">其他设置</a></li> </ul> </div> <div id="tab-content" style="flex:1;overflow-y:auto;padding-left:10px;font-size:14px"> <div class="tab-panel" data-id="basic"> <div style="margin:2% 0"> <label>请求地址：</label> <input id="base_api" style="width:40%"/>&nbsp;&nbsp;&nbsp;&nbsp; <label>请求方式：</label> <select id="request_type"> <option value="auto">自动判断</option> <option value="local">本地请求</option> <option value="remote">远程请求</option> </select><br/> <small>注意：普通使用请勿修改；默认使用混合请求</small> </div> <div style="margin:2% 0"> <label>视频格式：</label> <select id="format"> <option value="mp4">MP4</option> <option value="flv">FLV</option> <option value="dash">DASH</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>切换CDN：</label> <select id="host_key"> {{host_key_options}} </select><br/> <small>注意：无法选择MP4清晰度；建议特殊地区或播放异常时切换（自行选择合适线路）</small> </div> <div style="margin:2% 0"> <label>自动下载：</label> <select id="auto_download"> <option value="0">关闭</option> <option value="1">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>视频质量：</label> <select id="video_quality"> {{video_quality_options}} </select><br/> <small>说明：请求地址成功后将自动点击下载视频按钮；脚本识别错误时可手动设置质量参数</small> </div> <div style="margin:2% 0"> <label>下载方式：</label> <select id="download_type"> <option value="a">URL链接</option> <option value="web">Web请求</option> <option value="aria">Aria2命令</option> <option value="blob">Blob请求</option> <option value="blob_merge">Blob合并</option> <option value="rpc">RPC接口</option> <option value="api">API请求</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>AriaNg地址：</label> <input id="ariang_host" style="width:40%"/><br/> <small>提示：建议使用RPC请求下载；非HTTPS或非本地RPC域名使用AriaNg下载</small> </div> <div style="margin:2% 0"> <label>RPC配置：[ 域名 : 端口 | 路径 | 密钥 ]</label> <a class="setting-context" href="javascript:;" id="ariang_sync_config">同步至AriaNg</a><br/> <input id="rpc_domain" placeholder="ws://192.168.1.1" style="width:25%"/> : <input id="rpc_port" placeholder="6800" style="width:10%"/> | <input id="rpc_path" placeholder="/jsonrpc" style="width:20%"/> | <input id="rpc_token" placeholder="未设置不填" style="width:15%;color:transparent" onFocus="this.style.color=\'black\';" onBlur="this.style.color=\'transparent\';"/><br/> <small>注意：RPC默认使用Motrix（需要安装并运行）下载，其他软件请修改参数</small> </div> <div style="margin:2% 0"> <label>授权状态：</label> <select id="auth" disabled="disabled"> <option value="0">未授权</option> <option value="1">已授权</option> </select> <a class="setting-context" href="javascript:;" id="show_login">扫码授权</a> <a class="setting-context" href="javascript:;" id="show_login_2">网页授权</a> <a class="setting-context" href="javascript:;" id="show_logout">取消授权</a> <a class="setting-context" href="javascript:;" id="show_login_help">授权说明</a> </div> </div> <div class="tab-panel" data-id="download"> <div style="margin:2% 0"> <label for="filename_template">文件名模板：</label> <input id="filename_template" placeholder="留空沿用原命名，例如 {title} P{p:03} {part} [{cid}]" style="width:70%"/> <small>支持 {default} 原文件名、{title} 视频/合集总标题、{part} 分P/单集标题、{p} 序号、{total} 总数、{bvid}、{aid}、{cid}、{epid}。</small> <small>例：{p:03} 补零为 001。无需填写扩展名；非法字符替换为下划线，缺失字段留空，未知占位符原样保留。批量下载建议包含 {p} 或 {cid}，避免重名。</small> </div> <div style="margin:2% 0"> <label>RPC下载目录：</label> <input id="rpc_dir" placeholder="留空使用默认目录" style="width:70%"/> </div> <div style="margin:2% 0"> <label>AriaNg下载目录：</label> <input id="ariang_dir" placeholder="留空使用默认目录" style="width:70%"/> </div> <div style="margin:2% 0"> <span>[Aria2参数]</span><br/> <label>最大连接：</label> <select id="aria2c_connection_level"> <option value="min">1</option> <option value="mid">8</option> <option value="max">16</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>附加参数：</label> <input id="aria2c_addition_parameters" placeholder="见Aria2c文档" style="width:40%"/><br/> <small>说明：用于配置Aria2命令下载方式的参数</small> </div> <div style="margin:2% 0"> <span>API下载参数 [ 接口 | 密钥 ]</span> <a class="setting-context" target="_blank" href="https://github.com/injahow/idm-agent">参考IDM-Agent</a><br/> <input id="download_api" placeholder="自定义API下载接口" style="width:40%"/> | <input id="download_api_secret" style="width:30%;color:transparent" onFocus="this.style.color=\'black\';" onBlur="this.style.color=\'transparent\';"/><br/> <small>说明：接口为API下载方式请求地址，密钥用于服务端校验参数签名</small> </div> <div style="margin:2% 0"> <label>提示启动Motrix：</label> <select id="show_motrix_confirm"> <option value="0">关闭</option> <option value="1">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>自动启动Motrix：</label> <select id="show_motrix_confirm_open_auto"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：使用RPC（POST）请求下载时，支持弹窗提示是否启动Motrix；不再弹窗提示，自动启动Motrix</small> </div> <div style="margin:2% 0"> <label>自动滚动加载：</label> <select id="video_list_auto_scroll_load"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：批量下载时，自动滚动播放列表触发更新，获取完整视频列表信息</small> </div> </div> <div class="tab-panel" data-id="other" style="display:none"> <div style="margin:2% 0"> <label>强制换源：</label> <select id="replace_force"> <option value="0">关闭</option> <option value="1">开启</option> </select>&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕速度：</label> <input id="danmaku_speed" style="width:10%"/> s&nbsp;&nbsp;&nbsp;&nbsp; <label>弹幕字号：</label> <input id="danmaku_fontsize" style="width:10%"/> px&nbsp;&nbsp;&nbsp;&nbsp; <small>说明：使用请求到的视频地址在DPlayer进行播放；弹幕速度为弹幕滑过DPlayer的时间</small> </div> <div style="margin:2% 0"> <label>UI超时时间：</label> <input id="show_ui_timeout" style="width:10%"> s <small>说明：脚本初始化时，超时没有正常显示UI的检查时间，数值填写正整数</small> </div> <div style="margin:2% 0"> <label>UI加载提示：</label> <select id="show_ui_confirm"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：脚本初始化UI时，如果检测到页面异常会进行弹窗提示是否手动加载</small> </div> <div style="margin:2% 0"> <label>UI强制加载：</label> <select id="show_ui_confirm_load_force"> <option value="0">关闭</option> <option value="1">开启</option> </select> <small>说明：启用UI加载超时弹窗时，自动确认强制加载UI，可能导致页面异常</small> </div> </div> </div> </div> <div style="text-align:right;margin-top:20px"> <button class="setting-button" id="save_config">确定</button> </div> </div> <style>#bp_config{opacity:0;display:none;position:fixed;inset:0px;top:0;left:0;width:100%;height:100%;z-index:10000}#bp_config .config-bg{position:absolute;background:#fff;border-radius:10px;padding:20px;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;max-width:90vw;max-height:90vh;overflow:auto;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:10001}#bp_config .config-mark{width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.5);z-index:10000}#bp_config .setting-button{width:120px;height:40px;border-width:0;border-radius:3px;background:#1e90ff;cursor:pointer;outline:0;color:#fff;font-size:17px}#bp_config .setting-button:hover{background:#59f}#bp_config .setting-context{margin:0 1%;color:#00f}#bp_config .setting-context:hover{color:red}#bp_config .tab-link{display:block;padding:8px 10px;margin:4px 0;border-radius:4px;color:#333;text-decoration:none;font-weight:500;transition:all .2s}#bp_config .tab-link:hover{background:#eef5ff}#bp_config .tab-link.active{background:#1e90ff;color:#fff}#bp_config small{color:#666;font-size:12px;margin-top:4px;display:block}#bp_config label{font-weight:500;min-width:60px;display:inline-block}#bp_config input,#bp_config select{padding:4px 6px;border:1px solid #ccc;border-radius:3px}#bp_config input:focus,#bp_config select:focus{border-color:#1e90ff;outline:0}</style> </div> ';
     function config_typeof(o) {
         return config_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
             return typeof o;
@@ -3843,6 +3890,7 @@
         host_key: "0",
         replace_force: "0",
         download_type: "web",
+        filename_template: "",
         rpc_domain: "http://localhost",
         rpc_port: "16800",
         rpc_token: "",
@@ -4274,10 +4322,10 @@
                         if (!res.video || !res.audio) return void message_Message_warning("数据错误");
                         _url = res.video.replace("http://", "https://"), _url_ = res.audio.replace("http://", "https://");
                     }
-                    $("#video_url").attr("href", _url), $("#video_url").attr("download", vb.filename() + Download.url_format(_url)), 
+                    $("#video_url").attr("href", _url), $("#video_url").attr("download", downloadFilename(vb, config_config.filename_template) + Download.url_format(_url)),
                     $("#video_download").show(), "#" !== _url_ && ($("#video_url_2").attr("href", _url_), 
-                    $("#video_url_2").attr("download", vb.filename() + "_audio.mp4"), $("#video_download_2").show()), 
-                    (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_), 
+                    $("#video_url_2").attr("download", downloadFilename(vb, config_config.filename_template) + "_audio.mp4"),
+                    $("#video_download_2").show()), (user.needReplace() || vb.isLimited() || "1" === config_config.replace_force) && player.replace_player(_url, _url_),
                     "1" === config_config.auto_download && $("#video_download").click();
                 }
             }); else {
@@ -4289,12 +4337,13 @@
             }
         },
         video_download: function video_download() {
-            var type = config_config.download_type;
-            if ("a" === type) {
+            var type = config_config.download_type, basename = downloadFilename(video.base(), config_config.filename_template);
+            if ($("#video_url").attr("download", basename + Download.url_format($("#video_url").attr("href") || "")),
+            $("#video_url_2").attr("download", basename + "_audio.mp4"), "a" === type) {
                 var _ref3 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href"), $("#video_url").attr("download"), $("#video_url_2").attr("download") ], video_url_2 = _ref3[1], file_name = _ref3[2], file_name_2 = _ref3[3], msg = "建议使用IDM、FDM等软件安装其浏览器插件后，鼠标右键点击链接下载~<br/><br/>" + '<a href="'.concat(_ref3[0], '" download="').concat(file_name, '" target="_blank" style="text-decoration:underline;">&gt视频地址&lt</a><br/><br/>') + ("dash" === config_config.format ? '<a href="'.concat(video_url_2, '" download="').concat(file_name_2, '" target="_blank" style="text-decoration:underline;">&gt音频地址&lt</a>') : "");
                 MessageBox_alert(msg);
             } else if ("web" === type) $("#video_url")[0].click(); else if ("aria" === type) {
-                var _ref4 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref4[0], _video_url_ = _ref4[1], video_title = video.base().filename(), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref6 = event_slicedToArray({
+                var _ref4 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url = _ref4[0], _video_url_ = _ref4[1], video_title = downloadFilename(video.base(), config_config.filename_template), _file_name = video_title + Download.url_format(_video_url), _file_name_ = video_title + ".m4a", aria2c_header = '--header "User-Agent: '.concat(window.navigator.userAgent, '" --header "Referer: ').concat(window.location.href, '"'), _ref6 = event_slicedToArray({
                     min: [ 1, 5 ],
                     mid: [ 16, 8 ],
                     max: [ 32, 16 ]
@@ -4305,21 +4354,22 @@
                     $("#".concat(id)).select(), document.execCommand("copy") ? message_Message_success("复制成功") : message_Message_warning("复制失败");
                 }), MessageBox_alert(_msg);
             } else if ("blob_merge" === type) {
-                var _ref7 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url2 = _ref7[0], _video_url_2 = _ref7[1], filename = video.base().filename() + Download.url_format(_video_url2);
+                var _ref7 = [ $("#video_url").attr("href"), $("#video_url_2").attr("href") ], _video_url2 = _ref7[0], _video_url_2 = _ref7[1], filename = downloadFilename(video.base(), config_config.filename_template) + Download.url_format(_video_url2);
                 if (console.log("blob_merge", _video_url2, _video_url_2, filename), "dash" === config_config.format) return void Download.download_blob_merge(_video_url2, _video_url_2, filename);
                 Download.download(_video_url2, filename, "blob");
             } else {
-                var url = $("#video_url").attr("href"), _filename = video.base().filename() + Download.url_format(url);
+                var url = $("#video_url").attr("href"), _filename = downloadFilename(video.base(), config_config.filename_template) + Download.url_format(url);
                 Download.download(url, _filename, type);
             }
         },
         video_download_2: function video_download_2() {
             var type = config_config.download_type;
-            if ("a" === type) $("#video_download").click(); else if ("web" === type) $("#video_url_2")[0].click(); else if ("aria" === type) $("#video_download").click(); else if ("blob_merge" === type) {
-                var url = $("#video_url_2").attr("href"), filename = video.base().filename() + ".m4a";
+            if ($("#video_url_2").attr("download", downloadFilename(video.base(), config_config.filename_template) + "_audio.mp4"),
+            "a" === type) $("#video_download").click(); else if ("web" === type) $("#video_url_2")[0].click(); else if ("aria" === type) $("#video_download").click(); else if ("blob_merge" === type) {
+                var url = $("#video_url_2").attr("href"), filename = downloadFilename(video.base(), config_config.filename_template) + ".m4a";
                 Download.download(url, filename, "blob");
             } else {
-                var _url2 = $("#video_url_2").attr("href"), _filename2 = video.base().filename() + ".m4a";
+                var _url2 = $("#video_url_2").attr("href"), _filename2 = downloadFilename(video.base(), config_config.filename_template) + ".m4a";
                 Download.download(_url2, _filename2, type);
             }
         },
@@ -4332,10 +4382,10 @@
         },
         download_danmaku: function download_danmaku() {
             var vb = video.base();
-            Download.download_danmaku_ass(vb.cid(), vb.filename());
+            Download.download_danmaku_ass(vb.cid(), downloadFilename(vb, config_config.filename_template));
         },
         download_subtitle: function download_subtitle() {
-            Download.download_subtitle_vtt(0, video.base().filename());
+            Download.download_subtitle_vtt(0, downloadFilename(video.base(), config_config.filename_template));
         },
         test: function test() {
             MessageBox_alert();
@@ -4510,7 +4560,7 @@
         function Main() {
             !function main_classCallCheck(a, n) {
                 if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
-            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.9.2", " ").concat("90a6675", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
+            }(this, Main), console.log("\n".concat(" %c bilibili-parse-download.user.js v", "2.9.2", " ").concat("df7deb7", " %c https://github.com/injahow/user.js ", "\n", "\n"), "color: #fadfa3; background: #030307; padding:5px 0;", "background: #fadfa3; padding:5px 0;");
         }
         return function main_createClass(e, r, t) {
             return r && main_defineProperties(e.prototype, r), t && main_defineProperties(e, t), 

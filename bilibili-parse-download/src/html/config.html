@@ -100,6 +100,12 @@
         </div>
         <!-- 2. 下载设置 -->
         <div class="tab-panel" data-id="download">
+          <div style="margin: 2% 0">
+            <label for="filename_template">文件名模板：</label>
+            <input id="filename_template" placeholder="留空沿用原命名，例如 {title} P{p:03} {part} [{cid}]" style="width: 70%" />
+            <small>支持 {default} 原文件名、{title} 视频/合集总标题、{part} 分P/单集标题、{p} 序号、{total} 总数、{bvid}、{aid}、{cid}、{epid}。</small>
+            <small>例：{p:03} 补零为 001。无需填写扩展名；非法字符替换为下划线，缺失字段留空，未知占位符原样保留。批量下载建议包含 {p} 或 {cid}，避免重名。</small>
+          </div>
           <!-- RPC参数 -->
           <div style="margin: 2% 0">
             <label>RPC下载目录：</label>
